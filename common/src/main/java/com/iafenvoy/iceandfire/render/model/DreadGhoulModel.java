@@ -1,11 +1,12 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.DreadGhoulRenderState;
 import com.iafenvoy.iceandfire.entity.DreadGhoulEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
 
-public class DreadGhoulModel extends BipedBaseModel<DreadGhoulEntity> {
+public class DreadGhoulModel extends BipedBaseModel<DreadGhoulRenderState> {
     public final AdvancedModelBox head2;
     public final AdvancedModelBox clawsRight;
     public final AdvancedModelBox clawsLeft;
@@ -65,24 +66,30 @@ public class DreadGhoulModel extends BipedBaseModel<DreadGhoulEntity> {
     }
 
     @Override
-    public void setAngles(DreadGhoulEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(DreadGhoulRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+
         this.resetToDefaultPose();
         this.faceTarget(headYaw, headPitch, 1.0F, this.head);
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0f);
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0f);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
         float degree_walk = 1F;
-        if (entity.getAnimation() == DreadGhoulEntity.ANIMATION_SPAWN) {
-            if (entity.getAnimationTick() < 30) {
-                this.swing(this.armRight, 0.5F, 0.5F, false, 2, -0.7F, entity.age, 1);
-                this.swing(this.armLeft, 0.5F, 0.5F, true, 2, -0.7F, entity.age, 1);
-                this.flap(this.armRight, 0.5F, 0.5F, true, 1, 0, entity.age, 1);
-                this.flap(this.armLeft, 0.5F, 0.5F, true, 1, 0, entity.age, 1);
+        if (state.getAnimation() == DreadGhoulEntity.ANIMATION_SPAWN) {
+            if (state.getAnimationTick() < 30) {
+                this.swing(this.armRight, 0.5F, 0.5F, false, 2, -0.7F, state.ageInTicks, 1);
+                this.swing(this.armLeft, 0.5F, 0.5F, true, 2, -0.7F, state.ageInTicks, 1);
+                this.flap(this.armRight, 0.5F, 0.5F, true, 1, 0, state.ageInTicks, 1);
+                this.flap(this.armLeft, 0.5F, 0.5F, true, 1, 0, state.ageInTicks, 1);
             }
         }
-        this.flap(this.armLeft, speed_idle, 0.15F, false, 2, -0.1F, entity.age, 1);
-        this.flap(this.armRight, speed_idle, 0.15F, true, 2, -0.1F, entity.age, 1);
-        this.walk(this.head, speed_idle, 0.1F, true, 1, -0.05F, entity.age, 1);
+        this.flap(this.armLeft, speed_idle, 0.15F, false, 2, -0.1F, state.ageInTicks, 1);
+        this.flap(this.armRight, speed_idle, 0.15F, true, 2, -0.1F, state.ageInTicks, 1);
+        this.walk(this.head, speed_idle, 0.1F, true, 1, -0.05F, state.ageInTicks, 1);
 
         this.walk(this.legRight, speed_walk, degree_walk, false, 0, 0, limbAngle, limbDistance);
         this.walk(this.legLeft, speed_walk, degree_walk, true, 0, 0, limbAngle, limbDistance);

@@ -1,24 +1,26 @@
 package com.iafenvoy.iceandfire.render.model;
 
 import com.google.common.collect.ImmutableList;
+import com.iafenvoy.iceandfire.render.entity.state.BipedRenderState;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.ModelWithArms;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.ArmedModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 
-public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEntityModel<T> implements ICustomStatueModel, ModelWithArms {
+import java.util.List;
+import java.util.Map;
+
+public abstract class BipedBaseModel<T extends BipedRenderState> extends AdvancedEntityModel<T> implements ICustomStatueModel, ArmedModel {
     public HideableModelRenderer head;
     public HideableModelRenderer headware;
     public HideableModelRenderer body;
@@ -26,13 +28,13 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     public HideableModelRenderer armLeft;
     public HideableModelRenderer legRight;
     public HideableModelRenderer legLeft;
-    public BipedEntityModel.ArmPose leftArmPose;
-    public BipedEntityModel.ArmPose rightArmPose;
+    public float attackTime;
     public boolean isSneak;
     protected ModelAnimator animator;
 
     //Make sure we don't have any null boxes which would cause issues with getAllParts()
     protected BipedBaseModel() {
+        super(new ModelPart(List.of(), Map.of()));
         this.head = new HideableModelRenderer(this, 0, 0);
         this.headware = new HideableModelRenderer(this, 0, 0);
         this.body = new HideableModelRenderer(this, 0, 0);
@@ -43,19 +45,16 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     }
 
     @Override
-    public void setArmAngle(Arm sideIn, MatrixStack matrixStackIn) {
+    public void translateToHand(HumanoidArm sideIn, PoseStack matrixStackIn) {
         this.getArmForSide(sideIn).translateAndRotate(matrixStackIn);
     }
 
-    protected HideableModelRenderer getArmForSide(Arm side) {
-        return side == Arm.LEFT ? this.armLeft : this.armRight;
+    protected HideableModelRenderer getArmForSide(HumanoidArm side) {
+        return side == HumanoidArm.LEFT ? this.armLeft : this.armRight;
     }
 
-    protected Arm getMainHand(Entity entityIn) {
-        if (entityIn instanceof LivingEntity LivingEntity) {
-            Arm Handside = LivingEntity.getMainArm();
-            return LivingEntity.preferredHand == Hand.MAIN_HAND ? Handside : Handside.getOpposite();
-        } else return Arm.RIGHT;
+    protected HumanoidArm getMainHand(T state) {
+        return state.swingingArm == InteractionHand.MAIN_HAND ? state.mainArm : state.mainArm.getOpposite();
     }
 
     public void progressRotationInterp(AdvancedModelBox model, float progress, float rotX, float rotY, float rotZ, float max) {
@@ -102,39 +101,10 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     }
 
     public <M extends ModelPart, U extends BasicModelPart> void copyFrom(M modelIn, U currentModel) {
-        modelIn.setAngles(currentModel.rotateAngleX, currentModel.rotateAngleY, currentModel.rotateAngleZ);
-        modelIn.pivotX = currentModel.rotationPointX;
-        modelIn.pivotY = currentModel.rotationPointY;
-        modelIn.pivotZ = currentModel.rotationPointZ;
-    }
-
-    public void setModelAttributes(BipedBaseModel<T> modelIn) {
-        super.copyStateTo(modelIn);
-        modelIn.animator = this.animator;
-        modelIn.leftArmPose = this.leftArmPose;
-        modelIn.rightArmPose = this.rightArmPose;
-        modelIn.isSneak = this.isSneak;
-        this.copyFrom(modelIn.head, this.head);
-        this.copyFrom(modelIn.headware, this.headware);
-        this.copyFrom(modelIn.body, this.body);
-        this.copyFrom(modelIn.armRight, this.armRight);
-        this.copyFrom(modelIn.armLeft, this.armLeft);
-        this.copyFrom(modelIn.legRight, this.legRight);
-        this.copyFrom(modelIn.legLeft, this.legLeft);
-    }
-
-    public void setModelAttributes(BipedEntityModel<T> modelIn) {
-        super.copyStateTo(modelIn);
-        modelIn.leftArmPose = this.leftArmPose;
-        modelIn.rightArmPose = this.rightArmPose;
-        modelIn.sneaking = this.isSneak;
-        this.copyFrom(modelIn.head, this.head);
-        this.copyFrom(modelIn.hat, this.headware);
-        this.copyFrom(modelIn.body, this.body);
-        this.copyFrom(modelIn.rightArm, this.armRight);
-        this.copyFrom(modelIn.leftArm, this.armLeft);
-        this.copyFrom(modelIn.rightLeg, this.legRight);
-        this.copyFrom(modelIn.leftLeg, this.legLeft);
+        modelIn.setRotation(currentModel.rotateAngleX, currentModel.rotateAngleY, currentModel.rotateAngleZ);
+        modelIn.x = currentModel.rotationPointX;
+        modelIn.y = currentModel.rotationPointY;
+        modelIn.z = currentModel.rotationPointZ;
     }
 
     public void setVisible(boolean visible) {
@@ -148,21 +118,28 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(T state) {
+        this.attackTime = state.attackTime;
+        this.isSneak = state.isSneak;
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
         this.resetToDefaultPose();
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
         this.faceTarget(headYaw, headPitch, 1.0F, this.head);
         float f = 1.0F;
-        this.armRight.rotateAngleX += MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 2.0F * limbDistance * 0.5F / f;
-        this.armLeft.rotateAngleX += MathHelper.cos(limbAngle * 0.6662F) * 2.0F * limbDistance * 0.5F / f;
-        this.legRight.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance / f;
-        this.legLeft.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance / f;
+        this.armRight.rotateAngleX += Mth.cos(limbAngle * 0.6662F + (float) Math.PI) * 2.0F * limbDistance * 0.5F / f;
+        this.armLeft.rotateAngleX += Mth.cos(limbAngle * 0.6662F) * 2.0F * limbDistance * 0.5F / f;
+        this.legRight.rotateAngleX = Mth.cos(limbAngle * 0.6662F) * 1.4F * limbDistance / f;
+        this.legLeft.rotateAngleX = Mth.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance / f;
         this.legRight.rotateAngleY = 0.0F;
         this.legLeft.rotateAngleY = 0.0F;
         this.legRight.rotateAngleZ = 0.0F;
         this.legLeft.rotateAngleZ = 0.0F;
 
-        if (entity.hasVehicle()) {
+        if (state.isPassenger) {
             this.armRight.rotateAngleX -= ((float) Math.PI / 5F);
             this.armLeft.rotateAngleX -= ((float) Math.PI / 5F);
             this.legRight.rotateAngleX = -1.4137167F;
@@ -172,31 +149,31 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
             this.legLeft.rotateAngleY = -((float) Math.PI / 10F);
             this.legLeft.rotateAngleZ = -0.07853982F;
         }
-        if (this.handSwingProgress > 0.0F) {
-            Arm handSide = this.getMainHand(entity);
+        if (this.attackTime > 0.0F) {
+            HumanoidArm handSide = this.getMainHand(state);
             HideableModelRenderer modelrenderer = this.getArmForSide(handSide);
-            float f1 = this.handSwingProgress;
-            this.body.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) * ((float) Math.PI * 2F)) * 0.2F;
+            float f1 = this.attackTime;
+            this.body.rotateAngleY = Mth.sin(Mth.sqrt(f1) * ((float) Math.PI * 2F)) * 0.2F;
 
-            if (handSide == Arm.LEFT)
+            if (handSide == HumanoidArm.LEFT)
                 this.body.rotateAngleY *= -1.0F;
 
-            this.armRight.rotationPointZ = MathHelper.sin(this.body.rotateAngleY) * 5.0F;
-            this.armRight.rotationPointX = -MathHelper.cos(this.body.rotateAngleY) * 5.0F;
-            this.armLeft.rotationPointZ = -MathHelper.sin(this.body.rotateAngleY) * 5.0F;
-            this.armLeft.rotationPointX = MathHelper.cos(this.body.rotateAngleY) * 5.0F;
+            this.armRight.rotationPointZ = Mth.sin(this.body.rotateAngleY) * 5.0F;
+            this.armRight.rotationPointX = -Mth.cos(this.body.rotateAngleY) * 5.0F;
+            this.armLeft.rotationPointZ = -Mth.sin(this.body.rotateAngleY) * 5.0F;
+            this.armLeft.rotationPointX = Mth.cos(this.body.rotateAngleY) * 5.0F;
             this.armRight.rotateAngleY += this.body.rotateAngleY;
             this.armLeft.rotateAngleY += this.body.rotateAngleY;
             this.armLeft.rotateAngleX += this.body.rotateAngleX;
-            f1 = 1.0F - this.handSwingProgress;
+            f1 = 1.0F - this.attackTime;
             f1 = f1 * f1;
             f1 = f1 * f1;
             f1 = 1.0F - f1;
-            float f2 = MathHelper.sin(f1 * (float) Math.PI);
-            float f3 = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.rotateAngleX - 0.7F) * 0.75F;
+            float f2 = Mth.sin(f1 * (float) Math.PI);
+            float f3 = Mth.sin(this.attackTime * (float) Math.PI) * -(this.head.rotateAngleX - 0.7F) * 0.75F;
             modelrenderer.rotateAngleX = (float) ((double) modelrenderer.rotateAngleX - ((double) f2 * 1.2D + (double) f3));
             modelrenderer.rotateAngleY += this.body.rotateAngleY * 2.0F;
-            modelrenderer.rotateAngleZ += MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
+            modelrenderer.rotateAngleZ += Mth.sin(this.attackTime * (float) Math.PI) * -0.4F;
         }
         if (this.isSneak) {
             this.body.rotateAngleX = 0.5F;
@@ -216,19 +193,19 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
             this.head.rotationPointY = 0.0F;
         }
 
-        this.armRight.rotateAngleZ += MathHelper.cos(animationProgress * 0.09F) * 0.05F + 0.05F;
-        this.armLeft.rotateAngleZ -= MathHelper.cos(animationProgress * 0.09F) * 0.05F + 0.05F;
-        this.armRight.rotateAngleX += MathHelper.sin(animationProgress * 0.067F) * 0.05F;
-        this.armLeft.rotateAngleX -= MathHelper.sin(animationProgress * 0.067F) * 0.05F;
+        this.armRight.rotateAngleZ += Mth.cos(animationProgress * 0.09F) * 0.05F + 0.05F;
+        this.armLeft.rotateAngleZ -= Mth.cos(animationProgress * 0.09F) * 0.05F + 0.05F;
+        this.armRight.rotateAngleX += Mth.sin(animationProgress * 0.067F) * 0.05F;
+        this.armLeft.rotateAngleX -= Mth.sin(animationProgress * 0.067F) * 0.05F;
 
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 
-    abstract void animate(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float f);
+    abstract void animate(T state, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float f);
 
     @Override
     public Iterable<AdvancedModelBox> getAllParts() {

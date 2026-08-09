@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.DreadKnightRenderState;
 import com.iafenvoy.iceandfire.entity.DreadKnightEntity;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
-public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
+public class DreadKnightModel extends DreadBaseModel<DreadKnightRenderState> {
     public final HideableModelRenderer chestplate;
     public final HideableModelRenderer cloak;
     public final HideableModelRenderer crown;
@@ -23,8 +24,8 @@ public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
     public DreadKnightModel(float modelScale) {
         this.texWidth = 128;
         this.texHeight = 64;
-        this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-        this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.sleeveRight = new HideableModelRenderer(this, 35, 33);
         this.sleeveRight.setPos(0.0F, -0.1F, 0.0F);
         this.sleeveRight.addBox(-4.0F, -2.1F, -2.5F, 5, 6, 5, modelScale);
@@ -88,26 +89,11 @@ public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
     }
 
     @Override
-    public void animateModel(DreadKnightEntity entity, float limbAngle, float limbDistance, float tickDelta) {
-        this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
-        this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-        ItemStack itemstack = entity.getStackInHand(Hand.MAIN_HAND);
-
-        if (itemstack.getItem() == Items.BOW && entity.handSwinging)
-            if (entity.getMainArm() == Arm.RIGHT)
-                this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
-            else
-                this.leftArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
-
-        super.animateModel(entity, limbAngle, limbDistance, tickDelta);
+    public void setRotationAnglesSpawn(DreadKnightRenderState state, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void setRotationAnglesSpawn(DreadKnightEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    @Override
-    public void animate(DreadKnightEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+    public void animate(DreadKnightRenderState state, float f, float f1, float f2, float f3, float f4, float f5) {
     }
 
     @Override
@@ -115,13 +101,4 @@ public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
         return DreadKnightEntity.ANIMATION_SPAWN;
     }
 
-    @Override
-    public void copyStateTo(EntityModel<DreadKnightEntity> model) {
-        super.copyStateTo(model);
-        if (model instanceof BipedEntityModel bipedEntityModel) {
-            bipedEntityModel.leftArmPose = this.leftArmPose;
-            bipedEntityModel.rightArmPose = this.rightArmPose;
-            bipedEntityModel.sneaking = this.isSneak;
-        }
-    }
 }

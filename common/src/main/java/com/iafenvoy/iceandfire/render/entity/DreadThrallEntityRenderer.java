@@ -2,19 +2,15 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DreadThrallEntity;
-import com.iafenvoy.iceandfire.render.entity.feature.IHasArmorVariantResource;
-import com.iafenvoy.iceandfire.render.entity.feature.BipedArmorFeatureRendererMultiple;
 import com.iafenvoy.iceandfire.render.entity.feature.GenericGlowingFeatureRenderer;
+import com.iafenvoy.iceandfire.render.entity.feature.IHasArmorVariantResource;
+import com.iafenvoy.iceandfire.render.entity.state.DreadThrallRenderState;
 import com.iafenvoy.iceandfire.render.model.DreadThrallModel;
-import com.iafenvoy.uranus.client.model.util.HideableLayer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EquipmentSlot;
 
-public class DreadThrallEntityRenderer extends MobRenderer<DreadThrallEntity, DreadThrallModel> implements IHasArmorVariantResource {
+public class DreadThrallEntityRenderer extends AdvancedEntityRendererBase<DreadThrallEntity, DreadThrallRenderState, DreadThrallModel> implements IHasArmorVariantResource {
     public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall.png");
     public static final Identifier TEXTURE_EYES = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall_eyes.png");
     public static final Identifier TEXTURE_LEG_ARMOR = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_legs.png");
@@ -26,19 +22,43 @@ public class DreadThrallEntityRenderer extends MobRenderer<DreadThrallEntity, Dr
     public static final Identifier TEXTURE_ARMOR_5 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_6.png");
     public static final Identifier TEXTURE_ARMOR_6 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_7.png");
     public static final Identifier TEXTURE_ARMOR_7 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_8.png");
-    public final HideableLayer<DreadThrallEntity, DreadThrallModel, ItemInHandLayer<DreadThrallEntity, DreadThrallModel>> itemLayer;
 
     public DreadThrallEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new DreadThrallModel(0.0F, false), 0.6F);
-        this.addLayer(new GenericGlowingFeatureRenderer<>(this, TEXTURE_EYES));
-        this.itemLayer = new HideableLayer<>(new ItemInHandLayer<>(this, context.getItemInHandRenderer()), this);
-        this.addLayer(this.itemLayer);
-        this.addLayer(new BipedArmorFeatureRendererMultiple<>(this, new DreadThrallModel(0.5F, true), new DreadThrallModel(1.0F, true), TEXTURE_ARMOR_0, TEXTURE_LEG_ARMOR));
+        this.layers.add(new GenericGlowingFeatureRenderer<>(this, TEXTURE_EYES));
     }
 
     @Override
-    public Identifier getArmorResource(int variant, EquipmentSlot equipmentSlotType) {
-        if (equipmentSlotType == EquipmentSlot.LEGS) return TEXTURE_LEG_ARMOR;
+    public DreadThrallRenderState createRenderState() {
+        return new DreadThrallRenderState();
+    }
+
+    @Override
+    public void extractRenderState(DreadThrallEntity entity, DreadThrallRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.isPassenger = entity.isPassenger();
+        state.mainArm = entity.getMainArm();
+        state.swingingArm = entity.swingingArm;
+        state.attackTime = entity.getAttackAnim(partialTicks);
+        state.isSneak = entity.isCrouching();
+        state.animation = entity.getAnimation();
+        state.animationTick = entity.getAnimationTick();
+        state.animations = entity.getAnimations();
+    }
+
+    @Override
+    public void scale(DreadThrallRenderState state, PoseStack matrixStackIn) {
+        matrixStackIn.scale(0.95F, 0.95F, 0.95F);
+    }
+
+    @Override
+    public Identifier getTextureLocation(DreadThrallRenderState state) {
+        return TEXTURE;
+    }
+
+    @Override
+    public Identifier getArmorResource(int variant, net.minecraft.world.entity.EquipmentSlot equipmentSlotType) {
+        if (equipmentSlotType == net.minecraft.world.entity.EquipmentSlot.LEGS) return TEXTURE_LEG_ARMOR;
         return switch (variant) {
             case 1 -> TEXTURE_ARMOR_1;
             case 2 -> TEXTURE_ARMOR_2;
@@ -49,21 +69,5 @@ public class DreadThrallEntityRenderer extends MobRenderer<DreadThrallEntity, Dr
             case 7 -> TEXTURE_ARMOR_7;
             default -> TEXTURE_ARMOR_0;
         };
-    }
-
-    @Override
-    public void scale(DreadThrallEntity livingEntityIn, PoseStack stack, float partialTickTime) {
-        stack.scale(0.95F, 0.95F, 0.95F);
-        if (livingEntityIn.getAnimation() == this.getModel().getSpawnAnimation()) {
-            this.itemLayer.hidden = livingEntityIn.getAnimationTick() <= this.getModel().getSpawnAnimation().getDuration() - 10;
-            return;
-        }
-        this.itemLayer.hidden = false;
-
-    }
-
-    @Override
-    public Identifier getTextureLocation(DreadThrallEntity entity) {
-        return TEXTURE;
     }
 }

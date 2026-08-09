@@ -1,28 +1,32 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
+import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.LivingEntity;
 
-public class GenericGlowingFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
+public class GenericGlowingFeatureRenderer<S extends LivingEntityRenderState, M extends AdvancedEntityModel<S>> extends RenderLayer<S, M> {
     private final Identifier texture;
 
-    public GenericGlowingFeatureRenderer(LivingEntityRenderer<T, M> renderIn, Identifier texture) {
+    public GenericGlowingFeatureRenderer(RenderLayerParent<S, M> renderIn, Identifier texture) {
         super(renderIn);
         this.texture = texture;
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, LivingEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        RenderType eyes = RenderType.eyes(this.texture);
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(eyes);
-        this.getParentModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+    public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int lightCoords, S state, float yRot, float xRot) {
+        RenderType eyes = RenderTypes.eyes(this.texture);
+        submitNodeCollector.submitCustomGeometry(matrixStackIn, eyes, (pose, buffer) -> {
+            PoseStack fresh = new PoseStack();
+            fresh.last().pose().set(pose.pose());
+            fresh.last().normal().set(pose.normal());
+            this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 }

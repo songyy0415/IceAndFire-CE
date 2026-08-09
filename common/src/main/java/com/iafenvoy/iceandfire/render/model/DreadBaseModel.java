@@ -1,10 +1,9 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.AnimatedBipedRenderState;
 import com.iafenvoy.uranus.animation.Animation;
-import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.entity.LivingEntity;
 
-abstract class DreadBaseModel<T extends LivingEntity & IAnimatedEntity> extends BipedBaseModel<T> {
+abstract class DreadBaseModel<T extends AnimatedBipedRenderState> extends BipedBaseModel<T> {
     DreadBaseModel() {
         super();
     }
@@ -12,24 +11,29 @@ abstract class DreadBaseModel<T extends LivingEntity & IAnimatedEntity> extends 
     public abstract Animation getSpawnAnimation();
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-        this.setRotationAnglesSpawn(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+    public void setupAnim(T state) {
+        super.setupAnim(state);
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.setRotationAnglesSpawn(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
     }
 
-    public void setRotationAnglesSpawn(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entityIn.getAnimation() == this.getSpawnAnimation())
-            if (entityIn.getAnimationTick() < 30) {
-                this.flap(this.armRight, 0.5F, 0.5F, false, 2, -0.7F, entityIn.age, 1);
-                this.flap(this.armLeft, 0.5F, 0.5F, true, 2, -0.7F, entityIn.age, 1);
-                this.walk(this.armRight, 0.5F, 0.5F, true, 1, 0, entityIn.age, 1);
-                this.walk(this.armLeft, 0.5F, 0.5F, true, 1, 0, entityIn.age, 1);
+    public void setRotationAnglesSpawn(T state, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        if (state.getAnimation() == this.getSpawnAnimation())
+            if (state.getAnimationTick() < 30) {
+                this.flap(this.armRight, 0.5F, 0.5F, false, 2, -0.7F, state.ageInTicks, 1);
+                this.flap(this.armLeft, 0.5F, 0.5F, true, 2, -0.7F, state.ageInTicks, 1);
+                this.walk(this.armRight, 0.5F, 0.5F, true, 1, 0, state.ageInTicks, 1);
+                this.walk(this.armLeft, 0.5F, 0.5F, true, 1, 0, state.ageInTicks, 1);
             }
     }
 
     @Override
-    public void animate(T entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        this.animator.startAnimate(entity);
+    public void animate(T state, float f, float f1, float f2, float f3, float f4, float f5) {
+        this.animator.startAnimate(state);
         if (this.animator.setAnimation(this.getSpawnAnimation())) {
             this.animator.startKeyframe(0);
             this.animator.move(this.body, 0, 35, 0);

@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.DreadThrallRenderState;
 import com.iafenvoy.iceandfire.entity.DreadThrallEntity;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.model.HumanoidModel;
 
-public class DreadThrallModel extends DreadBaseModel<DreadThrallEntity> {
+public class DreadThrallModel extends DreadBaseModel<DreadThrallRenderState> {
     public DreadThrallModel(float modelScale, boolean bodyArmorModel) {
         this.texHeight = 32;
         this.texWidth = 64;
-        this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-        this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.body = new HideableModelRenderer(this, 16, 16);
         this.body.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, modelScale);
         this.body.setPos(0.0F, 0.0F, 0.0F);
@@ -71,15 +72,21 @@ public class DreadThrallModel extends DreadBaseModel<DreadThrallEntity> {
     }
 
     @Override
-    public void animateModel(DreadThrallEntity entity, float limbAngle, float limbDistance, float tickDelta) {
-        this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
-        this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-        super.animateModel(entity, limbAngle, limbDistance, tickDelta);
+    public void prepareMobModel(DreadThrallEntity entity, float limbAngle, float limbDistance, float tickDelta) {
+        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
+        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+        super.prepareMobModel(entity, limbAngle, limbDistance, tickDelta);
     }
 
     @Override
-    public void setAngles(DreadThrallEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+    public void setupAnim(DreadThrallRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+
+        super.setupAnim(state);
         this.flap(this.body, 0.5F, 0.15F, false, 1, 0F, limbAngle, limbDistance);
     }
 

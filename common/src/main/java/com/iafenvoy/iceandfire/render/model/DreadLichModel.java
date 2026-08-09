@@ -1,14 +1,15 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.DreadLichRenderState;
 import com.iafenvoy.iceandfire.entity.DreadLichEntity;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.ModelWithArms;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.ArmedModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.util.Mth;
 
-public class DreadLichModel extends DreadBaseModel<DreadLichEntity> implements ModelWithArms {
+public class DreadLichModel extends DreadBaseModel<DreadLichRenderState> implements ArmedModel {
     public final HideableModelRenderer robe;
     public final HideableModelRenderer mask;
     public final HideableModelRenderer hood;
@@ -20,8 +21,8 @@ public class DreadLichModel extends DreadBaseModel<DreadLichEntity> implements M
     public DreadLichModel(float modelScale) {
         this.texWidth = 128;
         this.texHeight = 64;
-        this.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
-        this.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
+        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.sleeveLeft = new HideableModelRenderer(this, 33, 35);
         this.sleeveLeft.mirror = true;
         this.sleeveLeft.setPos(0.0F, -0.1F, 0.0F);
@@ -89,15 +90,21 @@ public class DreadLichModel extends DreadBaseModel<DreadLichEntity> implements M
     }
 
     @Override
-    public void setAngles(DreadLichEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-        if (entity.getAnimation() == DreadLichEntity.ANIMATION_SUMMON) {
+    public void setupAnim(DreadLichRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+
+        super.setupAnim(state);
+        if (state.getAnimation() == DreadLichEntity.ANIMATION_SUMMON) {
             this.armRight.rotationPointZ = 0.0F;
             this.armRight.rotationPointX = -5.0F;
             this.armLeft.rotationPointZ = 0.0F;
             this.armLeft.rotationPointX = 5.0F;
-            this.armRight.rotateAngleX = MathHelper.cos(animationProgress * 0.6662F) * 0.25F;
-            this.armLeft.rotateAngleX = MathHelper.cos(animationProgress * 0.6662F) * 0.25F;
+            this.armRight.rotateAngleX = Mth.cos(animationProgress * 0.6662F) * 0.25F;
+            this.armLeft.rotateAngleX = Mth.cos(animationProgress * 0.6662F) * 0.25F;
             this.armRight.rotateAngleZ = 2.3561945F;
             this.armLeft.rotateAngleZ = -2.3561945F;
             this.armRight.rotateAngleY = 0.0F;

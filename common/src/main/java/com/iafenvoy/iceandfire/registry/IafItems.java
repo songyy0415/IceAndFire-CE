@@ -11,7 +11,6 @@ import com.iafenvoy.iceandfire.item.armor.DragonSteelArmorItem;
 import com.iafenvoy.iceandfire.item.armor.EarPlugsArmorItem;
 import com.iafenvoy.iceandfire.item.tool.*;
 import com.iafenvoy.iceandfire.registry.tag.IafBannerPatternTags;
-import dev.architectury.core.item.ArchitecturySpawnEggItem;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -205,30 +204,30 @@ public final class IafItems {
 
     //spawn Eggs
     static {
-        registerItem("spawn_egg_fire_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.FIRE_DRAGON, 0X340000, 0XA52929, new Item.Properties()));
-        registerItem("spawn_egg_ice_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.ICE_DRAGON, 0XB5DDFB, 0X7EBAF0, new Item.Properties()));
-        registerItem("spawn_egg_lightning_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.LIGHTNING_DRAGON, 0X422367, 0X725691, new Item.Properties()));
-        registerItem("spawn_egg_hippogryph", () -> new ArchitecturySpawnEggItem(IafEntities.HIPPOGRYPH, 0XD8D8D8, 0XD1B55D, new Item.Properties()));
-        registerItem("spawn_egg_gorgon", () -> new ArchitecturySpawnEggItem(IafEntities.GORGON, 0XD0D99F, 0X684530, new Item.Properties()));
-        registerItem("spawn_egg_pixie", () -> new ArchitecturySpawnEggItem(IafEntities.PIXIE, 0XFF7F89, 0XE2CCE2, new Item.Properties()));
-        registerItem("spawn_egg_cyclops", () -> new ArchitecturySpawnEggItem(IafEntities.CYCLOPS, 0XB0826E, 0X3A1F0F, new Item.Properties()));
-        registerItem("spawn_egg_siren", () -> new ArchitecturySpawnEggItem(IafEntities.SIREN, 0X8EE6CA, 0XF2DFC8, new Item.Properties()));
-        registerItem("spawn_egg_hippocampus", () -> new ArchitecturySpawnEggItem(IafEntities.HIPPOCAMPUS, 0X4491C7, 0X4FC56B, new Item.Properties()));
-        registerItem("spawn_egg_death_worm", () -> new ArchitecturySpawnEggItem(IafEntities.DEATH_WORM, 0XD1CDA3, 0X423A3A, new Item.Properties()));
-        registerItem("spawn_egg_cockatrice", () -> new ArchitecturySpawnEggItem(IafEntities.COCKATRICE, 0X8F5005, 0X4F5A23, new Item.Properties()));
-        registerItem("spawn_egg_stymphalian_bird", () -> new ArchitecturySpawnEggItem(IafEntities.STYMPHALIAN_BIRD, 0X744F37, 0X9E6C4B, new Item.Properties()));
-        registerItem("spawn_egg_troll", () -> new ArchitecturySpawnEggItem(IafEntities.TROLL, 0X3D413D, 0X58433A, new Item.Properties()));
-        registerItem("spawn_egg_amphithere", () -> new ArchitecturySpawnEggItem(IafEntities.AMPHITHERE, 0X597535, 0X00AA98, new Item.Properties()));
-        registerItem("spawn_egg_sea_serpent", () -> new ArchitecturySpawnEggItem(IafEntities.SEA_SERPENT, 0X008299, 0XC5E6E7, new Item.Properties()));
-        registerItem("spawn_egg_dread_thrall", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_THRALL, 0XE0E6E6, 0X00FFFF, new Item.Properties()));
-        registerItem("spawn_egg_dread_ghoul", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_GHOUL, 0XE0E6E6, 0X7B838A, new Item.Properties()));
-        registerItem("spawn_egg_dread_beast", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_BEAST, 0XE0E6E6, 0X38373C, new Item.Properties()));
-        registerItem("spawn_egg_dread_scuttler", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_SCUTTLER, 0XE0E6E6, 0X4D5667, new Item.Properties()));
-        registerItem("spawn_egg_lich", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_LICH, 0XE0E6E6, 0X274860, new Item.Properties()));
-        registerItem("spawn_egg_dread_knight", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_KNIGHT, 0XE0E6E6, 0X4A6C6E, new Item.Properties()));
-        registerItem("spawn_egg_dread_horse", () -> new ArchitecturySpawnEggItem(IafEntities.DREAD_HORSE, 0XE0E6E6, 0XACACAC, new Item.Properties()));
-        registerItem("spawn_egg_hydra", () -> new ArchitecturySpawnEggItem(IafEntities.HYDRA, 0X8B8B78, 0X2E372B, new Item.Properties()));
-        registerItem("spawn_egg_ghost", () -> new ArchitecturySpawnEggItem(IafEntities.GHOST, 0XB9EDB8, 0X73B276, new Item.Properties()));
+        registerItem("spawn_egg_fire_dragon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.FIRE_DRAGON.get())));
+        registerItem("spawn_egg_ice_dragon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.ICE_DRAGON.get())));
+        registerItem("spawn_egg_lightning_dragon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.LIGHTNING_DRAGON.get())));
+        registerItem("spawn_egg_hippogryph", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.HIPPOGRYPH.get())));
+        registerItem("spawn_egg_gorgon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.GORGON.get())));
+        registerItem("spawn_egg_pixie", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.PIXIE.get())));
+        registerItem("spawn_egg_cyclops", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.CYCLOPS.get())));
+        registerItem("spawn_egg_siren", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.SIREN.get())));
+        registerItem("spawn_egg_hippocampus", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.HIPPOCAMPUS.get())));
+        registerItem("spawn_egg_death_worm", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DEATH_WORM.get())));
+        registerItem("spawn_egg_cockatrice", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.COCKATRICE.get())));
+        registerItem("spawn_egg_stymphalian_bird", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.STYMPHALIAN_BIRD.get())));
+        registerItem("spawn_egg_troll", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.TROLL.get())));
+        registerItem("spawn_egg_amphithere", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.AMPHITHERE.get())));
+        registerItem("spawn_egg_sea_serpent", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.SEA_SERPENT.get())));
+        registerItem("spawn_egg_dread_thrall", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_THRALL.get())));
+        registerItem("spawn_egg_dread_ghoul", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_GHOUL.get())));
+        registerItem("spawn_egg_dread_beast", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_BEAST.get())));
+        registerItem("spawn_egg_dread_scuttler", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_SCUTTLER.get())));
+        registerItem("spawn_egg_lich", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_LICH.get())));
+        registerItem("spawn_egg_dread_knight", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_KNIGHT.get())));
+        registerItem("spawn_egg_dread_horse", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_HORSE.get())));
+        registerItem("spawn_egg_hydra", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.HYDRA.get())));
+        registerItem("spawn_egg_ghost", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.GHOST.get())));
     }
 
     //Hidden

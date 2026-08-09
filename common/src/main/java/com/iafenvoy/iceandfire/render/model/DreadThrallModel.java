@@ -11,8 +11,6 @@ public class DreadThrallModel extends DreadBaseModel<DreadThrallRenderState> {
     public DreadThrallModel(float modelScale, boolean bodyArmorModel) {
         this.texHeight = 32;
         this.texWidth = 64;
-        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
-        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.body = new HideableModelRenderer(this, 16, 16);
         this.body.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, modelScale);
         this.body.setPos(0.0F, 0.0F, 0.0F);
@@ -69,13 +67,6 @@ public class DreadThrallModel extends DreadBaseModel<DreadThrallRenderState> {
         this.body.addChild(this.legLeft);
         this.animator = ModelAnimator.create();
         this.updateDefaultPose();
-    }
-
-    @Override
-    public void prepareMobModel(DreadThrallEntity entity, float limbAngle, float limbDistance, float tickDelta) {
-        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
-        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
-        super.prepareMobModel(entity, limbAngle, limbDistance, tickDelta);
     }
 
     @Override

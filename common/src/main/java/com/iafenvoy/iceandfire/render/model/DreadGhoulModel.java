@@ -106,9 +106,9 @@ public class DreadGhoulModel extends BipedBaseModel<DreadGhoulRenderState> {
     }
 
     @Override
-    void animate(DreadGhoulEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float f) {
+    void animate(DreadGhoulRenderState state, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float f) {
         this.resetToDefaultPose();
-        this.animator.startAnimate(entity);
+        this.animator.startAnimate(state);
         if (this.animator.setAnimation(DreadGhoulEntity.ANIMATION_SLASH)) {
             this.animator.startKeyframe(5);
             this.rotate(this.animator, this.armRight, 20, 45, 80);

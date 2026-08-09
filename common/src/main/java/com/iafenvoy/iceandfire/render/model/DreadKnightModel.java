@@ -24,8 +24,6 @@ public class DreadKnightModel extends DreadBaseModel<DreadKnightRenderState> {
     public DreadKnightModel(float modelScale) {
         this.texWidth = 128;
         this.texHeight = 64;
-        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
-        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.sleeveRight = new HideableModelRenderer(this, 35, 33);
         this.sleeveRight.setPos(0.0F, -0.1F, 0.0F);
         this.sleeveRight.addBox(-4.0F, -2.1F, -2.5F, 5, 6, 5, modelScale);

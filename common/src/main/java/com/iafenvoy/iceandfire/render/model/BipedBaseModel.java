@@ -20,7 +20,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BipedBaseModel<T extends BipedRenderState> extends AdvancedEntityModel<T> implements ICustomStatueModel, ArmedModel {
+public abstract class BipedBaseModel<T extends BipedRenderState> extends AdvancedEntityModel<T> implements ICustomStatueModel, ArmedModel<BipedRenderState> {
     public HideableModelRenderer head;
     public HideableModelRenderer headware;
     public HideableModelRenderer body;
@@ -45,7 +45,7 @@ public abstract class BipedBaseModel<T extends BipedRenderState> extends Advance
     }
 
     @Override
-    public void translateToHand(HumanoidArm sideIn, PoseStack matrixStackIn) {
+    public void translateToHand(BipedRenderState state, HumanoidArm sideIn, PoseStack matrixStackIn) {
         this.getArmForSide(sideIn).translateAndRotate(matrixStackIn);
     }
 
@@ -202,7 +202,7 @@ public abstract class BipedBaseModel<T extends BipedRenderState> extends Advance
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 
     abstract void animate(T state, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float f);

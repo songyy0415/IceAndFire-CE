@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.StymphalianBirdRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.StymphalianBirdEntity;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class StymphalianBirdModel extends DragonBaseModel<LivingEntityRenderState> {
+public class StymphalianBirdModel extends DragonBaseModel<StymphalianBirdRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox LowerBody;
     public final AdvancedModelBox Neck1;
@@ -377,8 +379,13 @@ public class StymphalianBirdModel extends DragonBaseModel<LivingEntityRenderStat
     }
 
     @Override
-    public void setupAnim(StymphalianBirdEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+    public void setupAnim(StymphalianBirdRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.3F;
         float speed_idle = 0.05F;
         float speed_fly = 0.4F;
@@ -391,54 +398,54 @@ public class StymphalianBirdModel extends DragonBaseModel<LivingEntityRenderStat
         AdvancedModelBox[] WING_RIGHT = new AdvancedModelBox[]{this.WingR, this.WingR2, this.WingR3};
         this.faceTarget(headYaw, headPitch, 2, this.HeadBase);
         this.faceTarget(headYaw, headPitch, 2, this.Neck2);
-        if (entity.flyProgress > 0F) {
-            this.progressRotation(this.WingR, entity.flyProgress, 0.08726646259971647F, 0.0F, 1.3962634015954636F);
-            this.progressRotation(this.WingR2, entity.flyProgress, -0.3490658503988659F, 0.0F, 0.17453292519943295F);
-            this.progressRotation(this.WingR3, entity.flyProgress, 0.5235987755982988F, 0.0F, 0.0F);
-            this.progressRotation(this.WingL, entity.flyProgress, 0.08726646259971647F, 0.0F, -1.3962634015954636F);
-            this.progressRotation(this.WingL2, entity.flyProgress, -0.3490658503988659F, 0.0F, -0.17453292519943295F);
-            this.progressRotation(this.WingL3, entity.flyProgress, 0.5235987755982988F, 0.0F, 0.0F);
+        if (state.flyProgress > 0F) {
+            this.progressRotation(this.WingR, state.flyProgress, 0.08726646259971647F, 0.0F, 1.3962634015954636F);
+            this.progressRotation(this.WingR2, state.flyProgress, -0.3490658503988659F, 0.0F, 0.17453292519943295F);
+            this.progressRotation(this.WingR3, state.flyProgress, 0.5235987755982988F, 0.0F, 0.0F);
+            this.progressRotation(this.WingL, state.flyProgress, 0.08726646259971647F, 0.0F, -1.3962634015954636F);
+            this.progressRotation(this.WingL2, state.flyProgress, -0.3490658503988659F, 0.0F, -0.17453292519943295F);
+            this.progressRotation(this.WingL3, state.flyProgress, 0.5235987755982988F, 0.0F, 0.0F);
 
-            this.progressRotation(this.TailL1, entity.flyProgress, 1.5707963267948966F, -0.03490658503988659F, 0.0F);
-            this.progressRotation(this.ToeR1, entity.flyProgress, -0.40980330836826856F, 3.141592653589793F, 0.0F);
-            this.progressRotation(this.TailR1, entity.flyProgress, 1.5707963267948966F, 0.03490658503988659F, 0.0F);
-            this.progressRotation(this.uppernail, entity.flyProgress, 1.6845917940249266F, -0.0F, 0.0F);
-            this.progressRotation(this.FingerR1, entity.flyProgress, 0.03490658503988659F, 0.0F, 0.0F);
-            this.progressRotation(this.FingerR2, entity.flyProgress, 0.15707963267948966F, 0.0F, 0.0F);
-            this.progressRotation(this.ToeL4_1, entity.flyProgress, -0.22759093446006054F, 0.6108652381980153F, 0.0F);
-            this.progressRotation(this.Crest3, entity.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
-            this.progressRotation(this.HeadFront, entity.flyProgress, 0.045553093477052F, 0.0F, 0.0F);
-            this.progressRotation(this.TailR2, entity.flyProgress, 1.5707963267948966F, 0.3490658503988659F, 0.12217304763960307F);
-            this.progressRotation(this.ToeR2, entity.flyProgress, -0.22759093446006054F, -0.6108652381980153F, 0.0F);
-            this.progressRotation(this.FingerR4, entity.flyProgress, 0.40142572795869574F, 0.0F, 0.0F);
-            this.progressRotation(this.FingerL2, entity.flyProgress, 0.15707963267948966F, 0.0F, 0.0F);
-            this.progressRotation(this.ToeL2, entity.flyProgress, -0.22759093446006054F, 0.6108652381980153F, 0.0F);
-            this.progressRotation(this.Crest2, entity.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
-            this.progressRotation(this.FingerL3, entity.flyProgress, 0.2617993877991494F, 0.0F, 0.0F);
-            this.progressRotation(this.BackLegR2, entity.flyProgress, -0.18203784098300857F, 0.0F, 0.0F);
-            this.progressRotation(this.Jaw, entity.flyProgress, -0.091106186954104F, 0.0F, 0.0F);
-            this.progressRotation(this.ToeR3, entity.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
-            this.progressRotation(this.BackLegL2, entity.flyProgress, -0.18203784098300857F, 0.0F, 0.0F);
-            this.progressRotation(this.ToeL1, entity.flyProgress, -0.40980330836826856F, 3.141592653589793F, 0.0F);
-            this.progressRotation(this.TailL2, entity.flyProgress, 1.5707963267948966F, -0.3490658503988659F, -0.12217304763960307F);
-            this.progressRotation(this.Lowerbodytilt, entity.flyProgress, 1.730144887501979F, 0.0F, 0.0F);
-            this.progressRotation(this.FingerR3, entity.flyProgress, 0.2617993877991494F, 0.0F, 0.0F);
-            this.progressRotation(this.LowerBody, entity.flyProgress, -0.091106186954104F, 0.0F, 0.0F);
-            this.progressRotation(this.FingerL1, entity.flyProgress, 0.03490658503988659F, 0.0F, 0.0F);
-            this.progressRotation(this.FingerL4, entity.flyProgress, 0.40142572795869574F, 0.0F, 0.0F);
-            this.progressRotation(this.BackLegR1, entity.flyProgress, 1.6390387005478748F, 0.0F, 0.08726646259971647F);
-            this.progressRotation(this.HeadPivot, entity.flyProgress, 0.5918411493512771F, 0.0F, 0.0F);
-            this.progressRotation(this.Crest1, entity.flyProgress, 0.18203784098300857F, 0.0F, 0.0F);
-            this.progressRotation(this.ToeL3, entity.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
-            this.progressRotation(this.Neck1, entity.flyProgress, 0.18203784098300857F, 0.0F, 0.0F);
-            this.progressRotation(this.BackLegL1, entity.flyProgress, 1.6390387005478748F, 0.0F, -0.08726646259971647F);
-            this.progressRotation(this.NeckPivot, entity.flyProgress, -0.31869712141416456F, 0.0F, 0.0F);
-            this.progressRotation(this.ToeL4, entity.flyProgress, -0.22759093446006054F, -0.6108652381980153F, 0.0F);
+            this.progressRotation(this.TailL1, state.flyProgress, 1.5707963267948966F, -0.03490658503988659F, 0.0F);
+            this.progressRotation(this.ToeR1, state.flyProgress, -0.40980330836826856F, 3.141592653589793F, 0.0F);
+            this.progressRotation(this.TailR1, state.flyProgress, 1.5707963267948966F, 0.03490658503988659F, 0.0F);
+            this.progressRotation(this.uppernail, state.flyProgress, 1.6845917940249266F, -0.0F, 0.0F);
+            this.progressRotation(this.FingerR1, state.flyProgress, 0.03490658503988659F, 0.0F, 0.0F);
+            this.progressRotation(this.FingerR2, state.flyProgress, 0.15707963267948966F, 0.0F, 0.0F);
+            this.progressRotation(this.ToeL4_1, state.flyProgress, -0.22759093446006054F, 0.6108652381980153F, 0.0F);
+            this.progressRotation(this.Crest3, state.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
+            this.progressRotation(this.HeadFront, state.flyProgress, 0.045553093477052F, 0.0F, 0.0F);
+            this.progressRotation(this.TailR2, state.flyProgress, 1.5707963267948966F, 0.3490658503988659F, 0.12217304763960307F);
+            this.progressRotation(this.ToeR2, state.flyProgress, -0.22759093446006054F, -0.6108652381980153F, 0.0F);
+            this.progressRotation(this.FingerR4, state.flyProgress, 0.40142572795869574F, 0.0F, 0.0F);
+            this.progressRotation(this.FingerL2, state.flyProgress, 0.15707963267948966F, 0.0F, 0.0F);
+            this.progressRotation(this.ToeL2, state.flyProgress, -0.22759093446006054F, 0.6108652381980153F, 0.0F);
+            this.progressRotation(this.Crest2, state.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
+            this.progressRotation(this.FingerL3, state.flyProgress, 0.2617993877991494F, 0.0F, 0.0F);
+            this.progressRotation(this.BackLegR2, state.flyProgress, -0.18203784098300857F, 0.0F, 0.0F);
+            this.progressRotation(this.Jaw, state.flyProgress, -0.091106186954104F, 0.0F, 0.0F);
+            this.progressRotation(this.ToeR3, state.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
+            this.progressRotation(this.BackLegL2, state.flyProgress, -0.18203784098300857F, 0.0F, 0.0F);
+            this.progressRotation(this.ToeL1, state.flyProgress, -0.40980330836826856F, 3.141592653589793F, 0.0F);
+            this.progressRotation(this.TailL2, state.flyProgress, 1.5707963267948966F, -0.3490658503988659F, -0.12217304763960307F);
+            this.progressRotation(this.Lowerbodytilt, state.flyProgress, 1.730144887501979F, 0.0F, 0.0F);
+            this.progressRotation(this.FingerR3, state.flyProgress, 0.2617993877991494F, 0.0F, 0.0F);
+            this.progressRotation(this.LowerBody, state.flyProgress, -0.091106186954104F, 0.0F, 0.0F);
+            this.progressRotation(this.FingerL1, state.flyProgress, 0.03490658503988659F, 0.0F, 0.0F);
+            this.progressRotation(this.FingerL4, state.flyProgress, 0.40142572795869574F, 0.0F, 0.0F);
+            this.progressRotation(this.BackLegR1, state.flyProgress, 1.6390387005478748F, 0.0F, 0.08726646259971647F);
+            this.progressRotation(this.HeadPivot, state.flyProgress, 0.5918411493512771F, 0.0F, 0.0F);
+            this.progressRotation(this.Crest1, state.flyProgress, 0.18203784098300857F, 0.0F, 0.0F);
+            this.progressRotation(this.ToeL3, state.flyProgress, -0.22759093446006054F, 0.0F, 0.0F);
+            this.progressRotation(this.Neck1, state.flyProgress, 0.18203784098300857F, 0.0F, 0.0F);
+            this.progressRotation(this.BackLegL1, state.flyProgress, 1.6390387005478748F, 0.0F, -0.08726646259971647F);
+            this.progressRotation(this.NeckPivot, state.flyProgress, -0.31869712141416456F, 0.0F, 0.0F);
+            this.progressRotation(this.ToeL4, state.flyProgress, -0.22759093446006054F, -0.6108652381980153F, 0.0F);
 
-            this.chainFlap(WING_LEFT, speed_fly + (entity.getAnimation() == StymphalianBirdEntity.ANIMATION_SHOOT_ARROWS ? 0.25F : 0), -degree_fly * 0.5F, 0, animationProgress, 1);
-            this.chainFlap(WING_RIGHT, speed_fly + (entity.getAnimation() == StymphalianBirdEntity.ANIMATION_SHOOT_ARROWS ? 0.25F : 0), degree_fly * 0.5F, 0, animationProgress, 1);
+            this.chainFlap(WING_LEFT, speed_fly + (state.getAnimation() == StymphalianBirdEntity.ANIMATION_SHOOT_ARROWS ? 0.25F : 0), -degree_fly * 0.5F, 0, animationProgress, 1);
+            this.chainFlap(WING_RIGHT, speed_fly + (state.getAnimation() == StymphalianBirdEntity.ANIMATION_SHOOT_ARROWS ? 0.25F : 0), degree_fly * 0.5F, 0, animationProgress, 1);
 
-            if (entity.getAnimation() != StymphalianBirdEntity.ANIMATION_SHOOT_ARROWS) {
+            if (state.getAnimation() != StymphalianBirdEntity.ANIMATION_SHOOT_ARROWS) {
                 this.chainWave(NECK, speed_fly, degree_fly * 0.15F, 4, animationProgress, 1);
                 this.bob(this.Body, speed_fly * 0.5F, degree_fly * 2.5F, true, animationProgress, 1);
                 this.walk(this.BackLegL1, speed_fly, degree_fly * 0.15F, true, 1, 0.2F, animationProgress, 1);
@@ -493,6 +500,6 @@ public class StymphalianBirdModel extends DragonBaseModel<LivingEntityRenderStat
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

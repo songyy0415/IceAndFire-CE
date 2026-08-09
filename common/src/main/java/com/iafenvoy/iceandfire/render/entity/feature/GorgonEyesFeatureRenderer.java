@@ -3,16 +3,17 @@ package com.iafenvoy.iceandfire.render.entity.feature;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
 import com.iafenvoy.iceandfire.render.entity.GorgonEntityRenderer;
+import com.iafenvoy.iceandfire.render.entity.state.GorgonRenderState;
 import com.iafenvoy.iceandfire.render.model.GorgonModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
-public class GorgonEyesFeatureRenderer extends RenderLayer<GorgonEntity, GorgonModel> {
+public class GorgonEyesFeatureRenderer extends RenderLayer<GorgonRenderState, GorgonModel> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/gorgon/gorgon_eyes.png");
 
     public GorgonEyesFeatureRenderer(GorgonEntityRenderer renderIn) {
@@ -20,11 +21,15 @@ public class GorgonEyesFeatureRenderer extends RenderLayer<GorgonEntity, GorgonM
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, GorgonEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entity.getAnimation() == GorgonEntity.ANIMATION_SCARE || entity.getAnimation() == GorgonEntity.ANIMATION_HIT) {
-            RenderType eyes = RenderType.eyes(TEXTURE);
-            VertexConsumer vertexConsumer = bufferIn.getBuffer(eyes);
-            this.getParentModel().renderToBuffer(matrixStackIn, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+    public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int packedLight, GorgonRenderState state, float yRot, float xRot) {
+        if (state.getAnimation() == GorgonEntity.ANIMATION_SCARE || state.getAnimation() == GorgonEntity.ANIMATION_HIT) {
+            RenderType eyes = RenderTypes.eyes(TEXTURE);
+            submitNodeCollector.submitCustomGeometry(matrixStackIn, eyes, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.getParentModel().renderPartsToBuffer(fresh, buffer, packedLight, OverlayTexture.NO_OVERLAY, -1);
+            });
         }
     }
 }

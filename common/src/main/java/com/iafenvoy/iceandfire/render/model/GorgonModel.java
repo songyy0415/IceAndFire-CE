@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.GorgonRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
@@ -13,7 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
-public class GorgonModel extends DragonBaseModel<LivingEntityRenderState> {
+public class GorgonModel extends DragonBaseModel<GorgonRenderState> {
     public final AdvancedModelBox Tail_1;
     public final AdvancedModelBox Tail_2;
     public final AdvancedModelBox Body;
@@ -608,8 +610,13 @@ public class GorgonModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(GorgonEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+    public void setupAnim(GorgonRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
         float degree_walk = 1F;
@@ -689,7 +696,7 @@ public class GorgonModel extends DragonBaseModel<LivingEntityRenderState> {
         this.chainSwing(SNAKEL7, speed_idle, degree_idle * 0.75F, -3, animationProgress, 1);
         this.faceTarget(headYaw, headPitch, 1, this.Head);
 
-        float deathProg = Math.min(40, (float) entity.deathTime) / 2;
+        float deathProg = Math.min(40, (float) state.deathTime) / 2;
 
         this.progressRotation(this.Tail_1, deathProg, (float) Math.toRadians(5), (float) Math.toRadians(57), 0);
         this.progressPosition(this.Tail_1, deathProg, -5, 22, -4);
@@ -724,6 +731,6 @@ public class GorgonModel extends DragonBaseModel<LivingEntityRenderState> {
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

@@ -9,7 +9,7 @@ import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.util.Mth;
 
-public class DreadLichModel extends DreadBaseModel<DreadLichRenderState> implements ArmedModel {
+public class DreadLichModel extends DreadBaseModel<DreadLichRenderState> {
     public final HideableModelRenderer robe;
     public final HideableModelRenderer mask;
     public final HideableModelRenderer hood;
@@ -21,8 +21,6 @@ public class DreadLichModel extends DreadBaseModel<DreadLichRenderState> impleme
     public DreadLichModel(float modelScale) {
         this.texWidth = 128;
         this.texHeight = 64;
-        this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
-        this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.sleeveLeft = new HideableModelRenderer(this, 33, 35);
         this.sleeveLeft.mirror = true;
         this.sleeveLeft.setPos(0.0F, -0.1F, 0.0F);

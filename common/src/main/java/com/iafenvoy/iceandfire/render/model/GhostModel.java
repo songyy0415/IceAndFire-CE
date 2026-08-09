@@ -1,12 +1,13 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.GhostRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.GhostEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
 
-public class GhostModel extends BipedBaseModel<GhostEntity> {
+public class GhostModel extends BipedBaseModel<GhostRenderState> {
     public final AdvancedModelBox robe;
     public final AdvancedModelBox mask;
     public final AdvancedModelBox hood;
@@ -87,9 +88,15 @@ public class GhostModel extends BipedBaseModel<GhostEntity> {
     }
 
     @Override
-    public void setAngles(GhostEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(GhostRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+
         this.resetToDefaultPose();
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         this.faceTarget(headYaw, headPitch, 1, this.head);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
@@ -122,8 +129,8 @@ public class GhostModel extends BipedBaseModel<GhostEntity> {
     }
 
     @Override
-    public void animate(GhostEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        this.animator.startAnimate(entity);
+    public void animate(GhostRenderState state, float f, float f1, float f2, float f3, float f4, float f5) {
+        this.animator.startAnimate(state);
         if (this.animator.setAnimation(GhostEntity.ANIMATION_SCARE)) {
             this.animator.startKeyframe(5);
             this.animator.move(this.head, 0, -2, 0);

@@ -1,5 +1,13 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.DreadLichSkullRenderState;
+
+import java.util.Map;
+
+import java.util.List;
+
+import net.minecraft.client.model.geom.ModelPart;
+
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.DreadLichSkullEntity;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
@@ -7,7 +15,7 @@ import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
 
-public class DreadLichSkullModel extends AdvancedEntityModel<DreadLichSkullEntity> {
+public class DreadLichSkullModel extends AdvancedEntityModel<DreadLichSkullRenderState> {
     public final HideableModelRenderer bipedHead;
     public final HideableModelRenderer bipedHeadwear;
 
@@ -16,6 +24,7 @@ public class DreadLichSkullModel extends AdvancedEntityModel<DreadLichSkullEntit
     }
 
     public DreadLichSkullModel(float modelSize) {
+        super(new ModelPart(List.of(), Map.of()));
         this.texHeight = 32;
         this.texWidth = 64;
         this.bipedHead = new HideableModelRenderer(this, 0, 0);
@@ -28,7 +37,7 @@ public class DreadLichSkullModel extends AdvancedEntityModel<DreadLichSkullEntit
     }
 
     @Override
-    public void setAngles(DreadLichSkullEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(DreadLichSkullRenderState state) {
         this.resetToDefaultPose();
     }
 

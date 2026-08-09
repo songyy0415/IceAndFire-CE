@@ -1,13 +1,19 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.TideTridentRenderState;
+
+import java.util.Map;
+
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.Entity;
 
-public class TideTridentModel extends AdvancedEntityModel<Entity> {
+public class TideTridentModel extends AdvancedEntityModel<TideTridentRenderState> {
     public final AdvancedModelBox shaft;
     public final AdvancedModelBox base;
     public final AdvancedModelBox blade_B;
@@ -18,6 +24,7 @@ public class TideTridentModel extends AdvancedEntityModel<Entity> {
     public final AdvancedModelBox blade_A_2;
 
     public TideTridentModel() {
+        super(new ModelPart(List.of(), Map.of()));
         this.texWidth = 64;
         this.texHeight = 32;
         this.fins = new AdvancedModelBox(this, 5, 12);
@@ -67,7 +74,7 @@ public class TideTridentModel extends AdvancedEntityModel<Entity> {
     }
 
     @Override
-    public void setAngles(Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(TideTridentRenderState state) {
     }
 
     @Override
@@ -76,8 +83,8 @@ public class TideTridentModel extends AdvancedEntityModel<Entity> {
     }
 
     public void setRotateAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.pitch = x;
-        modelRenderer.yaw = y;
-        modelRenderer.roll = z;
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 }

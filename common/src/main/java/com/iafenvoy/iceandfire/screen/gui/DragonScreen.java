@@ -4,65 +4,65 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.screen.handler.DragonScreenHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class DragonScreen extends HandledScreen<DragonScreenHandler> {
-    private static final Identifier TEXTURE = Identifier.of(IceAndFire.MOD_ID, "textures/gui/dragon.png");
+public class DragonScreen extends AbstractContainerScreen<DragonScreenHandler> {
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/dragon.png");
 
-    public DragonScreen(DragonScreenHandler dragonInv, PlayerInventory playerInv, Text name) {
+    public DragonScreen(DragonScreenHandler dragonInv, Inventory playerInv, Component name) {
         super(dragonInv, playerInv, name);
-        this.backgroundHeight = 214;
+        this.imageHeight = 214;
     }
 
     @Override
-    protected void drawForeground(DrawContext matrixStack, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics matrixStack, int mouseX, int mouseY) {
     }
 
     @Override
-    public void render(DrawContext matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.drawMouseoverTooltip(matrixStack, mouseX, mouseY);
+        this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void drawBackground(DrawContext matrixStack, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+    protected void renderBg(GuiGraphics matrixStack, float partialTicks, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        int k = (this.width - this.backgroundWidth) / 2;
-        int l = (this.height - this.backgroundHeight) / 2;
-        matrixStack.drawTexture(TEXTURE, k, l, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        assert MinecraftClient.getInstance().world != null;
-        DragonBaseEntity dragon = this.handler.getDragon();
-        float dragonScale = 1F / Math.max(0.0001F, dragon.getScaleFactor());
-        Quaternionf quaternionf = (new Quaternionf()).rotateY((float) MathHelper.lerp((float) mouseX / this.width, 0, Math.PI)).rotateZ((float) MathHelper.lerp((float) mouseY / this.width, Math.PI, Math.PI + 0.2));
-        InventoryScreen.drawEntity(matrixStack, k + 88, l + (int) (0.5F * (dragon.flyProgress)) + 55, (int) (dragonScale * 23F), new Vector3f(0), quaternionf, null, dragon);
-        assert this.client != null;
-        TextRenderer textRenderer = this.client.textRenderer;
-        String s3 = dragon.getCustomName() == null ? I18n.translate("dragon.unnamed") : I18n.translate("dragon.name") + " " + dragon.getCustomName().getString();
-        textRenderer.draw(s3, k + (float) this.backgroundWidth / 2 - (float) textRenderer.getWidth(s3) / 2, l + 75, 0XFFFFFF, false, matrixStack.getMatrices().peek().getPositionMatrix(), matrixStack.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
-        String s2 = I18n.translate("dragon.health") + " " + Math.floor(Math.min(dragon.getHealth(), dragon.getMaxHealth())) + " / " + dragon.getMaxHealth();
-        textRenderer.draw(s2, k + (float) this.backgroundWidth / 2 - (float) textRenderer.getWidth(s2) / 2, l + 84, 0XFFFFFF, false, matrixStack.getMatrices().peek().getPositionMatrix(), matrixStack.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+        int k = (this.width - this.imageWidth) / 2;
+        int l = (this.height - this.imageHeight) / 2;
+        matrixStack.blit(TEXTURE, k, l, 0, 0, this.imageWidth, this.imageHeight);
+        assert Minecraft.getInstance().level != null;
+        DragonBaseEntity dragon = this.menu.getDragon();
+        float dragonScale = 1F / Math.max(0.0001F, dragon.getAgeScale());
+        Quaternionf quaternionf = (new Quaternionf()).rotateY((float) Mth.lerp((float) mouseX / this.width, 0, Math.PI)).rotateZ((float) Mth.lerp((float) mouseY / this.width, Math.PI, Math.PI + 0.2));
+        InventoryScreen.renderEntityInInventory(matrixStack, k + 88, l + (int) (0.5F * (dragon.flyProgress)) + 55, (int) (dragonScale * 23F), new Vector3f(0), quaternionf, null, dragon);
+        assert this.minecraft != null;
+        Font textRenderer = this.minecraft.font;
+        String s3 = dragon.getCustomName() == null ? I18n.get("dragon.unnamed") : I18n.get("dragon.name") + " " + dragon.getCustomName().getString();
+        textRenderer.drawInBatch(s3, k + (float) this.imageWidth / 2 - (float) textRenderer.width(s3) / 2, l + 75, 0XFFFFFF, false, matrixStack.pose().last().pose(), matrixStack.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+        String s2 = I18n.get("dragon.health") + " " + Math.floor(Math.min(dragon.getHealth(), dragon.getMaxHealth())) + " / " + dragon.getMaxHealth();
+        textRenderer.drawInBatch(s2, k + (float) this.imageWidth / 2 - (float) textRenderer.width(s2) / 2, l + 84, 0XFFFFFF, false, matrixStack.pose().last().pose(), matrixStack.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
         String s = (dragon.isMale() ? "dragon.gender.male" : "dragon.gender.female");
-        String s5 = I18n.translate("dragon.gender") + I18n.translate(s);
-        textRenderer.draw(s5, k + (float) this.backgroundWidth / 2 - (float) textRenderer.getWidth(s5) / 2, l + 93, 0XFFFFFF, false, matrixStack.getMatrices().peek().getPositionMatrix(), matrixStack.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
-        String s6 = I18n.translate("dragon.hunger") + dragon.getHunger() + "/100";
-        textRenderer.draw(s6, k + (float) this.backgroundWidth / 2 - (float) textRenderer.getWidth(s6) / 2, l + 102, 0XFFFFFF, false, matrixStack.getMatrices().peek().getPositionMatrix(), matrixStack.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
-        String s4 = I18n.translate("dragon.stage") + " " + dragon.getDragonStage() + " " + I18n.translate("dragon.days.front") + dragon.getAgeInDays() + " " + I18n.translate("dragon.days.back");
-        textRenderer.draw(s4, k + (float) this.backgroundWidth / 2 - (float) textRenderer.getWidth(s4) / 2, l + 111, 0XFFFFFF, false, matrixStack.getMatrices().peek().getPositionMatrix(), matrixStack.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
-        String s7 = dragon.getOwner() != null ? I18n.translate("dragon.owner") + dragon.getOwner().getName().getString() : I18n.translate("dragon.untamed");
-        textRenderer.draw(s7, k + (float) this.backgroundWidth / 2 - (float) textRenderer.getWidth(s7) / 2, l + 120, 0XFFFFFF, false, matrixStack.getMatrices().peek().getPositionMatrix(), matrixStack.getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+        String s5 = I18n.get("dragon.gender") + I18n.get(s);
+        textRenderer.drawInBatch(s5, k + (float) this.imageWidth / 2 - (float) textRenderer.width(s5) / 2, l + 93, 0XFFFFFF, false, matrixStack.pose().last().pose(), matrixStack.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+        String s6 = I18n.get("dragon.hunger") + dragon.getHunger() + "/100";
+        textRenderer.drawInBatch(s6, k + (float) this.imageWidth / 2 - (float) textRenderer.width(s6) / 2, l + 102, 0XFFFFFF, false, matrixStack.pose().last().pose(), matrixStack.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+        String s4 = I18n.get("dragon.stage") + " " + dragon.getDragonStage() + " " + I18n.get("dragon.days.front") + dragon.getAgeInDays() + " " + I18n.get("dragon.days.back");
+        textRenderer.drawInBatch(s4, k + (float) this.imageWidth / 2 - (float) textRenderer.width(s4) / 2, l + 111, 0XFFFFFF, false, matrixStack.pose().last().pose(), matrixStack.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+        String s7 = dragon.getOwner() != null ? I18n.get("dragon.owner") + dragon.getOwner().getName().getString() : I18n.get("dragon.untamed");
+        textRenderer.drawInBatch(s7, k + (float) this.imageWidth / 2 - (float) textRenderer.width(s7) / 2, l + 120, 0XFFFFFF, false, matrixStack.pose().last().pose(), matrixStack.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
     }
 }

@@ -8,27 +8,27 @@ import com.iafenvoy.iceandfire.util.attachment.NeedUpdateData;
 import com.iafenvoy.iceandfire.world.processor.DreadPortalProcessor;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.StructurePlacementData;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.TeleportTarget;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
 
 public class PortalData extends NeedUpdateData<LivingEntity> {
     public static final Codec<PortalData> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.BOOL.fieldOf("teleported").forGetter(PortalData::isTeleported),
             Codec.INT.fieldOf("teleportTick").forGetter(PortalData::getTeleportTick)
     ).apply(i, PortalData::new));
-    public static final PacketCodec<RegistryByteBuf, PortalData> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
+    public static final StreamCodec<RegistryFriendlyByteBuf, PortalData> PACKET_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
     private boolean teleported = false;
     private int teleportTick = -1;
 
@@ -42,22 +42,22 @@ public class PortalData extends NeedUpdateData<LivingEntity> {
 
     @Override
     public void tick(LivingEntity living) {
-        World world = living.getWorld();
-        if (!this.isTeleported() && this.getTeleportTick() == 0 && world instanceof ServerWorld serverWorld) {
+        Level world = living.level();
+        if (!this.isTeleported() && this.getTeleportTick() == 0 && world instanceof ServerLevel serverWorld) {
             this.setTeleported(true);
             MinecraftServer server = serverWorld.getServer();
-            if (world.getRegistryKey().getValue().equals(IafWorld.DREAD_LAND.getValue()))
-                living.teleportTo(new TeleportTarget(server.getOverworld(), living.getPos(), Vec3d.ZERO, living.headYaw, living.getPitch(), TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET));
+            if (world.dimension().location().equals(IafWorld.DREAD_LAND.location()))
+                living.changeDimension(new DimensionTransition(server.overworld(), living.position(), Vec3.ZERO, living.yHeadRot, living.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
             else {
-                ServerWorld dreadLand = server.getWorld(IafWorld.DREAD_LAND);
+                ServerLevel dreadLand = server.getLevel(IafWorld.DREAD_LAND);
                 if (dreadLand == null) return;
-                living.teleportTo(new TeleportTarget(server.getWorld(IafWorld.DREAD_LAND), living.getPos(), Vec3d.ZERO, living.headYaw, living.getPitch(), TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET));
-                if (!dreadLand.getBlockState(living.getBlockPos()).isOf(IafBlocks.DREAD_PORTAL.get()))
-                    server.getStructureTemplateManager().getTemplate(Identifier.of(IceAndFire.MOD_ID, "dread_exit_portal")).ifPresent(structureTemplate -> structureTemplate.place(dreadLand, living.getBlockPos().subtract(new BlockPos(2, 1, 2)), BlockPos.ORIGIN, new StructurePlacementData().addProcessor(new DreadPortalProcessor()), dreadLand.random, 2));
-                living.sendMessage(Text.translatable("warning.iceandfire.dreadland.not_complete"));
+                living.changeDimension(new DimensionTransition(server.getLevel(IafWorld.DREAD_LAND), living.position(), Vec3.ZERO, living.yHeadRot, living.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
+                if (!dreadLand.getBlockState(living.blockPosition()).is(IafBlocks.DREAD_PORTAL.get()))
+                    server.getStructureManager().get(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dread_exit_portal")).ifPresent(structureTemplate -> structureTemplate.placeInWorld(dreadLand, living.blockPosition().subtract(new BlockPos(2, 1, 2)), BlockPos.ZERO, new StructurePlaceSettings().addProcessor(new DreadPortalProcessor()), dreadLand.random, 2));
+                living.sendSystemMessage(Component.translatable("warning.iceandfire.dreadland.not_complete"));
             }
         }
-        if (world.getBlockState(living.getBlockPos()).isOf(IafBlocks.DREAD_PORTAL.get())) {
+        if (world.getBlockState(living.blockPosition()).is(IafBlocks.DREAD_PORTAL.get())) {
             if (this.getTeleportTick() > 0) this.setTeleportTick(this.getTeleportTick() - 1);
             else if (this.getTeleportTick() == -1) this.setTeleportTick(100);
         } else {
@@ -84,7 +84,7 @@ public class PortalData extends NeedUpdateData<LivingEntity> {
         this.teleportTick = teleportTick;
     }
 
-    public static PortalData get(PlayerEntity player) {
+    public static PortalData get(Player player) {
         return ComponentManager.getPortalData(player);
     }
 }

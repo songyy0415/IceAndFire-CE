@@ -1,11 +1,11 @@
 package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.entity.BannerPattern;
 
 public final class IafBannerPatterns {
-    public static final RegistryKey<BannerPattern> PATTERN_DREAD = RegistryKey.of(RegistryKeys.BANNER_PATTERN, Identifier.of(IceAndFire.MOD_ID, "dread"));
+    public static final ResourceKey<BannerPattern> PATTERN_DREAD = ResourceKey.create(Registries.BANNER_PATTERN, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dread"));
 }

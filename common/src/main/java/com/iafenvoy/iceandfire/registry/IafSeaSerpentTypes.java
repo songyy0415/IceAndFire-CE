@@ -2,21 +2,21 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 
 public final class IafSeaSerpentTypes {
-    public static final SeaSerpentType BLUE = register("blue", Formatting.BLUE);
-    public static final SeaSerpentType BRONZE = register("bronze", Formatting.GOLD);
-    public static final SeaSerpentType DEEPBLUE = register("deepblue", Formatting.DARK_BLUE);
-    public static final SeaSerpentType GREEN = register("green", Formatting.DARK_GREEN);
-    public static final SeaSerpentType PURPLE = register("purple", Formatting.DARK_PURPLE);
-    public static final SeaSerpentType RED = register("red", Formatting.DARK_RED);
-    public static final SeaSerpentType TEAL = register("teal", Formatting.AQUA);
+    public static final SeaSerpentType BLUE = register("blue", ChatFormatting.BLUE);
+    public static final SeaSerpentType BRONZE = register("bronze", ChatFormatting.GOLD);
+    public static final SeaSerpentType DEEPBLUE = register("deepblue", ChatFormatting.DARK_BLUE);
+    public static final SeaSerpentType GREEN = register("green", ChatFormatting.DARK_GREEN);
+    public static final SeaSerpentType PURPLE = register("purple", ChatFormatting.DARK_PURPLE);
+    public static final SeaSerpentType RED = register("red", ChatFormatting.DARK_RED);
+    public static final SeaSerpentType TEAL = register("teal", ChatFormatting.AQUA);
 
-    private static SeaSerpentType register(String name, Formatting color) {
-        return Registry.register(IafRegistries.SEA_SERPENT_TYPE, Identifier.of(IceAndFire.MOD_ID, name), new SeaSerpentType(name, color));
+    private static SeaSerpentType register(String name, ChatFormatting color) {
+        return Registry.register(IafRegistries.SEA_SERPENT_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new SeaSerpentType(name, color));
     }
 
     public static void init() {

@@ -10,31 +10,31 @@ import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.loot.LootTable;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.structure.StructureContext;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 public class FireDragonCaveStructure extends DragonCaveStructure {
     public static final MapCodec<FireDragonCaveStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(configCodecBuilder(instance)).apply(instance, FireDragonCaveStructure::new));
+            instance.group(settingsCodec(instance)).apply(instance, FireDragonCaveStructure::new));
 
-    protected FireDragonCaveStructure(Config config) {
+    protected FireDragonCaveStructure(StructureSettings config) {
         super(config);
     }
 
     @Override
-    protected DragonCavePiece createPiece(BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
+    protected DragonCavePiece createPiece(BoundingBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
         return new FireDragonCavePiece(0, boundingBox, male, offset, y, seed);
     }
 
@@ -44,19 +44,19 @@ public class FireDragonCaveStructure extends DragonCaveStructure {
     }
 
     @Override
-    public StructureType<?> getType() {
+    public StructureType<?> type() {
         return IafStructureTypes.FIRE_DRAGON_CAVE.get();
     }
 
     public static class FireDragonCavePiece extends DragonCavePiece {
-        public static final Identifier FIRE_DRAGON_CHEST = Identifier.of(IceAndFire.MOD_ID, "chest/fire_dragon_female_cave");
-        public static final Identifier FIRE_DRAGON_CHEST_MALE = Identifier.of(IceAndFire.MOD_ID, "chest/fire_dragon_male_cave");
+        public static final Identifier FIRE_DRAGON_CHEST = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/fire_dragon_female_cave");
+        public static final Identifier FIRE_DRAGON_CHEST_MALE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/fire_dragon_male_cave");
 
-        protected FireDragonCavePiece(int length, BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
+        protected FireDragonCavePiece(int length, BoundingBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
             super(IafStructurePieces.FIRE_DRAGON_CAVE.get(), length, boundingBox, male, offset, y, seed);
         }
 
-        public FireDragonCavePiece(StructureContext context, NbtCompound nbt) {
+        public FireDragonCavePiece(StructurePieceSerializationContext context, CompoundTag nbt) {
             super(IafStructurePieces.FIRE_DRAGON_CAVE.get(), nbt);
         }
 
@@ -72,17 +72,17 @@ public class FireDragonCaveStructure extends DragonCaveStructure {
 
         @Override
         protected BlockState getTreasurePile() {
-            return IafBlocks.GOLD_PILE.get().getDefaultState();
+            return IafBlocks.GOLD_PILE.get().defaultBlockState();
         }
 
         @Override
-        protected BlockState getPaletteBlock(Random random) {
-            return (random.nextBoolean() ? IafBlocks.CHARRED_STONE : IafBlocks.CHARRED_COBBLESTONE).get().getDefaultState();
+        protected BlockState getPaletteBlock(RandomSource random) {
+            return (random.nextBoolean() ? IafBlocks.CHARRED_STONE : IafBlocks.CHARRED_COBBLESTONE).get().defaultBlockState();
         }
 
         @Override
-        protected RegistryKey<LootTable> getChestTable(boolean male) {
-            return RegistryKey.of(RegistryKeys.LOOT_TABLE, male ? FIRE_DRAGON_CHEST_MALE : FIRE_DRAGON_CHEST);
+        protected ResourceKey<LootTable> getChestTable(boolean male) {
+            return ResourceKey.create(Registries.LOOT_TABLE, male ? FIRE_DRAGON_CHEST_MALE : FIRE_DRAGON_CHEST);
         }
 
         @Override

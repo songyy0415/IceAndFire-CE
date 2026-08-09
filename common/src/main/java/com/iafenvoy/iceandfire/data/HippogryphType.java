@@ -3,14 +3,13 @@ package com.iafenvoy.iceandfire.data;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.IafHippogryphTypes;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.Biome;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.biome.Biome;
 
 public record HippogryphType(String name, boolean developer, TagKey<Biome> spawnBiomes) {
     public static HippogryphType[] getWildTypes() {
@@ -21,7 +20,7 @@ public record HippogryphType(String name, boolean developer, TagKey<Biome> spawn
         return getWildTypes()[ThreadLocalRandom.current().nextInt(getWildTypes().length - 1)];
     }
 
-    public static HippogryphType getBiomeType(RegistryEntry<Biome> biome) {
+    public static HippogryphType getBiomeType(Holder<Biome> biome) {
         List<HippogryphType> types = IafRegistries.HIPPOGRYPH_TYPE.stream().filter(x -> x.allowSpawn(biome)).toList();
         if (types.isEmpty()) return getRandomType();
         else {
@@ -31,11 +30,11 @@ public record HippogryphType(String name, boolean developer, TagKey<Biome> spawn
         }
     }
 
-    public boolean allowSpawn(RegistryEntry<Biome> biome) {
-        return biome.isIn(this.spawnBiomes);
+    public boolean allowSpawn(Holder<Biome> biome) {
+        return biome.is(this.spawnBiomes);
     }
 
-    public Identifier getTexture(boolean blink) {
-        return Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/" + this.name.toLowerCase(Locale.ROOT) + (blink ? "_blink" : "") + ".png");
+    public Identifier getTextureLocation(boolean blink) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/" + this.name.toLowerCase(Locale.ROOT) + (blink ? "_blink" : "") + ".png");
     }
 }

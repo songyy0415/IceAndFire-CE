@@ -18,7 +18,7 @@ import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class IceAndFire {
     //TODO: IceAndFire::id is a temporary fix to capable with old version, should be removed in later versions
     public static Identifier id(String path) {
         if (path.contains(":")) return Identifier.tryParse(path);
-        else return Identifier.of(MOD_ID, path);
+        else return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public static void init() {

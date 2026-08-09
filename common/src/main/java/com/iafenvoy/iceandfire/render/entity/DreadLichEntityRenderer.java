@@ -5,30 +5,30 @@ import com.iafenvoy.iceandfire.entity.DreadLichEntity;
 import com.iafenvoy.iceandfire.render.entity.feature.GenericGlowingFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.DreadLichModel;
 import com.iafenvoy.uranus.client.model.util.HideableLayer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.resources.Identifier;
 
-public class DreadLichEntityRenderer extends MobEntityRenderer<DreadLichEntity, DreadLichModel> {
-    public static final Identifier TEXTURE_EYES = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_eyes.png");
-    public static final Identifier TEXTURE_0 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_0.png");
-    public static final Identifier TEXTURE_1 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_1.png");
-    public static final Identifier TEXTURE_2 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_2.png");
-    public static final Identifier TEXTURE_3 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_3.png");
-    public static final Identifier TEXTURE_4 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_4.png");
-    public final HideableLayer<DreadLichEntity, DreadLichModel, HeldItemFeatureRenderer<DreadLichEntity, DreadLichModel>> itemLayer;
+public class DreadLichEntityRenderer extends MobRenderer<DreadLichEntity, DreadLichModel> {
+    public static final Identifier TEXTURE_EYES = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_eyes.png");
+    public static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_0.png");
+    public static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_1.png");
+    public static final Identifier TEXTURE_2 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_2.png");
+    public static final Identifier TEXTURE_3 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_3.png");
+    public static final Identifier TEXTURE_4 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_4.png");
+    public final HideableLayer<DreadLichEntity, DreadLichModel, ItemInHandLayer<DreadLichEntity, DreadLichModel>> itemLayer;
 
-    public DreadLichEntityRenderer(EntityRendererFactory.Context context) {
+    public DreadLichEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new DreadLichModel(0.0F), 0.6F);
-        this.addFeature(new GenericGlowingFeatureRenderer<>(this, TEXTURE_EYES));
-        this.itemLayer = new HideableLayer<>(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()), this);
-        this.addFeature(this.itemLayer);
+        this.addLayer(new GenericGlowingFeatureRenderer<>(this, TEXTURE_EYES));
+        this.itemLayer = new HideableLayer<>(new ItemInHandLayer<>(this, context.getItemInHandRenderer()), this);
+        this.addLayer(this.itemLayer);
     }
 
     @Override
-    protected void scale(DreadLichEntity entity, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(DreadLichEntity entity, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.95F, 0.95F, 0.95F);
         if (entity.getAnimation() == this.getModel().getSpawnAnimation()) {
             this.itemLayer.hidden = entity.getAnimationTick() <= this.getModel().getSpawnAnimation().getDuration() - 10;
@@ -38,7 +38,7 @@ public class DreadLichEntityRenderer extends MobEntityRenderer<DreadLichEntity, 
     }
 
     @Override
-    public Identifier getTexture(DreadLichEntity entity) {
+    public Identifier getTextureLocation(DreadLichEntity entity) {
         return switch (entity.getVariant()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

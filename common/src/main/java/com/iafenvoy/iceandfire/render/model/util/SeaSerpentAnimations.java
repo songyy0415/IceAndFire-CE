@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.render.model.util;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 public enum SeaSerpentAnimations {
     T_POSE("base"),
@@ -28,6 +28,6 @@ public enum SeaSerpentAnimations {
     }
 
     public Identifier getModelId() {
-        return Identifier.of(IceAndFire.MOD_ID, "seaserpent/seaserpent_" + this.fileSuffix);
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "seaserpent/seaserpent_" + this.fileSuffix);
     }
 }

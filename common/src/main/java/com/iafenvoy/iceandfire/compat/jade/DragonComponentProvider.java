@@ -2,9 +2,9 @@ package com.iafenvoy.iceandfire.compat.jade;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -15,15 +15,15 @@ public enum DragonComponentProvider implements IEntityComponentProvider {
 
     @Override
     public Identifier getUid() {
-        return Identifier.of(IceAndFire.MOD_ID, "dragon");
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon");
     }
 
     @Override
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         if (entityAccessor.getEntity() instanceof DragonBaseEntity dragon) {
-            iTooltip.add(Text.translatable("dragon.stage").formatted(Formatting.GRAY).append(Text.literal(" " + dragon.getDragonStage())));
-            iTooltip.add(Text.literal(dragon.getAgeInDays() + "d"));
-            iTooltip.add(Text.literal(dragon.isMale() ? "Male" : "Female"));
+            iTooltip.add(Component.translatable("dragon.stage").withStyle(ChatFormatting.GRAY).append(Component.literal(" " + dragon.getDragonStage())));
+            iTooltip.add(Component.literal(dragon.getAgeInDays() + "d"));
+            iTooltip.add(Component.literal(dragon.isMale() ? "Male" : "Female"));
         }
     }
 }

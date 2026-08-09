@@ -4,19 +4,19 @@ import com.iafenvoy.iceandfire.entity.TrollEntity;
 import com.iafenvoy.iceandfire.render.entity.feature.TrollEyesFeatureRenderer;
 import com.iafenvoy.iceandfire.render.entity.feature.TrollWeaponFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.TrollModel;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.Identifier;
 
-public class TrollEntityRenderer extends MobEntityRenderer<TrollEntity, TrollModel> {
-    public TrollEntityRenderer(EntityRendererFactory.Context context) {
+public class TrollEntityRenderer extends MobRenderer<TrollEntity, TrollModel> {
+    public TrollEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new TrollModel(), 0.9F);
-        this.features.add(new TrollWeaponFeatureRenderer(this));
-        this.features.add(new TrollEyesFeatureRenderer(this));
+        this.layers.add(new TrollWeaponFeatureRenderer(this));
+        this.layers.add(new TrollEyesFeatureRenderer(this));
     }
 
     @Override
-    public Identifier getTexture(TrollEntity troll) {
-        return troll.getTrollType().getTexture();
+    public Identifier getTextureLocation(TrollEntity troll) {
+        return troll.getTrollType().getTextureLocation();
     }
 }

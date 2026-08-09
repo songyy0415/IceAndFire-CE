@@ -7,33 +7,33 @@ import com.iafenvoy.iceandfire.render.entity.feature.BipedArmorFeatureRendererMu
 import com.iafenvoy.iceandfire.render.entity.feature.GenericGlowingFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.DreadThrallModel;
 import com.iafenvoy.uranus.client.model.util.HideableLayer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
 
-public class DreadThrallEntityRenderer extends MobEntityRenderer<DreadThrallEntity, DreadThrallModel> implements IHasArmorVariantResource {
-    public static final Identifier TEXTURE = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall.png");
-    public static final Identifier TEXTURE_EYES = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall_eyes.png");
-    public static final Identifier TEXTURE_LEG_ARMOR = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_legs.png");
-    public static final Identifier TEXTURE_ARMOR_0 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_1.png");
-    public static final Identifier TEXTURE_ARMOR_1 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_2.png");
-    public static final Identifier TEXTURE_ARMOR_2 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_3.png");
-    public static final Identifier TEXTURE_ARMOR_3 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_4.png");
-    public static final Identifier TEXTURE_ARMOR_4 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_5.png");
-    public static final Identifier TEXTURE_ARMOR_5 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_6.png");
-    public static final Identifier TEXTURE_ARMOR_6 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_7.png");
-    public static final Identifier TEXTURE_ARMOR_7 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_8.png");
-    public final HideableLayer<DreadThrallEntity, DreadThrallModel, HeldItemFeatureRenderer<DreadThrallEntity, DreadThrallModel>> itemLayer;
+public class DreadThrallEntityRenderer extends MobRenderer<DreadThrallEntity, DreadThrallModel> implements IHasArmorVariantResource {
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall.png");
+    public static final Identifier TEXTURE_EYES = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall_eyes.png");
+    public static final Identifier TEXTURE_LEG_ARMOR = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_legs.png");
+    public static final Identifier TEXTURE_ARMOR_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_1.png");
+    public static final Identifier TEXTURE_ARMOR_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_2.png");
+    public static final Identifier TEXTURE_ARMOR_2 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_3.png");
+    public static final Identifier TEXTURE_ARMOR_3 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_4.png");
+    public static final Identifier TEXTURE_ARMOR_4 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_5.png");
+    public static final Identifier TEXTURE_ARMOR_5 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_6.png");
+    public static final Identifier TEXTURE_ARMOR_6 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_7.png");
+    public static final Identifier TEXTURE_ARMOR_7 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/thrall_chest_8.png");
+    public final HideableLayer<DreadThrallEntity, DreadThrallModel, ItemInHandLayer<DreadThrallEntity, DreadThrallModel>> itemLayer;
 
-    public DreadThrallEntityRenderer(EntityRendererFactory.Context context) {
+    public DreadThrallEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new DreadThrallModel(0.0F, false), 0.6F);
-        this.addFeature(new GenericGlowingFeatureRenderer<>(this, TEXTURE_EYES));
-        this.itemLayer = new HideableLayer<>(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()), this);
-        this.addFeature(this.itemLayer);
-        this.addFeature(new BipedArmorFeatureRendererMultiple<>(this, new DreadThrallModel(0.5F, true), new DreadThrallModel(1.0F, true), TEXTURE_ARMOR_0, TEXTURE_LEG_ARMOR));
+        this.addLayer(new GenericGlowingFeatureRenderer<>(this, TEXTURE_EYES));
+        this.itemLayer = new HideableLayer<>(new ItemInHandLayer<>(this, context.getItemInHandRenderer()), this);
+        this.addLayer(this.itemLayer);
+        this.addLayer(new BipedArmorFeatureRendererMultiple<>(this, new DreadThrallModel(0.5F, true), new DreadThrallModel(1.0F, true), TEXTURE_ARMOR_0, TEXTURE_LEG_ARMOR));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DreadThrallEntityRenderer extends MobEntityRenderer<DreadThrallEnti
     }
 
     @Override
-    public void scale(DreadThrallEntity livingEntityIn, MatrixStack stack, float partialTickTime) {
+    public void scale(DreadThrallEntity livingEntityIn, PoseStack stack, float partialTickTime) {
         stack.scale(0.95F, 0.95F, 0.95F);
         if (livingEntityIn.getAnimation() == this.getModel().getSpawnAnimation()) {
             this.itemLayer.hidden = livingEntityIn.getAnimationTick() <= this.getModel().getSpawnAnimation().getDuration() - 10;
@@ -63,7 +63,7 @@ public class DreadThrallEntityRenderer extends MobEntityRenderer<DreadThrallEnti
     }
 
     @Override
-    public Identifier getTexture(DreadThrallEntity entity) {
+    public Identifier getTextureLocation(DreadThrallEntity entity) {
         return TEXTURE;
     }
 }

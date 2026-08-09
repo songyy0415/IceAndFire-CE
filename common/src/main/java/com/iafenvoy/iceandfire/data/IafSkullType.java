@@ -3,14 +3,13 @@ package com.iafenvoy.iceandfire.data;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.item.MobSkullItem;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import net.minecraft.block.SkullBlock;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-
 import java.util.Locale;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.SkullBlock;
 
-public enum IafSkullType implements SkullBlock.SkullType {
+public enum IafSkullType implements SkullBlock.Type {
     HIPPOGRYPH,
     CYCLOPS,
     COCKATRICE,
@@ -33,11 +32,11 @@ public enum IafSkullType implements SkullBlock.SkullType {
     }
 
     public Item getSkullItem() {
-        return Registries.ITEM.get(Identifier.of(IceAndFire.MOD_ID, this.itemResourceName));
+        return BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, this.itemResourceName));
     }
 
     @Override
-    public String asString() {
+    public String getSerializedName() {
         return this.itemResourceName;
     }
 }

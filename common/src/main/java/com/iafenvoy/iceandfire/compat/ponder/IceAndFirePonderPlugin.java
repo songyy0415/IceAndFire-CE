@@ -11,11 +11,11 @@ import net.createmod.ponder.api.registration.PonderPlugin;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
 import net.createmod.ponder.foundation.PonderIndex;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class IceAndFirePonderPlugin implements PonderPlugin {
-    private static final Identifier DRAGON_TAG_ID = Identifier.of(IceAndFire.MOD_ID, "dragon_forge");
+    private static final Identifier DRAGON_TAG_ID = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_forge");
 
     @Override
     public @NotNull String getModId() {

@@ -27,19 +27,18 @@ import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
-import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.ChestRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.resources.Identifier;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public final class IafRenderers {
-    public static final Identifier FIRE_DRAGON = Identifier.of(IceAndFire.MOD_ID, "firedragon/firedragon_ground");
-    public static final Identifier ICE_DRAGON = Identifier.of(IceAndFire.MOD_ID, "icedragon/icedragon_ground");
-    public static final Identifier LIGHTNING_DRAGON = Identifier.of(IceAndFire.MOD_ID, "lightningdragon/lightningdragon_ground");
-    public static final Identifier SEA_SERPENT = Identifier.of(IceAndFire.MOD_ID, "seaserpent/seaserpent_base");
+    public static final Identifier FIRE_DRAGON = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "firedragon/firedragon_ground");
+    public static final Identifier ICE_DRAGON = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "icedragon/icedragon_ground");
+    public static final Identifier LIGHTNING_DRAGON = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lightningdragon/lightningdragon_ground");
+    public static final Identifier SEA_SERPENT = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "seaserpent/seaserpent_base");
 
     public static void registerEntityRenderers() {
         EntityRendererRegistry.register(IafEntities.FIRE_DRAGON, x -> new DragonBaseEntityRenderer<>(x, TabulaModelHandlerHelper.getModel(FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new))));
@@ -51,7 +50,7 @@ public final class IafRenderers {
         EntityRendererRegistry.register(IafEntities.FIRE_DRAGON_CHARGE, manager -> new DragonChargeEntityRenderer(manager, true));
         EntityRendererRegistry.register(IafEntities.ICE_DRAGON_CHARGE, manager -> new DragonChargeEntityRenderer(manager, false));
         EntityRendererRegistry.register(IafEntities.LIGHTNING_DRAGON_CHARGE, LightningDragonChargeEntityRenderer::new);
-        EntityRendererRegistry.register(IafEntities.HIPPOGRYPH_EGG, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(IafEntities.HIPPOGRYPH_EGG, ThrownItemRenderer::new);
         EntityRendererRegistry.register(IafEntities.HIPPOGRYPH, HippogryphEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.STONE_STATUE, StoneStatueEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.GORGON, GorgonEntityRenderer::new);
@@ -60,9 +59,9 @@ public final class IafRenderers {
         EntityRendererRegistry.register(IafEntities.SIREN, SirenEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.HIPPOCAMPUS, HippocampusEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.DEATH_WORM, DeathWormEntityRenderer::new);
-        EntityRendererRegistry.register(IafEntities.DEATH_WORM_EGG, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(IafEntities.DEATH_WORM_EGG, ThrownItemRenderer::new);
         EntityRendererRegistry.register(IafEntities.COCKATRICE, CockatriceEntityRenderer::new);
-        EntityRendererRegistry.register(IafEntities.COCKATRICE_EGG, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(IafEntities.COCKATRICE_EGG, ThrownItemRenderer::new);
         EntityRendererRegistry.register(IafEntities.STYMPHALIAN_BIRD, StymphalianBirdEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.STYMPHALIAN_FEATHER, StymphalianFeatherEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.STYMPHALIAN_ARROW, StymphalianArrowEntityRenderer::new);
@@ -117,7 +116,7 @@ public final class IafRenderers {
         BlockEntityRendererRegistry.register(IafBlockEntities.PIXIE_JAR.get(), JarBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(IafBlockEntities.DREAD_PORTAL.get(), DreadPortalBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(IafBlockEntities.DREAD_SPAWNER.get(), DreadSpawnerBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(IafBlockEntities.GHOST_CHEST.get(), ChestBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(IafBlockEntities.GHOST_CHEST.get(), ChestRenderer::new);
     }
 
     public static void registerArmorRenderers() {
@@ -156,29 +155,29 @@ public final class IafRenderers {
     }
 
     public static void registerRenderLayers() {
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.GOLD_PILE.get(), IafBlocks.SILVER_PILE.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.LECTERN.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.PODIUM_OAK.get(), IafBlocks.PODIUM_BIRCH.get(), IafBlocks.PODIUM_SPRUCE.get(), IafBlocks.PODIUM_JUNGLE.get(), IafBlocks.PODIUM_ACACIA.get(), IafBlocks.PODIUM_DARK_OAK.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.FIRE_LILY.get(), IafBlocks.FROST_LILY.get(), IafBlocks.LIGHTNING_LILY.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.DRAGON_ICE_SPIKES.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.DREAD_STONE_FACE.get());
-        RenderTypeRegistry.register(RenderLayer.getTranslucent(), IafBlocks.EGG_IN_ICE.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.JAR_EMPTY.get(), IafBlocks.JAR_PIXIE_0.get(), IafBlocks.JAR_PIXIE_1.get(), IafBlocks.JAR_PIXIE_2.get(), IafBlocks.JAR_PIXIE_3.get(), IafBlocks.JAR_PIXIE_4.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get(), IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get(), IafBlocks.PIXIE_HOUSE_OAK.get(), IafBlocks.PIXIE_HOUSE_BIRCH.get(), IafBlocks.PIXIE_HOUSE_SPRUCE.get(), IafBlocks.PIXIE_HOUSE_DARK_OAK.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.DREAD_SPAWNER.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.DREAD_TORCH.get(), IafBlocks.BURNT_TORCH.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.DREAD_TORCH_WALL.get(), IafBlocks.BURNT_TORCH_WALL.get());
-        RenderTypeRegistry.register(RenderLayer.getCutout(), IafBlocks.DREADWOOD_LEAVES.get(), IafBlocks.DREADWOOD_SAPLING.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.GOLD_PILE.get(), IafBlocks.SILVER_PILE.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.LECTERN.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.PODIUM_OAK.get(), IafBlocks.PODIUM_BIRCH.get(), IafBlocks.PODIUM_SPRUCE.get(), IafBlocks.PODIUM_JUNGLE.get(), IafBlocks.PODIUM_ACACIA.get(), IafBlocks.PODIUM_DARK_OAK.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.FIRE_LILY.get(), IafBlocks.FROST_LILY.get(), IafBlocks.LIGHTNING_LILY.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DRAGON_ICE_SPIKES.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_STONE_FACE.get());
+        RenderTypeRegistry.register(RenderType.translucent(), IafBlocks.EGG_IN_ICE.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.JAR_EMPTY.get(), IafBlocks.JAR_PIXIE_0.get(), IafBlocks.JAR_PIXIE_1.get(), IafBlocks.JAR_PIXIE_2.get(), IafBlocks.JAR_PIXIE_3.get(), IafBlocks.JAR_PIXIE_4.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get(), IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get(), IafBlocks.PIXIE_HOUSE_OAK.get(), IafBlocks.PIXIE_HOUSE_BIRCH.get(), IafBlocks.PIXIE_HOUSE_SPRUCE.get(), IafBlocks.PIXIE_HOUSE_DARK_OAK.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_SPAWNER.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_TORCH.get(), IafBlocks.BURNT_TORCH.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_TORCH_WALL.get(), IafBlocks.BURNT_TORCH_WALL.get());
+        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREADWOOD_LEAVES.get(), IafBlocks.DREADWOOD_SAPLING.get());
     }
 
     public static void registerModelPredicates() {
-        ItemPropertiesRegistry.register(IafItems.DRAGON_BOW.get(), Identifier.ofVanilla("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1 : 0);
-        ItemPropertiesRegistry.register(IafItems.DRAGON_BOW.get(), Identifier.ofVanilla("pull"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity == null ? 0 : livingEntity.getActiveItem() != itemStack ? 0 : (float) (itemStack.getMaxUseTime(livingEntity) - livingEntity.getItemUseTimeLeft()) / 20);
+        ItemPropertiesRegistry.register(IafItems.DRAGON_BOW.get(), Identifier.withDefaultNamespace("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1 : 0);
+        ItemPropertiesRegistry.register(IafItems.DRAGON_BOW.get(), Identifier.withDefaultNamespace("pull"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity == null ? 0 : livingEntity.getUseItem() != itemStack ? 0 : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / 20);
 
-        ItemPropertiesRegistry.register(IafItems.DRAGON_HORN.get(), Identifier.ofVanilla("iceorfire"), (stack, level, entity, p) -> DragonHornItem.getDragonType(stack) * 0.25F);
-        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_FIRE.get(), Identifier.ofVanilla("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_ICE.get(), Identifier.ofVanilla("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_LIGHTNING.get(), Identifier.ofVanilla("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemPropertiesRegistry.register(IafItems.TIDE_TRIDENT.get(), Identifier.ofVanilla("throwing"), (stack, level, entity, p) -> entity != null && entity.isUsingItem() && entity.getMainHandStack() == stack ? 1.0F : 0.0F);
+        ItemPropertiesRegistry.register(IafItems.DRAGON_HORN.get(), Identifier.withDefaultNamespace("iceorfire"), (stack, level, entity, p) -> DragonHornItem.getDragonType(stack) * 0.25F);
+        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_FIRE.get(), Identifier.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
+        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_ICE.get(), Identifier.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
+        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_LIGHTNING.get(), Identifier.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
+        ItemPropertiesRegistry.register(IafItems.TIDE_TRIDENT.get(), Identifier.withDefaultNamespace("throwing"), (stack, level, entity, p) -> entity != null && entity.isUsingItem() && entity.getMainHandItem() == stack ? 1.0F : 0.0F);
     }
 }

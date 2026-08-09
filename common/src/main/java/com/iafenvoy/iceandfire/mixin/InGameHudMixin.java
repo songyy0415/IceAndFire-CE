@@ -3,11 +3,11 @@ package com.iafenvoy.iceandfire.mixin;
 import com.iafenvoy.iceandfire.render.PortalRenderHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,23 +16,23 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public abstract class InGameHudMixin {
     @Shadow
-    protected abstract void renderOverlay(DrawContext context, Identifier texture, float opacity);
+    protected abstract void renderTextureOverlay(GuiGraphics context, Identifier texture, float opacity);
 
     @Shadow
     @Final
-    private static Identifier POWDER_SNOW_OUTLINE;
+    private static Identifier POWDER_SNOW_OUTLINE_LOCATION;
 
     @Shadow
     @Final
-    private MinecraftClient client;
+    private Minecraft minecraft;
 
-    @Inject(method = "renderMiscOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getFrozenTicks()I"))
-    private void renderDreadPortalOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (this.client.player == null) return;
-        int renderTick = PortalRenderHelper.getTick(), i = this.client.player.getMinFreezeDamageTicks();
-        if (renderTick > 0) this.renderOverlay(context, POWDER_SNOW_OUTLINE, (float) Math.min(renderTick, i) / i);
+    @Inject(method = "renderCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getTicksFrozen()I"))
+    private void renderDreadPortalOverlay(GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci) {
+        if (this.minecraft.player == null) return;
+        int renderTick = PortalRenderHelper.getTick(), i = this.minecraft.player.getTicksRequiredToFreeze();
+        if (renderTick > 0) this.renderTextureOverlay(context, POWDER_SNOW_OUTLINE_LOCATION, (float) Math.min(renderTick, i) / i);
     }
 }

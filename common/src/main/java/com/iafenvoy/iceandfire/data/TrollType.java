@@ -8,36 +8,36 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.uranus.util.RandomHelper;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.Item;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 
 public class TrollType {
     //FIXME:: Remove this
     public RegistrySupplier<Item> leather, helmet, chestplate, leggings, boots;
     private final String name;
-    private final RegistryEntry<ArmorMaterial> material;
+    private final Holder<ArmorMaterial> material;
     private final TagKey<Biome> spawnBiomes;
     private final Identifier lootTable;
     private final List<ITrollWeapon> weapons;
 
-    public TrollType(String name, RegistryEntry<ArmorMaterial> material, TagKey<Biome> spawnBiomes, ITrollWeapon... weapons) {
+    public TrollType(String name, Holder<ArmorMaterial> material, TagKey<Biome> spawnBiomes, ITrollWeapon... weapons) {
         this.name = name;
         this.weapons = List.of(weapons);
         this.material = material;
         this.spawnBiomes = spawnBiomes;
-        this.lootTable = Identifier.of(IceAndFire.MOD_ID, "entities/troll_" + name);
+        this.lootTable = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/troll_" + name);
     }
 
-    public static TrollType getBiomeType(RegistryEntry<Biome> biome) {
+    public static TrollType getBiomeType(Holder<Biome> biome) {
         List<TrollType> types = IafRegistries.TROLL_TYPE.stream().filter(x -> x.allowSpawn(biome)).toList();
         return RandomHelper.randomOne(types.isEmpty() ? IafRegistries.TROLL_TYPE.stream().toList() : types);
     }
@@ -48,7 +48,7 @@ public class TrollType {
 
     public static void initArmors() {
         for (TrollType troll : IafRegistries.TROLL_TYPE) {
-            troll.leather = IafItems.registerItem(String.format(Locale.ROOT, "troll_leather_%s", troll.name.toLowerCase(Locale.ROOT)), () -> new Item(new Item.Settings()));
+            troll.leather = IafItems.registerItem(String.format(Locale.ROOT, "troll_leather_%s", troll.name.toLowerCase(Locale.ROOT)), () -> new Item(new Item.Properties()));
             troll.helmet = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorItem.Type.HELMET), () -> new TrollArmorItem(troll, ArmorItem.Type.HELMET));
             troll.chestplate = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorItem.Type.CHESTPLATE), () -> new TrollArmorItem(troll, ArmorItem.Type.CHESTPLATE));
             troll.leggings = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorItem.Type.LEGGINGS), () -> new TrollArmorItem(troll, ArmorItem.Type.LEGGINGS));
@@ -72,24 +72,24 @@ public class TrollType {
         return this.lootTable;
     }
 
-    public RegistryEntry<ArmorMaterial> getMaterial() {
+    public Holder<ArmorMaterial> getMaterial() {
         return this.material;
     }
 
-    public Identifier getTexture() {
-        return Identifier.of(IceAndFire.MOD_ID, "textures/entity/troll/troll_" + this.name + ".png");
+    public Identifier getTextureLocation() {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/troll/troll_" + this.name + ".png");
     }
 
     public Identifier getStatueTexture() {
-        return Identifier.of(IceAndFire.MOD_ID, "textures/entity/troll/troll_" + this.name + "_stone.png");
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/troll/troll_" + this.name + "_stone.png");
     }
 
     public Identifier getEyesTexture() {
-        return Identifier.of(IceAndFire.MOD_ID, "textures/entity/troll/troll_" + this.name + "_eyes.png");
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/troll/troll_" + this.name + "_eyes.png");
     }
 
-    public boolean allowSpawn(RegistryEntry<Biome> biome) {
-        return biome.isIn(this.spawnBiomes);
+    public boolean allowSpawn(Holder<Biome> biome) {
+        return biome.is(this.spawnBiomes);
     }
 
     public enum BuiltinWeapon implements ITrollWeapon {
@@ -107,8 +107,8 @@ public class TrollType {
         }
 
         @Override
-        public Identifier getTexture() {
-            return Identifier.of(IceAndFire.MOD_ID, "textures/entity/troll/weapon/weapon_" + this.name().toLowerCase(Locale.ROOT) + ".png");
+        public Identifier getTextureLocation() {
+            return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/troll/weapon/weapon_" + this.name().toLowerCase(Locale.ROOT) + ".png");
         }
 
         @Override
@@ -140,7 +140,7 @@ public class TrollType {
 
         String getName();
 
-        Identifier getTexture();
+        Identifier getTextureLocation();
 
         Item getItem();
     }

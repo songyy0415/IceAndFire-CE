@@ -2,41 +2,41 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.entity.GhostSwordEntity;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
 public class GhostSwordEntityRenderer extends EntityRenderer<GhostSwordEntity> {
-    public GhostSwordEntityRenderer(EntityRendererFactory.Context context) {
+    public GhostSwordEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public Identifier getTexture(GhostSwordEntity entity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+    public Identifier getTextureLocation(GhostSwordEntity entity) {
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 
     @Override
-    public void render(GhostSwordEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        matrixStackIn.push();
-        matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.prevYaw, entityIn.getYaw()) - 90.0F));
-        matrixStackIn.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.prevPitch, entityIn.getPitch())));
+    public void render(GhostSwordEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
+        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
         matrixStackIn.translate(0, 0.5F, 0);
         matrixStackIn.scale(2F, 2F, 2F);
-        matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(0.0F));
-        matrixStackIn.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees((entityIn.age + partialTicks) * 30.0F));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(0.0F));
+        matrixStackIn.mulPose(Axis.ZN.rotationDegrees((entityIn.tickCount + partialTicks) * 30.0F));
         matrixStackIn.translate(0, -0.15F, 0);
-        MinecraftClient.getInstance().getItemRenderer().renderItem(new ItemStack(IafItems.GHOST_SWORD.get()), ModelTransformationMode.GROUND, 240, OverlayTexture.DEFAULT_UV, matrixStackIn, bufferIn, MinecraftClient.getInstance().world, 0);
-        matrixStackIn.pop();
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(IafItems.GHOST_SWORD.get()), ItemDisplayContext.GROUND, 240, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn, Minecraft.getInstance().level, 0);
+        matrixStackIn.popPose();
     }
 }

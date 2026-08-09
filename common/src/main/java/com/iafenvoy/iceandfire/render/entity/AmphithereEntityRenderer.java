@@ -3,34 +3,34 @@ package com.iafenvoy.iceandfire.render.entity;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.render.model.AmphithereModel;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.Identifier;
 
-public class AmphithereEntityRenderer extends MobEntityRenderer<AmphithereEntity, AmphithereModel> {
-    public static final Identifier TEXTURE_BLUE = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue.png");
-    public static final Identifier TEXTURE_BLUE_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue_blink.png");
-    public static final Identifier TEXTURE_GREEN = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_green.png");
-    public static final Identifier TEXTURE_GREEN_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_green_blink.png");
-    public static final Identifier TEXTURE_OLIVE = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_olive.png");
-    public static final Identifier TEXTURE_OLIVE_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_olive_blink.png");
-    public static final Identifier TEXTURE_RED = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_red.png");
-    public static final Identifier TEXTURE_RED_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_red_blink.png");
-    public static final Identifier TEXTURE_YELLOW = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_yellow.png");
-    public static final Identifier TEXTURE_YELLOW_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_yellow_blink.png");
+public class AmphithereEntityRenderer extends MobRenderer<AmphithereEntity, AmphithereModel> {
+    public static final Identifier TEXTURE_BLUE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue.png");
+    public static final Identifier TEXTURE_BLUE_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue_blink.png");
+    public static final Identifier TEXTURE_GREEN = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_green.png");
+    public static final Identifier TEXTURE_GREEN_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_green_blink.png");
+    public static final Identifier TEXTURE_OLIVE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_olive.png");
+    public static final Identifier TEXTURE_OLIVE_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_olive_blink.png");
+    public static final Identifier TEXTURE_RED = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_red.png");
+    public static final Identifier TEXTURE_RED_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_red_blink.png");
+    public static final Identifier TEXTURE_YELLOW = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_yellow.png");
+    public static final Identifier TEXTURE_YELLOW_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_yellow_blink.png");
 
-    public AmphithereEntityRenderer(EntityRendererFactory.Context context) {
+    public AmphithereEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new AmphithereModel(), 1.6F);
     }
 
     @Override
-    protected void scale(AmphithereEntity entity, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(AmphithereEntity entity, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(2.0F, 2.0F, 2.0F);
     }
 
     @Override
-    public Identifier getTexture(AmphithereEntity amphithere) {
+    public Identifier getTextureLocation(AmphithereEntity amphithere) {
         switch (amphithere.getVariant()) {
             case 0 -> {
                 if (amphithere.isBlinking()) return TEXTURE_BLUE_BLINK;

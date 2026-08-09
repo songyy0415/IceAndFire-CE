@@ -3,28 +3,28 @@ package com.iafenvoy.iceandfire.render.entity.feature;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.uranus.client.model.TabulaModel;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 
-public class DragonMaleOverlayFeatureRenderer<T extends DragonBaseEntity> extends FeatureRenderer<T, TabulaModel<T>> {
-    public DragonMaleOverlayFeatureRenderer(MobEntityRenderer<T, TabulaModel<T>> renderIn) {
+public class DragonMaleOverlayFeatureRenderer<T extends DragonBaseEntity> extends RenderLayer<T, TabulaModel<T>> {
+    public DragonMaleOverlayFeatureRenderer(MobRenderer<T, TabulaModel<T>> renderIn) {
         super(renderIn);
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, T dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         Identifier texture = DragonColor.getById(dragon.getVariant()).getTextureProvider().getMaleOverlay();
         if (dragon.isMale() && !dragon.isSkeletal() && texture != null)
-            this.getContextModel().render(matrixStackIn, bufferIn.getBuffer(RenderLayer.getEntityTranslucent(texture)), packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+            this.getParentModel().renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderType.entityTranslucent(texture)), packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 
     @Override
-    protected Identifier getTexture(T dragon) {
+    protected Identifier getTextureLocation(T dragon) {
         return null;
     }
 }

@@ -1,28 +1,28 @@
 package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public final class IafDamageTypes {
-    public static final RegistryKey<DamageType> BONUS = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "bonus"));
-    public static final RegistryKey<DamageType> GORGON_DMG_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "gorgon"));
-    public static final RegistryKey<DamageType> DRAGON_FIRE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_fire"));
-    public static final RegistryKey<DamageType> DRAGON_ICE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_ice"));
-    public static final RegistryKey<DamageType> DRAGON_LIGHTNING_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_lightning"));
+    public static final ResourceKey<DamageType> BONUS = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "bonus"));
+    public static final ResourceKey<DamageType> GORGON_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "gorgon"));
+    public static final ResourceKey<DamageType> DRAGON_FIRE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_fire"));
+    public static final ResourceKey<DamageType> DRAGON_ICE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_ice"));
+    public static final ResourceKey<DamageType> DRAGON_LIGHTNING_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_lightning"));
 
-    private static RegistryEntry<DamageType> get(Entity entity, RegistryKey<DamageType> key) {
-        Registry<DamageType> registry = entity.getWorld().damageSources.registry;
-        return registry.getEntry(key).orElse(registry.entryOf(DamageTypes.OUT_OF_WORLD));
+    private static Holder<DamageType> get(Entity entity, ResourceKey<DamageType> key) {
+        Registry<DamageType> registry = entity.level().damageSources().damageTypes;
+        return registry.getHolder(key).orElse(registry.getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD));
     }
 
     public static DamageSource bonusDamage(Entity attacker) {
@@ -58,34 +58,34 @@ public final class IafDamageTypes {
     }
 
     public static class CustomEntityDamageSource extends DamageSource {
-        public CustomEntityDamageSource(RegistryEntry<DamageType> damageType, Entity entity) {
+        public CustomEntityDamageSource(Holder<DamageType> damageType, Entity entity) {
             super(damageType, entity);
         }
 
         @Override
-        public Text getDeathMessage(LivingEntity entityLivingBaseIn) {
-            LivingEntity livingentity = entityLivingBaseIn.getPrimeAdversary();
-            String s = "death.attack." + this.getName();
+        public Component getLocalizedDeathMessage(LivingEntity entityLivingBaseIn) {
+            LivingEntity livingentity = entityLivingBaseIn.getKillCredit();
+            String s = "death.attack." + this.getMsgId();
             int index = entityLivingBaseIn.getRandom().nextInt(2);
             String s1 = s + "." + index;
             String s2 = s + ".attacker_" + index;
-            return livingentity != null ? Text.translatable(s2, entityLivingBaseIn.getDisplayName(), livingentity.getDisplayName()) : Text.translatable(s1, entityLivingBaseIn.getDisplayName());
+            return livingentity != null ? Component.translatable(s2, entityLivingBaseIn.getDisplayName(), livingentity.getDisplayName()) : Component.translatable(s1, entityLivingBaseIn.getDisplayName());
         }
     }
 
     public static class CustomIndirectEntityDamageSource extends DamageSource {
-        public CustomIndirectEntityDamageSource(RegistryEntry<DamageType> damageType, Entity source, Entity entity) {
+        public CustomIndirectEntityDamageSource(Holder<DamageType> damageType, Entity source, Entity entity) {
             super(damageType, source, entity);
         }
 
         @Override
-        public Text getDeathMessage(LivingEntity entityLivingBaseIn) {
-            LivingEntity livingentity = entityLivingBaseIn.getPrimeAdversary();
-            String s = "death.attack." + this.getName();
+        public Component getLocalizedDeathMessage(LivingEntity entityLivingBaseIn) {
+            LivingEntity livingentity = entityLivingBaseIn.getKillCredit();
+            String s = "death.attack." + this.getMsgId();
             int index = entityLivingBaseIn.getRandom().nextInt(2);
             String s1 = s + "." + index;
             String s2 = s + ".attacker_" + index;
-            return livingentity != null ? Text.translatable(s2, entityLivingBaseIn.getDisplayName(), livingentity.getDisplayName()) : Text.translatable(s1, entityLivingBaseIn.getDisplayName());
+            return livingentity != null ? Component.translatable(s2, entityLivingBaseIn.getDisplayName(), livingentity.getDisplayName()) : Component.translatable(s1, entityLivingBaseIn.getDisplayName());
         }
     }
 }

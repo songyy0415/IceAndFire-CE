@@ -3,29 +3,29 @@ package com.iafenvoy.iceandfire.render.entity.feature;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.uranus.client.model.TabulaModel;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 
-public class DragonEyesFeatureRenderer<T extends DragonBaseEntity> extends FeatureRenderer<T, TabulaModel<T>> {
-    public DragonEyesFeatureRenderer(MobEntityRenderer<T, TabulaModel<T>> renderIn) {
+public class DragonEyesFeatureRenderer<T extends DragonBaseEntity> extends RenderLayer<T, TabulaModel<T>> {
+    public DragonEyesFeatureRenderer(MobRenderer<T, TabulaModel<T>> renderIn) {
         super(renderIn);
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, DragonBaseEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headpitch) {
+    public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, DragonBaseEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headpitch) {
         if (!entity.shouldRenderEyes()) return;
         Identifier eyeTexture = DragonColor.getById(entity.getVariant()).getTextureProvider().getEyesTexture(entity.getDragonStage());
         if (eyeTexture == null) return;
-        this.getContextModel().render(matrices, vertexConsumers.getBuffer(RenderLayer.getEyes(eyeTexture)), light, OverlayTexture.DEFAULT_UV, -1);
+        this.getParentModel().renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.eyes(eyeTexture)), light, OverlayTexture.NO_OVERLAY, -1);
     }
 
     @Override
-    protected Identifier getTexture(DragonBaseEntity entityIn) {
+    protected Identifier getTextureLocation(DragonBaseEntity entityIn) {
         return null;
     }
 }

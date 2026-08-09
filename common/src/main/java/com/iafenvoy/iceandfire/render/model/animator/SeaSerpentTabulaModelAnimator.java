@@ -6,8 +6,8 @@ import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ITabulaModelAnimator;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 
 public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator<SeaSerpentEntity> implements ITabulaModelAnimator<SeaSerpentEntity> {
     public final SeaSerpentAnimations[] swimPose = {SeaSerpentAnimations.SWIM1, SeaSerpentAnimations.SWIM3, SeaSerpentAnimations.SWIM4, SeaSerpentAnimations.SWIM6};
@@ -28,7 +28,7 @@ public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator
         TabulaModel<SeaSerpentEntity> prevPosition = resolve(this.swimPose[prevIndex].getModelId());
         TabulaModel<SeaSerpentEntity> currentPosition = resolve(this.swimPose[currentIndex].getModelId());
         if (prevPosition == null || currentPosition == null) return;
-        float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         float delta = ((entity.swimCycle) / 10.0F) % 1.0F + (partialTicks / 10.0F);
 
         for (AdvancedModelBox cube : model.getCubes().values()) {
@@ -56,21 +56,21 @@ public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator
         }
         if (entity.jumpRot > 0.0F) {
             float jumpRot = entity.prevJumpRot + (entity.jumpRot - entity.prevJumpRot) * partialTicks;
-            float turn = (float) entity.getVelocity().y * -4F;
+            float turn = (float) entity.getDeltaMovement().y * -4F;
             model.getCube("BodyUpper").rotateAngleX += (float) Math.toRadians(22.5F * turn) * jumpRot;
             model.getCube("Tail1").rotateAngleX -= (float) Math.toRadians(turn) * jumpRot;
             model.getCube("Tail2").rotateAngleX -= (float) Math.toRadians(turn) * jumpRot;
             model.getCube("Tail3").rotateAngleX -= (float) Math.toRadians(turn) * jumpRot;
             model.getCube("Tail4").rotateAngleX -= (float) Math.toRadians(turn) * jumpRot;
         }
-        float prevRenderOffset = entity.prevBodyYaw + (entity.bodyYaw - entity.prevBodyYaw) * partialTicks;
+        float prevRenderOffset = entity.yBodyRotO + (entity.yBodyRot - entity.yBodyRotO) * partialTicks;
 
         model.getCube("Tail1").rotateAngleY += (entity.getPieceYaw(1, partialTicks) - prevRenderOffset) * ((float) Math.PI / 180F);
         model.getCube("Tail2").rotateAngleY += (entity.getPieceYaw(2, partialTicks) - prevRenderOffset) * ((float) Math.PI / 180F);
         model.getCube("Tail3").rotateAngleY += (entity.getPieceYaw(3, partialTicks) - prevRenderOffset) * ((float) Math.PI / 180F);
         model.getCube("Tail4").rotateAngleY += (entity.getPieceYaw(4, partialTicks) - prevRenderOffset) * ((float) Math.PI / 180F);
         model.getCube("BodyUpper").rotateAngleX -= rotationPitch * ((float) Math.PI / 180F);
-        if (!entity.isJumpingOutOfWater() || entity.isTouchingWater()) {
+        if (!entity.isJumpingOutOfWater() || entity.isInWater()) {
             model.getCube("Tail1").rotateAngleX -= (entity.getPiecePitch(1, partialTicks) - 0) * ((float) Math.PI / 180F);
             model.getCube("Tail2").rotateAngleX -= (entity.getPiecePitch(2, partialTicks) - 0) * ((float) Math.PI / 180F);
             model.getCube("Tail3").rotateAngleX -= (entity.getPiecePitch(3, partialTicks) - 0) * ((float) Math.PI / 180F);

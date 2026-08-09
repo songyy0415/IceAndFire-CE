@@ -1,11 +1,11 @@
 package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 
 public final class IafWorld {
-    public static final RegistryKey<World> DREAD_LAND = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(IceAndFire.MOD_ID, "dread_land"));
+    public static final ResourceKey<Level> DREAD_LAND = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dread_land"));
 }

@@ -8,28 +8,28 @@ import com.iafenvoy.uranus.util.RandomHelper;
 import net.createmod.ponder.api.scene.PonderStoryBoard;
 import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.function.Function;
 
 public class DragonForgeStoryBoard<T extends DragonBaseEntity> implements PonderStoryBoard {
-    private final Function<World, Entity> dragonFactory;
+    private final Function<Level, Entity> dragonFactory;
     private final Class<T> dragonClass;
 
-    public DragonForgeStoryBoard(Function<World, Entity> dragonFactory, Class<T> dragonClass) {
+    public DragonForgeStoryBoard(Function<Level, Entity> dragonFactory, Class<T> dragonClass) {
         this.dragonFactory = dragonFactory;
         this.dragonClass = dragonClass;
     }
 
     public static Identifier id(DragonType type) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "%s_dragon_forge", type.name()));
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format(Locale.ROOT, "%s_dragon_forge", type.name()));
     }
 
     @Override
@@ -64,12 +64,12 @@ public class DragonForgeStoryBoard<T extends DragonBaseEntity> implements Ponder
         scene.rotateCameraY(-45);
         scene.idle(20);
         scene.world().createEntity(this.dragonFactory);
-        scene.world().modifyEntities(this.dragonClass, dragon -> MinecraftClient.getInstance().execute(() -> {
+        scene.world().modifyEntities(this.dragonClass, dragon -> Minecraft.getInstance().execute(() -> {
             dragon.setGender(true);
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.setPos(3, 0.5, -5);
+            dragon.setPosRaw(3, 0.5, -5);
             dragon.setAgeInDays(50);//Stage 3 is enough
-            dragon.setSitting(true);
+            dragon.setOrderedToSit(true);
             dragon.setAnimation(DragonBaseEntity.ANIMATION_SPEAK);
         }));
         scene.overlay().showText(100)
@@ -86,6 +86,6 @@ public class DragonForgeStoryBoard<T extends DragonBaseEntity> implements Ponder
 
     private static void setBrickDisplay(SceneBuilder scene, BlockPos center, boolean bl) {
         for (int i = 0; i < 4; i++)
-            scene.world().modifyBlock(center.add(Direction.fromHorizontal(i).getVector()), state -> state.contains(DragonForgeBrickBlock.GRILL) ? state.with(DragonForgeBrickBlock.GRILL, bl) : state, false);
+            scene.world().modifyBlock(center.offset(Direction.from2DDataValue(i).getNormal()), state -> state.hasProperty(DragonForgeBrickBlock.GRILL) ? state.setValue(DragonForgeBrickBlock.GRILL, bl) : state, false);
     }
 }

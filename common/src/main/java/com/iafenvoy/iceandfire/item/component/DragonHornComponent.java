@@ -2,16 +2,15 @@ package com.iafenvoy.iceandfire.item.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
-
 import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 
-public record DragonHornComponent(Identifier entityType, UUID entityUuid, NbtCompound entityData) {
+public record DragonHornComponent(Identifier entityType, UUID entityUuid, CompoundTag entityData) {
     public static final Codec<DragonHornComponent> CODEC = RecordCodecBuilder.create(i -> i.group(
-            Identifier.CODEC.optionalFieldOf("entityType", Identifier.ofVanilla("empty")).forGetter(DragonHornComponent::entityType),
-            Uuids.CODEC.optionalFieldOf("entityUuid", new UUID(0, 0)).forGetter(DragonHornComponent::entityUuid),
-            NbtCompound.CODEC.optionalFieldOf("entityData", new NbtCompound()).forGetter(DragonHornComponent::entityData)
+            Identifier.CODEC.optionalFieldOf("entityType", Identifier.withDefaultNamespace("empty")).forGetter(DragonHornComponent::entityType),
+            UUIDUtil.AUTHLIB_CODEC.optionalFieldOf("entityUuid", new UUID(0, 0)).forGetter(DragonHornComponent::entityUuid),
+            CompoundTag.CODEC.optionalFieldOf("entityData", new CompoundTag()).forGetter(DragonHornComponent::entityData)
     ).apply(i, DragonHornComponent::new));
 }

@@ -4,23 +4,23 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 
-public record DragonControlC2SPayload(int dragonId, byte controlState, BlockPos pos) implements CustomPayload {
-    private static final Identifier IDENTIFIER = Identifier.of(IceAndFire.MOD_ID, "dragon_control");
-    public static final Id<DragonControlC2SPayload> ID = new Id<>(IDENTIFIER);
-    public static final PacketCodec<ByteBuf, DragonControlC2SPayload> CODEC = PacketCodecs.codec(RecordCodecBuilder.create(i -> i.group(
+public record DragonControlC2SPayload(int dragonId, byte controlState, BlockPos pos) implements CustomPacketPayload {
+    private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_control");
+    public static final Type<DragonControlC2SPayload> ID = new Type<>(IDENTIFIER);
+    public static final StreamCodec<ByteBuf, DragonControlC2SPayload> CODEC = ByteBufCodecs.fromCodec(RecordCodecBuilder.create(i -> i.group(
             Codec.INT.fieldOf("dragonId").forGetter(DragonControlC2SPayload::dragonId),
             Codec.BYTE.fieldOf("controlState").forGetter(DragonControlC2SPayload::controlState),
             BlockPos.CODEC.fieldOf("pos").forGetter(DragonControlC2SPayload::pos)
     ).apply(i, DragonControlC2SPayload::new)));
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

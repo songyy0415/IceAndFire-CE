@@ -9,11 +9,11 @@ import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 public class ForgeRecipeHolder {
     private final String dragonType;
@@ -31,16 +31,16 @@ public class ForgeRecipeHolder {
     public void register(EmiRegistry registry) {
         registry.addCategory(this.category);
         registry.addWorkstation(this.category, this.workstation);
-        List<RecipeEntry<DragonForgeRecipe>> forgeRecipeList = registry.getRecipeManager().listAllOfType(IafRecipes.DRAGON_FORGE_TYPE.get());
-        for (RecipeEntry<DragonForgeRecipe> recipeEntry : forgeRecipeList.stream().filter(entry -> entry.value().getDragonType().equals(this.dragonType)).toList())
+        List<RecipeHolder<DragonForgeRecipe>> forgeRecipeList = registry.getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get());
+        for (RecipeHolder<DragonForgeRecipe> recipeEntry : forgeRecipeList.stream().filter(entry -> entry.value().getDragonType().equals(this.dragonType)).toList())
             registry.addRecipe(new DragonForgeEmiRecipe(recipeEntry, this.category));
     }
 
     public class DragonForgeEmiRecipe implements EmiRecipe {
-        private final RecipeEntry<DragonForgeRecipe> entry;
+        private final RecipeHolder<DragonForgeRecipe> entry;
         private final EmiRecipeCategory category;
 
-        public DragonForgeEmiRecipe(RecipeEntry<DragonForgeRecipe> entry, EmiRecipeCategory category) {
+        public DragonForgeEmiRecipe(RecipeHolder<DragonForgeRecipe> entry, EmiRecipeCategory category) {
             this.entry = entry;
             this.category = category;
         }

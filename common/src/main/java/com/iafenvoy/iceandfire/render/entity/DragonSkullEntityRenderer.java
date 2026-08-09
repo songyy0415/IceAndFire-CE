@@ -17,35 +17,34 @@ import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.iafenvoy.uranus.event.Event;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.RotationAxis;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Tuple;
 
 public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity> {
-    public static final Event<Consumer<BiConsumer<DragonType, net.minecraft.util.Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>>>> COLLECT_DRAGON_SKULL_MODELS = new Event<>(callbacks -> consumer -> callbacks.forEach(x -> x.accept(consumer)));
-    private final Map<DragonType, Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
+    public static final Event<Consumer<BiConsumer<DragonType, net.minecraft.util.Tuple<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>>>> COLLECT_DRAGON_SKULL_MODELS = new Event<>(callbacks -> consumer -> callbacks.forEach(x -> x.accept(consumer)));
+    private final Map<DragonType, Tuple<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
 
     static {
         COLLECT_DRAGON_SKULL_MODELS.register(consumer -> {
-            consumer.accept(IafDragonTypes.FIRE, new Pair<>(IafRenderers.FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new)));
-            consumer.accept(IafDragonTypes.ICE, new Pair<>(IafRenderers.ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new)));
-            consumer.accept(IafDragonTypes.LIGHTNING, new Pair<>(IafRenderers.LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new)));
+            consumer.accept(IafDragonTypes.FIRE, new Tuple<>(IafRenderers.FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new)));
+            consumer.accept(IafDragonTypes.ICE, new Tuple<>(IafRenderers.ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new)));
+            consumer.accept(IafDragonTypes.LIGHTNING, new Tuple<>(IafRenderers.LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new)));
         });
     }
 
-    public DragonSkullEntityRenderer(EntityRendererFactory.Context context) {
+    public DragonSkullEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
         COLLECT_DRAGON_SKULL_MODELS.invoker().accept(this.models::put);
     }
@@ -57,27 +56,27 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
     }
 
     @Override
-    public void render(DragonSkullEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
+    public void render(DragonSkullEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+        Tuple<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
         if (p == null) return;
-        TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getLeft());
+        TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getA());
         if (model == null) return;
-        VertexConsumer consumer = bufferIn.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(entity)));
-        matrixStackIn.push();
-        matrixStackIn.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-180.0F));
-        matrixStackIn.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(-180.0F - entity.getYaw()));
+        VertexConsumer consumer = bufferIn.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(entity)));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-180.0F));
+        matrixStackIn.mulPose(Axis.YN.rotationDegrees(-180.0F - entity.getYRot()));
         matrixStackIn.scale(1.0F, 1.0F, 1.0F);
         float size = this.getRenderSize(entity) / 3;
         matrixStackIn.scale(size, size, size);
         matrixStackIn.translate(0, entity.isOnWall() ? -0.24F : -0.12F, entity.isOnWall() ? 0.4F : 0.5F);
         model.resetToDefaultPose();
         setRotationAngles(model.getCube("Head"), entity.isOnWall() ? (float) Math.toRadians(50F) : 0F);
-        model.getCube("Head").render(matrixStackIn, consumer, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
-        matrixStackIn.pop();
+        model.getCube("Head").render(matrixStackIn, consumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        matrixStackIn.popPose();
     }
 
     @Override
-    public Identifier getTexture(DragonSkullEntity entity) {
+    public Identifier getTextureLocation(DragonSkullEntity entity) {
         return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())).getSkeletonTexture(entity.getDragonStage());
     }
 

@@ -1,40 +1,40 @@
 package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.registry.IafBlocks;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.projectile.AbstractFireballEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.level.block.Blocks;
 
-public class DragonChargeEntityRenderer extends EntityRenderer<AbstractFireballEntity> {
+public class DragonChargeEntityRenderer extends EntityRenderer<Fireball> {
     public final boolean isFire;
 
-    public DragonChargeEntityRenderer(EntityRendererFactory.Context context, boolean isFire) {
+    public DragonChargeEntityRenderer(EntityRendererProvider.Context context, boolean isFire) {
         super(context);
         this.isFire = isFire;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public Identifier getTexture(AbstractFireballEntity entity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+    public Identifier getTextureLocation(Fireball entity) {
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 
     @Override
-    public void render(AbstractFireballEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        matrixStackIn.push();
+    public void render(Fireball entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.0D, 0.5D, 0.0D);
-        matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(-90.0F));
         matrixStackIn.translate(-0.5D, -0.5D, 0.5D);
-        matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(this.isFire ? Blocks.MAGMA_BLOCK.getDefaultState() : IafBlocks.DRAGON_ICE.get().getDefaultState(), matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV);
-        matrixStackIn.pop();
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(90.0F));
+        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(this.isFire ? Blocks.MAGMA_BLOCK.defaultBlockState() : IafBlocks.DRAGON_ICE.get().defaultBlockState(), matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY);
+        matrixStackIn.popPose();
     }
 }

@@ -6,16 +6,16 @@ import com.iafenvoy.iceandfire.render.entity.HydraEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.HydraBodyModel;
 import com.iafenvoy.iceandfire.render.model.HydraHeadModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.resources.Identifier;
 
-public class HydraHeadFeatureRenderer extends FeatureRenderer<HydraEntity, HydraBodyModel> {
-    public static final Identifier TEXTURE_STONE = Identifier.of(IceAndFire.MOD_ID, "textures/entity/hydra/stone.png");
+public class HydraHeadFeatureRenderer extends RenderLayer<HydraEntity, HydraBodyModel> {
+    public static final Identifier TEXTURE_STONE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/stone.png");
     private static final float[][] TRANSLATE = new float[][]{
             {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F},// 1 total heads
             {-0.15F, 0.15F, 0F, 0F, 0F, 0F, 0F, 0F, 0F},// 2 total heads
@@ -52,21 +52,21 @@ public class HydraHeadFeatureRenderer extends FeatureRenderer<HydraEntity, Hydra
         this.renderer = renderer;
     }
 
-    public static void renderHydraHeads(HydraBodyModel model, boolean stone, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, HydraEntity hydra, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        matrixStackIn.push();
+    public static void renderHydraHeads(HydraBodyModel model, boolean stone, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, HydraEntity hydra, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        matrixStackIn.pushPose();
         int heads = hydra.getHeadCount();
         translateToBody(model, matrixStackIn);
-        RenderLayer type = RenderLayer.getEntityCutout(stone ? TEXTURE_STONE : getHeadTexture(hydra));
+        RenderType type = RenderType.entityCutout(stone ? TEXTURE_STONE : getHeadTexture(hydra));
         for (int head = 1; head <= heads; head++) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             float bodyWidth = 0.5F;
             matrixStackIn.translate(TRANSLATE[heads - 1][head - 1] * bodyWidth, 0, 0);
-            matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(ROTATE[heads - 1][head - 1]));
-            modelArr[head - 1].setAngles(hydra, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            modelArr[head - 1].render(matrixStackIn, bufferIn.getBuffer(type), packedLightIn, LivingEntityRenderer.getOverlay(hydra, 0.0F), -1);
-            matrixStackIn.pop();
+            matrixStackIn.mulPose(Axis.YP.rotationDegrees(ROTATE[heads - 1][head - 1]));
+            modelArr[head - 1].setupAnim(hydra, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            modelArr[head - 1].renderToBuffer(matrixStackIn, bufferIn.getBuffer(type), packedLightIn, LivingEntityRenderer.getOverlayCoords(hydra, 0.0F), -1);
+            matrixStackIn.popPose();
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     public static Identifier getHeadTexture(HydraEntity gorgon) {
@@ -77,33 +77,33 @@ public class HydraHeadFeatureRenderer extends FeatureRenderer<HydraEntity, Hydra
         };
     }
 
-    protected static void translateToBody(HydraBodyModel model, MatrixStack stack) {
+    protected static void translateToBody(HydraBodyModel model, PoseStack stack) {
         postRender(model.BodyUpper, stack);
     }
 
-    protected static void postRender(AdvancedModelBox renderer, MatrixStack matrixStackIn) {
+    protected static void postRender(AdvancedModelBox renderer, PoseStack matrixStackIn) {
         if (renderer.rotateAngleX == 0.0F && renderer.rotateAngleY == 0.0F && renderer.rotateAngleZ == 0.0F) {
             if (renderer.rotationPointX != 0.0F || renderer.rotationPointY != 0.0F)
                 matrixStackIn.translate(renderer.rotationPointX * (float) 0.0625, renderer.rotationPointY * (float) 0.0625, renderer.rotateAngleZ * (float) 0.0625);
         } else {
             matrixStackIn.translate(renderer.rotationPointX * (float) 0.0625, renderer.rotationPointY * (float) 0.0625, renderer.rotateAngleZ * (float) 0.0625);
             if (renderer.rotateAngleZ != 0.0F)
-                matrixStackIn.multiply(RotationAxis.POSITIVE_Z.rotation(renderer.rotateAngleZ));
+                matrixStackIn.mulPose(Axis.ZP.rotation(renderer.rotateAngleZ));
             if (renderer.rotateAngleY != 0.0F)
-                matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotation(renderer.rotateAngleY));
+                matrixStackIn.mulPose(Axis.YP.rotation(renderer.rotateAngleY));
             if (renderer.rotateAngleX != 0.0F)
-                matrixStackIn.multiply(RotationAxis.POSITIVE_X.rotation(renderer.rotateAngleX));
+                matrixStackIn.mulPose(Axis.XP.rotation(renderer.rotateAngleX));
         }
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, HydraEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, HydraEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         if (entity.isInvisible()) return;
         renderHydraHeads(this.renderer.getModel(), false, matrixStackIn, bufferIn, packedLightIn, entity, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
     }
 
     @Override
-    public Identifier getTexture(HydraEntity gorgon) {
+    public Identifier getTextureLocation(HydraEntity gorgon) {
         return switch (gorgon.getVariant()) {
             case 1 -> HydraEntityRenderer.TEXUTURE_1;
             case 2 -> HydraEntityRenderer.TEXUTURE_2;

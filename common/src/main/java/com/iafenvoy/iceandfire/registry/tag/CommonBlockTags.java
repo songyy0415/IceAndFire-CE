@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.registry.tag;
 
-import net.minecraft.block.Block;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 public final class CommonBlockTags {
     public static final TagKey<Block> COBBLESTONES = create("cobblestones");
@@ -11,6 +11,6 @@ public final class CommonBlockTags {
     public static final TagKey<Block> STONES = create("stones");
 
     private static TagKey<Block> create(String name) {
-        return TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", name));
+        return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("c", name));
     }
 }

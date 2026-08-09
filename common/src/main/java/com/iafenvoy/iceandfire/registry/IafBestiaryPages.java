@@ -2,8 +2,8 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.BestiaryPage;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 
 public final class IafBestiaryPages {
     public static final BestiaryPage INTRODUCTION = register("introduction", 2);
@@ -33,7 +33,7 @@ public final class IafBestiaryPages {
     public static final BestiaryPage GHOST = register("ghost", 1);
 
     private static BestiaryPage register(String name, int page) {
-        return Registry.register(IafRegistries.BESTIARY_PAGE, Identifier.of(IceAndFire.MOD_ID, name), new BestiaryPage(name, page));
+        return Registry.register(IafRegistries.BESTIARY_PAGE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new BestiaryPage(name, page));
     }
 
     public static void init() {

@@ -15,11 +15,11 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.List;
 //By jdkdigital
 @JeiPlugin
 public class IceAndFireJeiPlugin implements IModPlugin {
-    private static final Identifier ID = Identifier.of(IceAndFire.MOD_ID, IceAndFire.MOD_ID);
+    private static final Identifier ID = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, IceAndFire.MOD_ID);
 
     public static final RecipeType<DragonForgeRecipe> FIRE = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "firedragonforge", DragonForgeRecipe.class);
     public static final RecipeType<DragonForgeRecipe> ICE = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "icedragonforge", DragonForgeRecipe.class);
@@ -58,15 +58,15 @@ public class IceAndFireJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        RecipeManager recipeManager = MinecraftClient.getInstance().world.getRecipeManager();
+        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
 
-        List<RecipeEntry<DragonForgeRecipe>> recipeList = recipeManager.listAllOfType(IafRecipes.DRAGON_FORGE_TYPE.get());
+        List<RecipeHolder<DragonForgeRecipe>> recipeList = recipeManager.getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get());
 
         List<DragonForgeRecipe> FIRE_RECIPES = new ArrayList<>();
         List<DragonForgeRecipe> ICE_RECIPES = new ArrayList<>();
         List<DragonForgeRecipe> LIGHTNING_RECIPES = new ArrayList<>();
 
-        for (RecipeEntry<DragonForgeRecipe> recipe : recipeList) {
+        for (RecipeHolder<DragonForgeRecipe> recipe : recipeList) {
             switch (recipe.value().getDragonType()) {
                 case "fire":
                     FIRE_RECIPES.add(recipe.value());

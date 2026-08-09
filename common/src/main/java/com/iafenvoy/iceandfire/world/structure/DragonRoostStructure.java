@@ -6,49 +6,59 @@ import com.iafenvoy.iceandfire.item.block.PileBlock;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.loot.LootTable;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePieceType;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.structure.Structure;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.storage.loot.LootTable;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class DragonRoostStructure extends Structure implements DangerousGeneration {
-    protected DragonRoostStructure(Config config) {
+    protected DragonRoostStructure(StructureSettings config) {
         super(config);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected Optional<StructurePosition> getStructurePosition(Context context) {
+    protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         if (context.random().nextDouble() >= this.getGenerateChance())
             return Optional.empty();
-        BlockRotation blockRotation = BlockRotation.random(context.random());
-        BlockPos blockPos = this.getShiftedPos(context, blockRotation);
-        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.world().getBottomY() + 2)
+        Rotation blockRotation = Rotation.getRandom(context.random());
+        BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
+        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinBuildHeight() + 2)
             return Optional.empty();
-        return Optional.of(new StructurePosition(blockPos, collector -> collector.addPiece(this.createPiece(new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ()), context.random().nextBoolean()))));
+        return Optional.of(new GenerationStub(blockPos, collector -> collector.addPiece(this.createPiece(new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ()), context.random().nextBoolean()))));
     }
 
-    protected abstract DragonRoostPiece createPiece(BlockBox boundingBox, boolean isMale);
+    protected abstract DragonRoostPiece createPiece(BoundingBox boundingBox, boolean isMale);
 
     protected abstract double getGenerateChance();
 
@@ -56,27 +66,27 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         protected final Block treasureBlock;
         private final boolean isMale;
 
-        protected DragonRoostPiece(StructurePieceType type, int length, BlockBox boundingBox, Block treasureBlock, boolean isMale) {
+        protected DragonRoostPiece(StructurePieceType type, int length, BoundingBox boundingBox, Block treasureBlock, boolean isMale) {
             super(type, length, boundingBox);
             this.treasureBlock = treasureBlock;
             this.isMale = isMale;
         }
 
-        public DragonRoostPiece(StructurePieceType type, NbtCompound nbt) {
+        public DragonRoostPiece(StructurePieceType type, CompoundTag nbt) {
             super(type, nbt);
-            this.treasureBlock = Registries.BLOCK.get(Identifier.tryParse(nbt.getString("treasureBlock")));
+            this.treasureBlock = BuiltInRegistries.BLOCK.get(Identifier.tryParse(nbt.getString("treasureBlock")));
             this.isMale = nbt.getBoolean("isMale");
         }
 
         @Override
-        protected void writeNbt(StructureContext context, NbtCompound nbt) {
-            nbt.putString("treasureBlock", Registries.BLOCK.getId(this.treasureBlock).toString());
+        protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag nbt) {
+            nbt.putString("treasureBlock", BuiltInRegistries.BLOCK.getKey(this.treasureBlock).toString());
             nbt.putBoolean("isMale", this.isMale);
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
+        public void postProcess(WorldGenLevel world, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
+            if (!chunkBox.isInside(pivot))
                 return;
 
             int radius = 12 + random.nextInt(8);
@@ -90,17 +100,17 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         }
 
 
-        protected void generateRoostPile(StructureWorldAccess level, Random random, BlockPos position, Block block) {
+        protected void generateRoostPile(WorldGenLevel level, RandomSource random, BlockPos position, Block block) {
             int radius = random.nextInt(4);
 
             for (int i = 0; i < radius; i++) {
                 int layeredRadius = radius - i;
                 double circularArea = this.getCircularArea(radius);
-                BlockPos up = position.up(i);
+                BlockPos up = position.above(i);
 
-                for (BlockPos blockpos : BlockPos.stream(up.add(-layeredRadius, 0, -layeredRadius), up.add(layeredRadius, 0, layeredRadius)).map(BlockPos::toImmutable).collect(Collectors.toSet())) {
-                    if (blockpos.getSquaredDistance(position) <= circularArea) {
-                        level.setBlockState(blockpos, block.getDefaultState(), Block.NOTIFY_LISTENERS);
+                for (BlockPos blockpos : BlockPos.betweenClosedStream(up.offset(-layeredRadius, 0, -layeredRadius), up.offset(layeredRadius, 0, layeredRadius)).map(BlockPos::immutable).collect(Collectors.toSet())) {
+                    if (blockpos.distSqr(position) <= circularArea) {
+                        level.setBlock(blockpos, block.defaultBlockState(), Block.UPDATE_CLIENTS);
                     }
                 }
             }
@@ -108,38 +118,38 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
 
         protected double getCircularArea(int radius, int height) {
             double area = (radius + height + radius) * 0.333F + 0.5F;
-            return MathHelper.floor(area * area);
+            return Mth.floor(area * area);
         }
 
         protected double getCircularArea(int radius) {
             double area = (radius + radius) * 0.333F + 0.5F;
-            return MathHelper.floor(area * area);
+            return Mth.floor(area * area);
         }
 
-        protected BlockPos getSurfacePosition(StructureWorldAccess level, BlockPos position) {
-            return level.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, position);
+        protected BlockPos getSurfacePosition(WorldGenLevel level, BlockPos position) {
+            return level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, position);
         }
 
         protected BlockState transform(Block block) {
-            return this.transform(block.getDefaultState());
+            return this.transform(block.defaultBlockState());
         }
 
-        private void generateDecoration(StructureWorldAccess world, BlockPos origin, Random random, int radius, boolean isMale) {
+        private void generateDecoration(WorldGenLevel world, BlockPos origin, RandomSource random, int radius, boolean isMale) {
             int height = (radius / 5);
             double circularArea = this.getCircularArea(radius, height);
 
-            BlockPos.stream(origin.add(-radius, -height, -radius), origin.add(radius, height, radius)).map(BlockPos::toImmutable).forEach(position -> {
-                if (position.getSquaredDistance(origin) <= circularArea) {
-                    double distance = position.getSquaredDistance(origin) / circularArea;
+            BlockPos.betweenClosedStream(origin.offset(-radius, -height, -radius), origin.offset(radius, height, radius)).map(BlockPos::immutable).forEach(position -> {
+                if (position.distSqr(origin) <= circularArea) {
+                    double distance = position.distSqr(origin) / circularArea;
 
-                    if (!world.isAir(origin) && random.nextDouble() > distance * 0.5) {
+                    if (!world.isEmptyBlock(origin) && random.nextDouble() > distance * 0.5) {
                         BlockState state = world.getBlockState(position);
 
-                        if (!(state.getBlock() instanceof BlockWithEntity) && state.getHardness(world, position) >= 0) {
+                        if (!(state.getBlock() instanceof BaseEntityBlock) && state.getDestroySpeed(world, position) >= 0) {
                             BlockState transformed = this.transform(state);
 
                             if (transformed != state) {
-                                world.setBlockState(position, transformed, Block.NOTIFY_LISTENERS);
+                                world.setBlock(position, transformed, Block.UPDATE_CLIENTS);
                             }
                         }
                     }
@@ -151,8 +161,8 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
                         this.generateTreasurePile(world, random, position);
 
                     if (distance < 0.3D && random.nextInt(isMale ? 500 : 700) == 0) {
-                        BlockPos surfacePosition = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, position);
-                        boolean wasPlaced = world.setBlockState(surfacePosition, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.Type.HORIZONTAL.random(random)), Block.NOTIFY_LISTENERS);
+                        BlockPos surfacePosition = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, position);
+                        boolean wasPlaced = world.setBlock(surfacePosition, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, Direction.Plane.HORIZONTAL.getRandomDirection(random)), Block.UPDATE_CLIENTS);
 
                         if (wasPlaced) {
                             BlockEntity blockEntity = world.getBlockEntity(surfacePosition);
@@ -166,16 +176,16 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             });
         }
 
-        public void generateBoulder(WorldAccess worldIn, Random rand, BlockPos position, Block block, int startRadius, boolean replaceAir) {
+        public void generateBoulder(LevelAccessor worldIn, RandomSource rand, BlockPos position, Block block, int startRadius, boolean replaceAir) {
             while (true) {
                 if (position.getY() > 3) {
-                    if (worldIn.isAir(position.down())) {
-                        position = position.down();
+                    if (worldIn.isEmptyBlock(position.below())) {
+                        position = position.below();
                         continue;
                     }
-                    BlockState b = worldIn.getBlockState(position.down());
-                    if (!b.isIn(IafBlockTags.GRASSES) && !b.isOf(Blocks.DIRT) && !b.isOf(Blocks.STONE)) {
-                        position = position.down();
+                    BlockState b = worldIn.getBlockState(position.below());
+                    if (!b.is(IafBlockTags.GRASSES) && !b.is(Blocks.DIRT) && !b.is(Blocks.STONE)) {
+                        position = position.below();
                         continue;
                     }
                 }
@@ -187,130 +197,130 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
                     int k = startRadius + rand.nextInt(2);
                     int l = startRadius + rand.nextInt(2);
                     float f = (float) (j + k + l) * 0.333F + 0.5F;
-                    for (BlockPos blockpos : BlockPos.stream(position.add(-j, -k, -l), position.add(j, k, l)).map(BlockPos::toImmutable).collect(Collectors.toSet()))
-                        if (blockpos.getSquaredDistance(position) <= (double) (f * f) && (replaceAir || worldIn.getBlockState(blockpos).isOpaque()))
-                            worldIn.setBlockState(blockpos, block.getDefaultState(), 2);
-                    position = position.add(-(startRadius + 1) + rand.nextInt(2 + startRadius * 2), -rand.nextInt(2), -(startRadius + 1) + rand.nextInt(2 + startRadius * 2));
+                    for (BlockPos blockpos : BlockPos.betweenClosedStream(position.offset(-j, -k, -l), position.offset(j, k, l)).map(BlockPos::immutable).collect(Collectors.toSet()))
+                        if (blockpos.distSqr(position) <= (double) (f * f) && (replaceAir || worldIn.getBlockState(blockpos).canOcclude()))
+                            worldIn.setBlock(blockpos, block.defaultBlockState(), 2);
+                    position = position.offset(-(startRadius + 1) + rand.nextInt(2 + startRadius * 2), -rand.nextInt(2), -(startRadius + 1) + rand.nextInt(2 + startRadius * 2));
                 }
                 break;
             }
         }
 
-        private void generateArch(WorldAccess worldIn, Random random, BlockPos position, Block block) {
+        private void generateArch(LevelAccessor worldIn, RandomSource random, BlockPos position, Block block) {
             int height = 3 + random.nextInt(3);
             int width = Math.min(3, height - 2);
-            Direction direction = Direction.Type.HORIZONTAL.random(random);
+            Direction direction = Direction.Plane.HORIZONTAL.getRandomDirection(random);
             boolean diagonal = random.nextBoolean();
             for (int i = 0; i < height; i++)
-                worldIn.setBlockState(position.up(i), block.getDefaultState(), 2);
+                worldIn.setBlock(position.above(i), block.defaultBlockState(), 2);
             BlockPos offsetPos = position;
             int placedWidths = 0;
             for (int i = 0; i < width; i++) {
-                offsetPos = position.up(height).offset(direction, i);
+                offsetPos = position.above(height).relative(direction, i);
                 if (diagonal)
-                    offsetPos = position.up(height).offset(direction, i).offset(direction.rotateYClockwise(), i);
+                    offsetPos = position.above(height).relative(direction, i).relative(direction.getClockWise(), i);
                 if (placedWidths < width - 1 || random.nextBoolean())
-                    worldIn.setBlockState(offsetPos, block.getDefaultState(), 2);
+                    worldIn.setBlock(offsetPos, block.defaultBlockState(), 2);
                 placedWidths++;
             }
-            while (worldIn.isAir(offsetPos.down()) && offsetPos.getY() > 0) {
-                worldIn.setBlockState(offsetPos.down(), block.getDefaultState(), 2);
-                offsetPos = offsetPos.down();
+            while (worldIn.isEmptyBlock(offsetPos.below()) && offsetPos.getY() > 0) {
+                worldIn.setBlock(offsetPos.below(), block.defaultBlockState(), 2);
+                offsetPos = offsetPos.below();
             }
         }
 
-        private void hollowOut(StructureWorldAccess world, BlockPos origin, int radius) {
+        private void hollowOut(WorldGenLevel world, BlockPos origin, int radius) {
             int height = 2;
             double circularArea = this.getCircularArea(radius, height);
-            BlockPos up = origin.up(height - 1);
+            BlockPos up = origin.above(height - 1);
 
-            BlockPos.stream(up.add(-radius, 0, -radius), up.add(radius, height, radius)).map(BlockPos::toImmutable).forEach(position -> {
-                if (position.getSquaredDistance(origin) <= circularArea)
-                    world.setBlockState(position, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+            BlockPos.betweenClosedStream(up.offset(-radius, 0, -radius), up.offset(radius, height, radius)).map(BlockPos::immutable).forEach(position -> {
+                if (position.distSqr(origin) <= circularArea)
+                    world.setBlock(position, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
             });
         }
 
-        private void generateShell(StructureWorldAccess world, BlockPos origin, Random random, int radius) {
+        private void generateShell(WorldGenLevel world, BlockPos origin, RandomSource random, int radius) {
             int height = (radius / 5);
             double circularArea = this.getCircularArea(radius, height);
 
             int real_radius = (int) Math.sqrt(circularArea);
-            super.boundingBox = new BlockBox(origin.getX() - real_radius, origin.getY(), origin.getZ() - real_radius, origin.getX() + real_radius, origin.getY() + 3, origin.getZ() + real_radius);
+            super.boundingBox = new BoundingBox(origin.getX() - real_radius, origin.getY(), origin.getZ() - real_radius, origin.getX() + real_radius, origin.getY() + 3, origin.getZ() + real_radius);
 
-            BlockPos.stream(origin.add(-radius, -height, -radius), origin.add(radius, 1, radius)).map(BlockPos::toImmutable).forEach(position -> {
-                if (position.getSquaredDistance(origin) < circularArea)
-                    world.setBlockState(position, random.nextBoolean() ? this.transform(Blocks.GRAVEL) : this.transform(Blocks.DIRT), Block.NOTIFY_LISTENERS);
-                else if (position.getSquaredDistance(origin) == circularArea)
-                    world.setBlockState(position, this.transform(Blocks.COBBLESTONE), Block.NOTIFY_LISTENERS);
+            BlockPos.betweenClosedStream(origin.offset(-radius, -height, -radius), origin.offset(radius, 1, radius)).map(BlockPos::immutable).forEach(position -> {
+                if (position.distSqr(origin) < circularArea)
+                    world.setBlock(position, random.nextBoolean() ? this.transform(Blocks.GRAVEL) : this.transform(Blocks.DIRT), Block.UPDATE_CLIENTS);
+                else if (position.distSqr(origin) == circularArea)
+                    world.setBlock(position, this.transform(Blocks.COBBLESTONE), Block.UPDATE_CLIENTS);
             });
         }
 
-        private void generateSurface(StructureWorldAccess world, BlockPos origin, Random random, int radius) {
+        private void generateSurface(WorldGenLevel world, BlockPos origin, RandomSource random, int radius) {
             int height = 2;
             double circularArea = this.getCircularArea(radius, height);
 
-            BlockPos.stream(origin.add(-radius, height, -radius), origin.add(radius, 0, radius)).map(BlockPos::toImmutable).forEach(position -> {
+            BlockPos.betweenClosedStream(origin.offset(-radius, height, -radius), origin.offset(radius, 0, radius)).map(BlockPos::immutable).forEach(position -> {
                 int heightDifference = position.getY() - origin.getY();
 
-                if (position.getSquaredDistance(origin) <= circularArea && heightDifference < 2 + random.nextInt(height) && !world.isAir(position.down())) {
-                    if (world.isAir(position.up()))
-                        world.setBlockState(position, this.transform(Blocks.SHORT_GRASS), Block.NOTIFY_LISTENERS);
+                if (position.distSqr(origin) <= circularArea && heightDifference < 2 + random.nextInt(height) && !world.isEmptyBlock(position.below())) {
+                    if (world.isEmptyBlock(position.above()))
+                        world.setBlock(position, this.transform(Blocks.SHORT_GRASS), Block.UPDATE_CLIENTS);
                     else
-                        world.setBlockState(position, this.transform(Blocks.DIRT), Block.NOTIFY_LISTENERS);
+                        world.setBlock(position, this.transform(Blocks.DIRT), Block.UPDATE_CLIENTS);
                 }
             });
         }
 
-        private void generateTreasurePile(StructureWorldAccess world, Random random, BlockPos origin) {
+        private void generateTreasurePile(WorldGenLevel world, RandomSource random, BlockPos origin) {
             int layers = random.nextInt(3);
 
             for (int i = 0; i < layers; i++) {
                 int radius = layers - i;
                 double circularArea = this.getCircularArea(radius);
 
-                for (BlockPos position : BlockPos.stream(origin.add(-radius, i, -radius), origin.add(radius, i, radius)).map(BlockPos::toImmutable).collect(Collectors.toSet())) {
-                    if (position.getSquaredDistance(origin) <= circularArea) {
-                        position = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, position);
+                for (BlockPos position : BlockPos.betweenClosedStream(origin.offset(-radius, i, -radius), origin.offset(radius, i, radius)).map(BlockPos::immutable).collect(Collectors.toSet())) {
+                    if (position.distSqr(origin) <= circularArea) {
+                        position = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, position);
 
                         if (this.treasureBlock instanceof PileBlock) {
                             BlockState state = world.getBlockState(position);
                             boolean placed = false;
                             if (state.isAir()) {
-                                world.setBlockState(position, this.treasureBlock.getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)), Block.NOTIFY_LISTENERS);
+                                world.setBlock(position, this.treasureBlock.defaultBlockState().setValue(PileBlock.LAYERS, 1 + random.nextInt(7)), Block.UPDATE_CLIENTS);
                                 placed = true;
-                            } else if (state.getBlock() instanceof SnowBlock) {
-                                world.setBlockState(position.down(), this.treasureBlock.getDefaultState().with(PileBlock.LAYERS, state.get(SnowBlock.LAYERS)), Block.NOTIFY_LISTENERS);
+                            } else if (state.getBlock() instanceof SnowLayerBlock) {
+                                world.setBlock(position.below(), this.treasureBlock.defaultBlockState().setValue(PileBlock.LAYERS, state.getValue(SnowLayerBlock.LAYERS)), Block.UPDATE_CLIENTS);
                                 placed = true;
                             }
-                            if (placed && world.getBlockState(position.down()).getBlock() instanceof PileBlock)
-                                world.setBlockState(position.down(), this.treasureBlock.getDefaultState().with(PileBlock.LAYERS, 8), Block.NOTIFY_LISTENERS);
+                            if (placed && world.getBlockState(position.below()).getBlock() instanceof PileBlock)
+                                world.setBlock(position.below(), this.treasureBlock.defaultBlockState().setValue(PileBlock.LAYERS, 8), Block.UPDATE_CLIENTS);
                         }
                     }
                 }
             }
         }
 
-        private void spawnDragon(StructureWorldAccess world, BlockPos origin, Random random, int ageOffset, boolean isMale) {
-            DragonBaseEntity dragon = this.getDragonType().create(world.toServerWorld());
+        private void spawnDragon(WorldGenLevel world, BlockPos origin, RandomSource random, int ageOffset, boolean isMale) {
+            DragonBaseEntity dragon = this.getDragonType().create(world.getLevel());
             assert dragon != null;
             dragon.setGender(isMale);
             dragon.growDragon(40 + ageOffset);
             dragon.setAgingDisabled(true);
             dragon.setHealth(dragon.getMaxHealth());
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.updatePositionAndAngles(origin.getX() + 0.5, world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
-            dragon.homePos = new HomePosition(origin, world.toServerWorld());
+            dragon.absMoveTo(origin.getX() + 0.5, world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
+            dragon.homePos = new HomePosition(origin, world.getLevel());
             dragon.hasHomePosition = true;
             dragon.setHunger(50);
-            world.spawnEntity(dragon);
+            world.addFreshEntity(dragon);
         }
 
         protected abstract EntityType<? extends DragonBaseEntity> getDragonType();
 
-        protected abstract RegistryKey<LootTable> getRoostLootTable();
+        protected abstract ResourceKey<LootTable> getRoostLootTable();
 
         protected abstract BlockState transform(BlockState block);
 
-        protected abstract void handleCustomGeneration(StructureWorldAccess world, BlockPos origin, Random random, BlockPos position, double distance);
+        protected abstract void handleCustomGeneration(WorldGenLevel world, BlockPos origin, RandomSource random, BlockPos position, double distance);
     }
 }

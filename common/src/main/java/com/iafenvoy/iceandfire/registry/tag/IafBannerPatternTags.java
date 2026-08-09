@@ -1,10 +1,10 @@
 package com.iafenvoy.iceandfire.registry.tag;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.entity.BannerPattern;
 
 public final class IafBannerPatternTags {
     public static final TagKey<BannerPattern> FIRE_BANNER_PATTERN = create("pattern_item/fire");
@@ -28,7 +28,7 @@ public final class IafBannerPatternTags {
     public static final TagKey<BannerPattern> DREAD_BANNER_PATTERN = create("pattern_item/dread");
 
     private static TagKey<BannerPattern> create(String name) {
-        return TagKey.of(RegistryKeys.BANNER_PATTERN, Identifier.of(IceAndFire.MOD_ID, name));
+        return TagKey.create(Registries.BANNER_PATTERN, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
     }
 }
 

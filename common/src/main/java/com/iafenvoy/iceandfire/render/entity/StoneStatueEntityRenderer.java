@@ -10,84 +10,83 @@ import com.iafenvoy.iceandfire.render.model.ICustomStatueModel;
 import com.iafenvoy.iceandfire.render.model.HydraBodyModel;
 import com.iafenvoy.iceandfire.render.model.StonePlayerModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.PigEntityModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.PigModel;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 
 public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity> {
     protected static final Identifier[] DESTROY_STAGES = new Identifier[]{
-            Identifier.ofVanilla("textures/block/destroy_stage_0.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_1.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_2.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_3.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_4.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_5.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_6.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_7.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_8.png"),
-            Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_9.png")};
+            Identifier.withDefaultNamespace("textures/block/destroy_stage_0.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_1.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_2.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_3.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_4.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_5.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_6.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_7.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_8.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_9.png")};
     private final Map<String, EntityModel> modelMap = new HashMap<>();
     private final Map<String, Entity> hollowEntityMap = new HashMap<>();
-    private final EntityRendererFactory.Context context;
+    private final EntityRendererProvider.Context context;
 
-    public StoneStatueEntityRenderer(EntityRendererFactory.Context context) {
+    public StoneStatueEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.context = context;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public Identifier getTexture(StoneStatueEntity entity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+    public Identifier getTextureLocation(StoneStatueEntity entity) {
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 
-    protected void preRenderCallback(StoneStatueEntity entity, MatrixStack matrixStackIn, float partialTickTime) {
-        float scale = entity.getScaleFactor() < 0.01F ? 1F : entity.getScaleFactor();
+    protected void preRenderCallback(StoneStatueEntity entity, PoseStack matrixStackIn, float partialTickTime) {
+        float scale = entity.getAgeScale() < 0.01F ? 1F : entity.getAgeScale();
         matrixStackIn.scale(scale, scale, scale);
     }
 
     @Override
-    public void render(StoneStatueEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        EntityModel model = new PigEntityModel<>(this.context.getPart(EntityModelLayers.PIG));
+    public void render(StoneStatueEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+        EntityModel model = new PigModel<>(this.context.bakeLayer(ModelLayers.PIG));
 
         // Get the correct model
         if (this.modelMap.get(entityIn.getTrappedEntityTypeString()) != null)
             model = this.modelMap.get(entityIn.getTrappedEntityTypeString());
         else {
-            EntityRenderer<?> renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().renderers.get(entityIn.getTrappedEntityType());
+            EntityRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().renderers.get(entityIn.getTrappedEntityType());
 
-            if (renderer instanceof FeatureRendererContext)
-                model = ((FeatureRendererContext<?, ?>) renderer).getModel();
+            if (renderer instanceof RenderLayerParent)
+                model = ((RenderLayerParent<?, ?>) renderer).getModel();
             else if (entityIn.getTrappedEntityType() == EntityType.PLAYER)
-                model = new StonePlayerModel(this.context.getPart(EntityModelLayers.PLAYER));
+                model = new StonePlayerModel(this.context.bakeLayer(ModelLayers.PLAYER));
             this.modelMap.put(entityIn.getTrappedEntityTypeString(), model);
         }
         if (model == null) return;
 
         Entity fakeEntity;
         if (this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString()) == null) {
-            fakeEntity = entityIn.getTrappedEntityType().create(MinecraftClient.getInstance().world);
+            fakeEntity = entityIn.getTrappedEntityType().create(Minecraft.getInstance().level);
             if (fakeEntity != null) {
                 try {
-                    fakeEntity.readNbt(entityIn.getTrappedTag());
+                    fakeEntity.load(entityIn.getTrappedTag());
                 } catch (Exception e) {
                     IceAndFire.LOGGER.warn("Mob {} could not build statue NBT", entityIn.getTrappedEntityTypeString());
                 }
@@ -95,50 +94,50 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
             }
         } else
             fakeEntity = this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString());
-        RenderLayer tex = IafRenderLayers.getStoneMobRenderType(200, 200);
+        RenderType tex = IafRenderLayers.getStoneMobRenderType(200, 200);
         if (fakeEntity instanceof TrollEntity troll)
-            tex = RenderLayer.getEntityCutout(troll.getTrollType().getStatueTexture());
+            tex = RenderType.entityCutout(troll.getTrollType().getStatueTexture());
 
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(tex);
 
-        matrixStackIn.push();
-        float yaw = entityIn.prevYaw + (entityIn.getYaw() - entityIn.prevYaw) * partialTicks;
-        model.child = entityIn.isBaby();
+        matrixStackIn.pushPose();
+        float yaw = entityIn.yRotO + (entityIn.getYRot() - entityIn.yRotO) * partialTicks;
+        model.young = entityIn.isBaby();
         model.riding = false;
-        model.handSwingProgress = entityIn.getHandSwingProgress(partialTicks);
+        model.attackTime = entityIn.getAttackAnim(partialTicks);
         if (model instanceof AdvancedEntityModel advancedEntityModel)
             advancedEntityModel.resetToDefaultPose();
         else if (fakeEntity != null)
-            model.setAngles(fakeEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F);
+            model.setupAnim(fakeEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F);
         this.preRenderCallback(entityIn, matrixStackIn, partialTicks);
         matrixStackIn.translate(0, 1.5F, 0);
-        matrixStackIn.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-        matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(yaw));
         if (model instanceof ICustomStatueModel statueModel && fakeEntity != null) {
             statueModel.renderStatue(matrixStackIn, ivertexbuilder, packedLightIn, fakeEntity);
             if (model instanceof HydraBodyModel hydraBody && fakeEntity instanceof HydraEntity hydra)
                 HydraHeadFeatureRenderer.renderHydraHeads(hydraBody, true, matrixStackIn, bufferIn, packedLightIn, hydra, 0, 0, partialTicks, 0, 0, 0);
         } else
-            model.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+            model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
         if (entityIn.getCrackAmount() >= 1) {
-            int i = MathHelper.clamp(entityIn.getCrackAmount() - 1, 0, DESTROY_STAGES.length - 1);
-            RenderLayer crackTex = IafRenderLayers.getStoneCrackRenderType(DESTROY_STAGES[i]);
+            int i = Mth.clamp(entityIn.getCrackAmount() - 1, 0, DESTROY_STAGES.length - 1);
+            RenderType crackTex = IafRenderLayers.getStoneCrackRenderType(DESTROY_STAGES[i]);
             VertexConsumer ivertexbuilder2 = bufferIn.getBuffer(crackTex);
-            matrixStackIn.push();
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
+            matrixStackIn.pushPose();
             this.preRenderCallback(entityIn, matrixStackIn, partialTicks);
             matrixStackIn.translate(0, 1.5F, 0);
-            matrixStackIn.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-            matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+            matrixStackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
+            matrixStackIn.mulPose(Axis.YP.rotationDegrees(yaw));
             if (model instanceof ICustomStatueModel statueModel)
                 statueModel.renderStatue(matrixStackIn, ivertexbuilder2, packedLightIn, fakeEntity);
             else
-                model.render(matrixStackIn, ivertexbuilder2, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
-            matrixStackIn.pop();
-            matrixStackIn.pop();
+                model.renderToBuffer(matrixStackIn, ivertexbuilder2, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
         }
         //super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }

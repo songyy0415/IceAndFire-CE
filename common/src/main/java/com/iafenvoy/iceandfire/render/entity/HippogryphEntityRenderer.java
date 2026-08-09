@@ -3,49 +3,49 @@ package com.iafenvoy.iceandfire.render.entity;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.render.model.HippogryphModel;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 
-public class HippogryphEntityRenderer extends MobEntityRenderer<HippogryphEntity, HippogryphModel> {
-    public HippogryphEntityRenderer(EntityRendererFactory.Context context) {
+public class HippogryphEntityRenderer extends MobRenderer<HippogryphEntity, HippogryphModel> {
+    public HippogryphEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new HippogryphModel(), 0.8F);
-        this.features.add(new LayerHippogriffSaddle(this));
+        this.layers.add(new LayerHippogriffSaddle(this));
     }
 
     @Override
-    protected void scale(HippogryphEntity entity, MatrixStack matrix, float partialTickTime) {
+    protected void scale(HippogryphEntity entity, PoseStack matrix, float partialTickTime) {
         matrix.scale(1.2F, 1.2F, 1.2F);
     }
 
     @Override
-    public Identifier getTexture(HippogryphEntity entity) {
-        return entity.getEnumVariant().getTexture(entity.isBlinking());
+    public Identifier getTextureLocation(HippogryphEntity entity) {
+        return entity.getEnumVariant().getTextureLocation(entity.isBlinking());
     }
 
-    private static class LayerHippogriffSaddle extends FeatureRenderer<HippogryphEntity, HippogryphModel> {
-        private final RenderLayer SADDLE_TEXTURE = RenderLayer.getEntityNoOutline(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/saddle.png"));
-        private final RenderLayer BRIDLE = RenderLayer.getEntityNoOutline(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/bridle.png"));
-        private final RenderLayer CHEST = RenderLayer.getEntityTranslucent(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/chest.png"));
-        private final RenderLayer TEXTURE_IRON = RenderLayer.getEntityNoOutline(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_iron.png"));
-        private final RenderLayer TEXTURE_GOLD = RenderLayer.getEntityNoOutline(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_gold.png"));
-        private final RenderLayer TEXTURE_DIAMOND = RenderLayer.getEntityNoOutline(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_diamond.png"));
-        private final RenderLayer TEXTURE_NETHERITE = RenderLayer.getEntityNoOutline(Identifier.of(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_netherite.png"));
+    private static class LayerHippogriffSaddle extends RenderLayer<HippogryphEntity, HippogryphModel> {
+        private final RenderType SADDLE_TEXTURE = RenderType.entityNoOutline(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/saddle.png"));
+        private final RenderType BRIDLE = RenderType.entityNoOutline(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/bridle.png"));
+        private final RenderType CHEST = RenderType.entityTranslucent(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/chest.png"));
+        private final RenderType TEXTURE_IRON = RenderType.entityNoOutline(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_iron.png"));
+        private final RenderType TEXTURE_GOLD = RenderType.entityNoOutline(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_gold.png"));
+        private final RenderType TEXTURE_DIAMOND = RenderType.entityNoOutline(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_diamond.png"));
+        private final RenderType TEXTURE_NETHERITE = RenderType.entityNoOutline(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/armor_netherite.png"));
 
         public LayerHippogriffSaddle(HippogryphEntityRenderer renderer) {
             super(renderer);
         }
 
         @Override
-        public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, HippogryphEntity hippo, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-            if (hippo.getArmor() != 0) {
-                RenderLayer type = switch (hippo.getArmor()) {
+        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, HippogryphEntity hippo, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+            if (hippo.getArmorValue() != 0) {
+                RenderType type = switch (hippo.getArmorValue()) {
                     case 1 -> this.TEXTURE_IRON;
                     case 2 -> this.TEXTURE_GOLD;
                     case 3 -> this.TEXTURE_DIAMOND;
@@ -53,19 +53,19 @@ public class HippogryphEntityRenderer extends MobEntityRenderer<HippogryphEntity
                     default -> null;
                 };
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(type);
-                this.getContextModel().render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+                this.getParentModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
             if (hippo.isSaddled()) {
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.SADDLE_TEXTURE);
-                this.getContextModel().render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+                this.getParentModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
             if (hippo.isSaddled() && hippo.getControllingPassenger() != null) {
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.BRIDLE);
-                this.getContextModel().render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+                this.getParentModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
             if (hippo.isChested()) {
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.CHEST);
-                this.getContextModel().render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+                this.getParentModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
         }
     }

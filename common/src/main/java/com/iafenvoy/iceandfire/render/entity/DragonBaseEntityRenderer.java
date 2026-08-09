@@ -4,32 +4,32 @@ import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.render.entity.feature.*;
 import com.iafenvoy.uranus.client.model.TabulaModel;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.Identifier;
 
-public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobEntityRenderer<T, TabulaModel<T>> {
-    public DragonBaseEntityRenderer(EntityRendererFactory.Context context, TabulaModel<T> model) {
+public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobRenderer<T, TabulaModel<T>> {
+    public DragonBaseEntityRenderer(EntityRendererProvider.Context context, TabulaModel<T> model) {
         super(context, model, 0.0025F);
-        this.addFeature(new DragonMaleOverlayFeatureRenderer<>(this));
-        this.addFeature(new DragonEyesFeatureRenderer<>(this));
-        this.addFeature(new DragonRiderFeatureRenderer<>(this, false));
-        this.addFeature(new DragonBannerFeatureRenderer<>(this));
-        this.addFeature(new DragonArmorFeatureRenderer<>(this));
+        this.addLayer(new DragonMaleOverlayFeatureRenderer<>(this));
+        this.addLayer(new DragonEyesFeatureRenderer<>(this));
+        this.addLayer(new DragonRiderFeatureRenderer<>(this, false));
+        this.addLayer(new DragonBannerFeatureRenderer<>(this));
+        this.addLayer(new DragonArmorFeatureRenderer<>(this));
     }
 
     @Override
-    protected void scale(DragonBaseEntity entity, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(DragonBaseEntity entity, PoseStack matrixStackIn, float partialTickTime) {
         this.shadowRadius = entity.getRenderSize() / 3;
         float f7 = entity.prevDragonPitch + (entity.getDragonPitch() - entity.prevDragonPitch) * partialTickTime;
-        matrixStackIn.multiply(RotationAxis.POSITIVE_X.rotationDegrees(f7));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(f7));
         matrixStackIn.scale(this.shadowRadius, this.shadowRadius, this.shadowRadius);
     }
 
     @Override
-    public Identifier getTexture(DragonBaseEntity entity) {
+    public Identifier getTextureLocation(DragonBaseEntity entity) {
         return DragonColor.getById(entity.getVariant()).getTextureProvider().getTextureByEntity(entity);
     }
 }

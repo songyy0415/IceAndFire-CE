@@ -4,27 +4,26 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.uranus.util.RandomHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.architectury.platform.Platform;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.SplashTextRenderer;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.SplashRenderer;
+import net.minecraft.resources.Identifier;
 
 public class TitleScreenRenderManager {
-    public static final Identifier splash = Identifier.of(IceAndFire.MOD_ID, "splashes.txt");
+    public static final Identifier splash = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "splashes.txt");
     public static final Identifier[] pageFlipTextures;
     public static final Identifier[] drawingTextures = new Identifier[23];
-    private static final Identifier BESTIARY_TEXTURE = Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/bestiary_menu.png");
-    private static final Identifier TABLE_TEXTURE = Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/table.png");
-    private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+    private static final Identifier BESTIARY_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/bestiary_menu.png");
+    private static final Identifier TABLE_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/table.png");
+    private static final Font textRenderer = Minecraft.getInstance().font;
     private static int layerTick;
     private static List<String> splashText;
     private static boolean isFlippingPage = false;
@@ -33,28 +32,28 @@ public class TitleScreenRenderManager {
     private static float globalAlpha = 1F;
 
     static {
-        pageFlipTextures = new Identifier[]{Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/page_1.png"),
-                Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/page_2.png"),
-                Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/page_3.png"),
-                Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/page_4.png"),
-                Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/page_5.png"),
-                Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/page_6.png")};
+        pageFlipTextures = new Identifier[]{Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/page_1.png"),
+                Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/page_2.png"),
+                Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/page_3.png"),
+                Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/page_4.png"),
+                Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/page_5.png"),
+                Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/page_6.png")};
         for (int i = 0; i < drawingTextures.length; i++)
-            drawingTextures[i] = Identifier.of(IceAndFire.MOD_ID, "textures/gui/main_menu/drawing_" + i + ".png");
+            drawingTextures[i] = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/main_menu/drawing_" + i + ".png");
         resetDrawnImages();
     }
 
-    public static SplashTextRenderer getSplash() {
+    public static SplashRenderer getSplash() {
         if (splashText == null)
             try {
-                BufferedReader bufferedReader = MinecraftClient.getInstance().getResourceManager().openAsReader(splash);
+                BufferedReader bufferedReader = Minecraft.getInstance().getResourceManager().openAsReader(splash);
                 splashText = bufferedReader.lines().map(String::trim).filter((splashText) -> splashText.hashCode() != 125780783).toList();
                 bufferedReader.close();
             } catch (IOException var8) {
                 splashText = new ArrayList<>();
             }
         if (splashText.isEmpty()) return null;
-        return new SplashTextRenderer(splashText.get(RandomHelper.nextInt(0, splashText.size() - 1)));
+        return new SplashRenderer(splashText.get(RandomHelper.nextInt(0, splashText.size() - 1)));
     }
 
     private static void resetDrawnImages() {
@@ -90,13 +89,13 @@ public class TitleScreenRenderManager {
         layerTick++;
     }
 
-    public static void renderBackground(DrawContext ms, int width, int height) {
+    public static void renderBackground(GuiGraphics ms, int width, int height) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
-        ms.drawTexture(TABLE_TEXTURE, 0, 0, 0, 0, width, height, width, height);
-        ms.drawTexture(BESTIARY_TEXTURE, 50, 0, 0, 0, width - 100, height, width - 100, height);
+        ms.blit(TABLE_TEXTURE, 0, 0, 0, 0, width, height, width, height);
+        ms.blit(BESTIARY_TEXTURE, 50, 0, 0, 0, width - 100, height, width - 100, height);
         if (isFlippingPage)
-            ms.drawTexture(pageFlipTextures[Math.min(5, pageFlip)], 50, 0, 0, 0, width - 100, height, width - 100, height);
+            ms.blit(pageFlipTextures[Math.min(5, pageFlip)], 50, 0, 0, 0, width - 100, height, width - 100, height);
         else {
             int middleX = width / 2;
             int middleY = height / 5;
@@ -108,19 +107,19 @@ public class TitleScreenRenderManager {
             for (Picture picture : drawnPictures) {
                 int x = (int) (picture.x * widthScale) + middleX;
                 int y = (int) ((picture.y * heightScale) + middleY);
-                ms.drawTexture(drawingTextures[picture.image], x, y, 0, 0, (int) imageScale, (int) imageScale, (int) imageScale, (int) imageScale);
+                ms.blit(drawingTextures[picture.image], x, y, 0, 0, (int) imageScale, (int) imageScale, (int) imageScale, (int) imageScale);
             }
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.disableBlend();
         }
     }
 
-    public static void drawModName(DrawContext ms, int width, int height, int alphaFormatted) {
+    public static void drawModName(GuiGraphics ms, int width, int height, int alphaFormatted) {
         int textColor = 0x00FFFFFF | alphaFormatted;
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
         boolean b = Platform.isFabric();
-        ms.drawText(textRenderer, "Ice and Fire CE-" + Formatting.GOLD + IceAndFire.VERSION, 2, height - (b ? 20 : 30), textColor, false);
+        ms.drawString(textRenderer, "Ice and Fire CE-" + ChatFormatting.GOLD + IceAndFire.VERSION, 2, height - (b ? 20 : 30), textColor, false);
     }
 
     private static class Picture {

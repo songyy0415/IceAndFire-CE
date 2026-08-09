@@ -6,45 +6,44 @@ import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.structure.StructureLiquidSettings;
-import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.structure.pool.StructurePoolBasedGenerator;
-import net.minecraft.structure.pool.alias.StructurePoolAliasLookup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.heightprovider.HeightProvider;
-import net.minecraft.world.gen.structure.DimensionPadding;
-import net.minecraft.world.gen.structure.StructureType;
-
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
+import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
+import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 
 public class GorgonTempleStructure extends IafJigsawStructure implements DangerousGeneration {
     public static final MapCodec<GorgonTempleStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(configCodecBuilder(instance),
-                    StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
+            instance.group(settingsCodec(instance),
+                    StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
                     Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
                     Codec.intRange(0, 30).fieldOf("size").forGetter(structure -> structure.size),
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
-                    Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
+                    Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
                     Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
             ).apply(instance, GorgonTempleStructure::new));
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public GorgonTempleStructure(Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter) {
+    public GorgonTempleStructure(StructureSettings config, Holder<StructureTemplatePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap, int maxDistanceFromCenter) {
         super(config, startPool, startJigsawName, size, startHeight, projectStartToHeightmap, maxDistanceFromCenter);
     }
 
     @Override
-    protected Optional<StructurePosition> getStructurePosition(Context context) {
+    protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateGorgonTempleChance.getValue())
             return Optional.empty();
         ChunkPos pos = context.chunkPos();
-        BlockPos blockpos = pos.getCenterAtY(1);
+        BlockPos blockpos = pos.getMiddleBlockPosition(1);
         if (!this.isFarEnoughFromSpawn(blockpos)) return Optional.empty();
-        return StructurePoolBasedGenerator.generate(
+        return JigsawPlacement.addPieces(
                 context, // Used for JigsawPlacement to get all the proper behaviors done.
                 this.startPool, // The starting pool to use to create the structure layout from
                 this.startJigsawName, // Can be used to only spawn from one Jigsaw block. But we don't need to worry about this.
@@ -56,13 +55,13 @@ public class GorgonTempleStructure extends IafJigsawStructure implements Dangero
                 // Set this to false for structure to be place only at the passed in blockpos's Y value instead.
                 // Definitely keep this false when placing structures in the nether as otherwise, heightmap placing will put the structure on the Bedrock roof.
                 this.maxDistanceFromCenter,
-                StructurePoolAliasLookup.EMPTY,
-                DimensionPadding.NONE,
-                StructureLiquidSettings.IGNORE_WATERLOGGING);
+                PoolAliasLookup.EMPTY,
+                DimensionPadding.ZERO,
+                LiquidSettings.IGNORE_WATERLOGGING);
     }
 
     @Override
-    public StructureType<?> getType() {
+    public StructureType<?> type() {
         return IafStructureTypes.GORGON_TEMPLE.get();
     }
 }

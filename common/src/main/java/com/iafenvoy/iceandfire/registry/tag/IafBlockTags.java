@@ -1,10 +1,10 @@
 package com.iafenvoy.iceandfire.registry.tag;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.block.Block;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 public final class IafBlockTags {
     public static final TagKey<Block> DRAGON_ENVIRONMENT_BLOCKS = create("dragon_environment_blocks");
@@ -22,7 +22,7 @@ public final class IafBlockTags {
     public static final TagKey<Block> GRASSES = create("grasses");
 
     private static TagKey<Block> create(final String name) {
-        return TagKey.of(RegistryKeys.BLOCK, Identifier.of(IceAndFire.MOD_ID, name));
+        return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
     }
 }
 

@@ -5,36 +5,36 @@ import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.render.entity.feature.PixieGlowFeatureRenderer;
 import com.iafenvoy.iceandfire.render.entity.feature.PixieItemFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.PixieModel;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.Identifier;
 
-public class PixieEntityRenderer extends MobEntityRenderer<PixieEntity, PixieModel> {
-    public static final Identifier TEXTURE_0 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_0.png");
-    public static final Identifier TEXTURE_1 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_1.png");
-    public static final Identifier TEXTURE_2 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_2.png");
-    public static final Identifier TEXTURE_3 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_3.png");
-    public static final Identifier TEXTURE_4 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_4.png");
-    public static final Identifier TEXTURE_5 = Identifier.of(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_5.png");
+public class PixieEntityRenderer extends MobRenderer<PixieEntity, PixieModel> {
+    public static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_0.png");
+    public static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_1.png");
+    public static final Identifier TEXTURE_2 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_2.png");
+    public static final Identifier TEXTURE_3 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_3.png");
+    public static final Identifier TEXTURE_4 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_4.png");
+    public static final Identifier TEXTURE_5 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_5.png");
 
-    public PixieEntityRenderer(EntityRendererFactory.Context context) {
+    public PixieEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new PixieModel(), 0.2F);
-        this.features.add(new PixieItemFeatureRenderer(this));
-        this.features.add(new PixieGlowFeatureRenderer(this));
+        this.layers.add(new PixieItemFeatureRenderer(this));
+        this.layers.add(new PixieGlowFeatureRenderer(this));
     }
 
     @Override
-    public void scale(PixieEntity LivingEntityIn, MatrixStack stack, float partialTickTime) {
+    public void scale(PixieEntity LivingEntityIn, PoseStack stack, float partialTickTime) {
         stack.scale(0.55F, 0.55F, 0.55F);
-        if (LivingEntityIn.isSitting()) {
+        if (LivingEntityIn.isOrderedToSit()) {
             stack.translate(0F, 0.5F, 0F);
 
         }
     }
 
     @Override
-    public Identifier getTexture(PixieEntity pixie) {
+    public Identifier getTextureLocation(PixieEntity pixie) {
         return switch (pixie.getColor()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

@@ -3,13 +3,13 @@ package com.iafenvoy.iceandfire.registry;
 import com.iafenvoy.iceandfire.IceAndFire;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 
 @SuppressWarnings("unused")
 public final class IafSounds {
-    public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.SOUND_EVENT);
+    public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.SOUND_EVENT);
 
     public static final RegistrySupplier<SoundEvent> BESTIARY_PAGE = of("bestiary_page");
     public static final RegistrySupplier<SoundEvent> EGG_HATCH = of("egg_hatch");
@@ -133,6 +133,6 @@ public final class IafSounds {
     public static final RegistrySupplier<SoundEvent> GHOST_JUMPSCARE = of("ghost_jumpscare");
 
     private static RegistrySupplier<SoundEvent> of(String soundName) {
-        return REGISTRY.register(soundName, () -> SoundEvent.of(Identifier.of(IceAndFire.MOD_ID, soundName)));
+        return REGISTRY.register(soundName, () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, soundName)));
     }
 }

@@ -1,33 +1,24 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
-import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.render.entity.PixieEntityRenderer;
+import com.iafenvoy.iceandfire.render.entity.state.PixieRenderState;
 import com.iafenvoy.iceandfire.render.model.PixieModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
 
-public class PixieGlowFeatureRenderer extends RenderLayer<PixieEntity, PixieModel> {
+public class PixieGlowFeatureRenderer extends RenderLayer<PixieRenderState, PixieModel> {
     public PixieGlowFeatureRenderer(PixieEntityRenderer renderIn) {
         super(renderIn);
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, PixieEntity pixie, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        Identifier texture = switch (pixie.getColor()) {
-            case 1 -> PixieEntityRenderer.TEXTURE_1;
-            case 2 -> PixieEntityRenderer.TEXTURE_2;
-            case 3 -> PixieEntityRenderer.TEXTURE_3;
-            case 4 -> PixieEntityRenderer.TEXTURE_4;
-            case 5 -> PixieEntityRenderer.TEXTURE_5;
-            default -> PixieEntityRenderer.TEXTURE_0;
-        };
-        RenderType eyes = RenderType.eyes(texture);
-        VertexConsumer vertexConsumer = bufferIn.getBuffer(eyes);
-        this.getParentModel().renderToBuffer(matrixStackIn, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+    public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int lightCoords, PixieRenderState state, float yRot, float xRot) {
+        RenderType eyes = RenderTypes.eyes(state.texture);
+        submitNodeCollector.order(1)
+            .submitModel(this.getParentModel(), state, matrixStackIn, eyes, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
     }
 }

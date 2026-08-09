@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
+import com.iafenvoy.iceandfire.render.entity.state.PixieRenderState;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
@@ -16,7 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 
-public class PixieModel extends DragonBaseModel<LivingEntityRenderState> {
+public class PixieModel extends DragonBaseModel<PixieRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox Left_Arm;
     public final AdvancedModelBox Head;
@@ -104,7 +105,12 @@ public class PixieModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(PixieEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(PixieRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
         this.resetToDefaultPose();
         float speed_fly = 1.1F;
         float speed_idle = 0.05F;
@@ -125,8 +131,7 @@ public class PixieModel extends DragonBaseModel<LivingEntityRenderState> {
         }
         this.Body.rotateAngleX = f12;
         this.Head.rotateAngleX -= f12;
-        ItemStack itemstack = entity.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!itemstack.isEmpty()) {
+        if (state.hasItemInHand) {
 
             this.faceTarget(headYaw, headPitch, 1, this.Head);
             this.Left_Arm.rotateAngleX += (float) Math.toRadians(-35);
@@ -140,7 +145,7 @@ public class PixieModel extends DragonBaseModel<LivingEntityRenderState> {
             this.Left_Arm.rotateAngleX = Mth.cos(limbAngle * 0.6662F) * 1.0F * limbDistance * 0.5F;
         }
 
-        if (entity.isPixieSitting()) {
+        if (state.sitting) {
             this.Right_Arm.rotateAngleX -= ((float) Math.PI / 5F);
             this.Left_Arm.rotateAngleX -= ((float) Math.PI / 5F);
             this.Right_Leg.rotateAngleX = -1.4137167F;

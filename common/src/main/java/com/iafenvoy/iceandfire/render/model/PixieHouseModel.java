@@ -1,13 +1,19 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import java.util.Map;
+
+import java.util.List;
+
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.LivingEntity;
 
-public class PixieHouseModel extends AdvancedEntityModel<LivingEntity> {
+public class PixieHouseModel extends AdvancedEntityModel<EntityRenderState> {
     public final AdvancedModelBox stalk;
     public final AdvancedModelBox cap1;
     public final AdvancedModelBox grass;
@@ -16,6 +22,7 @@ public class PixieHouseModel extends AdvancedEntityModel<LivingEntity> {
     public final AdvancedModelBox stalk2;
 
     public PixieHouseModel() {
+        super(new ModelPart(List.of(), Map.of()));
         this.texWidth = 128;
         this.texHeight = 64;
         this.stalk2 = new AdvancedModelBox(this, 4, 24);
@@ -59,14 +66,14 @@ public class PixieHouseModel extends AdvancedEntityModel<LivingEntity> {
     }
 
     @Override
-    public void setAngles(LivingEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(EntityRenderState state) {
 
     }
 
 
     public void setRotateAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.pitch = x;
-        modelRenderer.yaw = y;
-        modelRenderer.roll = z;
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 }

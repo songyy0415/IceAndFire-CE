@@ -1,7 +1,36 @@
 # P6-F FeatureRenderer / RenderLayer 迁移报告
 
 > 迁移：MC 1.21.1 → 26.2，RenderLayer `render(…, MultiBufferSource, …)` → `submit(PoseStack, SubmitNodeCollector, int light, S state, float yRot, float xRot)`。
-> 基线：commit `7004134`（Siren）。当前编译：javac 2,046 / unique 1,775（迁移前 2,070 / 1,797）。
+> 基线：commit `7004134`（Siren）。当前编译：javac 2,014 / unique 1,751（Pixie 批前 2,070 / 1,797）。
+
+---
+
+## Hippogryph Feature（鞍/甲/胸图层）✅
+
+### 修改文件
+
+| 文件 | 动作 |
+|---|---|
+| `render/entity/state/HippogryphRenderState.java` | **新增**：`LivingEntityRenderState implements IAnimatedEntity` |
+| `render/entity/HippogryphEntityRenderer.java` | **迁移**：`MobRenderer<HippogryphEntity, HippogryphRenderState, HippogryphModel>`；`LayerHippogriffSaddle` → `RenderLayer<HippogryphRenderState, HippogryphModel>` + `submit(…)`；`RenderTypes.entityNoOutline`→`entityCutout(tex, false)`、`entityTranslucent` 保留；`getControllingPassenger()` 快照 `hasPassenger` |
+| `render/model/HippogryphModel.java` | 泛型→state；`setupAnim(state)` 单参 + 本地映射；实体读取全改 state（sit/hover/flyProgress、isDodo、flying/hovering/airBorneCounter）；`this.young`→`state.isBaby`（setupAnim）/`living.isBaby()`（renderStatue） |
+
+### RenderState 新增字段
+- `texture / armorValue / saddled / hasPassenger / chested`（鞍/甲/胸图层）
+- `sitProgress / hoverProgress / flyProgress / isDodo / flying / hovering / airBorneCounter`（模型动画）
+- `animation / animationTick / animations`（IAnimatedEntity，HippogryphEntity 实现）
+
+### submit 迁移（本批关键）
+- 旧：`bufferIn.getBuffer(RenderType) + model.renderToBuffer(matrix, vc, light, overlay, -1)`（`MultiBufferSource` / `VertexConsumer`）
+- 新：`submitNodeCollector.order(1).submitModel(model, state, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null)`（10 参：model/state/poseStack/renderType/light/overlay/color/sprite/outlineColor/crumbling）
+- `RenderType.entityNoOutline` 在 26.2 不存在 → `RenderTypes.entityCutout(texture, false)`（affectsOutline=false）
+
+### 错误变化（本批）
+- 移除：24；新增：0。javac：2,046 → **2,014**；unique：1,775 → **1,751**。
+
+---
+
+## Pixie Feature（Glow + Item）✅
 
 ---
 

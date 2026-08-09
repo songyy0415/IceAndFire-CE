@@ -18,8 +18,8 @@ public class StymphalianDaggerItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
-        return super.hurtEnemy(stack, targetEntity, attacker);
+    public void hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
+        super.hurtEnemy(stack, targetEntity, attacker);
     }
 
     @Override

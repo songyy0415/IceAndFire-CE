@@ -25,7 +25,7 @@ public class HippogryphSwordItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
         float f = (float) attacker.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
         float f3 = 1.0F + getMultiplier(EnchantmentHelper.getEnchantmentLevel(RegistryHelper.getEnchantment(attacker.registryAccess(), Enchantments.SWEEPING_EDGE), attacker)) * f;
         if (attacker instanceof Player player) {
@@ -37,7 +37,7 @@ public class HippogryphSwordItem extends Item {
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
             player.sweepAttack();
         }
-        return super.hurtEnemy(stack, targetEntity, attacker);
+        super.hurtEnemy(stack, targetEntity, attacker);
     }
 
     @Override

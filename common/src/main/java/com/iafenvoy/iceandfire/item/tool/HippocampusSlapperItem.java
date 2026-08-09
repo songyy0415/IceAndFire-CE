@@ -21,12 +21,12 @@ public class HippocampusSlapperItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
         targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 2));
         targetEntity.playSound(SoundEvents.GUARDIAN_FLOP, 3, 1);
 
-        return super.hurtEnemy(stack, targetEntity, attacker);
+        super.hurtEnemy(stack, targetEntity, attacker);
     }
 
     @Override

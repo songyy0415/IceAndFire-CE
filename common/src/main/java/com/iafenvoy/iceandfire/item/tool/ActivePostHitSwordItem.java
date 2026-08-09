@@ -19,11 +19,11 @@ public class ActivePostHitSwordItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (this.ability.isEnable()) {
             this.ability.active(stack, target, attacker);
         }
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
     @Override

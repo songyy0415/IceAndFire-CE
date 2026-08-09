@@ -7,34 +7,35 @@ import com.iafenvoy.iceandfire.util.trade.factory.BuyWithPrice;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.DeferredSupplier;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.poi.PointOfInterestType;
-import net.minecraft.world.poi.PointOfInterestTypes;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public final class IafTrades {
-    public static final DeferredRegister<PointOfInterestType> POI_REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.POINT_OF_INTEREST_TYPE);
-    public static final DeferredRegister<VillagerProfession> PROFESSION_REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.VILLAGER_PROFESSION);
+    public static final DeferredRegister<PoiType> POI_REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.POINT_OF_INTEREST_TYPE);
+    public static final DeferredRegister<VillagerProfession> PROFESSION_REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.VILLAGER_PROFESSION);
 
     private static final String SCRIBE = "scribe";
     private static final RegistrySupplier<Block> SCRIBE_BLOCK = IafBlocks.LECTERN;
-    public static final Function<Block, Set<BlockState>> SCRIBE_WORKSTATION = block -> new HashSet<>(block.getStateManager().getStates());
-    public static final DeferredSupplier<PointOfInterestType> SCRIBE_POI = POI_REGISTRY.register(SCRIBE, () -> new PointOfInterestType(SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()), 1, 1));
-    public static final RegistrySupplier<VillagerProfession> SCRIBE_PROFESSION = PROFESSION_REGISTRY.register(SCRIBE, () -> new VillagerProfession(SCRIBE, e -> e.matchesKey(SCRIBE_POI.getKey()), e -> e.matchesKey(SCRIBE_POI.getKey()), ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_LIBRARIAN));
+    public static final Function<Block, Set<BlockState>> SCRIBE_WORKSTATION = block -> new HashSet<>(block.getStateDefinition().getPossibleStates());
+    public static final DeferredSupplier<PoiType> SCRIBE_POI = POI_REGISTRY.register(SCRIBE, () -> new PoiType(SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()), 1, 1));
+    public static final RegistrySupplier<VillagerProfession> SCRIBE_PROFESSION = PROFESSION_REGISTRY.register(SCRIBE, () -> new VillagerProfession(Component.translatable(SCRIBE), e -> e.is(SCRIBE_POI.getKey()), e -> e.is(SCRIBE_POI.getKey()), ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_LIBRARIAN, new Int2ObjectOpenHashMap<>()));
 
     public static void init() {
         for (BlockState state : SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()))
-            PointOfInterestTypes.POI_STATES_TO_TYPE.put(state, Registries.POINT_OF_INTEREST_TYPE.getEntry(SCRIBE_POI.get()));
+            PoiTypes.TYPE_BY_STATE.put(state, BuiltInRegistries.POINT_OF_INTEREST_TYPE.wrapAsHolder(SCRIBE_POI.get()));
         VillagerProfession profession = SCRIBE_PROFESSION.get();
         final float emeraldForItemsMultiplier = 0.05F; //Values taken from VillagerTrades.java
         final float itemForEmeraldMultiplier = 0.05F;

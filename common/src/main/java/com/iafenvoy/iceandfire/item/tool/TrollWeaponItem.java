@@ -27,10 +27,10 @@ public class TrollWeaponItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker instanceof Player player)
             return player.getAttackStrengthScale(0) < 0.95 || player.attackAnim != 0;
-        else return super.hurtEnemy(stack, target, attacker);
+        else super.hurtEnemy(stack, target, attacker);
     }
 
     @Override

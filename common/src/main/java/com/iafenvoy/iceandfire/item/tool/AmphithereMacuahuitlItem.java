@@ -23,7 +23,7 @@ public class AmphithereMacuahuitlItem extends Item {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
         targetEntity.playSound(IafSounds.AMPHITHERE_GUST.get(), 1, 1);
         targetEntity.playSound(SoundEvents.SHIELD_BLOCK.value(), 1, 1);
         targetEntity.hasImpulse = true;
@@ -39,7 +39,7 @@ public class AmphithereMacuahuitlItem extends Item {
             double d2 = rand.nextGaussian() * 0.02D;
             targetEntity.level().addParticle(ParticleTypes.CLOUD, targetEntity.getX() + (double) (rand.nextFloat() * targetEntity.getBbWidth() * 5.0F) - (double) targetEntity.getBbWidth() - d0 * 10.0D, targetEntity.getY() + (double) (rand.nextFloat() * targetEntity.getBbHeight()) - d1 * 10.0D, targetEntity.getZ() + (double) (rand.nextFloat() * targetEntity.getBbWidth() * 5.0F) - (double) targetEntity.getBbWidth() - d2 * 10.0D, d0, d1, d2);
         }
-        return super.hurtEnemy(stack, targetEntity, attacker);
+        super.hurtEnemy(stack, targetEntity, attacker);
     }
 
     @Override

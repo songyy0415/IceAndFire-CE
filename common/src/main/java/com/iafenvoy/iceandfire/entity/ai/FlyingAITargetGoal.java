@@ -1,35 +1,35 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.Box;
-
 import java.util.function.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.phys.AABB;
 
-public class FlyingAITargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-    public FlyingAITargetGoal(MobEntity creature, Class<T> classTarget, boolean checkSight) {
+public class FlyingAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
+    public FlyingAITargetGoal(Mob creature, Class<T> classTarget, boolean checkSight) {
         super(creature, classTarget, checkSight);
     }
 
-    public FlyingAITargetGoal(MobEntity creature, Class<T> classTarget, boolean checkSight, boolean onlyNearby) {
+    public FlyingAITargetGoal(Mob creature, Class<T> classTarget, boolean checkSight, boolean onlyNearby) {
         super(creature, classTarget, checkSight, onlyNearby);
     }
 
-    public FlyingAITargetGoal(MobEntity creature, Class<T> classTarget, int chance, boolean checkSight, boolean onlyNearby, final Predicate<LivingEntity> targetSelector) {
+    public FlyingAITargetGoal(Mob creature, Class<T> classTarget, int chance, boolean checkSight, boolean onlyNearby, final TargetingConditions.Selector targetSelector) {
         super(creature, classTarget, chance, checkSight, onlyNearby, targetSelector);
     }
 
     @Override
-    protected Box getSearchBox(double targetDistance) {
-        return this.mob.getBoundingBox().expand(targetDistance, targetDistance, targetDistance);
+    protected AABB getTargetSearchArea(double targetDistance) {
+        return this.mob.getBoundingBox().inflate(targetDistance, targetDistance, targetDistance);
     }
 
     @Override
-    public boolean canStart() {
-        if (this.mob instanceof SeaSerpentEntity seaSerpent && (seaSerpent.isJumpingOutOfWater() || !this.mob.isTouchingWater()))
+    public boolean canUse() {
+        if (this.mob instanceof SeaSerpentEntity seaSerpent && (seaSerpent.isJumpingOutOfWater() || !this.mob.isInWater()))
             return false;
-        return super.canStart();
+        return super.canUse();
     }
 }

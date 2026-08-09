@@ -1,48 +1,48 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Box;
-
 import java.util.EnumSet;
 import java.util.function.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 
-public class DragonAITargetNonTamedGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
+public class DragonAITargetNonTamedGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final DragonBaseEntity dragon;
 
-    public DragonAITargetNonTamedGoal(DragonBaseEntity entityIn, Class<T> classTarget, boolean checkSight, Predicate<LivingEntity> targetSelector) {
+    public DragonAITargetNonTamedGoal(DragonBaseEntity entityIn, Class<T> classTarget, boolean checkSight, TargetingConditions.Selector targetSelector) {
         super(entityIn, classTarget, 5, checkSight, false, targetSelector);
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
         this.dragon = entityIn;
     }
 
     @Override
-    public boolean canStart() {
-        if (this.dragon.isTamed()) return false;
+    public boolean canUse() {
+        if (this.dragon.isTame()) return false;
         if (this.dragon.lookingForRoostAIFlag) return false;
 
-        boolean canUse = super.canStart();
+        boolean canUse = super.canUse();
         boolean isSleeping = this.dragon.isSleeping();
         if (canUse) {
-            if (isSleeping && this.targetEntity instanceof PlayerEntity)
-                return this.dragon.squaredDistanceTo(this.targetEntity) <= 16;
+            if (isSleeping && this.target instanceof Player)
+                return this.dragon.distanceToSqr(this.target) <= 16;
             return !isSleeping;
         }
         return false;
     }
 
     @Override
-    protected Box getSearchBox(double targetDistance) {
-        return this.dragon.getBoundingBox().expand(targetDistance, targetDistance, targetDistance);
+    protected AABB getTargetSearchArea(double targetDistance) {
+        return this.dragon.getBoundingBox().inflate(targetDistance, targetDistance, targetDistance);
     }
 
     @Override
-    protected double getFollowRange() {
-        EntityAttributeInstance iattributeinstance = this.mob.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE);
+    protected double getFollowDistance() {
+        AttributeInstance iattributeinstance = this.mob.getAttribute(Attributes.FOLLOW_RANGE);
         return iattributeinstance == null ? 128.0D : iattributeinstance.getValue();
     }
 }

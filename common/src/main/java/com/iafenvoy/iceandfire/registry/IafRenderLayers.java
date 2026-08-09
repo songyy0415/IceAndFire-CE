@@ -1,57 +1,59 @@
 package com.iafenvoy.iceandfire.registry;
 
-import com.iafenvoy.iceandfire.render.RenderVariables;
 import com.iafenvoy.iceandfire.render.block.DreadPortalBlockEntityRenderer;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
-public final class IafRenderLayers extends RenderType {
-    private static final TransparencyStateShard GHOST_TRANSPARANCY = new TransparencyStateShard("translucent_ghost_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-    }, () -> {
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-    });
-    private static final Identifier STONE_TEXTURE = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/stone.png");
-    private static final ShaderStateShard DREAD_PORTAL_PROGRAM = new ShaderStateShard(() -> RenderVariables.DREAD_PORTAL_PROGRAM);
+/**
+ * Iaf-specific render types, migrated to the MC26.2 {@code RenderTypes} factory set.
+ *
+ * <p>MC26.2 {@code RenderType} is final and its {@code create(name, RenderSetup)} entry point is
+ * package-private, so custom pipelines (custom shaders / blend / depth) can no longer be exposed as
+ * a {@code RenderType} from a mod. Every method below therefore returns the closest stock
+ * {@code RenderTypes} render type; the caller-facing API (name + signature) is unchanged.
+ *
+ * <ul>
+ *   <li>{@code getGhost} — was ENTITY_CUTOUT_NO_CULL shader + additive-ish ghost blend + NO_CULL →
+ *       {@code entityCutout} (same cutout pipeline, no cull, standard blend).</li>
+ *   <li>{@code getGhostDaytime} — was ENTITY_CUTOUT_NO_CULL + translucent blend → {@code entityTranslucent}.</li>
+ *   <li>{@code getDreadlandsPortal} — was a custom shader (RenderVariables.DREAD_PORTAL_PROGRAM) with
+ *       two textures (POSITION_COLOR). Custom shader pipelines are not creatable in 26.2; falls back to
+ *       the portal texture with {@code entityCutout}. The block renderer migration (Batch3-C) will
+ *       re-evaluate the portal with 26.2 block-pipeline APIs.</li>
+ *   <li>{@code getStoneMobRenderType} — was ENTITY_CUTOUT with the stone texture → {@code entitySolid}.</li>
+ *   <li>{@code getIce} — was BEACON_BEAM shader + translucent + cull → {@code beaconBeam}.</li>
+ *   <li>{@code getStoneCrackRenderType} — was ENTITY_CUTOUT + EQUAL_DEPTH_TEST + NO_CULL + translucent.
+ *       EQ_DEPTH cannot be expressed in 26.2 stock types → {@code entityTranslucent}.</li>
+ * </ul>
+ */
+public final class IafRenderLayers {
+    private static final Identifier STONE_TEXTURE = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/stone.png");
 
-    public IafRenderLayers(String nameIn, VertexFormat formatIn, VertexFormat.Mode drawModeIn, int bufferSizeIn, boolean useDelegateIn, boolean needsSortingIn, Runnable setupTaskIn, Runnable clearTaskIn) {
-        super(nameIn, formatIn, drawModeIn, bufferSizeIn, useDelegateIn, needsSortingIn, setupTaskIn, clearTaskIn);
+    private IafRenderLayers() {
     }
 
     public static RenderType getGhost(Identifier locationIn) {
-        TextureStateShard lvt_1_1_ = new TextureStateShard(locationIn, false, false);
-        return create("ghost_iaf", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, CompositeState.builder().setShaderState(RENDERTYPE_ENTITY_CUTOUT_NO_CULL_SHADER).setTextureState(lvt_1_1_).setTransparencyState(GHOST_TRANSPARANCY).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(true));
+        return RenderTypes.entityCutout(locationIn);
     }
 
     public static RenderType getGhostDaytime(Identifier locationIn) {
-        TextureStateShard lvt_1_1_ = new TextureStateShard(locationIn, false, false);
-        return create("ghost_iaf_day", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, CompositeState.builder().setShaderState(RENDERTYPE_ENTITY_CUTOUT_NO_CULL_SHADER).setTextureState(lvt_1_1_).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(true));
+        return RenderTypes.entityTranslucent(locationIn);
     }
 
     public static RenderType getDreadlandsPortal() {
-        return create("dreadlands_portal", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false, CompositeState.builder().setShaderState(DREAD_PORTAL_PROGRAM).setTextureState(MultiTextureStateShard.builder().add(DreadPortalBlockEntityRenderer.DREAD_PORTAL_BACKGROUND, false, false).add(DreadPortalBlockEntityRenderer.DREAD_PORTAL, false, false).build()).createCompositeState(false));
+        return RenderTypes.entityCutout(DreadPortalBlockEntityRenderer.DREAD_PORTAL);
     }
 
     public static RenderType getStoneMobRenderType(float x, float y) {
-        TextureStateShard textureState = new TextureStateShard(STONE_TEXTURE, false, false);
-        CompositeState rendertype = CompositeState.builder().setShaderState(RenderType.RENDERTYPE_ENTITY_CUTOUT_SHADER).setTextureState(textureState).setTransparencyState(NO_TRANSPARENCY).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(true);
-        return create("stone_entity_type", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, rendertype);
+        return RenderTypes.entitySolid(STONE_TEXTURE);
     }
 
     public static RenderType getIce(Identifier locationIn) {
-        TextureStateShard lvt_1_1_ = new TextureStateShard(locationIn, false, false);
-        return create("ice_texture", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, CompositeState.builder().setShaderState(RenderType.RENDERTYPE_BEACON_BEAM_SHADER).setTextureState(lvt_1_1_).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setCullState(CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(true));
+        return RenderTypes.beaconBeam(locationIn, false);
     }
 
     public static RenderType getStoneCrackRenderType(Identifier crackTex) {
-        TextureStateShard textureState = new TextureStateShard(crackTex, false, false);
-        CompositeState rendertype$state = CompositeState.builder().setTextureState(textureState).setShaderState(RenderType.RENDERTYPE_ENTITY_CUTOUT_SHADER).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDepthTestState(EQUAL_DEPTH_TEST).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).createCompositeState(false);
-        return create("stone_entity_type_crack", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
+        return RenderTypes.entityTranslucent(crackTex);
     }
 }

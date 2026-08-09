@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.compat.emi;
 
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
+import java.util.ArrayList;
 import com.iafenvoy.iceandfire.registry.IafRecipes;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -31,7 +32,7 @@ public class ForgeRecipeHolder {
     public void register(EmiRegistry registry) {
         registry.addCategory(this.category);
         registry.addWorkstation(this.category, this.workstation);
-        List<RecipeHolder<DragonForgeRecipe>> forgeRecipeList = registry.getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get());
+        List<RecipeHolder<DragonForgeRecipe>> forgeRecipeList = new ArrayList<>(registry.getRecipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get()));
         for (RecipeHolder<DragonForgeRecipe> recipeEntry : forgeRecipeList.stream().filter(entry -> entry.value().getDragonType().equals(this.dragonType)).toList())
             registry.addRecipe(new DragonForgeEmiRecipe(recipeEntry, this.category));
     }
@@ -52,7 +53,7 @@ public class ForgeRecipeHolder {
 
         @Override
         public @Nullable Identifier getId() {
-            return this.entry.id();
+            return this.entry.id().location();
         }
 
         @Override

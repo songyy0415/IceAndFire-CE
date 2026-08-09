@@ -547,7 +547,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         if (itemstack.is(IafItemTags.BREED_HIPPOCAMPUS) && this.getAge() == 0 && !this.isInLove()) {
             this.setOrderedToSit(false);
             this.setInLove(player);
-            this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             if (!player.isCreative())
                 itemstack.shrink(1);
             return InteractionResult.SUCCESS;
@@ -556,7 +556,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         if (itemstack.is(IafItemTags.HEAL_HIPPOCAMPUS)) {
             if (!this.level().isClientSide()) {
                 this.heal(5);
-                this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+                this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                 for (int i = 0; i < 3; i++)
                     this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
                 if (!player.isCreative())
@@ -710,7 +710,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         boolean flag = this.isSaddled();
         this.updateContainerEquipment();
         if (this.tickCount > 20 && !flag && this.isSaddled())
-            this.playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
+            this.playSound(SoundEvents.HORSE_SADDLE.value(), 0.5F, 1.0F);
     }
 
     @Override

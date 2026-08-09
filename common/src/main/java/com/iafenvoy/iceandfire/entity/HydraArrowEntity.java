@@ -37,14 +37,14 @@ public class HydraArrowEntity extends AbstractArrow {
     public void tick() {
         super.tick();
         if (this.level().isClientSide() && !this.inGround) {
-            double d0 = this.random.nextGaussian() * 0.02D;
-            double d1 = this.random.nextGaussian() * 0.02D;
-            double d2 = this.random.nextGaussian() * 0.02D;
+            double d0 = this.getRandom().nextGaussian() * 0.02D;
+            double d1 = this.getRandom().nextGaussian() * 0.02D;
+            double d2 = this.getRandom().nextGaussian() * 0.02D;
             double d3 = 10.0D;
             double xRatio = this.getDeltaMovement().x * this.getBbHeight();
             double zRatio = this.getDeltaMovement().z * this.getBbHeight();
-            this.level().addParticle(IafParticles.HYDRA_BREATH.get(), this.getX() + xRatio + (double) (this.random.nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d0 * 10.0D, this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()) - d1 * 10.0D, this.getZ() + zRatio + (double) (this.random.nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d2 * 10.0D, 0.1D, 1.0D, 0.1D);
-            this.level().addParticle(IafParticles.HYDRA_BREATH.get(), this.getX() + xRatio + (double) (this.random.nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d0 * 10.0D, this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()) - d1 * 10.0D, this.getZ() + zRatio + (double) (this.random.nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d2 * 10.0D, 0.1D, 1.0D, 0.1D);
+            this.level().addParticle(IafParticles.HYDRA_BREATH.get(), this.getX() + xRatio + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d0 * 10.0D, this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()) - d1 * 10.0D, this.getZ() + zRatio + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d2 * 10.0D, 0.1D, 1.0D, 0.1D);
+            this.level().addParticle(IafParticles.HYDRA_BREATH.get(), this.getX() + xRatio + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d0 * 10.0D, this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()) - d1 * 10.0D, this.getZ() + zRatio + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 1.0F) - (double) this.getBbWidth() - d2 * 10.0D, 0.1D, 1.0D, 0.1D);
         }
     }
 
@@ -56,7 +56,7 @@ public class HydraArrowEntity extends AbstractArrow {
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();
-                this.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
             }
         }
     }

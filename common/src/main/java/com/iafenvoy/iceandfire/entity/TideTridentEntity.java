@@ -3,80 +3,80 @@ package com.iafenvoy.iceandfire.entity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.uranus.object.RegistryHelper;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
-public class TideTridentEntity extends TridentEntity {
+public class TideTridentEntity extends ThrownTrident {
     private static final int ADDITIONALPIERCING = 2;
     private int entitiesHit = 0;
 
-    public TideTridentEntity(EntityType<? extends TridentEntity> type, World worldIn) {
+    public TideTridentEntity(EntityType<? extends ThrownTrident> type, Level worldIn) {
         super(type, worldIn);
-        this.stack = new ItemStack(IafItems.TIDE_TRIDENT.get());
+        this.pickupItemStack = new ItemStack(IafItems.TIDE_TRIDENT.get());
     }
 
-    public TideTridentEntity(World worldIn, LivingEntity thrower, ItemStack thrownStackIn) {
+    public TideTridentEntity(Level worldIn, LivingEntity thrower, ItemStack thrownStackIn) {
         this(IafEntities.TIDE_TRIDENT.get(), worldIn);
-        this.setPosition(thrower.getX(), thrower.getEyeY() - 0.1F, thrower.getZ());
+        this.setPos(thrower.getX(), thrower.getEyeY() - 0.1F, thrower.getZ());
         this.setOwner(thrower);
-        this.stack = thrownStackIn;
-        this.dataTracker.set(LOYALTY, (byte) EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(worldIn.getRegistryManager(), Enchantments.LOYALTY), thrownStackIn));
-        this.dataTracker.set(ENCHANTED, thrownStackIn.hasGlint());
-        int piercingLevel = EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(worldIn.getRegistryManager(), Enchantments.PIERCING), thrownStackIn);
+        this.pickupItemStack = thrownStackIn;
+        this.entityData.set(ID_LOYALTY, (byte) EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(worldIn.registryAccess(), Enchantments.LOYALTY), thrownStackIn));
+        this.entityData.set(ID_FOIL, thrownStackIn.hasFoil());
+        int piercingLevel = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(worldIn.registryAccess(), Enchantments.PIERCING), thrownStackIn);
         this.setPierceLevel((byte) piercingLevel);
     }
 
     @Override
-    protected void onEntityHit(EntityHitResult result) {
+    protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
         float f = 12.0F;
         Entity entity2 = this.getOwner();
-        DamageSource damageSource = this.getDamageSources().trident(this, entity2 == null ? this : entity2);
-        if (entity instanceof LivingEntity && this.getWorld() instanceof ServerWorld serverWorld) {
-            f = EnchantmentHelper.getDamage(serverWorld, this.getItemStack(), entity, damageSource, f);
+        DamageSource damageSource = this.damageSources().trident(this, entity2 == null ? this : entity2);
+        if (entity instanceof LivingEntity && this.level() instanceof ServerLevel serverWorld) {
+            f = EnchantmentHelper.modifyDamage(serverWorld, this.getPickupItemStackOrigin(), entity, damageSource, f);
         }
 
         Entity entity1 = this.getOwner();
-        DamageSource damagesource = this.getWorld().getDamageSources().trident(this, entity1 == null ? this : entity1);
+        DamageSource damagesource = this.level().damageSources().trident(this, entity1 == null ? this : entity1);
         this.entitiesHit++;
         if (this.entitiesHit >= this.getMaxPiercing())
             this.dealtDamage = true;
-        SoundEvent soundevent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.damage(damagesource, f)) {
+        SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
+        if (entity.hurtOrSimulate(damagesource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) return;
 
             if (entity instanceof LivingEntity livingentity1) {
-                if (entity1 instanceof LivingEntity && this.getWorld() instanceof ServerWorld serverWorld)
-                    EnchantmentHelper.onTargetDamaged(serverWorld, entity, damageSource, this.getWeaponStack());
-                this.onHit(livingentity1);
+                if (entity1 instanceof LivingEntity && this.level() instanceof ServerLevel serverWorld)
+                    EnchantmentHelper.doPostAttackEffectsWithItemSource(serverWorld, entity, damageSource, this.getWeaponItem());
+                this.doPostHurtEffects(livingentity1);
             }
         }
 
         float f1 = 1.0F;
-        if (this.getWorld() instanceof ServerWorld && this.getWorld().isThundering() && EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(this.getWorld().getRegistryManager(), Enchantments.CHANNELING), this.getItemStack()) > 0) {
-            BlockPos blockpos = entity.getBlockPos();
-            if (this.getWorld().isSkyVisible(blockpos)) {
-                LightningEntity lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.getWorld());
+        if (this.level() instanceof ServerLevel && this.level().isThundering() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(this.level().registryAccess(), Enchantments.CHANNELING), this.getPickupItemStackOrigin()) > 0) {
+            BlockPos blockpos = entity.blockPosition();
+            if (this.level().canSeeSky(blockpos)) {
+                LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.level());
                 assert lightningboltentity != null;
-                lightningboltentity.refreshPositionAfterTeleport(Vec3d.ofCenter(blockpos));
-                lightningboltentity.setChanneler(entity1 instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity1 : null);
-                this.getWorld().spawnEntity(lightningboltentity);
-                soundevent = SoundEvents.ITEM_TRIDENT_THUNDER.value();
+                lightningboltentity.moveTo(Vec3.atCenterOf(blockpos));
+                lightningboltentity.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer) entity1 : null);
+                this.level().addFreshEntity(lightningboltentity);
+                soundevent = SoundEvents.TRIDENT_THUNDER.value();
                 f1 = 5.0F;
             }
         }

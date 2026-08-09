@@ -3,15 +3,14 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.util.IafMath;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
-
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.AABB;
 
-public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TrackTargetGoal {
+public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TargetGoal {
     protected final DragonAITargetItemsGoal.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected final int targetChance;
@@ -30,11 +29,11 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TrackTarg
         super(creature, checkSight, onlyNearby);
         this.theNearestAttackableTargetSorter = new DragonAITargetItemsGoal.Sorter(creature);
         this.targetChance = chance;
-        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getStack().isEmpty() && item.getStack().isIn(IafItemTags.HEAL_COCKATRICE);
+        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getItem().isEmpty() && item.getItem().is(IafItemTags.HEAL_COCKATRICE);
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         if (this.targetChance > 0 && this.mob.getRandom().nextInt(this.targetChance) != 0)
             return false;
 
@@ -43,8 +42,8 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TrackTarg
             return false;
         }
 
-        if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
         else {
@@ -54,13 +53,13 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TrackTarg
         }
     }
 
-    protected Box getTargetableArea(double targetDistance) {
-        return this.mob.getBoundingBox().expand(targetDistance, 4.0D, targetDistance);
+    protected AABB getTargetableArea(double targetDistance) {
+        return this.mob.getBoundingBox().inflate(targetDistance, 4.0D, targetDistance);
     }
 
     @Override
     public void start() {
-        this.mob.getNavigation().startMovingTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
+        this.mob.getNavigation().moveTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
         super.start();
     }
 
@@ -69,10 +68,10 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TrackTarg
         super.tick();
         if (this.targetEntity == null || !this.targetEntity.isAlive())
             this.stop();
-        else if (this.mob.squaredDistanceTo(this.targetEntity) < 1) {
+        else if (this.mob.distanceToSqr(this.targetEntity) < 1) {
             CockatriceEntity cockatrice = (CockatriceEntity) this.mob;
-            this.targetEntity.getStack().decrement(1);
-            this.mob.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1, 1);
+            this.targetEntity.getItem().shrink(1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             cockatrice.heal(8);
             cockatrice.setAnimation(CockatriceEntity.ANIMATION_EAT);
             this.stop();
@@ -80,7 +79,7 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TrackTarg
     }
 
     @Override
-    public boolean shouldContinue() {
-        return !this.mob.getNavigation().isIdle();
+    public boolean canContinueToUse() {
+        return !this.mob.getNavigation().isDone();
     }
 }

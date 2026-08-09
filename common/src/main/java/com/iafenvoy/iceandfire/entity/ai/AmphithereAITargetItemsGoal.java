@@ -3,41 +3,40 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.util.IafMath;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
-
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.AABB;
 
-public class AmphithereAITargetItemsGoal extends TrackTargetGoal {
+public class AmphithereAITargetItemsGoal extends TargetGoal {
     protected final DragonAITargetItemsGoal.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected final int targetChance;
     protected ItemEntity targetEntity;
     private List<ItemEntity> list = IafMath.emptyItemEntityList;
 
-    public AmphithereAITargetItemsGoal(MobEntity creature, boolean checkSight) {
+    public AmphithereAITargetItemsGoal(Mob creature, boolean checkSight) {
         this(creature, checkSight, false);
     }
 
-    public AmphithereAITargetItemsGoal(MobEntity creature, boolean checkSight, boolean onlyNearby) {
+    public AmphithereAITargetItemsGoal(Mob creature, boolean checkSight, boolean onlyNearby) {
         this(creature, 20, checkSight, onlyNearby);
     }
 
-    public AmphithereAITargetItemsGoal(MobEntity creature, int chance, boolean checkSight, boolean onlyNearby) {
+    public AmphithereAITargetItemsGoal(Mob creature, int chance, boolean checkSight, boolean onlyNearby) {
         super(creature, checkSight, onlyNearby);
         this.theNearestAttackableTargetSorter = new DragonAITargetItemsGoal.Sorter(creature);
         this.targetChance = chance;
-        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getStack().isEmpty() && item.getStack().isIn(IafItemTags.HEAL_AMPITHERE);
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getItem().isEmpty() && item.getItem().is(IafItemTags.HEAL_AMPITHERE);
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         if (this.targetChance > 0 && this.mob.getRandom().nextInt(this.targetChance) != 0) return false;
 
         if (!((AmphithereEntity) this.mob).canMove()) {
@@ -48,8 +47,8 @@ public class AmphithereAITargetItemsGoal extends TrackTargetGoal {
         // If the target entity already is what we want skip AABB
         if (this.targetEntitySelector.test(this.targetEntity)) return true;
 
-        if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
 
@@ -58,13 +57,13 @@ public class AmphithereAITargetItemsGoal extends TrackTargetGoal {
         return true;
     }
 
-    protected Box getTargetableArea(double targetDistance) {
-        return this.mob.getBoundingBox().expand(targetDistance, 4.0D, targetDistance);
+    protected AABB getTargetableArea(double targetDistance) {
+        return this.mob.getBoundingBox().inflate(targetDistance, 4.0D, targetDistance);
     }
 
     @Override
     public void start() {
-        this.mob.getNavigation().startMovingTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
+        this.mob.getNavigation().moveTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
         super.start();
     }
 
@@ -78,17 +77,17 @@ public class AmphithereAITargetItemsGoal extends TrackTargetGoal {
     public void tick() {
         super.tick();
         if (this.targetEntity == null || !this.targetEntity.isAlive()) this.stop();
-        if (this.targetEntity != null && this.targetEntity.isAlive() && this.mob.squaredDistanceTo(this.targetEntity) < 1) {
+        if (this.targetEntity != null && this.targetEntity.isAlive() && this.mob.distanceToSqr(this.targetEntity) < 1) {
             AmphithereEntity hippo = (AmphithereEntity) this.mob;
-            this.targetEntity.getStack().decrement(1);
-            this.mob.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1, 1);
+            this.targetEntity.getItem().shrink(1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             hippo.heal(5);
             this.stop();
         }
     }
 
     @Override
-    public boolean shouldContinue() {
-        return !this.mob.getNavigation().isIdle();
+    public boolean canContinueToUse() {
+        return !this.mob.getNavigation().isDone();
     }
 }

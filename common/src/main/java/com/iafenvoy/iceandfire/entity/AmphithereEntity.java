@@ -214,7 +214,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             if (this.getAge() == 0 && !this.isInLove()) {
                 this.setOrderedToSit(false);
                 this.setInLove(player);
-                this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+                this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                 if (!player.isCreative())
                     itemstack.shrink(1);
             }
@@ -222,7 +222,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         }
         if (itemstack != null && itemstack.is(IafItemTags.HEAL_AMPITHERE) && this.getHealth() < this.getMaxHealth()) {
             this.heal(5);
-            this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             if (!player.isCreative())
                 itemstack.shrink(1);
             return InteractionResult.SUCCESS;

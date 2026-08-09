@@ -2,21 +2,20 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
 import com.iafenvoy.iceandfire.util.IafMath;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
-
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.scores.Team;
 
-public class DeathwormAITargetItemsGoal<T extends ItemEntity> extends TrackTargetGoal {
+public class DeathwormAITargetItemsGoal<T extends ItemEntity> extends TargetGoal {
     protected final DragonAITargetItemsGoal.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected final int targetChance;
@@ -37,15 +36,15 @@ public class DeathwormAITargetItemsGoal<T extends ItemEntity> extends TrackTarge
         this.worm = creature;
         this.targetChance = chance;
         this.theNearestAttackableTargetSorter = new DragonAITargetItemsGoal.Sorter(creature);
-        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getStack().isEmpty() && item.getStack().getItem() == Blocks.TNT.asItem() && item.getWorld().getBlockState(item.getBlockPos().down()).isIn(BlockTags.SAND);
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getItem().isEmpty() && item.getItem().getItem() == Blocks.TNT.asItem() && item.level().getBlockState(item.blockPosition().below()).is(BlockTags.SAND);
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         if (this.targetChance > 0 && this.mob.getRandom().nextInt(this.targetChance) != 0)
             return false;
-        List<ItemEntity> list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        List<ItemEntity> list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
         if (list.isEmpty()) return false;
         else {
             list.sort(this.theNearestAttackableTargetSorter);
@@ -54,29 +53,29 @@ public class DeathwormAITargetItemsGoal<T extends ItemEntity> extends TrackTarge
         }
     }
 
-    protected Box getTargetableArea(double targetDistance) {
-        return this.mob.getBoundingBox().expand(targetDistance, 4.0D, targetDistance);
+    protected AABB getTargetableArea(double targetDistance) {
+        return this.mob.getBoundingBox().inflate(targetDistance, 4.0D, targetDistance);
     }
 
     @Override
     public void start() {
-        this.mob.getNavigation().startMovingTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
+        this.mob.getNavigation().moveTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
         super.start();
     }
 
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         Entity itemTarget = this.targetEntity;
 
         if (itemTarget == null) return false;
         else if (!itemTarget.isAlive()) return false;
         else {
-            AbstractTeam team = this.mob.getScoreboardTeam();
-            AbstractTeam team1 = itemTarget.getScoreboardTeam();
+            Team team = this.mob.getTeam();
+            Team team1 = itemTarget.getTeam();
             if (team != null && team1 == team) return false;
             else {
-                double d0 = this.getFollowRange();
-                return !(this.mob.squaredDistanceTo(itemTarget) > d0 * d0);
+                double d0 = this.getFollowDistance();
+                return !(this.mob.distanceToSqr(itemTarget) > d0 * d0);
             }
         }
     }
@@ -85,18 +84,18 @@ public class DeathwormAITargetItemsGoal<T extends ItemEntity> extends TrackTarge
     public void tick() {
         super.tick();
         if (this.targetEntity == null || !this.targetEntity.isAlive()) this.stop();
-        else if (this.mob.squaredDistanceTo(this.targetEntity) < 1) {
+        else if (this.mob.distanceToSqr(this.targetEntity) < 1) {
             DeathWormEntity deathWorm = (DeathWormEntity) this.mob;
-            this.targetEntity.getStack().decrement(1);
-            this.mob.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1, 1);
+            this.targetEntity.getItem().shrink(1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             deathWorm.setAnimation(DeathWormEntity.ANIMATION_BITE);
-            PlayerEntity thrower = null;
+            Player thrower = null;
             if (this.targetEntity.getOwner() != null)
-                thrower = this.targetEntity.getWorld().getPlayerByUuid(this.targetEntity.getOwner().getUuid());
+                thrower = this.targetEntity.level().getPlayerByUUID(this.targetEntity.getOwner().getUUID());
             deathWorm.setExplosive(true, thrower);
             this.stop();
         }
-        if (this.worm.getNavigation().isIdle())
-            this.worm.getNavigation().startMovingTo(this.targetEntity, 1.0F);
+        if (this.worm.getNavigation().isDone())
+            this.worm.getNavigation().moveTo(this.targetEntity, 1.0F);
     }
 }

@@ -4,19 +4,18 @@ import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 import com.iafenvoy.iceandfire.util.IafMath;
 import com.iafenvoy.uranus.object.item.FoodUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.Box;
-
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
-public class DragonAITargetItemsGoal extends TrackTargetGoal {
+public class DragonAITargetItemsGoal extends TargetGoal {
     protected final Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     private final int targetChance;
@@ -41,17 +40,17 @@ public class DragonAITargetItemsGoal extends TrackTargetGoal {
 
     public DragonAITargetItemsGoal(DragonBaseEntity creature, int chance, boolean checkSight, boolean onlyNearby, boolean prioritizeItems) {
         super(creature, checkSight, onlyNearby);
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
         this.isIce = creature instanceof IceDragonEntity;
         this.targetChance = chance;
         this.theNearestAttackableTargetSorter = new Sorter(creature);
-        this.setControls(EnumSet.of(Control.MOVE));
-        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getStack().isEmpty() && FoodUtils.getFoodPoints(item.getStack(), true, this.isIce) > 0;
+        this.setFlags(EnumSet.of(Flag.MOVE));
+        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getItem().isEmpty() && FoodUtils.getFoodPoints(item.getItem(), true, this.isIce) > 0;
         this.prioritizeItems = prioritizeItems;
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         final DragonBaseEntity dragon = (DragonBaseEntity) this.mob;
 
         if (this.prioritizeItems && dragon.getHunger() >= 60) return false;
@@ -63,8 +62,8 @@ public class DragonAITargetItemsGoal extends TrackTargetGoal {
     }
 
     private boolean updateList() {
-        if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
         else {
@@ -74,40 +73,40 @@ public class DragonAITargetItemsGoal extends TrackTargetGoal {
         }
     }
 
-    protected Box getTargetableArea(double targetDistance) {
-        return this.mob.getBoundingBox().expand(targetDistance, 4.0D, targetDistance);
+    protected AABB getTargetableArea(double targetDistance) {
+        return this.mob.getBoundingBox().inflate(targetDistance, 4.0D, targetDistance);
     }
 
     @Override
     public void start() {
-        this.mob.getNavigation().startMovingTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
+        this.mob.getNavigation().moveTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 1);
         super.start();
     }
 
     @Override
     public void tick() {
         super.tick();
-        ItemStack stack = this.targetEntity.getStack();
+        ItemStack stack = this.targetEntity.getItem();
         if (this.targetEntity == null || !this.targetEntity.isAlive() || stack.isEmpty()) this.stop();
-        else if (this.mob.squaredDistanceTo(this.targetEntity) < this.mob.getWidth() * 2 + this.mob.getHeight() / 2 || (this.mob instanceof DragonBaseEntity dragon && dragon.getHeadPosition().squaredDistanceTo(this.targetEntity.getPos()) < this.mob.getHeight())) {
-            this.mob.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1, 1);
-            final int hunger = FoodUtils.getFoodPoints(this.targetEntity.getStack(), true, this.isIce);
+        else if (this.mob.distanceToSqr(this.targetEntity) < this.mob.getBbWidth() * 2 + this.mob.getBbHeight() / 2 || (this.mob instanceof DragonBaseEntity dragon && dragon.getHeadPosition().distanceToSqr(this.targetEntity.position()) < this.mob.getBbHeight())) {
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
+            final int hunger = FoodUtils.getFoodPoints(this.targetEntity.getItem(), true, this.isIce);
             final DragonBaseEntity dragon = ((DragonBaseEntity) this.mob);
             dragon.setHunger(Math.min(100, dragon.getHunger() + hunger));
-            this.targetEntity.getStack();
-            this.mob.setHealth(Math.min(this.mob.getMaxHealth(), (int) (this.mob.getHealth() + FoodUtils.getFoodPoints(this.targetEntity.getStack(), true, this.isIce))));
+            this.targetEntity.getItem();
+            this.mob.setHealth(Math.min(this.mob.getMaxHealth(), (int) (this.mob.getHealth() + FoodUtils.getFoodPoints(this.targetEntity.getItem(), true, this.isIce))));
             if (DragonBaseEntity.ANIMATION_EAT != null)
                 dragon.setAnimation(DragonBaseEntity.ANIMATION_EAT);
             for (int i = 0; i < 4; i++)
                 dragon.spawnItemCrackParticles(stack.getItem());
-            this.targetEntity.getStack().decrement(1);
+            this.targetEntity.getItem().shrink(1);
             this.stop();
         } else this.updateList();
     }
 
     @Override
-    public boolean shouldContinue() {
-        return !this.mob.getNavigation().isIdle();
+    public boolean canContinueToUse() {
+        return !this.mob.getNavigation().isDone();
     }
 
     public static class Sorter implements Comparator<Entity> {
@@ -120,8 +119,8 @@ public class DragonAITargetItemsGoal extends TrackTargetGoal {
 
         @Override
         public int compare(Entity p_compare_1_, Entity p_compare_2_) {
-            final double d0 = this.theEntity.squaredDistanceTo(p_compare_1_);
-            final double d1 = this.theEntity.squaredDistanceTo(p_compare_2_);
+            final double d0 = this.theEntity.distanceToSqr(p_compare_1_);
+            final double d1 = this.theEntity.distanceToSqr(p_compare_2_);
             return Double.compare(d0, d1);
         }
     }

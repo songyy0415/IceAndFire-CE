@@ -25,7 +25,7 @@ public class AmphithereMacuahuitlItem extends Item {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
         targetEntity.playSound(IafSounds.AMPHITHERE_GUST.get(), 1, 1);
-        targetEntity.playSound(SoundEvents.SHIELD_BLOCK, 1, 1);
+        targetEntity.playSound(SoundEvents.SHIELD_BLOCK.value(), 1, 1);
         targetEntity.hasImpulse = true;
         double xRatio = -Mth.sin(attacker.getYRot() * 0.017453292F);
         double zRatio = Mth.cos(attacker.getYRot() * 0.017453292F);

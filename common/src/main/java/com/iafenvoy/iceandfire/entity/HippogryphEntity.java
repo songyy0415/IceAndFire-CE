@@ -283,7 +283,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             }
             if (itemstack.is(IafItemTags.BREED_HIPPOGRYPH) && this.getAge() == 0 && !this.isInLove()) {
                 this.setInLove(player);
-                this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+                this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                 if (!player.isCreative())
                     itemstack.shrink(1);
                 return InteractionResult.SUCCESS;
@@ -318,7 +318,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             }
             if (itemstack.has(DataComponents.FOOD) && itemstack.is(ItemTags.MEAT) && this.getHealth() < this.getMaxHealth()) {
                 this.heal(5);
-                this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+                this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                 for (int i = 0; i < 3; i++)
                     this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
                 if (!player.isCreative())

@@ -1087,7 +1087,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 this.tame(player);
                 this.setHunger(this.getHunger() + 20);
                 this.heal(Math.min(this.getHealth(), (int) (this.getMaxHealth() / 2)));
-                this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
+                this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
                 this.spawnItemCrackParticles(stack.getItem());
                 this.spawnItemCrackParticles(Items.BONE);
                 this.spawnItemCrackParticles(Items.BONE_MEAL);
@@ -1152,7 +1152,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                     if (itemFoodAmount > 0 && (this.getHunger() < 100 || this.getHealth() < this.getMaxHealth())) {
                         this.setHunger(this.getHunger() + itemFoodAmount);
                         this.setHealth(Math.min(this.getMaxHealth(), (int) (this.getHealth() + ((float) itemFoodAmount / 10))));
-                        this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
+                        this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
                         this.spawnItemCrackParticles(stack.getItem());
                         if (!player.isCreative())
                             stack.shrink(1);
@@ -1164,7 +1164,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                         this.growDragon(1);
                         this.setHunger(this.getHunger() + 20);
                         this.heal(Math.min(this.getHealth(), (int) (this.getMaxHealth() / 2)));
-                        this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
+                        this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
                         this.spawnItemCrackParticles(stackItem);
                         this.spawnItemCrackParticles(Items.BONE);
                         this.spawnItemCrackParticles(Items.BONE_MEAL);
@@ -1262,7 +1262,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (stack.getItem() == IafItems.DRAGON_BONE.get())
             this.playSound(SoundEvents.SKELETON_AMBIENT, 1, 1);
         else
-            this.playSound(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1, 1);
+            this.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 1, 1);
         return stack;
     }
 
@@ -2744,7 +2744,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
 
     @Override
     public void playSound(SoundEvent soundIn, float volume, float pitch) {
-        if (soundIn == SoundEvents.GENERIC_EAT || soundIn == this.getAmbientSound() || soundIn == this.getHurtSound(this.level().damageSources().generic()) || soundIn == this.getDeathSound() || soundIn == this.getRoarSound()) {
+        if (soundIn == SoundEvents.GENERIC_EAT.value() || soundIn == this.getAmbientSound() || soundIn == this.getHurtSound(this.level().damageSources().generic()) || soundIn == this.getDeathSound() || soundIn == this.getRoarSound()) {
             if (!this.isSilent() && this.headPart != null) {
                 this.level().playSound(null, this.headPart.getX(), this.headPart.getY(), this.headPart.getZ(), soundIn, this.getSoundSource(), volume, pitch);
             }

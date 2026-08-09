@@ -436,7 +436,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
             if (stackInHand.is(IafItemTags.HEAL_COCKATRICE)) {
                 if (this.getHealth() < this.getMaxHealth()) {
                     this.heal(8);
-                    this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+                    this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                     stackInHand.shrink(1);
                 }
                 return InteractionResult.SUCCESS;

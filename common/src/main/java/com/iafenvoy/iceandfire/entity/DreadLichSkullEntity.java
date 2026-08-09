@@ -81,9 +81,9 @@ public class DreadLichSkullEntity extends AbstractArrow {
         double d0 = 0;
         double d1 = 0.01D;
         double d2 = 0D;
-        double x = this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
-        double y = this.getY() + this.random.nextFloat() * this.getBbHeight() - this.getBbHeight();
-        double z = this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
+        double x = this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
+        double y = this.getY() + this.getRandom().nextFloat() * this.getBbHeight() - this.getBbHeight();
+        double z = this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
         float f = (this.getBbWidth() + this.getBbHeight() + this.getBbWidth()) * 0.333F + 0.5F;
         if (this.particleDistSq(x, y, z) < f * f)
             this.level().addParticle(IafParticles.DREAD_TORCH.get(), x, y + 0.5D, z, d0, d1, d2);
@@ -133,7 +133,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();
-                this.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
             }
         }
     }

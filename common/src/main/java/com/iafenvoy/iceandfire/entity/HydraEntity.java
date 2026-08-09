@@ -314,9 +314,9 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setHeadCount(compound.getInt("HeadCount"));
-        this.setSeveredHead(compound.getInt("SeveredHead"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setHeadCount(compound.getInt("HeadCount").orElse(0));
+        this.setSeveredHead(compound.getInt("SeveredHead").orElse(0));
         for (int i = 0; i < HEADS; i++)
             this.headDamageTracker[i] = compound.getFloat("HeadDamage" + i);
         this.setConfigurableAttributes();

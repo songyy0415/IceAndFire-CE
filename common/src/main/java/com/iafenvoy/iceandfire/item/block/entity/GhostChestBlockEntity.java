@@ -26,7 +26,7 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
     @Override
     protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         super.loadAdditional(nbt, registryLookup);
-        this.generatedGhost = nbt.getBoolean("generatedGhost");
+        this.generatedGhost = nbt.getBoolean("generatedGhost").orElse(false);
     }
 
     @Override

@@ -211,9 +211,9 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getString("Variant"));
-        this.setWeapon(compound.getString("Weapon"));
-        this.stoneProgress = compound.getFloat("StoneProgress");
+        this.setVariant(compound.getString("Variant").orElse(""));
+        this.setWeapon(compound.getString("Weapon").orElse(""));
+        this.stoneProgress = compound.getFloat("StoneProgress").orElse(0.0F);
         this.setConfigurableAttributes();
     }
 

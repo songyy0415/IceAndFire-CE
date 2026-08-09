@@ -178,9 +178,9 @@ public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity,
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setScreamStage(compound.getInt("ScreamStage"));
-        this.setSize(compound.getFloat("DreadScale"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setScreamStage(compound.getInt("ScreamStage").orElse(0));
+        this.setSize(compound.getFloat("DreadScale").orElse(0.0F));
     }
 
     public int getVariant() {

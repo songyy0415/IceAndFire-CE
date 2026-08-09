@@ -161,7 +161,7 @@ public class DreadKnightEntity extends DreadMobEntity implements IAnimatedEntity
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setArmorVariant(compound.getInt("ArmorVariant"));
+        this.setArmorVariant(compound.getInt("ArmorVariant").orElse(0));
     }
 
     @Override

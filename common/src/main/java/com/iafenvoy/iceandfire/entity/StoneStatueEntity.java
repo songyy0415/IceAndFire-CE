@@ -152,13 +152,13 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.setCrackAmount(tag.getByte("CrackAmount"));
-        this.setTrappedEntityWidth(tag.getFloat("StatueWidth"));
-        this.setTrappedHeight(tag.getFloat("StatueHeight"));
-        this.setTrappedScale(tag.getFloat("StatueScale"));
-        this.setTrappedEntityTypeString(tag.getString("StatueEntityType"));
+        this.setCrackAmount(tag.getByte("CrackAmount").orElse((byte) 0));
+        this.setTrappedEntityWidth(tag.getFloat("StatueWidth").orElse(0.0F));
+        this.setTrappedHeight(tag.getFloat("StatueHeight").orElse(0.0F));
+        this.setTrappedScale(tag.getFloat("StatueScale").orElse(0.0F));
+        this.setTrappedEntityTypeString(tag.getString("StatueEntityType").orElse(""));
         if (tag.contains("StatueEntityTag")) {
-            this.setTrappedTag(tag.getCompound("StatueEntityTag"));
+            this.setTrappedTag(tag.getCompoundOrEmpty("StatueEntityTag"));
 
         }
     }

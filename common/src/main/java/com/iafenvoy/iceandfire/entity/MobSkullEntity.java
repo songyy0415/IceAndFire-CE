@@ -124,8 +124,8 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
-        this.setYRot(compound.getFloat("SkullYaw"));
-        this.setEnumOrdinal(compound.getInt("SkullType"));
+        this.setYRot(compound.getFloat("SkullYaw").orElse(0.0F));
+        this.setEnumOrdinal(compound.getInt("SkullType").orElse(0));
         super.readAdditionalSaveData(compound);
     }
 

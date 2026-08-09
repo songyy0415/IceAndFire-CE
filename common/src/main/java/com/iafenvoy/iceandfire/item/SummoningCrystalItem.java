@@ -64,8 +64,8 @@ public class SummoningCrystalItem extends Item {
                 if (tagInfo.contains("Dragon")) {
                     CompoundTag dragonTag = nbt.getCompound(tagInfo);
                     String dragonName = I18n.get(desc);
-                    if (!dragonTag.getString("CustomName").isEmpty())
-                        dragonName = dragonTag.getString("CustomName");
+                    if (!dragonTag.getString("CustomName").orElse("").isEmpty())
+                        dragonName = dragonTag.getString("CustomName").orElse("");
                     tooltip.accept(Component.translatable("item.iceandfire.summoning_crystal.bound", dragonName).withStyle(ChatFormatting.GRAY));
                     flag = true;
                 }

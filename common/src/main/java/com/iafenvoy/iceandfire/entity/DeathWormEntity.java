@@ -301,12 +301,12 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.growthCounter = compound.getInt("GrowthCounter");
-        this.setDeathWormScale(compound.getFloat("Scale"));
-        this.setWormAge(compound.getInt("WormAge"));
-        this.setWormHome(BlockPos.of(compound.getLong("WormHome")));
-        this.willExplode = compound.getBoolean("WillExplode");
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.growthCounter = compound.getInt("GrowthCounter").orElse(0);
+        this.setDeathWormScale(compound.getFloat("Scale").orElse(0.0F));
+        this.setWormAge(compound.getInt("WormAge").orElse(0));
+        this.setWormHome(BlockPos.of(compound.getLong("WormHome").orElse(0L)));
+        this.willExplode = compound.getBoolean("WillExplode").orElse(false);
         this.setConfigurableAttributes();
     }
 

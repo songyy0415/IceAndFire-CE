@@ -200,8 +200,8 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setBlinded(compound.getBoolean("Blind"));
-        this.setVariant(compound.getInt("Variant"));
+        this.setBlinded(compound.getBoolean("Blind").orElse(false));
+        this.setVariant(compound.getInt("Variant").orElse(0));
         this.setConfigurableAttributes();
     }
 

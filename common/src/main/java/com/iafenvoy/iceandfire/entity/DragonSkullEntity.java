@@ -160,10 +160,10 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
-        this.setDragonType(compound.getString("Type"));
-        this.setStage(compound.getInt("Stage"));
-        this.setDragonAge(compound.getInt("DragonAge"));
-        this.setYRot(compound.getFloat("DragonYaw"));
+        this.setDragonType(compound.getString("Type").orElse(""));
+        this.setStage(compound.getInt("Stage").orElse(0));
+        this.setDragonAge(compound.getInt("DragonAge").orElse(0));
+        this.setYRot(compound.getFloat("DragonYaw").orElse(0.0F));
         super.readAdditionalSaveData(compound);
     }
 

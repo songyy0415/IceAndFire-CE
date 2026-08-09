@@ -427,24 +427,24 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getString("Variant"));
-        this.setChested(compound.getBoolean("Chested"));
-        this.setSaddled(compound.getBoolean("Saddled"));
-        this.setHovering(compound.getBoolean("Hovering"));
-        this.setFlying(compound.getBoolean("Flying"));
-        this.setArmor(compound.getInt("Armor"));
-        this.feedings = compound.getInt("Feedings");
+        this.setVariant(compound.getString("Variant").orElse(""));
+        this.setChested(compound.getBoolean("Chested").orElse(false));
+        this.setSaddled(compound.getBoolean("Saddled").orElse(false));
+        this.setHovering(compound.getBoolean("Hovering").orElse(false));
+        this.setFlying(compound.getBoolean("Flying").orElse(false));
+        this.setArmor(compound.getInt("Armor").orElse(0));
+        this.feedings = compound.getInt("Feedings").orElse(0);
 
         this.initHippogryphInv();
         List<ItemStack> inv = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
         for (int i = 0; i < inv.size() && i < this.hippogryphInventory.getContainerSize(); i++)
             this.hippogryphInventory.setItem(i, inv.get(i));
 
-        this.hasHomePosition = compound.getBoolean("HasHomePosition");
-        if (this.hasHomePosition && compound.getInt("HomeAreaX") != 0 && compound.getInt("HomeAreaY") != 0 && compound.getInt("HomeAreaZ") != 0) {
-            this.homePos = new BlockPos(compound.getInt("HomeAreaX"), compound.getInt("HomeAreaY"), compound.getInt("HomeAreaZ"));
+        this.hasHomePosition = compound.getBoolean("HasHomePosition").orElse(false);
+        if (this.hasHomePosition && compound.getInt("HomeAreaX").orElse(0) != 0 && compound.getInt("HomeAreaY").orElse(0) != 0 && compound.getInt("HomeAreaZ").orElse(0) != 0) {
+            this.homePos = new BlockPos(compound.getInt("HomeAreaX").orElse(0), compound.getInt("HomeAreaY").orElse(0), compound.getInt("HomeAreaZ").orElse(0));
         }
-        this.setCommand(compound.getInt("Command"));
+        this.setCommand(compound.getInt("Command").orElse(0));
 
         if (this.isOrderedToSit())
             this.sitProgress = 20.0F;

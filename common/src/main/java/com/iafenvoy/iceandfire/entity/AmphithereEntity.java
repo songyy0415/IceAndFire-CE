@@ -563,14 +563,14 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setFlying(compound.getBoolean("Flying"));
-        this.flightCooldown = compound.getInt("FlightCooldown");
-        this.ridingTime = compound.getInt("RidingTime");
-        this.hasHomePosition = compound.getBoolean("HasHomePosition");
-        if (this.hasHomePosition && compound.getInt("HomeAreaX") != 0 && compound.getInt("HomeAreaY") != 0 && compound.getInt("HomeAreaZ") != 0)
-            this.homePos = new BlockPos(compound.getInt("HomeAreaX"), compound.getInt("HomeAreaY"), compound.getInt("HomeAreaZ"));
-        this.setCommand(compound.getInt("Command"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setFlying(compound.getBoolean("Flying").orElse(false));
+        this.flightCooldown = compound.getInt("FlightCooldown").orElse(0);
+        this.ridingTime = compound.getInt("RidingTime").orElse(0);
+        this.hasHomePosition = compound.getBoolean("HasHomePosition").orElse(false);
+        if (this.hasHomePosition && compound.getInt("HomeAreaX").orElse(0) != 0 && compound.getInt("HomeAreaY").orElse(0) != 0 && compound.getInt("HomeAreaZ").orElse(0) != 0)
+            this.homePos = new BlockPos(compound.getInt("HomeAreaX").orElse(0), compound.getInt("HomeAreaY").orElse(0), compound.getInt("HomeAreaZ").orElse(0));
+        this.setCommand(compound.getInt("Command").orElse(0));
         this.setConfigurableAttributes();
     }
 

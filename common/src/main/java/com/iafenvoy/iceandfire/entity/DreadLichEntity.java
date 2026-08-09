@@ -182,8 +182,8 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setMinionCount(compound.getInt("MinionCount"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setMinionCount(compound.getInt("MinionCount").orElse(0));
         this.setCombatTask();
     }
 

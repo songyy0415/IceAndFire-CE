@@ -389,20 +389,20 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         super.readAdditionalSaveData(tag);
         this.charmingEntities.clear();
         if (tag.contains("CharmingEntities", Tag.TAG_LIST) && this.level() instanceof ServerLevel world) {
-            ListTag list = tag.getList("CharmingEntities", Tag.TAG_COMPOUND);
+            ListTag list = tag.getListOrEmpty("CharmingEntities");
             for (Tag element : list)
                 if (element instanceof CompoundTag nbt) {
                     Entity entity = world.getEntity(nbt.getUUID("Uuid"));
                     if (entity instanceof LivingEntity living)
-                        this.charmingEntities.put(living, nbt.getInt("CharmTime"));
+                        this.charmingEntities.put(living, nbt.getInt("CharmTime").orElse(0));
                 }
         }
-        this.setHairColor(tag.getInt("HairColor"));
-        this.setAggressive(tag.getBoolean("Aggressive"));
-        this.setSingingPose(tag.getInt("SingingPose"));
-        this.setSinging(tag.getBoolean("Singing"));
-        this.setSwimming(tag.getBoolean("Swimming"));
-        this.setCharmed(tag.getBoolean("Passive"));
+        this.setHairColor(tag.getInt("HairColor").orElse(0));
+        this.setAggressive(tag.getBoolean("Aggressive").orElse(false));
+        this.setSingingPose(tag.getInt("SingingPose").orElse(0));
+        this.setSinging(tag.getBoolean("Singing").orElse(false));
+        this.setSwimming(tag.getBoolean("Swimming").orElse(false));
+        this.setCharmed(tag.getBoolean("Passive").orElse(false));
         this.setConfigurableAttributes();
     }
 

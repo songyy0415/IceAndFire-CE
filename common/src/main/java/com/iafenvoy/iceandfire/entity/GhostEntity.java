@@ -329,10 +329,10 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setColor(compound.getInt("Color"));
-        this.setDaytimeMode(compound.getBoolean("DaytimeMode"));
-        this.setDaytimeCounter(compound.getInt("DaytimeCounter"));
-        this.setFromChest(compound.getBoolean("FromChest"));
+        this.setColor(compound.getInt("Color").orElse(0));
+        this.setDaytimeMode(compound.getBoolean("DaytimeMode").orElse(false));
+        this.setDaytimeCounter(compound.getInt("DaytimeCounter").orElse(0));
+        this.setFromChest(compound.getBoolean("FromChest").orElse(false));
 
         this.setConfigurableAttributes();
     }

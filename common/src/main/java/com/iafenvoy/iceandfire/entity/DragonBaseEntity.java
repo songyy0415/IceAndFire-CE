@@ -788,36 +788,36 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setHunger(compound.getInt("Hunger"));
-        this.setAgeInTicks(compound.getInt("AgeTicks"));
-        this.setGender(compound.getBoolean("Gender"));
-        this.setVariant(compound.getString("Variant"));
-        this.setInSittingPose(compound.getBoolean("Sleeping"));
-        this.setTame(compound.getBoolean("TamedDragon"), true);
-        this.setBreathingFire(compound.getBoolean("FireBreathing"));
-        this.usingGroundAttack = compound.getBoolean("AttackDecision");
-        this.setHovering(compound.getBoolean("Hovering"));
-        this.setFlying(compound.getBoolean("Flying"));
-        this.setDeathStage(compound.getInt("DeathStage"));
-        this.setModelDead(compound.getBoolean("ModelDead"));
-        this.modelDeadProgress = compound.getFloat("DeadProg");
-        this.setCustomPose(compound.getString("CustomPose"));
-        this.hasHomePosition = compound.getBoolean("HasHomePosition");
-        if (this.hasHomePosition && compound.getInt("HomeAreaX") != 0 && compound.getInt("HomeAreaY") != 0 && compound.getInt("HomeAreaZ") != 0)
+        this.setHunger(compound.getInt("Hunger").orElse(0));
+        this.setAgeInTicks(compound.getInt("AgeTicks").orElse(0));
+        this.setGender(compound.getBoolean("Gender").orElse(false));
+        this.setVariant(compound.getString("Variant").orElse(""));
+        this.setInSittingPose(compound.getBoolean("Sleeping").orElse(false));
+        this.setTame(compound.getBoolean("TamedDragon").orElse(false), true);
+        this.setBreathingFire(compound.getBoolean("FireBreathing").orElse(false));
+        this.usingGroundAttack = compound.getBoolean("AttackDecision").orElse(false);
+        this.setHovering(compound.getBoolean("Hovering").orElse(false));
+        this.setFlying(compound.getBoolean("Flying").orElse(false));
+        this.setDeathStage(compound.getInt("DeathStage").orElse(0));
+        this.setModelDead(compound.getBoolean("ModelDead").orElse(false));
+        this.modelDeadProgress = compound.getFloat("DeadProg").orElse(0.0F);
+        this.setCustomPose(compound.getString("CustomPose").orElse(""));
+        this.hasHomePosition = compound.getBoolean("HasHomePosition").orElse(false);
+        if (this.hasHomePosition && compound.getInt("HomeAreaX").orElse(0) != 0 && compound.getInt("HomeAreaY").orElse(0) != 0 && compound.getInt("HomeAreaZ").orElse(0) != 0)
             this.homePos = new HomePosition(compound, this.level());
-        this.setTackling(compound.getBoolean("Tackle"));
-        this.setAgingDisabled(compound.getBoolean("AgingDisabled"));
-        this.setCommand(compound.getInt("Command"));
+        this.setTackling(compound.getBoolean("Tackle").orElse(false));
+        this.setAgingDisabled(compound.getBoolean("AgingDisabled").orElse(false));
+        this.setCommand(compound.getInt("Command").orElse(0));
 
         this.createInventory();
         List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
         for (int i = 0; i < stacks.size() && i < this.dragonInventory.getContainerSize(); i++)
             this.dragonInventory.setItem(i, stacks.get(i));
 
-        this.setCrystalBound(compound.getBoolean("CrystalBound"));
+        this.setCrystalBound(compound.getBoolean("CrystalBound").orElse(false));
         this.setConfigurableAttributes();
         this.refreshDirtyAttributes();
-        this.brushedTime = compound.getInt("BrushedTime");
+        this.brushedTime = compound.getInt("BrushedTime").orElse(0);
     }
 
     public int getContainerSize() {

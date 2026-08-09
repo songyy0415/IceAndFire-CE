@@ -63,14 +63,14 @@ public class EggInIceBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         super.loadAdditional(nbt, registryLookup);
-        this.type = DragonColor.getById(nbt.getString("Color"));
-        this.age = nbt.getInt("Age");
+        this.type = DragonColor.getById(nbt.getString("Color").orElse(""));
+        this.age = nbt.getInt("Age").orElse(0);
         UUID s = null;
         if (nbt.hasUUID("OwnerUUID"))
             s = nbt.getUUID("OwnerUUID");
         else
             try {
-                String s1 = nbt.getString("OwnerUUID");
+                String s1 = nbt.getString("OwnerUUID").orElse("");
                 assert this.level != null;
                 s = OldUsersConverter.convertMobOwnerIfNecessary(this.level.getServer(), s1);
             } catch (Exception ignored) {

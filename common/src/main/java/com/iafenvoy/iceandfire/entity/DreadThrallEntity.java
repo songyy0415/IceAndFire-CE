@@ -186,11 +186,11 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setBodyArmorVariant(compound.getInt("ArmorVariant"));
-        this.setCustomArmorHead(compound.getBoolean("HasCustomHelmet"));
-        this.setCustomArmorChest(compound.getBoolean("HasCustomChestplate"));
-        this.setCustomArmorLegs(compound.getBoolean("HasCustomLeggings"));
-        this.setCustomArmorFeet(compound.getBoolean("HasCustomBoots"));
+        this.setBodyArmorVariant(compound.getInt("ArmorVariant").orElse(0));
+        this.setCustomArmorHead(compound.getBoolean("HasCustomHelmet").orElse(false));
+        this.setCustomArmorChest(compound.getBoolean("HasCustomChestplate").orElse(false));
+        this.setCustomArmorLegs(compound.getBoolean("HasCustomLeggings").orElse(false));
+        this.setCustomArmorFeet(compound.getBoolean("HasCustomBoots").orElse(false));
     }
 
     @Override

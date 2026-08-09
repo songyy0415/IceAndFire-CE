@@ -34,7 +34,7 @@ public class DragonArrowEntity extends AbstractArrow {
     @Override
     public void readAdditionalSaveData(CompoundTag tagCompund) {
         super.readAdditionalSaveData(tagCompund);
-        this.setBaseDamage(tagCompund.getDouble("damage"));
+        this.setBaseDamage(tagCompund.getDouble("damage").orElse(0.0));
     }
 
     @Override

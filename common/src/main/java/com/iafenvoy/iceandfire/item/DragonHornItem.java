@@ -105,13 +105,13 @@ public class DragonHornItem extends Item {
                     EntityType<?> entityType = optional.get();
                     tooltip.accept((Component.translatable(entityType.getDescriptionId())).withStyle(this.getTextColorForEntityType(entityType)));
                     String name = Component.translatable("dragon.unnamed").getString();
-                    if (!entityTag.getString("CustomName").isEmpty())
-                        name = entityTag.getString("CustomName");
+                    if (!entityTag.getString("CustomName").orElse("").isEmpty())
+                        name = entityTag.getString("CustomName").orElse("");
 
                     tooltip.accept((Component.literal(name)).withStyle(ChatFormatting.GRAY));
-                    String gender = (Component.translatable("dragon.gender")).getString() + " " + (Component.translatable(entityTag.getBoolean("Gender") ? "dragon.gender.male" : "dragon.gender.female")).getString();
+                    String gender = (Component.translatable("dragon.gender")).getString() + " " + (Component.translatable(entityTag.getBoolean("Gender").orElse(false) ? "dragon.gender.male" : "dragon.gender.female")).getString();
                     tooltip.accept((Component.literal(gender)).withStyle(ChatFormatting.GRAY));
-                    int stagenumber = entityTag.getInt("AgeTicks") / 24000;
+                    int stagenumber = entityTag.getInt("AgeTicks").orElse(0) / 24000;
                     int stage1;
                     if (stagenumber >= 100) stage1 = 5;
                     else if (stagenumber >= 75) stage1 = 4;

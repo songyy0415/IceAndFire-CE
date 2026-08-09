@@ -367,10 +367,10 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setChested(compound.getBoolean("Chested"));
-        this.setSaddled(compound.getBoolean("Saddled"));
-        this.setArmor(compound.getInt("Armor"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setChested(compound.getBoolean("Chested").orElse(false));
+        this.setSaddled(compound.getBoolean("Saddled").orElse(false));
+        this.setArmor(compound.getInt("Armor").orElse(0));
 
         this.createInventory();
         List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());

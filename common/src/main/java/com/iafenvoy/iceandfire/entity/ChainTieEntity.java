@@ -85,7 +85,7 @@ public class ChainTieEntity extends HangingEntity {
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
-        this.pos = new BlockPos(compound.getInt("TileX"), compound.getInt("TileY"), compound.getInt("TileZ"));
+        this.pos = new BlockPos(compound.getInt("TileX").orElse(0), compound.getInt("TileY").orElse(0), compound.getInt("TileZ").orElse(0));
     }
 
     @Override

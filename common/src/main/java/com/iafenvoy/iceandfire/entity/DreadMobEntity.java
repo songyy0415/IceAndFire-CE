@@ -97,7 +97,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
         if (compound.hasUUID("CommanderUUID")) {
             uuid = compound.getUUID("CommanderUUID");
         } else {
-            String s = compound.getString("CommanderUUID");
+            String s = compound.getString("CommanderUUID").orElse("");
             uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
         }
 

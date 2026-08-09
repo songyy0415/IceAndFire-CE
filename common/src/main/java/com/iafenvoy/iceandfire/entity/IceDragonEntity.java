@@ -96,8 +96,8 @@ public class IceDragonEntity extends DragonBaseEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setSwimming(compound.getBoolean("Swimming"));
-        this.ticksSwiming = compound.getInt("SwimmingTicks");
+        this.setSwimming(compound.getBoolean("Swimming").orElse(false));
+        this.ticksSwiming = compound.getInt("SwimmingTicks").orElse(0);
     }
 
     @Override

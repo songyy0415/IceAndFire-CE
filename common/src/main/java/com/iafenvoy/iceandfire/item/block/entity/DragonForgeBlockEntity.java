@@ -168,7 +168,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
         super.loadAdditional(nbt, registryLookup);
         this.forgeItemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, this.forgeItemStacks, registryLookup);
-        this.cookTime = nbt.getInt("CookTime");
+        this.cookTime = nbt.getInt("CookTime").orElse(0);
     }
 
     @Override

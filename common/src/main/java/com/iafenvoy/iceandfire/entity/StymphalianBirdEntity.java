@@ -146,7 +146,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
         if (tag.hasUUID("VictorUUID")) {
             s = tag.getUUID("VictorUUID");
         } else {
-            String s1 = tag.getString("VictorUUID");
+            String s1 = tag.getString("VictorUUID").orElse("");
             s = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
         }
 
@@ -156,7 +156,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
             } catch (Throwable ignored) {
             }
         }
-        this.setFlying(tag.getBoolean("Flying"));
+        this.setFlying(tag.getBoolean("Flying").orElse(false));
     }
 
     public boolean isFlying() {

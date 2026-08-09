@@ -360,16 +360,16 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Variant") && compound.get("Variant").getId() == Tag.TAG_STRING)
-            this.setVariant(compound.getString("Variant"));
+            this.setVariant(compound.getString("Variant").orElse(""));
         else
-            this.setVariant(SeaSerpentType.values().get(compound.getInt("Variant")).getName());
-        this.ticksSinceRoar = compound.getInt("TicksSinceRoar");
-        this.jumpCooldown = compound.getInt("JumpCooldown");
-        this.setSeaSerpentScale(compound.getFloat("Scale"));
-        this.setJumpingOutOfWater(compound.getBoolean("JumpingOutOfWater"));
-        this.attackDecision = compound.getBoolean("AttackDecision");
-        this.setBreathing(compound.getBoolean("Breathing"));
-        this.setAncient(compound.getBoolean("Ancient"));
+            this.setVariant(SeaSerpentType.values().get(compound.getInt("Variant").orElse(0)).getName());
+        this.ticksSinceRoar = compound.getInt("TicksSinceRoar").orElse(0);
+        this.jumpCooldown = compound.getInt("JumpCooldown").orElse(0);
+        this.setSeaSerpentScale(compound.getFloat("Scale").orElse(0.0F));
+        this.setJumpingOutOfWater(compound.getBoolean("JumpingOutOfWater").orElse(false));
+        this.attackDecision = compound.getBoolean("AttackDecision").orElse(false);
+        this.setBreathing(compound.getBoolean("Breathing").orElse(false));
+        this.setAncient(compound.getBoolean("Ancient").orElse(false));
         this.setConfigurableAttributes();
     }
 

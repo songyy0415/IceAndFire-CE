@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.entity.util;
 
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 public class HomePosition {
     int x;
@@ -12,19 +12,19 @@ public class HomePosition {
     BlockPos pos;
     String dimension;
 
-    public HomePosition(NbtCompound compound) {
+    public HomePosition(CompoundTag compound) {
         this.read(compound);
     }
 
-    public HomePosition(NbtCompound compound, World world) {
+    public HomePosition(CompoundTag compound, Level world) {
         this.read(compound, world);
     }
 
-    public HomePosition(BlockPos pos, World world) {
+    public HomePosition(BlockPos pos, Level world) {
         this(pos.getX(), pos.getY(), pos.getZ(), world);
     }
 
-    public HomePosition(int x, int y, int z, World world) {
+    public HomePosition(int x, int y, int z, Level world) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -40,7 +40,7 @@ public class HomePosition {
         return this.dimension == null ? "" : this.dimension;
     }
 
-    public void write(NbtCompound compound) {
+    public void write(CompoundTag compound) {
         compound.putInt("HomeAreaX", this.x);
         compound.putInt("HomeAreaY", this.y);
         compound.putInt("HomeAreaZ", this.z);
@@ -48,22 +48,22 @@ public class HomePosition {
             compound.putString("HomeDimension", this.dimension);
     }
 
-    public void read(NbtCompound compound, World world) {
+    public void read(CompoundTag compound, Level world) {
         this.read(compound);
         if (this.dimension == null)
             this.dimension = DragonUtils.getDimensionName(world);
     }
 
-    public void read(NbtCompound compound) {
+    public void read(CompoundTag compound) {
         if (compound.contains("HomeAreaX"))
-            this.x = compound.getInt("HomeAreaX");
+            this.x = compound.getInt("HomeAreaX").orElse(0);
         if (compound.contains("HomeAreaY"))
-            this.y = compound.getInt("HomeAreaY");
+            this.y = compound.getInt("HomeAreaY").orElse(0);
         if (compound.contains("HomeAreaZ"))
-            this.z = compound.getInt("HomeAreaZ");
+            this.z = compound.getInt("HomeAreaZ").orElse(0);
         this.pos = new BlockPos(this.x, this.y, this.z);
         if (compound.contains("HomeDimension"))
-            this.dimension = compound.getString("HomeDimension");
+            this.dimension = compound.getString("HomeDimension").orElse("");
     }
 }
 

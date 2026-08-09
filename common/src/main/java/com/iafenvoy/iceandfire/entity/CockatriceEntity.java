@@ -344,13 +344,13 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.setHen(tag.getBoolean("Hen"));
-        this.setStaring(tag.getBoolean("Staring"));
-        this.setTamingLevel(tag.getInt("TamingLevel"));
-        this.setTamingPlayer(tag.getInt("TamingPlayer"));
-        this.setCommand(tag.getInt("Command"));
-        this.hasHomePosition = tag.getBoolean("HasHomePosition");
-        if (this.hasHomePosition && tag.getInt("HomeAreaX") != 0 && tag.getInt("HomeAreaY") != 0 && tag.getInt("HomeAreaZ") != 0)
+        this.setHen(tag.getBoolean("Hen").orElse(false));
+        this.setStaring(tag.getBoolean("Staring").orElse(false));
+        this.setTamingLevel(tag.getInt("TamingLevel").orElse(0));
+        this.setTamingPlayer(tag.getInt("TamingPlayer").orElse(0));
+        this.setCommand(tag.getInt("Command").orElse(0));
+        this.hasHomePosition = tag.getBoolean("HasHomePosition").orElse(false);
+        if (this.hasHomePosition && tag.getInt("HomeAreaX").orElse(0) != 0 && tag.getInt("HomeAreaY").orElse(0) != 0 && tag.getInt("HomeAreaZ").orElse(0) != 0)
             this.homePos = new HomePosition(tag, this.level());
         this.setConfigurableAttributes();
     }

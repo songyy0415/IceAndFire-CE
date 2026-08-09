@@ -80,13 +80,13 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.setEggType(DragonColor.getById(tag.getString("Color")));
-        this.setDragonAge(tag.getInt("DragonAge"));
+        this.setEggType(DragonColor.getById(tag.getString("Color").orElse("")));
+        this.setDragonAge(tag.getInt("DragonAge").orElse(0));
         String s;
 
-        if (tag.contains("OwnerUUID", 8)) s = tag.getString("OwnerUUID");
+        if (tag.contains("OwnerUUID", 8)) s = tag.getString("OwnerUUID").orElse("");
         else {
-            String s1 = tag.getString("Owner");
+            String s1 = tag.getString("Owner").orElse("");
             UUID converedUUID = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
             s = converedUUID == null ? s1 : converedUUID.toString();
         }

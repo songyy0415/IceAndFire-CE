@@ -109,7 +109,7 @@ public class DreadScuttlerEntity extends DreadMobEntity implements IAnimatedEnti
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setSize(compound.getFloat("Scale"));
+        this.setSize(compound.getFloat("Scale").orElse(0.0F));
     }
 
     @Override

@@ -327,13 +327,13 @@ public class PixieEntity extends TamableAnimal {
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
-        this.setColor(compound.getInt("Color"));
+        this.setColor(compound.getInt("Color").orElse(0));
 
-        this.stealCooldown = compound.getInt("StealCooldown");
-        this.ticksHeldItemFor = compound.getInt("HoldingTicks");
+        this.stealCooldown = compound.getInt("StealCooldown").orElse(0);
+        this.ticksHeldItemFor = compound.getInt("HoldingTicks").orElse(0);
 
-        this.setPixieSitting(compound.getBoolean("PixieSitting"));
-        this.setCommand(compound.getInt("Command"));
+        this.setPixieSitting(compound.getBoolean("PixieSitting").orElse(false));
+        this.setCommand(compound.getInt("Command").orElse(0));
 
         super.readAdditionalSaveData(compound);
     }

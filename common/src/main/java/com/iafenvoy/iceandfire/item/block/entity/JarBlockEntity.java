@@ -98,11 +98,11 @@ public class JarBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         super.loadAdditional(nbt, registryLookup);
-        this.hasPixie = nbt.getBoolean("HasPixie");
-        this.pixieType = nbt.getInt("PixieType");
-        this.hasProduced = nbt.getBoolean("HasProduced");
-        this.ticksExisted = nbt.getInt("TicksExisted");
-        this.tamedPixie = nbt.getBoolean("TamedPixie");
+        this.hasPixie = nbt.getBoolean("HasPixie").orElse(false);
+        this.pixieType = nbt.getInt("PixieType").orElse(0);
+        this.hasProduced = nbt.getBoolean("HasProduced").orElse(false);
+        this.ticksExisted = nbt.getInt("TicksExisted").orElse(0);
+        this.tamedPixie = nbt.getBoolean("TamedPixie").orElse(false);
         if (nbt.hasUUID("PixieOwnerUUID"))
             this.pixieOwnerUUID = nbt.getUUID("PixieOwnerUUID");
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);

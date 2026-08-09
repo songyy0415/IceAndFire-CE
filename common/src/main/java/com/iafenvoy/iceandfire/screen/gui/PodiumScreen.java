@@ -2,44 +2,34 @@ package com.iafenvoy.iceandfire.screen.gui;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.screen.handler.PodiumScreenHandler;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 
 public class PodiumScreen extends AbstractContainerScreen<PodiumScreenHandler> {
     public static final Identifier PODIUM_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/podium.png");
 
     public PodiumScreen(PodiumScreenHandler container, Inventory inv, Component name) {
-        super(container, inv, name);
-        this.imageHeight = 133;
+        super(container, inv, name, 176, 133);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics pGuiGraphics, int x, int y) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
         if (this.menu != null) {
             String s = I18n.get("block.iceandfire.podium");
-            assert this.minecraft != null;
-            pGuiGraphics.drawString(this.font, s, this.imageWidth / 2 - this.minecraft.font.width(s) / 2, 6, 4210752, false);
+            graphics.text(this.font, s, this.imageWidth / 2 - this.font.width(s) / 2, 6, ARGB.opaque(4210752), false);
         }
-        pGuiGraphics.drawString(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752, false);
+        graphics.text(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, ARGB.opaque(4210752), false);
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(context, mouseX, mouseY, partialTicks);
-        super.render(context, mouseX, mouseY, partialTicks);
-        this.renderTooltip(context, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics pGuiGraphics, float partialTicks, int x, int y) {
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        int i = (this.width - this.imageWidth) / 2;
-        int j = (this.height - this.imageHeight) / 2;
-        pGuiGraphics.blit(PODIUM_TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PODIUM_TEXTURE, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
     }
 }

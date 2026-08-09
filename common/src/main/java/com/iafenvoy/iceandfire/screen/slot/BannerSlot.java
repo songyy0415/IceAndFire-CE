@@ -1,22 +1,22 @@
 package com.iafenvoy.iceandfire.screen.slot;
 
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BannerItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BannerItem;
+import net.minecraft.world.item.ItemStack;
 
 public class BannerSlot extends Slot {
-    public BannerSlot(Inventory inventory, int index, int x, int y) {
+    public BannerSlot(Container inventory, int index, int x, int y) {
         super(inventory, index, x, y);
     }
 
     @Override
-    public boolean canInsert(ItemStack stack) {
-        return super.canInsert(stack) && stack.getItem() instanceof BannerItem;
+    public boolean mayPlace(ItemStack stack) {
+        return super.mayPlace(stack) && stack.getItem() instanceof BannerItem;
     }
 
     @Override
-    public int getMaxItemCount() {
+    public int getMaxStackSize() {
         return 1;
     }
 }

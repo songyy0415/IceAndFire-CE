@@ -1,24 +1,24 @@
 package com.iafenvoy.iceandfire.screen.slot;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class LecternSlot extends Slot {
-    public LecternSlot(Inventory inv, int slotIndex, int xPosition, int yPosition) {
+    public LecternSlot(Container inv, int slotIndex, int xPosition, int yPosition) {
         super(inv, slotIndex, xPosition, yPosition);
     }
 
     @Override
-    public void markDirty() {
-        this.inventory.markDirty();
+    public void setChanged() {
+        this.container.setChanged();
     }
 
     @Override
-    public void onTakeItem(PlayerEntity playerIn, ItemStack stack) {
-        this.onCrafted(stack);
-        super.onTakeItem(playerIn, stack);
+    public void onTake(Player playerIn, ItemStack stack) {
+        this.checkTakeAchievements(stack);
+        super.onTake(playerIn, stack);
     }
 
     /**
@@ -27,8 +27,8 @@ public class LecternSlot extends Slot {
      * onCrafting(item).
      */
     @Override
-    protected void onCrafted(ItemStack stack, int amount) {
-        this.onCrafted(stack);
+    protected void onQuickCraft(ItemStack stack, int amount) {
+        this.checkTakeAchievements(stack);
     }
 
     /**
@@ -36,11 +36,11 @@ public class LecternSlot extends Slot {
      * not ore and wood.
      */
     @Override
-    protected void onCrafted(ItemStack stack) {
+    protected void checkTakeAchievements(ItemStack stack) {
     }
 
     @Override
-    public int getMaxItemCount() {
+    public int getMaxStackSize() {
         return 1;
     }
 }

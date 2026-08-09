@@ -134,7 +134,7 @@ public class LecternScreenHandler extends AbstractContainerMenu {
                 this.tileFurnace.setItem(0, bookStack);
                 this.tileFurnace.setChanged();
                 this.slotsChanged(this.tileFurnace);
-                playerIn.level().playSound(null, playerIn.blockPosition(), IafSounds.BESTIARY_PAGE.get(), SoundSource.BLOCKS, 1.0F, playerIn.level().random.nextFloat() * 0.1F + 0.9F);
+                playerIn.level().playSound(null, playerIn.blockPosition(), IafSounds.BESTIARY_PAGE.get(), SoundSource.BLOCKS, 1.0F, playerIn.level().getRandom().nextFloat() * 0.1F + 0.9F);
             }
             this.onUpdate();
             return true;

@@ -1,25 +1,25 @@
 package com.iafenvoy.iceandfire.screen.handler;
 
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public class PodiumScreenHandler extends ScreenHandler {
-    public final Inventory podium;
+public class PodiumScreenHandler extends AbstractContainerMenu {
+    public final Container podium;
 
-    public PodiumScreenHandler(int i, PlayerInventory playerInventory) {
-        this(i, new SimpleInventory(1), playerInventory);
+    public PodiumScreenHandler(int i, Inventory playerInventory) {
+        this(i, new SimpleContainer(1), playerInventory);
     }
 
-    public PodiumScreenHandler(int id, Inventory furnaceInventory, PlayerInventory playerInventory) {
+    public PodiumScreenHandler(int id, Container furnaceInventory, Inventory playerInventory) {
         super(IafScreenHandlers.PODIUM_SCREEN.get(), id);
         this.podium = furnaceInventory;
-        furnaceInventory.onOpen(playerInventory.player);
+        furnaceInventory.startOpen(playerInventory.player);
         byte b0 = 51;
         this.addSlot(new Slot(furnaceInventory, 0, 80, 20));
         for (int i = 0; i < 3; ++i)
@@ -30,26 +30,26 @@ public class PodiumScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerIn) {
-        return this.podium.canPlayerUse(playerIn);
+    public boolean stillValid(Player playerIn) {
+        return this.podium.stillValid(playerIn);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot.hasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        if (slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (index < this.podium.size()) {
-                if (!this.insertItem(itemstack1, this.podium.size(), this.slots.size(), true))
+            if (index < this.podium.getContainerSize()) {
+                if (!this.moveItemStackTo(itemstack1, this.podium.getContainerSize(), this.slots.size(), true))
                     return ItemStack.EMPTY;
-            } else if (!this.insertItem(itemstack1, 0, this.podium.size(), false))
+            } else if (!this.moveItemStackTo(itemstack1, 0, this.podium.getContainerSize(), false))
                 return ItemStack.EMPTY;
             if (itemstack1.isEmpty())
-                slot.setStackNoCallbacks(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             else
-                slot.markDirty();
+                slot.setChanged();
         }
         return itemstack;
     }
@@ -58,8 +58,8 @@ public class PodiumScreenHandler extends ScreenHandler {
      * Called when the container is closed.
      */
     @Override
-    public void onClosed(PlayerEntity playerIn) {
-        super.onClosed(playerIn);
-        this.podium.onClose(playerIn);
+    public void removed(Player playerIn) {
+        super.removed(playerIn);
+        this.podium.stopOpen(playerIn);
     }
 }

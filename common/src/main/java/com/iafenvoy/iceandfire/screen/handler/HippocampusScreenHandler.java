@@ -2,42 +2,42 @@ package com.iafenvoy.iceandfire.screen.handler;
 
 import com.iafenvoy.iceandfire.entity.HippocampusEntity;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 
-public class HippocampusScreenHandler extends ScreenHandler {
-    private final Inventory hippocampusInventory;
+public class HippocampusScreenHandler extends AbstractContainerMenu {
+    private final Container hippocampusInventory;
     private final HippocampusEntity hippocampus;
 
-    public HippocampusScreenHandler(int i, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(i, new SimpleInventory(18), playerInventory, (HippocampusEntity) MinecraftClient.getInstance().world.getEntityById(buf.readInt()));
+    public HippocampusScreenHandler(int i, Inventory playerInventory, FriendlyByteBuf buf) {
+        this(i, new SimpleContainer(18), playerInventory, (HippocampusEntity) Minecraft.getInstance().level.getEntity(buf.readInt()));
     }
 
-    public HippocampusScreenHandler(int id, Inventory hippoInventory, PlayerInventory playerInventory, HippocampusEntity hippocampus) {
+    public HippocampusScreenHandler(int id, Container hippoInventory, Inventory playerInventory, HippocampusEntity hippocampus) {
         super(IafScreenHandlers.HIPPOCAMPUS_SCREEN.get(), id);
         this.hippocampusInventory = hippoInventory;
         this.hippocampus = hippocampus;
-        PlayerEntity player = playerInventory.player;
-        this.hippocampusInventory.onOpen(player);
+        Player player = playerInventory.player;
+        this.hippocampusInventory.startOpen(player);
 
         // Saddle slot
         this.addSlot(new Slot(this.hippocampusInventory, 0, 8, 18) {
             @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Items.SADDLE && !this.hasStack();
+            public boolean mayPlace(ItemStack stack) {
+                return stack.getItem() == Items.SADDLE && !this.hasItem();
             }
 
             @Override
-            public boolean isEnabled() {
+            public boolean isActive() {
                 return true;
             }
         });
@@ -45,12 +45,12 @@ public class HippocampusScreenHandler extends ScreenHandler {
         // Chest slot
         this.addSlot(new Slot(this.hippocampusInventory, 1, 8, 36) {
             @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Blocks.CHEST.asItem() && !this.hasStack();
+            public boolean mayPlace(ItemStack stack) {
+                return stack.getItem() == Blocks.CHEST.asItem() && !this.hasItem();
             }
 
             @Override
-            public boolean isEnabled() {
+            public boolean isActive() {
                 return true;
             }
         });
@@ -58,17 +58,17 @@ public class HippocampusScreenHandler extends ScreenHandler {
         // Armor slot
         this.addSlot(new Slot(this.hippocampusInventory, 2, 8, 52) {
             @Override
-            public boolean canInsert(ItemStack stack) {
+            public boolean mayPlace(ItemStack stack) {
                 return HippocampusEntity.getIntFromArmor(stack) != 0;
             }
 
             @Override
-            public int getMaxItemCount() {
+            public int getMaxStackSize() {
                 return 1;
             }
 
             @Override
-            public boolean isEnabled() {
+            public boolean isActive() {
                 return true;
             }
         });
@@ -86,51 +86,51 @@ public class HippocampusScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot2 = this.slots.get(slot);
-        if (slot2.hasStack()) {
-            ItemStack itemStack2 = slot2.getStack();
+        if (slot2.hasItem()) {
+            ItemStack itemStack2 = slot2.getItem();
             itemStack = itemStack2.copy();
-            int i = this.hippocampusInventory.size() + 1;
+            int i = this.hippocampusInventory.getContainerSize() + 1;
             if (slot < i) {
-                if (!this.insertItem(itemStack2, i, this.slots.size(), true))
+                if (!this.moveItemStackTo(itemStack2, i, this.slots.size(), true))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {
-                if (!this.insertItem(itemStack2, 1, 2, false))
+            } else if (this.getSlot(1).mayPlace(itemStack2) && !this.getSlot(1).hasItem()) {
+                if (!this.moveItemStackTo(itemStack2, 1, 2, false))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(0).canInsert(itemStack2)) {
-                if (!this.insertItem(itemStack2, 0, 1, false))
+            } else if (this.getSlot(0).mayPlace(itemStack2)) {
+                if (!this.moveItemStackTo(itemStack2, 0, 1, false))
                     return ItemStack.EMPTY;
-            } else if (i <= 1 || !this.insertItem(itemStack2, 2, i, false)) {
+            } else if (i <= 1 || !this.moveItemStackTo(itemStack2, 2, i, false)) {
                 int k = i + 27;
                 int m = k + 9;
                 if (slot >= k && slot < m) {
-                    if (!this.insertItem(itemStack2, i, k, false))
+                    if (!this.moveItemStackTo(itemStack2, i, k, false))
                         return ItemStack.EMPTY;
                 } else if (slot < k) {
-                    if (!this.insertItem(itemStack2, k, m, false))
+                    if (!this.moveItemStackTo(itemStack2, k, m, false))
                         return ItemStack.EMPTY;
-                } else if (!this.insertItem(itemStack2, k, k, false))
+                } else if (!this.moveItemStackTo(itemStack2, k, k, false))
                     return ItemStack.EMPTY;
                 return ItemStack.EMPTY;
             }
-            if (itemStack2.isEmpty()) slot2.setStack(ItemStack.EMPTY);
-            else slot2.markDirty();
+            if (itemStack2.isEmpty()) slot2.setByPlayer(ItemStack.EMPTY);
+            else slot2.setChanged();
         }
 
         return itemStack;
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerIn) {
-        return !this.hippocampus.hasInventoryChanged(this.hippocampusInventory) && this.hippocampusInventory.canPlayerUse(playerIn) && this.hippocampus.isAlive() && this.hippocampus.distanceTo(playerIn) < 8.0F;
+    public boolean stillValid(Player playerIn) {
+        return !this.hippocampus.hasInventoryChanged(this.hippocampusInventory) && this.hippocampusInventory.stillValid(playerIn) && this.hippocampus.isAlive() && this.hippocampus.distanceTo(playerIn) < 8.0F;
     }
 
     @Override
-    public void onClosed(PlayerEntity playerIn) {
-        super.onClosed(playerIn);
-        this.hippocampusInventory.onClose(playerIn);
+    public void removed(Player playerIn) {
+        super.removed(playerIn);
+        this.hippocampusInventory.stopOpen(playerIn);
     }
 
     public HippocampusEntity getHippocampus() {

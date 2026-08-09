@@ -4,40 +4,40 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.registry.IafRegistryKeys;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.FurnaceOutputSlot;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.FurnaceResultSlot;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-public class DragonForgeScreenHandler extends ScreenHandler {
-    protected final World world;
-    private final Inventory tileFurnace;
+public class DragonForgeScreenHandler extends AbstractContainerMenu {
+    protected final Level world;
+    private final Container tileFurnace;
     private final DragonType dragonType;
-    private final PropertyDelegate propertyDelegate;
+    private final ContainerData propertyDelegate;
 
-    public DragonForgeScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, new SimpleInventory(3), playerInventory, IafRegistries.DRAGON_TYPE.get(buf.readRegistryKey(IafRegistryKeys.DRAGON_TYPE)), new ArrayPropertyDelegate(2));
+    public DragonForgeScreenHandler(int syncId, Inventory playerInventory, FriendlyByteBuf buf) {
+        this(syncId, new SimpleContainer(3), playerInventory, IafRegistries.DRAGON_TYPE.get(buf.readResourceKey(IafRegistryKeys.DRAGON_TYPE)).orElseThrow().value(), new SimpleContainerData(2));
     }
 
-    public DragonForgeScreenHandler(int syncId, Inventory furnaceInventory, PlayerInventory playerInventory, DragonType dragonType, PropertyDelegate delegate) {
+    public DragonForgeScreenHandler(int syncId, Container furnaceInventory, Inventory playerInventory, DragonType dragonType, ContainerData delegate) {
         super(IafScreenHandlers.DRAGON_FORGE_SCREEN.get(), syncId);
         this.tileFurnace = furnaceInventory;
-        this.world = playerInventory.player.getWorld();
+        this.world = playerInventory.player.level();
         this.dragonType = dragonType;
-        checkDataCount(delegate, 2);
+        checkContainerDataCount(delegate, 2);
         this.propertyDelegate = delegate;
-        this.addProperties(this.propertyDelegate);
+        this.addDataSlots(this.propertyDelegate);
         this.addSlot(new Slot(furnaceInventory, 0, 68, 34));
         this.addSlot(new Slot(furnaceInventory, 1, 86, 34));
-        this.addSlot(new FurnaceOutputSlot(playerInventory.player, furnaceInventory, 2, 148, 35));
+        this.addSlot(new FurnaceResultSlot(playerInventory.player, furnaceInventory, 2, 148, 35));
         for (int i = 0; i < 3; ++i)
             for (int j = 0; j < 9; ++j)
                 this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
@@ -46,41 +46,41 @@ public class DragonForgeScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerIn) {
-        return this.tileFurnace.canPlayerUse(playerIn);
+    public boolean stillValid(Player playerIn) {
+        return this.tileFurnace.stillValid(playerIn);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
-        if (slot.hasStack()) {
-            ItemStack slotStack = slot.getStack();
+        if (slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
             stack = slotStack.copy();
 
             if (index == 2) {
-                if (!this.insertItem(slotStack, 3, 39, true))
+                if (!this.moveItemStackTo(slotStack, 3, 39, true))
                     return ItemStack.EMPTY;
-                slot.onQuickTransfer(slotStack, stack);
+                slot.onQuickCraft(slotStack, stack);
             } else if (index != 1 && index != 0) {
-                if (!this.insertItem(slotStack, 0, 1, false))
+                if (!this.moveItemStackTo(slotStack, 0, 1, false))
                     return ItemStack.EMPTY;
                 else if (index < 30) {
-                    if (!this.insertItem(slotStack, 30, 39, false))
+                    if (!this.moveItemStackTo(slotStack, 30, 39, false))
                         return ItemStack.EMPTY;
-                } else if (index < 39 && !this.insertItem(slotStack, 3, 30, false))
+                } else if (index < 39 && !this.moveItemStackTo(slotStack, 3, 30, false))
                     return ItemStack.EMPTY;
-            } else if (!this.insertItem(slotStack, 3, 39, false))
+            } else if (!this.moveItemStackTo(slotStack, 3, 39, false))
                 return ItemStack.EMPTY;
 
-            if (slotStack.isEmpty()) slot.setStackNoCallbacks(ItemStack.EMPTY);
-            else slot.markDirty();
+            if (slotStack.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
 
             if (slotStack.getCount() == stack.getCount())
                 return ItemStack.EMPTY;
 
-            slot.onTakeItem(playerIn, slotStack);
+            slot.onTake(playerIn, slotStack);
         }
 
         return stack;

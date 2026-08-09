@@ -2,87 +2,87 @@ package com.iafenvoy.iceandfire.screen.handler;
 
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
-public class HippogryphScreenHandler extends ScreenHandler {
-    private final Inventory hippogryphInventory;
+public class HippogryphScreenHandler extends AbstractContainerMenu {
+    private final Container hippogryphInventory;
     private final HippogryphEntity hippogryph;
 
-    public HippogryphScreenHandler(int i, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(i, new SimpleInventory(18), playerInventory, (HippogryphEntity) MinecraftClient.getInstance().world.getEntityById(buf.readInt()));
+    public HippogryphScreenHandler(int i, Inventory playerInventory, FriendlyByteBuf buf) {
+        this(i, new SimpleContainer(18), playerInventory, (HippogryphEntity) Minecraft.getInstance().level.getEntity(buf.readInt()));
     }
 
-    public HippogryphScreenHandler(int id, Inventory hippogryphInventory, PlayerInventory playerInventory, HippogryphEntity hippogryph) {
+    public HippogryphScreenHandler(int id, Container hippogryphInventory, Inventory playerInventory, HippogryphEntity hippogryph) {
         super(IafScreenHandlers.HIPPOGRYPH_SCREEN.get(), id);
         this.hippogryphInventory = hippogryphInventory;
         this.hippogryph = hippogryph;
-        PlayerEntity player = playerInventory.player;
-        this.hippogryphInventory.onOpen(player);
+        Player player = playerInventory.player;
+        this.hippogryphInventory.startOpen(player);
         this.addSlot(new Slot(this.hippogryphInventory, 0, 8, 18) {
             @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Items.SADDLE && !this.hasStack();
+            public boolean mayPlace(ItemStack stack) {
+                return stack.getItem() == Items.SADDLE && !this.hasItem();
             }
 
             @Override
-            public void markDirty() {
-                super.markDirty();
+            public void setChanged() {
+                super.setChanged();
                 if (HippogryphScreenHandler.this.hippogryph != null)
-                    HippogryphScreenHandler.this.hippogryph.setSaddled(this.hasStack() && this.getStack().isOf(Items.SADDLE));
+                    HippogryphScreenHandler.this.hippogryph.setSaddled(this.hasItem() && this.getItem().is(Items.SADDLE));
             }
 
             @Override
-            public boolean isEnabled() {
+            public boolean isActive() {
                 return true;
             }
         });
         this.addSlot(new Slot(this.hippogryphInventory, 1, 8, 36) {
             @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.isOf(Items.CHEST) && !this.hasStack();
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(Items.CHEST) && !this.hasItem();
             }
 
             @Override
-            public void markDirty() {
-                super.markDirty();
+            public void setChanged() {
+                super.setChanged();
                 if (HippogryphScreenHandler.this.hippogryph != null)
-                    HippogryphScreenHandler.this.hippogryph.setChested(this.hasStack() && this.getStack().isOf(Items.CHEST));
+                    HippogryphScreenHandler.this.hippogryph.setChested(this.hasItem() && this.getItem().is(Items.CHEST));
             }
 
             @Override
-            public boolean isEnabled() {
+            public boolean isActive() {
                 return true;
             }
         });
         this.addSlot(new Slot(this.hippogryphInventory, 2, 8, 52) {
             @Override
-            public boolean canInsert(ItemStack stack) {
+            public boolean mayPlace(ItemStack stack) {
                 return HippogryphEntity.getIntFromArmor(stack) != 0;
             }
 
             @Override
-            public int getMaxItemCount() {
+            public int getMaxStackSize() {
                 return 1;
             }
 
             @Override
-            public void markDirty() {
-                super.markDirty();
+            public void setChanged() {
+                super.setChanged();
                 if (HippogryphScreenHandler.this.hippogryph != null)
-                    HippogryphScreenHandler.this.hippogryph.setArmor(this.hasStack() ? HippogryphEntity.getIntFromArmor(this.getStack()) : 0);
+                    HippogryphScreenHandler.this.hippogryph.setArmor(this.hasItem() ? HippogryphEntity.getIntFromArmor(this.getItem()) : 0);
             }
 
             @Override
-            public boolean isEnabled() {
+            public boolean isActive() {
                 return true;
             }
         });
@@ -91,12 +91,12 @@ public class HippogryphScreenHandler extends ScreenHandler {
             for (int l = 0; l < 5; ++l)
                 this.addSlot(new Slot(this.hippogryphInventory, 3 + l + k * 5, 80 + l * 18, 18 + k * 18) {
                     @Override
-                    public boolean isEnabled() {
+                    public boolean isActive() {
                         return HippogryphScreenHandler.this.hippogryph != null && HippogryphScreenHandler.this.hippogryph.isChested();
                     }
 
                     @Override
-                    public boolean canInsert(ItemStack stack) {
+                    public boolean mayPlace(ItemStack stack) {
                         return HippogryphScreenHandler.this.hippogryph != null && HippogryphScreenHandler.this.hippogryph.isChested();
                     }
                 });
@@ -111,43 +111,43 @@ public class HippogryphScreenHandler extends ScreenHandler {
 
 
     @Override
-    public ItemStack quickMove(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
-        if (slot.hasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        if (slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (index < this.hippogryphInventory.size()) {
-                if (!this.insertItem(itemstack1, this.hippogryphInventory.size(), this.slots.size(), true))
+            if (index < this.hippogryphInventory.getContainerSize()) {
+                if (!this.moveItemStackTo(itemstack1, this.hippogryphInventory.getContainerSize(), this.slots.size(), true))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(1).canInsert(itemstack1) && !this.getSlot(1).hasStack()) {
-                if (!this.insertItem(itemstack1, 1, 2, false))
+            } else if (this.getSlot(1).mayPlace(itemstack1) && !this.getSlot(1).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 1, 2, false))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(2).canInsert(itemstack1) && !this.getSlot(2).hasStack()) {
-                if (!this.insertItem(itemstack1, 2, 3, false))
+            } else if (this.getSlot(2).mayPlace(itemstack1) && !this.getSlot(2).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, 2, 3, false))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(0).canInsert(itemstack1)) {
-                if (!this.insertItem(itemstack1, 0, 1, false))
+            } else if (this.getSlot(0).mayPlace(itemstack1)) {
+                if (!this.moveItemStackTo(itemstack1, 0, 1, false))
                     return ItemStack.EMPTY;
-            } else if (this.hippogryphInventory.size() <= 3 || !this.insertItem(itemstack1, 3, this.hippogryphInventory.size(), false))
+            } else if (this.hippogryphInventory.getContainerSize() <= 3 || !this.moveItemStackTo(itemstack1, 3, this.hippogryphInventory.getContainerSize(), false))
                 return ItemStack.EMPTY;
             if (itemstack1.isEmpty())
-                slot.setStackNoCallbacks(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             else
-                slot.markDirty();
+                slot.setChanged();
         }
         return itemstack;
     }
 
     @Override
-    public boolean canUse(PlayerEntity playerIn) {
-        return this.hippogryphInventory.canPlayerUse(playerIn) && this.hippogryph.isAlive() && this.hippogryph.distanceTo(playerIn) < 8.0F;
+    public boolean stillValid(Player playerIn) {
+        return this.hippogryphInventory.stillValid(playerIn) && this.hippogryph.isAlive() && this.hippogryph.distanceTo(playerIn) < 8.0F;
     }
 
     @Override
-    public void onClosed(PlayerEntity playerIn) {
-        super.onClosed(playerIn);
-        this.hippogryphInventory.onClose(playerIn);
+    public void removed(Player playerIn) {
+        super.removed(playerIn);
+        this.hippogryphInventory.stopOpen(playerIn);
     }
 
     public HippogryphEntity getHippogryph() {

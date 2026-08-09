@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.CockatriceRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class CockatriceModel extends DragonBaseModel<LivingEntityRenderState> {
+public class CockatriceModel extends DragonBaseModel<CockatriceRenderState> {
     public final AdvancedModelBox lowerBody;
     public final AdvancedModelBox leftThigh;
     public final AdvancedModelBox rightThigh;
@@ -388,8 +390,13 @@ public class CockatriceModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(CockatriceEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+    public void setupAnim(CockatriceRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
         float degree_walk = 0.5F;
@@ -420,24 +427,24 @@ public class CockatriceModel extends DragonBaseModel<LivingEntityRenderState> {
         this.walk(this.rightLeg, speed_walk, degree_walk, false, 1, 0.1F, limbAngle, limbDistance);
         this.walk(this.leftFoot, speed_walk, degree_walk * -1.75F, true, 1, -0.1F, limbAngle, limbDistance);
         this.walk(this.rightFoot, speed_walk, degree_walk * -1.75F, false, 1, -0.1F, limbAngle, limbDistance);
-        this.progressRotation(this.neck, entity.stareProgress, (float) Math.toRadians(10), 0.0F, 0.0F);
-        this.progressRotation(this.neck2, entity.stareProgress, (float) Math.toRadians(-18), 0.0F, 0.0F);
-        this.progressRotation(this.head, entity.stareProgress, (float) Math.toRadians(18), 0.0F, 0.0F);
+        this.progressRotation(this.neck, state.stareProgress, (float) Math.toRadians(10), 0.0F, 0.0F);
+        this.progressRotation(this.neck2, state.stareProgress, (float) Math.toRadians(-18), 0.0F, 0.0F);
+        this.progressRotation(this.head, state.stareProgress, (float) Math.toRadians(18), 0.0F, 0.0F);
 
-        this.progressRotation(this.rightThigh, entity.sitProgress, (float) Math.toRadians(-15), 0.0F, 0.0F);
-        this.progressRotation(this.leftThigh, entity.sitProgress, (float) Math.toRadians(-15), 0.0F, 0.0F);
-        this.progressRotation(this.rightLeg, entity.sitProgress, (float) Math.toRadians(13), 0.0F, 0.0F);
-        this.progressRotation(this.leftLeg, entity.sitProgress, (float) Math.toRadians(13), 0.0F, 0.0F);
-        this.progressRotation(this.rightFoot, entity.sitProgress, 0.0F, 0.0F, 0.0F);
-        this.progressRotation(this.leftFoot, entity.sitProgress, 0.0F, 0.0F, 0.0F);
-        this.progressPosition(this.rightThigh, entity.sitProgress, -3.0F, 19F, 3.0F);
-        this.progressPosition(this.leftThigh, entity.sitProgress, 3.0F, 19F, 3.0F);
-        this.progressPosition(this.lowerBody, entity.sitProgress, 0.0F, 12.9F, -2.5F);
+        this.progressRotation(this.rightThigh, state.sitProgress, (float) Math.toRadians(-15), 0.0F, 0.0F);
+        this.progressRotation(this.leftThigh, state.sitProgress, (float) Math.toRadians(-15), 0.0F, 0.0F);
+        this.progressRotation(this.rightLeg, state.sitProgress, (float) Math.toRadians(13), 0.0F, 0.0F);
+        this.progressRotation(this.leftLeg, state.sitProgress, (float) Math.toRadians(13), 0.0F, 0.0F);
+        this.progressRotation(this.rightFoot, state.sitProgress, 0.0F, 0.0F, 0.0F);
+        this.progressRotation(this.leftFoot, state.sitProgress, 0.0F, 0.0F, 0.0F);
+        this.progressPosition(this.rightThigh, state.sitProgress, -3.0F, 19F, 3.0F);
+        this.progressPosition(this.leftThigh, state.sitProgress, 3.0F, 19F, 3.0F);
+        this.progressPosition(this.lowerBody, state.sitProgress, 0.0F, 12.9F, -2.5F);
     }
 
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

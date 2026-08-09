@@ -2,13 +2,13 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
+import com.iafenvoy.iceandfire.render.entity.state.AmphithereRenderState;
 import com.iafenvoy.iceandfire.render.model.AmphithereModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-public class AmphithereEntityRenderer extends MobRenderer<AmphithereEntity, AmphithereModel> {
+public class AmphithereEntityRenderer extends AdvancedEntityRendererBase<AmphithereEntity, AmphithereRenderState, AmphithereModel> {
     public static final Identifier TEXTURE_BLUE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue.png");
     public static final Identifier TEXTURE_BLUE_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue_blink.png");
     public static final Identifier TEXTURE_GREEN = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_green.png");
@@ -25,36 +25,57 @@ public class AmphithereEntityRenderer extends MobRenderer<AmphithereEntity, Amph
     }
 
     @Override
-    protected void scale(AmphithereEntity entity, PoseStack matrixStackIn, float partialTickTime) {
+    public AmphithereRenderState createRenderState() {
+        return new AmphithereRenderState();
+    }
+
+    @Override
+    public void extractRenderState(AmphithereEntity entity, AmphithereRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.flapProgress = entity.flapProgress;
+        state.groundProgress = entity.groundProgress;
+        state.sitProgress = entity.sitProgress;
+        state.diveProgress = entity.diveProgress;
+        state.onGround = entity.onGround();
+        state.variant = entity.getVariant();
+        state.isBlinking = entity.isBlinking();
+        state.roll_buffer = entity.roll_buffer;
+        state.pitch_buffer = entity.pitch_buffer;
+        state.tail_buffer = entity.tail_buffer;
+        state.animation = entity.getAnimation();
+        state.animationTick = entity.getAnimationTick();
+        state.animations = entity.getAnimations();
+    }
+
+    @Override
+    protected void scale(AmphithereRenderState state, PoseStack matrixStackIn) {
         matrixStackIn.scale(2.0F, 2.0F, 2.0F);
     }
 
     @Override
-    public Identifier getTextureLocation(AmphithereEntity amphithere) {
-        switch (amphithere.getVariant()) {
+    public Identifier getTextureLocation(AmphithereRenderState state) {
+        switch (state.variant) {
             case 0 -> {
-                if (amphithere.isBlinking()) return TEXTURE_BLUE_BLINK;
+                if (state.isBlinking) return TEXTURE_BLUE_BLINK;
                 else return TEXTURE_BLUE;
             }
             case 1 -> {
-                if (amphithere.isBlinking()) return TEXTURE_GREEN_BLINK;
+                if (state.isBlinking) return TEXTURE_GREEN_BLINK;
                 else return TEXTURE_GREEN;
             }
             case 2 -> {
-                if (amphithere.isBlinking()) return TEXTURE_OLIVE_BLINK;
+                if (state.isBlinking) return TEXTURE_OLIVE_BLINK;
                 else return TEXTURE_OLIVE;
             }
             case 3 -> {
-                if (amphithere.isBlinking()) return TEXTURE_RED_BLINK;
+                if (state.isBlinking) return TEXTURE_RED_BLINK;
                 else return TEXTURE_RED;
-
             }
             case 4 -> {
-                if (amphithere.isBlinking()) return TEXTURE_YELLOW_BLINK;
+                if (state.isBlinking) return TEXTURE_YELLOW_BLINK;
                 else return TEXTURE_YELLOW;
             }
         }
         return TEXTURE_GREEN;
     }
-
 }

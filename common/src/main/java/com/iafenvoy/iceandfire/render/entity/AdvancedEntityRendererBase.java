@@ -31,6 +31,25 @@ public abstract class AdvancedEntityRendererBase<E extends Mob, S extends Living
         super(context, model, shadowRadius);
     }
 
+    /**
+     * Hook for renderers whose body is drawn by different model classes depending on the
+     * entity (e.g. Cockatrice swaps adult/chick model by {@code state.isBaby}). Defaults to
+     * the renderer's main model; both the {@code setupAnim} call and the deferred
+     * {@code renderPartsToBuffer} draw use whichever model this returns.
+     */
+    protected M getModel(S state) {
+        return this.model;
+    }
+
+    /**
+     * Hook for extra deferred geometry drawn in the entity's local pose space after the body
+     * and layers (e.g. the Cockatrice beam). Subclasses submit it via
+     * {@code submitNodeCollector.submitCustomGeometry(...)}; the callback receives the pose
+     * captured at submit time and rebuilds a fresh {@code PoseStack} from it.
+     */
+    protected void submitExtra(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight) {
+    }
+
     @Override
     public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
@@ -54,12 +73,13 @@ public abstract class AdvancedEntityRendererBase<E extends Mob, S extends Living
             int overlayCoords = getOverlayCoords(state, this.getWhiteOverlayProgress(state));
             int baseColor = forceTransparent ? 654311423 : -1;
             int tintedColor = ARGB.multiply(baseColor, this.getModelTint(state));
-            this.model.setupAnim(state);
+            M model = this.getModel(state);
+            model.setupAnim(state);
             submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
                 PoseStack fresh = new PoseStack();
                 fresh.last().pose().set(pose.pose());
                 fresh.last().normal().set(pose.normal());
-                this.model.renderPartsToBuffer(fresh, buffer, state.lightCoords, overlayCoords, tintedColor);
+                model.renderPartsToBuffer(fresh, buffer, state.lightCoords, overlayCoords, tintedColor);
             });
         }
         if (this.shouldRenderLayers(state) && !this.layers.isEmpty()) {
@@ -67,6 +87,7 @@ public abstract class AdvancedEntityRendererBase<E extends Mob, S extends Living
                 layer.submit(poseStack, submitNodeCollector, state.lightCoords, state, state.yRot, state.xRot);
             }
         }
+        this.submitExtra(state, poseStack, submitNodeCollector, state.lightCoords);
         poseStack.popPose();
         super.submit(state, poseStack, submitNodeCollector, camera);
     }

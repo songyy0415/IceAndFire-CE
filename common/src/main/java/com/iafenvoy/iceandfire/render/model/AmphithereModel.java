@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.AmphithereRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
+public class AmphithereModel extends DragonBaseModel<AmphithereRenderState> {
     public final AdvancedModelBox BodyUpper;
     public final AdvancedModelBox BodyLower;
     public final AdvancedModelBox Neck1;
@@ -433,10 +435,15 @@ public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(AmphithereEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(AmphithereRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
         this.resetToDefaultPose();
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
-        if (this.young) {
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
+        if (state.isBaby) {
             this.BodyUpper.setShouldScaleChildren(true);
             this.HeadFront.setShouldScaleChildren(true);
             this.Jaw.setShouldScaleChildren(true);
@@ -455,11 +462,11 @@ public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
         float speed_fly = 0.2F;
         float degree_walk = 0.5F;
         float degree_idle = 0.5F;
-        float degree_flap = 0.5F * (entity.flapProgress / 10F);
+        float degree_flap = 0.5F * (state.flapProgress / 10F);
         AdvancedModelBox[] TAIL = new AdvancedModelBox[]{this.Tail1, this.Tail2, this.Tail3, this.Tail4};
         AdvancedModelBox[] ENTIRE_BODY = new AdvancedModelBox[]{this.BodyUpper, this.BodyLower, this.Tail1, this.Tail2, this.Tail3, this.Tail4};
         AdvancedModelBox[] NECK = new AdvancedModelBox[]{this.Neck1, this.Neck2, this.Neck3};
-        if (entity.groundProgress >= 10) {
+        if (state.groundProgress >= 10) {
             this.chainSwing(ENTIRE_BODY, speed_walk, 0.125F, 2, limbAngle, limbDistance);
             this.chainSwing(NECK, speed_walk, -degree_walk, 4, limbAngle, limbDistance);
         }
@@ -470,7 +477,7 @@ public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
         this.flap(this.WingL2, speed_fly, degree_flap, false, 0, 0, animationProgress, 1);
         this.flap(this.WingR2, speed_fly, -degree_flap, false, 0, 0, animationProgress, 1);
         {
-            float sitProgress = entity.diveProgress;
+            float sitProgress = state.diveProgress;
             this.progressRotation(this.FingerR4, sitProgress, 0.2617993877991494F, 0.0F, 0.0F);
             this.progressRotation(this.WingL2, sitProgress, -0.3490658503988659F, 0.0F, 0.3490658503988659F);
             this.progressRotation(this.FingerR1, sitProgress, 0.03490658503988659F, 0.0F, 0.0F);
@@ -488,7 +495,7 @@ public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
             this.progressRotation(this.WingL, sitProgress, 0.5585053606381855F, 0.0F, -1.6580627893946132F);
         }
         {
-            float sitProgress = entity.groundProgress;
+            float sitProgress = state.groundProgress;
             this.progressRotation(this.Tail1, sitProgress, -0.045553093477052F, 0.0F, 0.0F);
             this.progressRotation(this.CrestR2, sitProgress, 1.7453292519943295F, -0.6108652381980153F, -0.3141592653589793F);
             this.progressRotation(this.FingerR4, sitProgress, -0.2617993877991494F, 0.0F, 0.0F);
@@ -536,7 +543,7 @@ public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
             this.progressPosition(this.BodyUpper, sitProgress, 0, 18, 0);
         }
         {
-            float sitProgress = entity.sitProgress;
+            float sitProgress = state.sitProgress;
             this.progressRotation(this.CrestLB, sitProgress, 1.7453292519943295F, 0.27314402793711257F, 0.0F);
             this.progressRotation(this.CrestR1, sitProgress, 1.7453292519943295F, -0.08726646259971647F, 0.0F);
             this.progressRotation(this.TailL1, sitProgress, 1.3962634015954636F, -0.06981317007977318F, 0.0F);
@@ -562,15 +569,15 @@ public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
             this.progressRotation(this.Neck3, sitProgress, 0.18203784098300857F, -0.0F, 0.0F);
         }
 
-        if (entity.groundProgress <= 0 && entity.getAnimation() != AmphithereEntity.ANIMATION_WING_BLAST && !entity.onGround()) {
-            entity.roll_buffer.applyChainFlapBuffer(this.BodyUpper);
-            entity.pitch_buffer.applyChainWaveBuffer(this.BodyUpper);
-            entity.tail_buffer.applyChainSwingBuffer(TAIL);
+        if (state.groundProgress <= 0 && state.getAnimation() != AmphithereEntity.ANIMATION_WING_BLAST && !state.onGround) {
+            state.roll_buffer.applyChainFlapBuffer(this.BodyUpper);
+            state.pitch_buffer.applyChainWaveBuffer(this.BodyUpper);
+            state.tail_buffer.applyChainSwingBuffer(TAIL);
         }
     }
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

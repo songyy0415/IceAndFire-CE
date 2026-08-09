@@ -6,16 +6,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-public class ActivePostHitSwordItem extends SwordItem {
+public class ActivePostHitSwordItem extends Item {
     private final PostHitAbility ability;
-    public ActivePostHitSwordItem(Tier toolMaterial, Properties settings, PostHitAbility ability) {
-        super(toolMaterial, settings);
+    public ActivePostHitSwordItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Properties settings, PostHitAbility ability) {
+        super(settings.sword(toolMaterial, attackDamage, attackSpeed));
         this.ability = ability;
     }
 

@@ -11,18 +11,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-public class TrollWeaponItem extends SwordItem {
+public class TrollWeaponItem extends Item {
     public final TrollType.ITrollWeapon weapon;
 
     public TrollWeaponItem(TrollType.ITrollWeapon weapon) {
-        super(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, 15, -3.5F)));
+        super(new Item.Properties().sword(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL.toolMaterial(), 15, -3.5F));
         this.weapon = weapon;
     }
 

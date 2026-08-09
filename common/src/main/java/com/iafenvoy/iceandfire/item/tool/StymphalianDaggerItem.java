@@ -7,14 +7,14 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-public class StymphalianDaggerItem extends SwordItem {
+public class StymphalianDaggerItem extends Item {
     public StymphalianDaggerItem() {
-        super(IafToolMaterials.STYMHALIAN_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.STYMHALIAN_SWORD_TOOL_MATERIAL, 3, -1.0F)));
+        super(new Item.Properties().sword(IafToolMaterials.STYMHALIAN_SWORD_TOOL_MATERIAL.toolMaterial(), 3, -1.0F));
     }
 
     @Override

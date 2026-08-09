@@ -7,15 +7,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ActivePostHitAxeItem extends AxeItem {
     private final PostHitAbility ability;
-    public ActivePostHitAxeItem(Tier toolMaterial, Properties settings, PostHitAbility ability) {
-        super(toolMaterial, settings);
+    public ActivePostHitAxeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Properties settings, PostHitAbility ability) {
+        super(toolMaterial, attackDamage, attackSpeed, settings);
         this.ability = ability;
     }
 

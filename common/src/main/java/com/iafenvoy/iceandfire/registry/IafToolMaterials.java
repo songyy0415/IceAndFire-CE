@@ -2,14 +2,15 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.tag.CommonItemTags;
-import net.minecraft.block.Block;
-import net.minecraft.item.Items;
-import net.minecraft.item.ToolMaterial;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.TagKey;
+import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.level.block.Block;
 
-public enum IafToolMaterials implements ToolMaterial {
+public enum IafToolMaterials {
     SILVER_TOOL_MATERIAL("silver", 460, 1.0F, 11.0F, 18, BlockTags.INCORRECT_FOR_IRON_TOOL),
     COPPER_TOOL_MATERIAL("copper", 300, 0.0F, 3.0F, 10, BlockTags.INCORRECT_FOR_IRON_TOOL),
     DRAGONBONE_TOOL_MATERIAL("dragon_bone", 1660, 4.0F, 10.0F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
@@ -33,7 +34,7 @@ public enum IafToolMaterials implements ToolMaterial {
     private final float speed;
     private final int enchantability;
     private final TagKey<Block> inverted;
-    private Ingredient ingredient = Ingredient.ofItems(Items.AIR);
+    private TagKey<Item> repairItems = ItemTags.AIR;
 
     IafToolMaterials(String name, int durability, float damage, float speed, int enchantability, TagKey<Block> inverted) {
         this.name = name;
@@ -48,54 +49,30 @@ public enum IafToolMaterials implements ToolMaterial {
         return this.name;
     }
 
-    @Override
-    public int getDurability() {
-        return this.durability;
+    // 26.2: Tier interface removed — expose the ToolMaterial record instead.
+    public ToolMaterial toolMaterial() {
+        return new ToolMaterial(this.inverted, this.durability, this.speed, this.damage, this.enchantability, this.repairItems);
     }
 
-    @Override
-    public float getMiningSpeedMultiplier() {
-        return this.speed;
-    }
-
-    @Override
-    public float getAttackDamage() {
-        return this.damage;
-    }
-
-    @Override
-    public TagKey<Block> getInverseTag() {
-        return this.inverted;
-    }
-
-    @Override
-    public int getEnchantability() {
-        return this.enchantability;
-    }
-
-    @Override
-    public Ingredient getRepairIngredient() {
-        return this.ingredient == null ? Ingredient.EMPTY : this.ingredient;
-    }
-
-    public void setRepairMaterial(Ingredient ingredient) {
-        this.ingredient = ingredient;
+    // 26.2: repair is a TagKey<Item>, not an Ingredient.
+    public void setRepairItems(TagKey<Item> repairItems) {
+        this.repairItems = repairItems;
     }
 
     public static void init() {
-        SILVER_TOOL_MATERIAL.setRepairMaterial(Ingredient.fromTag(CommonItemTags.INGOTS_SILVER));
-        DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
-        BLOODED_DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
-        TROLL_WEAPON_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(Items.STONE));
-        HIPPOGRYPH_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.HIPPOGRYPH_TALON.get()));
-        HIPPOCAMPUS_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.SHINY_SCALES.get()));
-        AMPHITHERE_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.AMPHITHERE_FEATHER.get()));
-        STYMHALIAN_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.STYMPHALIAN_BIRD_FEATHER.get()));
-        DREAD_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DREAD_SHARD.get()));
-        DREAD_KNIGHT_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DREAD_SHARD.get()));
-        COPPER_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(Items.COPPER_INGOT));
-        DRAGONSTEEL_FIRE.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGONSTEEL_FIRE_INGOT.get()));
-        DRAGONSTEEL_ICE.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGONSTEEL_ICE_INGOT.get()));
-        DRAGONSTEEL_LIGHTNING.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGONSTEEL_LIGHTNING_INGOT.get()));
+        SILVER_TOOL_MATERIAL.setRepairItems(CommonItemTags.INGOTS_SILVER);
+        DRAGONBONE_TOOL_MATERIAL.setRepairItems(IafItemTags.DRAGON_BONE);
+        BLOODED_DRAGONBONE_TOOL_MATERIAL.setRepairItems(IafItemTags.DRAGON_BONE);
+        TROLL_WEAPON_TOOL_MATERIAL.setRepairItems(ItemTags.STONE_CRAFTING_MATERIALS);
+        HIPPOGRYPH_SWORD_TOOL_MATERIAL.setRepairItems(IafItemTags.HIPPOGRYPH_TALON);
+        HIPPOCAMPUS_SWORD_TOOL_MATERIAL.setRepairItems(IafItemTags.SHINY_SCALES);
+        AMPHITHERE_SWORD_TOOL_MATERIAL.setRepairItems(IafItemTags.AMPHITHERE_FEATHER);
+        STYMHALIAN_SWORD_TOOL_MATERIAL.setRepairItems(IafItemTags.STYMPHALIAN_BIRD_FEATHER);
+        DREAD_SWORD_TOOL_MATERIAL.setRepairItems(IafItemTags.DREAD_SHARD);
+        DREAD_KNIGHT_TOOL_MATERIAL.setRepairItems(IafItemTags.DREAD_SHARD);
+        COPPER_TOOL_MATERIAL.setRepairItems(IafItemTags.COPPER_INGOTS);
+        DRAGONSTEEL_FIRE.setRepairItems(IafItemTags.DRAGON_STEELS);
+        DRAGONSTEEL_ICE.setRepairItems(IafItemTags.DRAGON_STEELS);
+        DRAGONSTEEL_LIGHTNING.setRepairItems(IafItemTags.DRAGON_STEELS);
     }
 }

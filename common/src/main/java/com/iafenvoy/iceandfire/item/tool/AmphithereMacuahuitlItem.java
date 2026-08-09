@@ -12,14 +12,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-public class AmphithereMacuahuitlItem extends SwordItem {
+public class AmphithereMacuahuitlItem extends Item {
     public AmphithereMacuahuitlItem() {
-        super(IafToolMaterials.AMPHITHERE_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.AMPHITHERE_SWORD_TOOL_MATERIAL, 3, -2.4F)));
+        super(new Item.Properties().sword(IafToolMaterials.AMPHITHERE_SWORD_TOOL_MATERIAL.toolMaterial(), 3, -2.4F));
     }
 
     @Override

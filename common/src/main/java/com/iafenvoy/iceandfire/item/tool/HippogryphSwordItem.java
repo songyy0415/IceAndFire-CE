@@ -12,16 +12,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-public class HippogryphSwordItem extends SwordItem {
+public class HippogryphSwordItem extends Item {
     public HippogryphSwordItem() {
-        super(IafToolMaterials.HIPPOGRYPH_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.HIPPOGRYPH_SWORD_TOOL_MATERIAL, 3, -2.4F)));
+        super(new Item.Properties().sword(IafToolMaterials.HIPPOGRYPH_SWORD_TOOL_MATERIAL.toolMaterial(), 3, -2.4F));
     }
 
     @Override

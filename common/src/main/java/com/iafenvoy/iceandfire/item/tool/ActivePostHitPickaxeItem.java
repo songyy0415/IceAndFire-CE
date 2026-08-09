@@ -7,15 +7,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ActivePostHitPickaxeItem extends PickaxeItem {
     private final PostHitAbility ability;
-    public ActivePostHitPickaxeItem(Tier material, Properties settings, PostHitAbility ability) {
-        super(material, settings);
+    public ActivePostHitPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings, PostHitAbility ability) {
+        super(material, attackDamage, attackSpeed, settings);
         this.ability = ability;
     }
 

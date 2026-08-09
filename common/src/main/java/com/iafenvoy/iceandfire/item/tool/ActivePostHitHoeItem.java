@@ -7,15 +7,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ActivePostHitHoeItem extends HoeItem {
     private final PostHitAbility ability;
-    public ActivePostHitHoeItem(Tier toolMaterial, Properties settings, PostHitAbility ability) {
-        super(toolMaterial, settings);
+    public ActivePostHitHoeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Properties settings, PostHitAbility ability) {
+        super(toolMaterial, attackDamage, attackSpeed, settings);
         this.ability = ability;
     }
 

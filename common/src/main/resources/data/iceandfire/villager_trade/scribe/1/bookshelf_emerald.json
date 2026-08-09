@@ -1,0 +1,7 @@
+{
+  "wants": {"id": "minecraft:bookshelf", "count": 3.0},
+  "gives": {"id": "minecraft:emerald"},
+  "max_uses": 8.0,
+  "xp": 3.0,
+  "reputation_discount": 0.05
+}

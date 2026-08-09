@@ -1,0 +1,7 @@
+{
+  "wants": {"id": "minecraft:emerald", "count": 12.0},
+  "gives": {"id": "iceandfire:hydra_fang"},
+  "max_uses": 20.0,
+  "xp": 3.0,
+  "reputation_discount": 0.05
+}

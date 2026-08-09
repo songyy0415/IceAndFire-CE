@@ -1,0 +1,7 @@
+{
+  "wants": {"id": "iceandfire:manuscript", "count": 6.0},
+  "gives": {"id": "minecraft:emerald"},
+  "max_uses": 10.0,
+  "xp": 5.0,
+  "reputation_discount": 0.05
+}

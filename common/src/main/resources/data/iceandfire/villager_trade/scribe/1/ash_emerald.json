@@ -1,0 +1,7 @@
+{
+  "wants": {"id": "iceandfire:ash", "count": 10.0},
+  "gives": {"id": "minecraft:emerald"},
+  "max_uses": 8.0,
+  "xp": 4.0,
+  "reputation_discount": 0.05
+}

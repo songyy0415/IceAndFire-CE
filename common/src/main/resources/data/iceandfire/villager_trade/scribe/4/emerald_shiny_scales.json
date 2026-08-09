@@ -1,0 +1,7 @@
+{
+  "wants": {"id": "minecraft:emerald", "count": 4.0},
+  "gives": {"id": "iceandfire:shiny_scales"},
+  "max_uses": 5.0,
+  "xp": 2.0,
+  "reputation_discount": 0.05
+}

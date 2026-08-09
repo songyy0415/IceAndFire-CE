@@ -122,10 +122,10 @@ public class SummoningCrystalItem extends Item {
                 context.getPlayer().playSound(SoundEvents.ENDERMAN_TELEPORT, 1, 1);
                 context.getPlayer().playSound(SoundEvents.GLASS_BREAK, 1, 1);
                 context.getPlayer().swing(context.getHand());
-                context.getPlayer().displayClientMessage(Component.translatable("message.iceandfire.dragonTeleport"), true);
+                context.getPlayer().sendSystemMessage(Component.translatable("message.iceandfire.dragonTeleport"));
                 stack.remove(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
             } else if (displayError)
-                context.getPlayer().displayClientMessage(Component.translatable("message.iceandfire.noDragonTeleport"), true);
+                context.getPlayer().sendSystemMessage(Component.translatable("message.iceandfire.noDragonTeleport"));
         }
         return InteractionResult.PASS;
     }

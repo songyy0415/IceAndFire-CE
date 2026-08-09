@@ -35,7 +35,7 @@ public class DragonSeekerItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         if (world.isClientSide()) return super.use(world, user, hand);
         if (!IafCommonConfig.INSTANCE.misc.enableDragonSeeker.getValue()) {
-            user.displayClientMessage(Component.translatable("text.iceandfire.not_enable"), false);
+            user.sendSystemMessage(Component.translatable("text.iceandfire.not_enable"));
             return super.use(world, user, hand);
         }
         ItemStack stack = user.getItemInHand(hand);

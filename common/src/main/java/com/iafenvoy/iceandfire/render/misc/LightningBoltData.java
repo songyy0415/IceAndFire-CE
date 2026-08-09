@@ -1,11 +1,11 @@
 package com.iafenvoy.iceandfire.render.misc;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector4f;
 
 import java.util.*;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 /*
     Lightning bolt effect code used with permission from aidancbrady
@@ -15,8 +15,8 @@ public class LightningBoltData {
 
     private final BoltRenderInfo renderInfo;
 
-    private final Vec3d start;
-    private final Vec3d end;
+    private final Vec3 start;
+    private final Vec3 end;
 
     private final int segments;
 
@@ -27,20 +27,20 @@ public class LightningBoltData {
     private SpawnFunction spawnFunction = SpawnFunction.delay(60);
     private FadeFunction fadeFunction = FadeFunction.fade(0.5F);
 
-    public LightningBoltData(Vec3d start, Vec3d end) {
+    public LightningBoltData(Vec3 start, Vec3 end) {
         this(BoltRenderInfo.DEFAULT, start, end, (int) (Math.sqrt(start.distanceTo(end) * 100)));
     }
 
-    public LightningBoltData(BoltRenderInfo info, Vec3d start, Vec3d end, int segments) {
+    public LightningBoltData(BoltRenderInfo info, Vec3 start, Vec3 end, int segments) {
         this.renderInfo = info;
         this.start = start;
         this.end = end;
         this.segments = segments;
     }
 
-    private static Vec3d findRandomOrthogonalVector(Vec3d vec, Random rand) {
-        Vec3d newVec = new Vec3d(-0.5 + rand.nextDouble(), -0.5 + rand.nextDouble(), -0.5 + rand.nextDouble());
-        return vec.crossProduct(newVec).normalize();
+    private static Vec3 findRandomOrthogonalVector(Vec3 vec, Random rand) {
+        Vec3 newVec = new Vec3(-0.5 + rand.nextDouble(), -0.5 + rand.nextDouble(), -0.5 + rand.nextDouble());
+        return vec.cross(newVec).normalize();
     }
 
     public LightningBoltData count(int count) {
@@ -86,24 +86,24 @@ public class LightningBoltData {
 
     public List<BoltQuads> generate() {
         List<BoltQuads> quads = new ArrayList<>();
-        Vec3d diff = this.end.subtract(this.start);
+        Vec3 diff = this.end.subtract(this.start);
         float totalDistance = (float) diff.length();
         for (int i = 0; i < this.count; i++) {
             LinkedList<BoltInstructions> drawQueue = new LinkedList<>();
-            drawQueue.add(new BoltInstructions(this.start, 0, new Vec3d(0, 0, 0), null, false));
+            drawQueue.add(new BoltInstructions(this.start, 0, new Vec3(0, 0, 0), null, false));
             while (!drawQueue.isEmpty()) {
                 BoltInstructions data = drawQueue.poll();
-                Vec3d perpendicularDist = data.perpendicularDist;
+                Vec3 perpendicularDist = data.perpendicularDist;
                 float progress = data.progress + (1F / this.segments) * (1 - this.renderInfo.parallelNoise + this.random.nextFloat() * this.renderInfo.parallelNoise * 2);
-                Vec3d segmentEnd;
+                Vec3 segmentEnd;
                 if (progress >= 1) segmentEnd = this.end;
                 else {
                     float segmentDiffScale = this.renderInfo.spreadFunction.getMaxSpread(progress);
                     float maxDiff = this.renderInfo.spreadFactor * segmentDiffScale * totalDistance * this.renderInfo.randomFunction.getRandom(this.random);
-                    Vec3d randVec = findRandomOrthogonalVector(diff, this.random);
+                    Vec3 randVec = findRandomOrthogonalVector(diff, this.random);
                     perpendicularDist = this.renderInfo.segmentSpreader.getSegmentAdd(perpendicularDist, randVec, maxDiff, segmentDiffScale, progress);
                     // new vector is original + current progress through segments + perpendicular change
-                    segmentEnd = this.start.add(diff.multiply(progress)).add(perpendicularDist);
+                    segmentEnd = this.start.add(diff.scale(progress)).add(perpendicularDist);
                 }
                 float boltSize = this.size * (0.5F + (1 - progress) * 0.5F);
                 Pair<BoltQuads, QuadCache> quadData = this.createQuads(data.cache, data.start, segmentEnd, boltSize);
@@ -125,15 +125,15 @@ public class LightningBoltData {
         return quads;
     }
 
-    private Pair<BoltQuads, QuadCache> createQuads(QuadCache cache, Vec3d startPos, Vec3d end, float size) {
-        Vec3d diff = end.subtract(startPos);
-        Vec3d rightAdd = diff.crossProduct(new Vec3d(0.5, 0.5, 0.5)).normalize().multiply(size);
-        Vec3d backAdd = diff.crossProduct(rightAdd).normalize().multiply(size), rightAddSplit = rightAdd.multiply(0.5F);
+    private Pair<BoltQuads, QuadCache> createQuads(QuadCache cache, Vec3 startPos, Vec3 end, float size) {
+        Vec3 diff = end.subtract(startPos);
+        Vec3 rightAdd = diff.cross(new Vec3(0.5, 0.5, 0.5)).normalize().scale(size);
+        Vec3 backAdd = diff.cross(rightAdd).normalize().scale(size), rightAddSplit = rightAdd.scale(0.5F);
 
-        Vec3d start = cache != null ? cache.prevEnd : startPos;
-        Vec3d startRight = cache != null ? cache.prevEndRight : start.add(rightAdd);
-        Vec3d startBack = cache != null ? cache.prevEndBack : start.add(rightAddSplit).add(backAdd);
-        Vec3d endRight = end.add(rightAdd), endBack = end.add(rightAddSplit).add(backAdd);
+        Vec3 start = cache != null ? cache.prevEnd : startPos;
+        Vec3 startRight = cache != null ? cache.prevEndRight : start.add(rightAdd);
+        Vec3 startBack = cache != null ? cache.prevEndBack : start.add(rightAddSplit).add(backAdd);
+        Vec3 endRight = end.add(rightAdd), endBack = end.add(rightAddSplit).add(backAdd);
 
         BoltQuads quads = new BoltQuads();
         quads.addQuad(start, end, endRight, startRight);
@@ -158,7 +158,7 @@ public class LightningBoltData {
         /**
          * Represents a unit sine wave from 0 to PI, scaled by progress.
          */
-        SpreadFunction SINE = (progress) -> MathHelper.sin((float) (Math.PI * progress));
+        SpreadFunction SINE = (progress) -> Mth.sin((float) (Math.PI * progress));
 
         float getMaxSpread(float progress);
     }
@@ -176,7 +176,7 @@ public class LightningBoltData {
         /**
          * Don't remember where the last segment left off, just randomly move from the straight-line vector.
          */
-        SegmentSpreader NO_MEMORY = (perpendicularDist, randVec, maxDiff, scale, progress) -> randVec.multiply(maxDiff);
+        SegmentSpreader NO_MEMORY = (perpendicularDist, randVec, maxDiff, scale, progress) -> randVec.scale(maxDiff);
 
         /**
          * Move from where the previous segment ended by a certain memory factor. Higher memory will restrict perpendicular movement.
@@ -184,16 +184,16 @@ public class LightningBoltData {
         static SegmentSpreader memory(float memoryFactor) {
             return (perpendicularDist, randVec, maxDiff, spreadScale, progress) -> {
                 float nextDiff = maxDiff * (1 - memoryFactor);
-                Vec3d cur = randVec.multiply(nextDiff);
+                Vec3 cur = randVec.scale(nextDiff);
                 if (progress > 0.5F) {
                     // begin to come back to the center after we pass halfway mark
-                    cur = cur.add(perpendicularDist.multiply(-1 * (1 - spreadScale)));
+                    cur = cur.add(perpendicularDist.scale(-1 * (1 - spreadScale)));
                 }
                 return perpendicularDist.add(cur);
             };
         }
 
-        Vec3d getSegmentAdd(Vec3d perpendicularDist, Vec3d randVec, float maxDiff, float scale, float progress);
+        Vec3 getSegmentAdd(Vec3 perpendicularDist, Vec3 randVec, float maxDiff, float scale, float progress);
     }
 
     public interface SpawnFunction {
@@ -264,19 +264,19 @@ public class LightningBoltData {
         Pair<Integer, Integer> getRenderBounds(int totalBolts, float lifeScale);
     }
 
-    private record QuadCache(Vec3d prevEnd, Vec3d prevEndRight, Vec3d prevEndBack) {
+    private record QuadCache(Vec3 prevEnd, Vec3 prevEndRight, Vec3 prevEndBack) {
 
     }
 
     protected static class BoltInstructions {
 
-        private final Vec3d start;
-        private final Vec3d perpendicularDist;
+        private final Vec3 start;
+        private final Vec3 perpendicularDist;
         private final QuadCache cache;
         private final float progress;
         private final boolean isBranch;
 
-        private BoltInstructions(Vec3d start, float progress, Vec3d perpendicularDist, QuadCache cache, boolean isBranch) {
+        private BoltInstructions(Vec3 start, float progress, Vec3 perpendicularDist, QuadCache cache, boolean isBranch) {
             this.start = start;
             this.perpendicularDist = perpendicularDist;
             this.progress = progress;
@@ -329,13 +329,13 @@ public class LightningBoltData {
 
     public static class BoltQuads {
 
-        private final List<Vec3d> vecs = new ArrayList<>();
+        private final List<Vec3> vecs = new ArrayList<>();
 
-        protected void addQuad(Vec3d... quadVecs) {
+        protected void addQuad(Vec3... quadVecs) {
             this.vecs.addAll(Arrays.asList(quadVecs));
         }
 
-        public List<Vec3d> getVecs() {
+        public List<Vec3> getVecs() {
             return this.vecs;
         }
     }

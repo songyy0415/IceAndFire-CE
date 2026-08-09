@@ -1,16 +1,16 @@
 package com.iafenvoy.iceandfire.render.misc;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
 
 import java.util.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 
 /*
     Lightning bolt effect code used with permission from aidancbrady
@@ -19,15 +19,15 @@ public class LightningRenderer {
     private static final float REFRESH_TIME = 3F;
     private static final double MAX_OWNER_TRACK_TIME = 100;
     private final Random random = new Random();
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final Minecraft client = Minecraft.getInstance();
     private final Map<Object, BoltOwnerData> boltOwners = new Object2ObjectOpenHashMap<>();
     private Timestamp refreshTimestamp = new Timestamp();
 
-    public void render(float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn) {
-        VertexConsumer buffer = bufferIn.getBuffer(RenderLayer.getLightning());
-        Matrix4f matrix = matrixStackIn.peek().getPositionMatrix();
-        assert this.client.world != null;
-        Timestamp timestamp = new Timestamp(this.client.world.getTime(), partialTicks);
+    public void render(float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn) {
+        VertexConsumer buffer = bufferIn.getBuffer(RenderType.lightning());
+        Matrix4f matrix = matrixStackIn.last().pose();
+        assert this.client.level != null;
+        Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
         boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
         if (refresh) this.refreshTimestamp = timestamp;
         for (Iterator<Map.Entry<Object, BoltOwnerData>> iter = this.boltOwners.entrySet().iterator(); iter.hasNext(); ) {
@@ -46,10 +46,10 @@ public class LightningRenderer {
     }
 
     public void update(Object owner, LightningBoltData newBoltData, float partialTicks) {
-        if (this.client.world == null) return;
+        if (this.client.level == null) return;
         BoltOwnerData data = this.boltOwners.computeIfAbsent(owner, o -> new BoltOwnerData());
         data.lastBolt = newBoltData;
-        Timestamp timestamp = new Timestamp(this.client.world.getTime(), partialTicks);
+        Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
         if ((!data.lastBolt.getSpawnFunction().isConsecutive() || data.bolts.isEmpty()) && timestamp.isPassed(data.lastBoltTimestamp, data.lastBoltDelay))
             data.addBolt(new BoltInstance(newBoltData, timestamp), timestamp);
         data.lastUpdateTimestamp = timestamp;
@@ -70,7 +70,7 @@ public class LightningRenderer {
             float lifeScale = timestamp.subtract(this.createdTimestamp).value() / this.bolt.getLifespan();
             Pair<Integer, Integer> bounds = this.bolt.getFadeFunction().getRenderBounds(this.renderQuads.size(), lifeScale);
             for (int i = bounds.getLeft(); i < bounds.getRight(); i++)
-                this.renderQuads.get(i).getVecs().forEach(v -> buffer.vertex(matrix, (float) v.x, (float) v.y, (float) v.z).color(this.bolt.getColor().x(), this.bolt.getColor().y(), this.bolt.getColor().z(), this.bolt.getColor().w()));
+                this.renderQuads.get(i).getVecs().forEach(v -> buffer.addVertex(matrix, (float) v.x, (float) v.y, (float) v.z).setColor(this.bolt.getColor().x(), this.bolt.getColor().y(), this.bolt.getColor().z(), this.bolt.getColor().w()));
         }
 
         public boolean tick(Timestamp timestamp) {

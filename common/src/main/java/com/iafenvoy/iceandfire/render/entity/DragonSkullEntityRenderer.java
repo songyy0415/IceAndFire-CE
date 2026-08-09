@@ -30,17 +30,17 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Tuple;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity> {
-    public static final Event<Consumer<BiConsumer<DragonType, net.minecraft.util.Tuple<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>>>> COLLECT_DRAGON_SKULL_MODELS = new Event<>(callbacks -> consumer -> callbacks.forEach(x -> x.accept(consumer)));
-    private final Map<DragonType, Tuple<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
+    public static final Event<Consumer<BiConsumer<DragonType, net.minecraft.util.Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>>>> COLLECT_DRAGON_SKULL_MODELS = new Event<>(callbacks -> consumer -> callbacks.forEach(x -> x.accept(consumer)));
+    private final Map<DragonType, Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
 
     static {
         COLLECT_DRAGON_SKULL_MODELS.register(consumer -> {
-            consumer.accept(IafDragonTypes.FIRE, new Tuple<>(IafRenderers.FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new)));
-            consumer.accept(IafDragonTypes.ICE, new Tuple<>(IafRenderers.ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new)));
-            consumer.accept(IafDragonTypes.LIGHTNING, new Tuple<>(IafRenderers.LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new)));
+            consumer.accept(IafDragonTypes.FIRE, Pair.of(IafRenderers.FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new)));
+            consumer.accept(IafDragonTypes.ICE, Pair.of(IafRenderers.ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new)));
+            consumer.accept(IafDragonTypes.LIGHTNING, Pair.of(IafRenderers.LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new)));
         });
     }
 
@@ -57,9 +57,9 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
 
     @Override
     public void render(DragonSkullEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        Tuple<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
+        Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
         if (p == null) return;
-        TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getA());
+        TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getLeft());
         if (model == null) return;
         VertexConsumer consumer = bufferIn.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(entity)));
         matrixStackIn.pushPose();

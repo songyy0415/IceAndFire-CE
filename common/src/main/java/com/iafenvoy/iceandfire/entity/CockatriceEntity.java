@@ -441,18 +441,18 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
                 if (player.isShiftKeyDown()) {
                     if (this.hasHomePosition) {
                         this.hasHomePosition = false;
-                        player.displayClientMessage(Component.translatable("cockatrice.command.remove_home"), true);
+                        player.sendSystemMessage(Component.translatable("cockatrice.command.remove_home"));
                     } else {
                         BlockPos pos = this.blockPosition();
                         this.homePos = new HomePosition(pos, this.level());
                         this.hasHomePosition = true;
-                        player.displayClientMessage(Component.translatable("cockatrice.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()), true);
+                        player.sendSystemMessage(Component.translatable("cockatrice.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()));
                     }
                 } else {
                     this.setCommand(this.getCommand() + 1);
                     if (this.getCommand() > 3)
                         this.setCommand(0);
-                    player.displayClientMessage(Component.translatable("cockatrice.command." + this.getCommand()), true);
+                    player.sendSystemMessage(Component.translatable("cockatrice.command." + this.getCommand()));
                     this.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
                 }
                 return InteractionResult.SUCCESS;

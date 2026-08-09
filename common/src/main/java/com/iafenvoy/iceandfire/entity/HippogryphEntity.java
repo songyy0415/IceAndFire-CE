@@ -290,18 +290,18 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                 if (player.isShiftKeyDown()) {
                     if (this.hasHomePosition) {
                         this.hasHomePosition = false;
-                        player.displayClientMessage(Component.translatable("hippogryph.command.remove_home"), true);
+                        player.sendSystemMessage(Component.translatable("hippogryph.command.remove_home"));
                     } else {
                         this.homePos = this.blockPosition();
                         this.hasHomePosition = true;
-                        player.displayClientMessage(Component.translatable("hippogryph.command.new_home", this.homePos.getX(), this.homePos.getY(), this.homePos.getZ()), true);
+                        player.sendSystemMessage(Component.translatable("hippogryph.command.new_home", this.homePos.getX(), this.homePos.getY(), this.homePos.getZ()));
                     }
                     return InteractionResult.SUCCESS;
                 } else {
                     this.setCommand(this.getCommand() + 1);
                     if (this.getCommand() > 1)
                         this.setCommand(0);
-                    player.displayClientMessage(Component.translatable("hippogryph.command." + (this.getCommand() == 1 ? "sit" : "stand")), true);
+                    player.sendSystemMessage(Component.translatable("hippogryph.command." + (this.getCommand() == 1 ? "sit" : "stand")));
                 }
                 return InteractionResult.SUCCESS;
             }

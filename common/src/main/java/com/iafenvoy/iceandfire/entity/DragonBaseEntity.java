@@ -1185,12 +1185,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                         if (player.isShiftKeyDown()) {
                             if (this.hasHomePosition) {
                                 this.hasHomePosition = false;
-                                player.displayClientMessage(Component.translatable("dragon.command.remove_home"), true);
+                                player.sendSystemMessage(Component.translatable("dragon.command.remove_home"));
                             } else {
                                 BlockPos pos = this.blockPosition();
                                 this.homePos = new HomePosition(pos, this.level());
                                 this.hasHomePosition = true;
-                                player.displayClientMessage(Component.translatable("dragon.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()), true);
+                                player.sendSystemMessage(Component.translatable("dragon.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()));
                             }
                         } else {
                             this.playSound(SoundEvents.ZOMBIE_INFECT, this.getSoundVolume(), this.getVoicePitch());
@@ -1206,7 +1206,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                             } else if (this.getCommand() == 2) {
                                 commandText = "escort";
                             }
-                            player.displayClientMessage(Component.translatable("dragon.command." + commandText), true);
+                            player.sendSystemMessage(Component.translatable("dragon.command." + commandText));
                         }
                         return InteractionResult.SUCCESS;
                     }

@@ -230,7 +230,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
                 if (player.isShiftKeyDown()) {
                     this.homePos = this.blockPosition();
                     this.hasHomePosition = true;
-                    player.displayClientMessage(Component.translatable("amphithere.command.new_home", this.homePos.getX(), this.homePos.getY(), this.homePos.getZ()), true);
+                    player.sendSystemMessage(Component.translatable("amphithere.command.new_home", this.homePos.getX(), this.homePos.getY(), this.homePos.getZ()));
                     return InteractionResult.SUCCESS;
                 }
                 return InteractionResult.SUCCESS;
@@ -240,7 +240,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
                     this.setCommand(this.getCommand() + 1);
                     if (this.getCommand() > 2)
                         this.setCommand(0);
-                    player.displayClientMessage(Component.translatable("amphithere.command." + this.getCommand()), true);
+                    player.sendSystemMessage(Component.translatable("amphithere.command." + this.getCommand()));
                     this.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
                     return InteractionResult.SUCCESS;
                 }

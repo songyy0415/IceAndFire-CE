@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.HydraRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
@@ -15,7 +17,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
-public class HydraHeadModel extends DragonBaseModel<LivingEntityRenderState> {
+public class HydraHeadModel extends DragonBaseModel<HydraRenderState> {
     public final AdvancedModelBox Neck1;
     public final AdvancedModelBox Neck2;
     public final AdvancedModelBox Neck3;
@@ -119,16 +121,20 @@ public class HydraHeadModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(HydraEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+    public void setupAnim(HydraRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
         float degree_walk = 0.2F;
         float degree_idle = 0.5F;
-        if (GorgonEntity.isStoneMob(entity)) {
+        if (state.isStone) {
             return;
         }
-        float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         AdvancedModelBox[] ENTIRE_HEAD = new AdvancedModelBox[]{this.Neck1, this.Neck2, this.Neck3, this.Neck4};
         this.chainFlap(ENTIRE_HEAD, speed_idle, degree_idle * 0.15F, -3 + this.headIndex % 4, animationProgress, 1);
         this.chainSwing(ENTIRE_HEAD, speed_idle, degree_idle * 0.05F, -3 + this.headIndex % 3, animationProgress, 1);
@@ -137,16 +143,16 @@ public class HydraHeadModel extends DragonBaseModel<LivingEntityRenderState> {
         this.walk(this.neckSpike1, speed_idle * 1.5F, degree_idle * 0.4F, false, 2, -0.1F, animationProgress, 1);
         this.walk(this.neckSpike2, speed_idle * 1.5F, degree_idle * 0.4F, false, 3, -0.1F, animationProgress, 1);
         this.chainSwing(ENTIRE_HEAD, speed_walk, degree_walk * 0.75F, -3, limbAngle, limbDistance);
-        float speakProgress = entity.prevSpeakingProgress[this.headIndex] + partialTicks * (entity.speakingProgress[this.headIndex] - entity.prevSpeakingProgress[this.headIndex]);
+        float speakProgress = state.speakProgress[this.headIndex];
         this.progressRotationInterp(this.LowerJaw1, Mth.sin((float) (speakProgress * Math.PI)) * 10F, (float) Math.toRadians(25), 0.0F, 0.0F, 10F);
-        float strikeProgress = entity.prevStrikeProgress[this.headIndex] + partialTicks * (entity.strikingProgress[this.headIndex] - entity.prevStrikeProgress[this.headIndex]);
+        float strikeProgress = state.strikeProgress[this.headIndex];
         this.progressRotationInterp(this.Neck2, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.Neck3, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.Neck4, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.Head1, strikeProgress, (float) Math.toRadians(-15), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.LowerJaw1, strikeProgress, (float) Math.toRadians(45), 0.0F, 0.0F, 10F);
         this.progressPositionInterp(this.TeethTR1, strikeProgress, 0.5F, 0.0F, 0.0F, 10F);
-        float breathProgress = entity.prevBreathProgress[this.headIndex] + partialTicks * (entity.breathProgress[this.headIndex] - entity.prevBreathProgress[this.headIndex]);
+        float breathProgress = state.breathProgress[this.headIndex];
         this.progressRotationInterp(this.Neck4, breathProgress, (float) Math.toRadians(15), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.Neck3, breathProgress, (float) Math.toRadians(15), 0.0F, 0.0F, 10F);
         this.progressPositionInterp(this.TeethTR1, breathProgress, 0.5F, 0.0F, 0.0F, 10F);
@@ -155,12 +161,12 @@ public class HydraHeadModel extends DragonBaseModel<LivingEntityRenderState> {
         this.progressRotationInterp(this.LowerJaw1, breathProgress, (float) Math.toRadians(50), 0.0F, 0.0F, 10F);
 
 
-        this.Neck2.showModel = entity.getSeveredHead() != this.headIndex && entity.isAlive();
+        this.Neck2.showModel = state.severedHead != this.headIndex && state.isAlive;
     }
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 
 

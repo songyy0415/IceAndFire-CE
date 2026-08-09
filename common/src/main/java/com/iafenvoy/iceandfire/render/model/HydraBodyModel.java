@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.HydraRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.HydraEntity;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class HydraBodyModel extends DragonBaseModel<LivingEntityRenderState> {
+public class HydraBodyModel extends DragonBaseModel<HydraRenderState> {
     public final AdvancedModelBox BodyUpper;
     public final AdvancedModelBox BodyLower;
     public final AdvancedModelBox BodySpike1;
@@ -103,8 +105,13 @@ public class HydraBodyModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(HydraEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+    public void setupAnim(HydraRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
         float degree_walk = 1F;
@@ -126,7 +133,7 @@ public class HydraBodyModel extends DragonBaseModel<LivingEntityRenderState> {
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
         this.resetToDefaultPose();
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
 
         this.resetToDefaultPose();
     }

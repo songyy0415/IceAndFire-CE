@@ -52,3 +52,32 @@
 ## 未触碰
 - Particle / Screen / Mixin / DynamicItemRenderer。
 - 无删除功能 / 注释绕过 / 空实现 / `@SuppressWarnings`。
+
+---
+
+## Dragon Renderer + Feature 全量（Banner / Rider / Animator）✅
+
+### 本批修改
+
+| 文件 | 变更 |
+|---|---|
+| `render/entity/state/DragonRenderState.java` | **扩展**：+~40 字段（动画 progress/cycle/boolean/buffer/legSolver/preyRenderStates/bannerItem/partialTicks/dragonScale/shakingPrey） |
+| `render/entity/DragonBaseEntityRenderer.java` | **迁移**：`MobRenderer<T, DragonRenderState, TabulaModel<DragonRenderState>>`；`extractRenderState` 全量快照（动画/纹理/装甲/旗帜/猎物）；`scale(state)`/`getTextureLocation(state)` |
+| `render/entity/feature/DragonBannerFeatureRenderer.java` | **迁移**：`submit` + `state.bannerItem.submit(...)`（ItemStackRenderState，extract 用 itemModelResolver.updateForLiving 填充） |
+| `render/entity/feature/DragonRiderFeatureRenderer.java` | **迁移**：`submit` 经 `dispatcher.extractEntity(passenger)`（extract 捕获）+ `dispatcher.submit(preyState, camera, …)` 在龙嘴渲染猎物（26.2 官方机制，参考 GuiEntityRenderer/ItemPickupParticleGroup） |
+| `render/model/animator/*`（DragonTabula + Fire/Ice/Lightning + IceAndFireTabula + LegArticulator） | **迁移**：泛型 `T extends DragonBaseEntity`→`T extends DragonRenderState`；`setRotationAngles(model, state, …)`；`getTimer`→`getDeltaTracker`；LegArticulator `entity`→`renderSize` |
+
+### 错误变化
+
+- javac：1,957 → **1,918**（-39）；unique：1,731 → **1,676**（-55）
+- `DragonBaseEntityRenderer` / `DragonRiderFeatureRenderer` / `DragonTabulaModelAnimator`：**0 错误**（恢复编译）
+- 新增错误：0
+
+### 未处理
+
+- **LightningDragonEntityRenderer**（6 错误）：闪电渲染（`render/misc/LightningRenderer` + `LightningBoltData`）用旧 `MultiBufferSource`，需 26.2 submit 管线专项（闪电子类）。
+- **SeaSerpentTabulaModelAnimator**（18 错误）：需 `SeaSerpentRenderState`（独立渲染器，deferred）。
+- **双渲染规避**：Rider 的 RENDERING_RIDERS 已退役；猎物在龙嘴 + 正常位置可能双渲染，需 LevelExtractor mixin 规避（Mixin 禁改，留待 Mixin 阶段）。
+
+### 参考
+- 26.2 官方验证：`ItemStackRenderState.submit`、`ItemModelResolver.updateForLiving`、`EntityRenderDispatcher.extractEntity/submit`、`ITabulaModelAnimator<T extends LivingEntityRenderState>`。

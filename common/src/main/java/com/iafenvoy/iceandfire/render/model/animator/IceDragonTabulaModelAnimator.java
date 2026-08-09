@@ -1,11 +1,11 @@
 package com.iafenvoy.iceandfire.render.model.animator;
 
-import com.iafenvoy.iceandfire.entity.IceDragonEntity;
+import com.iafenvoy.iceandfire.render.entity.state.DragonRenderState;
 import com.iafenvoy.iceandfire.render.model.util.DragonModelTypes;
 import com.iafenvoy.iceandfire.render.model.util.DragonPoses;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 
-public class IceDragonTabulaModelAnimator extends DragonTabulaModelAnimator<IceDragonEntity> {
+public class IceDragonTabulaModelAnimator extends DragonTabulaModelAnimator<DragonRenderState> {
     public IceDragonTabulaModelAnimator() {
         super(DragonPoses.GROUND_POSE, DragonModelTypes.ICE_DRAGON_MODEL);
         this.walkPoses = new TabulaModel[]{this.getModel(DragonPoses.WALK1), this.getModel(DragonPoses.WALK2), this.getModel(DragonPoses.WALK3), this.getModel(DragonPoses.WALK4)};

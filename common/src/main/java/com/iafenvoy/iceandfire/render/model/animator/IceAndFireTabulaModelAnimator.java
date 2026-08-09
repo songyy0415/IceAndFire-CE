@@ -4,10 +4,10 @@ import com.iafenvoy.iceandfire.util.IafMath;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.TabulaModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.util.Mth;
 
-public class IceAndFireTabulaModelAnimator<T extends Entity> {
+public class IceAndFireTabulaModelAnimator<T extends LivingEntityRenderState> {
     protected final TabulaModel<T> baseModel;
 
     public IceAndFireTabulaModelAnimator(TabulaModel<T> baseModel) {
@@ -53,7 +53,7 @@ public class IceAndFireTabulaModelAnimator<T extends Entity> {
     }
 
     public float distance(float rotateAngleFrom, float rotateAngleTo) {
-        return (float) IafMath.atan2_accurate(MathHelper.sin(rotateAngleTo - rotateAngleFrom), MathHelper.cos(rotateAngleTo - rotateAngleFrom));
+        return (float) IafMath.atan2_accurate(Mth.sin(rotateAngleTo - rotateAngleFrom), Mth.cos(rotateAngleTo - rotateAngleFrom));
     }
 
     public void rotate(ModelAnimator animator, AdvancedModelBox model, float x, float y, float z) {

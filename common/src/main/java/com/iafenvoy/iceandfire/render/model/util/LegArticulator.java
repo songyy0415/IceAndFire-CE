@@ -1,12 +1,11 @@
 package com.iafenvoy.iceandfire.render.model.util;
 
-import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public final class LegArticulator {
     public static void articulateQuadruped(
-            DragonBaseEntity entity, LegSolverQuadruped legs, AdvancedModelBox body, AdvancedModelBox lowerBody, AdvancedModelBox neck,
+            float renderSize, LegSolverQuadruped legs, AdvancedModelBox body, AdvancedModelBox lowerBody, AdvancedModelBox neck,
             AdvancedModelBox backLeftThigh, AdvancedModelBox backLeftCalf, AdvancedModelBox[] backLeftFoot,
             AdvancedModelBox backRightThigh, AdvancedModelBox backRightCalf, AdvancedModelBox[] backRightFoot,
 
@@ -20,11 +19,11 @@ public final class LegArticulator {
         final float heightFrontLeft = legs.frontLeft.getHeight(delta);
         final float heightFrontRight = legs.frontRight.getHeight(delta);
         if (heightBackLeft > 0 || heightBackRight > 0 || heightFrontLeft > 0 || heightFrontRight > 0) {
-            final float sc = LegArticulator.getScale(entity);
+            final float sc = renderSize * 0.33F;
             final float backAvg = LegArticulator.avg(heightBackLeft, heightBackRight);
             final float frontAvg = LegArticulator.avg(heightFrontLeft, heightFrontRight);
             final float bodyLength = Math.abs(avg(legs.backLeft.forward, legs.backRight.forward) - avg(legs.frontLeft.forward, legs.frontRight.forward));
-            final float tilt = (float) (MathHelper.atan2(bodyLength * sc, backAvg - frontAvg) - Math.PI / 2);
+            final float tilt = (float) (Mth.atan2(bodyLength * sc, backAvg - frontAvg) - Math.PI / 2);
             body.rotationPointY += 16 / sc * backAvg;
             body.rotateAngleX += tilt;
             lowerBody.rotateAngleX -= tilt;
@@ -57,7 +56,5 @@ public final class LegArticulator {
         return (a + b) / 2;
     }
 
-    private static float getScale(DragonBaseEntity entity) {
-        return entity.getRenderSize() * 0.33F;
-    }
+    
 }

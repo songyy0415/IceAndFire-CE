@@ -58,8 +58,8 @@ dependencies {
 
     // uranus 26.2 (2.4.1-bugfix) — local build, installed to mavenLocal.
     implementation "com.iafenvoy.uranus:uranus-fabric:2.4.1-bugfix"
-    // jupiter 26.2 local port (Jupiter new, 2.4.2) to be wired in P3; 1.21.1 kept for P1.
-    implementation "maven.modrinth:jupiter:5pNXzmee"
+    // jupiter 26.2 (2.4.2) — local port build, installed to mavenLocal.
+    implementation "com.iafenvoy:jupiter:2.4.2-26.2-universal"
 
     // Bundled into META-INF/jars/ (integration-fabric jar already contains common classes).
     implementation "com.github.IAFEnvoy.Integration:integration-fabric:$integration_version"

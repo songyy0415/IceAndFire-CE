@@ -9,21 +9,26 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import com.mojang.serialization.MapCodec;
 import dev.architectury.registry.menu.MenuRegistry;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -31,15 +36,15 @@ import java.util.Locale;
 import java.util.Map;
 
 //FIXME::Introduce a base block class for all dragon forge blocks
-public class DragonForgeBrickBlock extends BlockWithEntity implements DragonProof, DragonTypeProvider {
+public class DragonForgeBrickBlock extends BaseEntityBlock implements DragonProof, DragonTypeProvider {
     private static final Map<DragonType, Block> TYPE_MAP = new HashMap<>();
-    public static final BooleanProperty GRILL = BooleanProperty.of("grill");
+    public static final BooleanProperty GRILL = BooleanProperty.create("grill");
     private final DragonType dragonType;
 
     public DragonForgeBrickBlock(DragonType dragonType) {
-        super(Settings.create().mapColor(MapColor.STONE_GRAY).instrument(NoteBlockInstrument.BASEDRUM).dynamicBounds().strength(40, 500).sounds(BlockSoundGroup.METAL));
+        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).dynamicShape().strength(40, 500).sound(SoundType.METAL));
         this.dragonType = dragonType;
-        this.setDefaultState(this.getStateManager().getDefaultState().with(GRILL, Boolean.FALSE));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(GRILL, Boolean.FALSE));
         TYPE_MAP.put(dragonType, this);
     }
 
@@ -52,46 +57,46 @@ public class DragonForgeBrickBlock extends BlockWithEntity implements DragonProo
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         DragonForgeBlockEntity forge = this.getConnectedBlockEntity(world, pos);
-        if (forge != null && forge.getDragonType() == this.dragonType && player instanceof ServerPlayerEntity serverPlayer) {
+        if (forge != null && forge.getDragonType() == this.dragonType && player instanceof ServerPlayer serverPlayer) {
             MenuRegistry.openExtendedMenu(serverPlayer, forge);
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    private DragonForgeBlockEntity getConnectedBlockEntity(World worldIn, BlockPos pos) {
+    private DragonForgeBlockEntity getConnectedBlockEntity(Level worldIn, BlockPos pos) {
         for (Direction facing : Direction.values())
-            if (worldIn.getBlockEntity(pos.offset(facing)) != null && worldIn.getBlockEntity(pos.offset(facing)) instanceof DragonForgeBlockEntity forge)
+            if (worldIn.getBlockEntity(pos.relative(facing)) != null && worldIn.getBlockEntity(pos.relative(facing)) instanceof DragonForgeBlockEntity forge)
                 if (forge.assembled())
                     return forge;
         return null;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(GRILL);
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return MapCodec.unit(this);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DragonForgeBrickBlockEntity(pos, state);
     }
 
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : validateTicker(type, IafBlockEntities.DRAGONFORGE_BRICK.get(), DragonForgeBrickBlockEntity::tick);
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return world.isClientSide() ? null : createTickerHelper(type, IafBlockEntities.DRAGONFORGE_BRICK.get(), DragonForgeBrickBlockEntity::tick);
     }
 
     @Override

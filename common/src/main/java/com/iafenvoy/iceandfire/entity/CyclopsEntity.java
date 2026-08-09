@@ -13,40 +13,58 @@ import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.block.*;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PolarBearEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
 
-public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, BlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
-    private static final TrackedData<Boolean> BLINDED = DataTracker.registerData(CyclopsEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Integer> VARIANT = DataTracker.registerData(CyclopsEntity.class, TrackedDataHandlerRegistry.INTEGER);
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FleeSunGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RestrictSunGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.PolarBear;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.Vec3;
+
+public class CyclopsEntity extends Monster implements IAnimatedEntity, BlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
+    private static final EntityDataAccessor<Boolean> BLINDED = SynchedEntityData.defineId(CyclopsEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(CyclopsEntity.class, EntityDataSerializers.INT);
     public static Animation ANIMATION_STOMP;
     public static Animation ANIMATION_EATPLAYER;
     public static Animation ANIMATION_KICK;
@@ -55,100 +73,100 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     private int animationTick;
     private Animation currentAnimation;
 
-    public CyclopsEntity(EntityType<CyclopsEntity> type, World worldIn) {
+    public CyclopsEntity(EntityType<CyclopsEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
-        this.setPathfindingPenalty(PathNodeType.FENCE, 0.0F);
+        this.setPathfindingMalus(PathType.WATER, -1.0F);
+        this.setPathfindingMalus(PathType.FENCE, 0.0F);
         ANIMATION_STOMP = Animation.create(27);
         ANIMATION_EATPLAYER = Animation.create(40);
         ANIMATION_KICK = Animation.create(20);
         ANIMATION_ROAR = Animation.create(30);
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder bakeAttributes() {
+        return Mob.createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, IafCommonConfig.INSTANCE.cyclops.maxHealth.getValue())
+                .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.cyclops.maxHealth.getValue())
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
                 //ATTACK
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, IafCommonConfig.INSTANCE.cyclops.attackDamage.getValue())
+                .add(Attributes.ATTACK_DAMAGE, IafCommonConfig.INSTANCE.cyclops.attackDamage.getValue())
                 //FOLLOW RANGE
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32D)
+                .add(Attributes.FOLLOW_RANGE, 32D)
                 //ARMOR
-                .add(EntityAttributes.GENERIC_ARMOR, 20.0D)
-                .add(EntityAttributes.GENERIC_STEP_HEIGHT, 2.5F);
+                .add(Attributes.ARMOR, 20.0D)
+                .add(Attributes.STEP_HEIGHT, 2.5F);
     }
 
     @Override
     public void setConfigurableAttributes() {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(IafCommonConfig.INSTANCE.cyclops.maxHealth.getValue());
-        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.35D);
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(IafCommonConfig.INSTANCE.cyclops.maxHealth.getValue());
+        this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35D);
     }
 
     @Override
-    protected EntityNavigation createNavigation(World worldIn) {
-        return new CyclopsNavigation(this, this.getWorld());
+    protected PathNavigation createNavigation(Level worldIn) {
+        return new CyclopsNavigation(this, this.level());
     }
 
     @Override
-    public int getXpToDrop() {
+    public int getBaseExperienceReward() {
         return 40;
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new AvoidSunlightGoal(this));
-        this.goalSelector.add(3, new EscapeSunlightGoal(this, 1.0D));
-        this.goalSelector.add(3, new CyclopsAIAttackMeleeGoal(this, 1.0D, false));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F, 1.0F));
-        this.goalSelector.add(6, new LookAroundGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, 10, true, true, (Predicate<LivingEntity>) entity -> {
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new RestrictSunGoal(this));
+        this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
+        this.goalSelector.addGoal(3, new CyclopsAIAttackMeleeGoal(this, 1.0D, false));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F, 1.0F));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, true, (Predicate<LivingEntity>) entity -> {
             if (GorgonEntity.isStoneMob(entity))
                 return false;
             if (!DragonUtils.isAlive(entity))
                 return false;
-            if (entity instanceof WaterCreatureEntity)
+            if (entity instanceof WaterAnimal)
                 return false;
-            if (entity instanceof PlayerEntity playerEntity) {
+            if (entity instanceof Player playerEntity) {
                 if (playerEntity.isCreative() || playerEntity.isSpectator())
                     return false;
             }
             if (entity instanceof CyclopsEntity)
                 return false;
-            if (entity instanceof AnimalEntity) {
-                if (!(entity instanceof WolfEntity || entity instanceof PolarBearEntity || entity instanceof DragonBaseEntity)) {
+            if (entity instanceof Animal) {
+                if (!(entity instanceof Wolf || entity instanceof PolarBear || entity instanceof DragonBaseEntity)) {
                     return false;
                 }
             }
-            return !entity.getType().isIn(IafEntityTags.SHEEP);
+            return !entity.getType().is(IafEntityTags.SHEEP);
         }));
 
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, true, entity -> entity instanceof PlayerEntity player && !(player.isCreative() || player.isSpectator())));
-        this.targetSelector.add(3, new CyclopsAITargetSheepPlayersGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, true, entity -> entity instanceof Player player && !(player.isCreative() || player.isSpectator())));
+        this.targetSelector.addGoal(3, new CyclopsAITargetSheepPlayersGoal<>(this, Player.class, true));
     }
 
     @Override
-    protected void pushAway(Entity entityIn) {
-        if (!entityIn.getType().isIn(IafEntityTags.SHEEP)) {
-            entityIn.pushAwayFrom(this);
+    protected void doPush(Entity entityIn) {
+        if (!entityIn.getType().is(IafEntityTags.SHEEP)) {
+            entityIn.push(this);
         }
     }
 
     @Override
-    public boolean tryAttack(Entity entityIn) {
+    public boolean doHurtTarget(Entity entityIn) {
         int attackDescision = this.getRandom().nextInt(3);
         if (attackDescision == 0) {
             this.setAnimation(ANIMATION_STOMP);
             return true;
         } else if (attackDescision == 1) {
             if (!entityIn.hasPassenger(this)
-                    && entityIn.getWidth() < 1.95F
+                    && entityIn.getBbWidth() < 1.95F
                     && !(entityIn instanceof DragonBaseEntity)
-                    && !entityIn.getType().isIn(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
+                    && !entityIn.getType().is(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
                 this.setAnimation(ANIMATION_EATPLAYER);
                 entityIn.stopRiding();
                 entityIn.startRiding(this, true);
@@ -163,15 +181,15 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(BLINDED, Boolean.FALSE);
-        builder.add(VARIANT, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(BLINDED, Boolean.FALSE);
+        builder.define(VARIANT, 0);
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound compound) {
-        super.writeCustomDataToNbt(compound);
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
         compound.putBoolean("Blind", this.isBlinded());
         compound.putInt("Variant", this.getVariant());
         if (this.eyeEntity != null)
@@ -179,53 +197,53 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound compound) {
-        super.readCustomDataFromNbt(compound);
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
         this.setBlinded(compound.getBoolean("Blind"));
         this.setVariant(compound.getInt("Variant"));
         this.setConfigurableAttributes();
     }
 
     public int getVariant() {
-        return this.dataTracker.get(VARIANT);
+        return this.entityData.get(VARIANT);
     }
 
     public void setVariant(int variant) {
-        this.dataTracker.set(VARIANT, variant);
+        this.entityData.set(VARIANT, variant);
     }
 
     public boolean isBlinded() {
-        return this.dataTracker.get(BLINDED);
+        return this.entityData.get(BLINDED);
     }
 
     public void setBlinded(boolean blind) {
-        this.dataTracker.set(BLINDED, blind);
+        this.entityData.set(BLINDED, blind);
     }
 
     @Override
-    public void updatePassengerPosition(Entity passenger, PositionUpdater callback) {
-        super.updatePassengerPosition(passenger, callback);
+    public void positionRider(Entity passenger, MoveFunction callback) {
+        super.positionRider(passenger, callback);
         if (this.hasPassenger(passenger)) {
-            passenger.setVelocity(0, passenger.getVelocity().y, 0);
+            passenger.setDeltaMovement(0, passenger.getDeltaMovement().y, 0);
             this.setAnimation(ANIMATION_EATPLAYER);
             double raiseUp = this.getAnimationTick() < 10 ? 0 : Math.min((this.getAnimationTick() * 3 - 30) * 0.2, 5.2F);
             float pullIn = this.getAnimationTick() < 15 ? 0 : Math.min((this.getAnimationTick() - 15) * 0.15F, 0.75F);
-            this.bodyYaw = this.getYaw();
-            this.setYaw(0);
+            this.yBodyRot = this.getYRot();
+            this.setYRot(0);
             float radius = -2.75F + pullIn;
-            float angle = (0.01745329251F * this.bodyYaw) + 3.15F;
-            double extraX = radius * MathHelper.sin((float) (Math.PI + angle));
-            double extraZ = radius * MathHelper.cos(angle);
-            passenger.setPosition(this.getX() + extraX, this.getY() + raiseUp, this.getZ() + extraZ);
+            float angle = (0.01745329251F * this.yBodyRot) + 3.15F;
+            double extraX = radius * Mth.sin((float) (Math.PI + angle));
+            double extraZ = radius * Mth.cos(angle);
+            passenger.setPos(this.getX() + extraX, this.getY() + raiseUp, this.getZ() + extraZ);
             if (this.getAnimationTick() == 32) {
-                passenger.damage(this.getWorld().getDamageSources().mobAttack(this), IafCommonConfig.INSTANCE.cyclops.biteDamage.getValue().floatValue());
+                passenger.hurt(this.level().damageSources().mobAttack(this), IafCommonConfig.INSTANCE.cyclops.biteDamage.getValue().floatValue());
                 passenger.stopRiding();
             }
         }
     }
 
     @Override
-    public void travel(Vec3d vec) {
+    public void travel(Vec3 vec) {
         if (this.getAnimation() == ANIMATION_EATPLAYER) {
             super.travel(vec.multiply(0, 0, 0));
             return;
@@ -239,17 +257,17 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     }
 
     @Override
-    public void tickMovement() {
-        super.tickMovement();
+    public void aiStep() {
+        super.aiStep();
         if (this.eyeEntity == null) {
             this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.6F, 1);
-            this.eyeEntity.copyPositionAndRotation(this);
-            this.getWorld().spawnEntity(this.eyeEntity);
+            this.eyeEntity.copyPosition(this);
+            this.level().addFreshEntity(this.eyeEntity);
         }
-        if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL && this.getTarget() instanceof PlayerEntity) {
+        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.getTarget() instanceof Player) {
             this.setTarget(null);
         }
-        if (this.isBlinded() && this.getTarget() != null && this.squaredDistanceTo(this.getTarget()) > 6) {
+        if (this.isBlinded() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 6) {
             this.setTarget(null);
         }
         if (this.getAnimation() == ANIMATION_ROAR && this.getAnimationTick() == 5) {
@@ -258,16 +276,16 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
         if (this.getAnimation() == ANIMATION_EATPLAYER && this.getAnimationTick() == 25) {
             this.playSound(IafSounds.CYCLOPS_BITE.get(), 1, 1);
         }
-        if (this.getAnimation() == ANIMATION_STOMP && this.getTarget() != null && this.squaredDistanceTo(this.getTarget()) < 12D && this.getAnimationTick() == 14) {
-            this.getTarget().damage(this.getWorld().getDamageSources().mobAttack(this), (float) this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue());
+        if (this.getAnimation() == ANIMATION_STOMP && this.getTarget() != null && this.distanceToSqr(this.getTarget()) < 12D && this.getAnimationTick() == 14) {
+            this.getTarget().hurt(this.level().damageSources().mobAttack(this), (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
         }
-        if (this.getAnimation() == ANIMATION_KICK && this.getTarget() != null && this.squaredDistanceTo(this.getTarget()) < 14D && this.getAnimationTick() == 12) {
-            this.getTarget().damage(this.getWorld().getDamageSources().mobAttack(this), (float) this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue());
+        if (this.getAnimation() == ANIMATION_KICK && this.getTarget() != null && this.distanceToSqr(this.getTarget()) < 14D && this.getAnimationTick() == 12) {
+            this.getTarget().hurt(this.level().damageSources().mobAttack(this), (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
             if (this.getTarget() != null)
-                this.getTarget().takeKnockback(2, this.getX() - this.getTarget().getX(), this.getZ() - this.getTarget().getZ());
+                this.getTarget().knockback(2, this.getX() - this.getTarget().getX(), this.getZ() - this.getTarget().getZ());
 
         }
-        if (this.getAnimation() != ANIMATION_EATPLAYER && this.getTarget() != null && !this.getPassengerList().isEmpty() && this.getPassengerList().contains(this.getTarget())) {
+        if (this.getAnimation() != ANIMATION_EATPLAYER && this.getTarget() != null && !this.getPassengers().isEmpty() && this.getPassengers().contains(this.getTarget())) {
             this.setAnimation(ANIMATION_EATPLAYER);
         }
         if (this.getAnimation() == NO_ANIMATION && this.getTarget() != null && this.getRandom().nextInt(100) == 0) {
@@ -279,15 +297,15 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
                 double motionY = this.getRandom().nextGaussian() * 0.07D;
                 double motionZ = this.getRandom().nextGaussian() * 0.07D;
                 float radius = 0.75F * -2F;
-                float angle = (0.01745329251F * this.bodyYaw) + i1 * 1F;
-                double extraX = radius * MathHelper.sin((float) (Math.PI + angle));
+                float angle = (0.01745329251F * this.yBodyRot) + i1 * 1F;
+                double extraX = radius * Mth.sin((float) (Math.PI + angle));
                 double extraY = 0.8F;
-                double extraZ = radius * MathHelper.cos(angle);
+                double extraZ = radius * Mth.cos(angle);
 
-                BlockState BlockState = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX() + extraX, this.getY() + extraY - 1, this.getZ() + extraZ));
+                BlockState BlockState = this.level().getBlockState(BlockPos.containing(this.getX() + extraX, this.getY() + extraY - 1, this.getZ() + extraZ));
                 if (BlockState.isAir()) {
-                    if (this.getWorld().isClient) {
-                        this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, BlockState), this.getX() + extraX, this.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
+                    if (this.level().isClientSide()) {
+                        this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, BlockState), this.getX() + extraX, this.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
                     }
                 }
             }
@@ -297,8 +315,8 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
 
         if (this.eyeEntity == null || this.eyeEntity.isRemoved()) {
             this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.5F, 1);
-            this.eyeEntity.copyPositionAndRotation(this);
-            this.getWorld().spawnEntity(this.eyeEntity);
+            this.eyeEntity.copyPosition(this);
+            this.level().addFreshEntity(this.eyeEntity);
         }
         if (!this.isRemoved())
             IafEntityUtil.updatePart(this.eyeEntity, this);
@@ -306,8 +324,8 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess worldIn, LocalDifficulty difficultyIn, SpawnReason reason, EntityData spawnDataIn) {
-        spawnDataIn = super.initialize(worldIn, difficultyIn, reason, spawnDataIn);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, SpawnGroupData spawnDataIn) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setVariant(this.getRandom().nextInt(4));
         return spawnDataIn;
     }
@@ -318,14 +336,14 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
                 for (int b = (int) Math.round(this.getBoundingBox().minY) + 1; (b <= (int) Math.round(this.getBoundingBox().maxY) + 2) && (b <= 127); b++)
                     for (int c = (int) Math.round(this.getBoundingBox().minZ) - 1; c <= (int) Math.round(this.getBoundingBox().maxZ) + 1; c++) {
                         BlockPos pos = new BlockPos(a, b, c);
-                        BlockState state = this.getWorld().getBlockState(pos);
+                        BlockState state = this.level().getBlockState(pos);
                         Block block = state.getBlock();
-                        if (!state.isAir() && !state.getOutlineShape(this.getWorld(), pos).isEmpty() && !(block instanceof PlantBlock) && block != Blocks.BEDROCK && (state.getBlock() instanceof LeavesBlock || state.isIn(BlockTags.LOGS))) {
-                            this.getVelocity().multiply(0.6D);
+                        if (!state.isAir() && !state.getShape(this.level(), pos).isEmpty() && !(block instanceof BushBlock) && block != Blocks.BEDROCK && (state.getBlock() instanceof LeavesBlock || state.is(BlockTags.LOGS))) {
+                            this.getDeltaMovement().scale(0.6D);
                             if (IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, a, b, c)) continue;
                             if (block != Blocks.AIR)
-                                if (!this.getWorld().isClient)
-                                    this.getWorld().breakBlock(pos, true);
+                                if (!this.level().isClientSide())
+                                    this.level().destroyBlock(pos, true);
                         }
                     }
     }
@@ -364,17 +382,17 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     }
 
     public boolean isBlinking() {
-        return this.age % 50 > 40 && !this.isBlinded();
+        return this.tickCount % 50 > 40 && !this.isBlinded();
     }
 
 
     public void onHitEye(DamageSource source, float damage) {
         if (!this.isBlinded()) {
             this.setBlinded(true);
-            this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).setBaseValue(6F);
-            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.35D);
+            this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(6F);
+            this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35D);
             this.setAnimation(ANIMATION_ROAR);
-            this.damage(source, damage * 3);
+            this.hurt(source, damage * 3);
         }
     }
 
@@ -399,12 +417,12 @@ public class CyclopsEntity extends HostileEntity implements IAnimatedEntity, Bla
     }
 
     @Override
-    public boolean isPersistent() {
+    public boolean isPersistenceRequired() {
         return true;
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 }

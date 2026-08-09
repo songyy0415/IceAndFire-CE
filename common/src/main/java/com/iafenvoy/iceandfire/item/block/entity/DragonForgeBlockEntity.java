@@ -8,45 +8,44 @@ import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.screen.handler.DragonForgeScreenHandler;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.input.RecipeInput;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class DragonForgeBlockEntity extends LockableContainerBlockEntity implements SidedInventory, ExtendedMenuProvider {
+public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider {
     private static final int[] SLOTS_TOP = new int[]{0};
     private static final int[] SLOTS_SIDES = new int[]{1};
     private static final int[] SLOTS_BOTTOM = new int[]{2};
     public int lastDragonFlameTimer = 0;
-    private DefaultedList<ItemStack> forgeItemStacks = DefaultedList.ofSize(3, ItemStack.EMPTY);
+    private NonNullList<ItemStack> forgeItemStacks = NonNullList.withSize(3, ItemStack.EMPTY);
     private boolean prevAssembled;
     private double cookTime = 0;
     //FIXME::Also add total cook time like what vanilla do
-    private final PropertyDelegate delegate = new PropertyDelegate() {
+    private final ContainerData delegate = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -62,7 +61,7 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         }
 
         @Override
-        public int size() {
+        public int getCount() {
             return 2;
         }
     };
@@ -72,12 +71,12 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     //FIXME::Optimize logic and remove core replacement
-    public static void tick(World level, BlockPos pos, BlockState state, DragonForgeBlockEntity blockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, DragonForgeBlockEntity blockEntity) {
         boolean flag = blockEntity.isBurning();
         boolean flag1 = false;
         if (blockEntity.lastDragonFlameTimer > 0) blockEntity.lastDragonFlameTimer--;
         blockEntity.updateGrills(blockEntity.assembled());
-        if (!level.isClient) {
+        if (!level.isClientSide()) {
             if (blockEntity.prevAssembled != blockEntity.assembled() && state.getBlock() instanceof DragonForgeCoreBlock core)
                 DragonForgeCoreBlock.setState(core.getDragonType(), level, pos);
             blockEntity.prevAssembled = blockEntity.assembled();
@@ -85,10 +84,10 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         }
         if (blockEntity.cookTime > 0 && blockEntity.canSmelt() && blockEntity.lastDragonFlameTimer == 0)
             blockEntity.cookTime--;
-        if (blockEntity.getStackInSlot(0).isEmpty() && !level.isClient)
+        if (blockEntity.getItem(0).isEmpty() && !level.isClientSide())
             blockEntity.cookTime = 0;
-        assert blockEntity.world != null;
-        if (!blockEntity.world.isClient) {
+        assert blockEntity.level != null;
+        if (!blockEntity.level.isClientSide()) {
             if (blockEntity.isBurning()) {
                 if (blockEntity.canSmelt()) {
                     ++blockEntity.cookTime;
@@ -102,17 +101,17 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
                     blockEntity.cookTime = 0;
                 }
             } else if (!blockEntity.isBurning() && blockEntity.cookTime > 0)
-                blockEntity.cookTime = MathHelper.clamp(blockEntity.cookTime - 2, 0, blockEntity.getMaxCookTime());
+                blockEntity.cookTime = Mth.clamp(blockEntity.cookTime - 2, 0, blockEntity.getMaxCookTime());
 
             if (flag != blockEntity.isBurning())
                 flag1 = true;
         }
 
-        if (flag1) blockEntity.markDirty();
+        if (flag1) blockEntity.setChanged();
     }
 
     @Override
-    public int size() {
+    public int getContainerSize() {
         return this.forgeItemStacks.size();
     }
 
@@ -125,62 +124,62 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     private void updateGrills(boolean grill) {
-        for (Direction facing : Direction.Type.HORIZONTAL) {
-            BlockPos pos = this.getPos().offset(facing);
-            assert this.world != null;
-            BlockState state = this.world.getBlockState(pos);
-            if (state.contains(DragonForgeBrickBlock.GRILL) && state.get(DragonForgeBrickBlock.GRILL) != grill)
-                this.world.setBlockState(pos, state.with(DragonForgeBrickBlock.GRILL, grill));
+        for (Direction facing : Direction.Plane.HORIZONTAL) {
+            BlockPos pos = this.getBlockPos().relative(facing);
+            assert this.level != null;
+            BlockState state = this.level.getBlockState(pos);
+            if (state.hasProperty(DragonForgeBrickBlock.GRILL) && state.getValue(DragonForgeBrickBlock.GRILL) != grill)
+                this.level.setBlockAndUpdate(pos, state.setValue(DragonForgeBrickBlock.GRILL, grill));
         }
     }
 
     @Override
-    public ItemStack getStackInSlot(int index) {
+    public ItemStack getItem(int index) {
         return this.forgeItemStacks.get(index);
     }
 
     @Override
-    public ItemStack removeStack(int index, int count) {
-        return Inventories.splitStack(this.forgeItemStacks, index, count);
+    public ItemStack removeItem(int index, int count) {
+        return ContainerHelper.removeItem(this.forgeItemStacks, index, count);
     }
 
     @Override
-    public ItemStack removeStack(int index) {
-        return Inventories.removeStack(this.forgeItemStacks, index);
+    public ItemStack removeItemNoUpdate(int index) {
+        return ContainerHelper.takeItem(this.forgeItemStacks, index);
     }
 
     @Override
-    public void setStack(int index, ItemStack stack) {
+    public void setItem(int index, ItemStack stack) {
         ItemStack itemstack = this.forgeItemStacks.get(index);
-        boolean flag = !stack.isEmpty() && ItemStack.areItemsEqual(stack, itemstack) && ItemStack.areEqual(stack, itemstack);
+        boolean flag = !stack.isEmpty() && ItemStack.isSameItem(stack, itemstack) && ItemStack.matches(stack, itemstack);
         this.forgeItemStacks.set(index, stack);
 
-        if (stack.getCount() > this.getMaxCountPerStack())
-            stack.setCount(this.getMaxCountPerStack());
+        if (stack.getCount() > this.getMaxStackSize())
+            stack.setCount(this.getMaxStackSize());
 
         if (index == 0 && !flag || this.cookTime > this.getMaxCookTime()) {
             this.cookTime = 0;
-            this.markDirty();
+            this.setChanged();
         }
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        this.forgeItemStacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.forgeItemStacks, registryLookup);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
+        this.forgeItemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(nbt, this.forgeItemStacks, registryLookup);
         this.cookTime = nbt.getInt("CookTime");
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         nbt.putInt("CookTime", (short) this.cookTime);
-        Inventories.writeNbt(nbt, this.forgeItemStacks, registryLookup);
+        ContainerHelper.saveAllItems(nbt, this.forgeItemStacks, registryLookup);
     }
 
     @Override
-    public int getMaxCountPerStack() {
+    public int getMaxStackSize() {
         return 64;
     }
 
@@ -189,7 +188,7 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     public DragonType getDragonType() {
-        if (this.getCachedState().getBlock() instanceof DragonTypeProvider provider) return provider.getDragonType();
+        if (this.getBlockState().getBlock() instanceof DragonTypeProvider provider) return provider.getDragonType();
         return IafDragonTypes.FIRE;
     }
 
@@ -217,13 +216,13 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     public Optional<DragonForgeRecipe> getCurrentRecipe() {
-        assert this.world != null;
-        return this.world.getRecipeManager().getFirstMatch(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.world).map(RecipeEntry::value);
+        assert this.level != null;
+        return this.level.getRecipeManager().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
     }
 
     public List<DragonForgeRecipe> getRecipes() {
-        assert this.world != null;
-        return this.world.getRecipeManager().listAllOfType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeEntry::value).toList();
+        assert this.level != null;
+        return this.level.getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {
@@ -235,18 +234,18 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         if (forgeRecipeOutput.isEmpty()) return false;
 
         ItemStack outputStack = this.forgeItemStacks.get(2);
-        if (!outputStack.isEmpty() && !ItemStack.areItemsEqual(outputStack, forgeRecipeOutput))
+        if (!outputStack.isEmpty() && !ItemStack.isSameItem(outputStack, forgeRecipeOutput))
             return false;
 
         int calculatedOutputCount = outputStack.getCount() + forgeRecipeOutput.getCount();
-        return (calculatedOutputCount <= this.getMaxCountPerStack() && calculatedOutputCount <= outputStack.getMaxCount());
+        return (calculatedOutputCount <= this.getMaxStackSize() && calculatedOutputCount <= outputStack.getMaxStackSize());
     }
 
     @Override
-    public boolean canPlayerUse(PlayerEntity player) {
-        if (player.getWorld().getBlockEntity(this.pos) != this) return false;
+    public boolean stillValid(Player player) {
+        if (player.level().getBlockEntity(this.worldPosition) != this) return false;
         else
-            return player.squaredDistanceTo(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+            return player.distanceToSqr(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
 
     public void smeltItem() {
@@ -259,14 +258,14 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         ItemStack output = this.getCurrentResult();
 
         if (outputStack.isEmpty()) this.forgeItemStacks.set(2, output.copy());
-        else outputStack.increment(output.getCount());
+        else outputStack.grow(output.getCount());
 
-        cookStack.decrement(1);
-        bloodStack.decrement(1);
+        cookStack.shrink(1);
+        bloodStack.shrink(1);
     }
 
     @Override
-    public boolean isValid(int index, ItemStack stack) {
+    public boolean canPlaceItem(int index, ItemStack stack) {
         return switch (index) {
             case 1 -> this.getRecipes().stream().anyMatch(item -> item.isValidBlood(stack));
             case 0 -> true;//getRecipes().stream().anyMatch(item -> item.isValidInput(stack))
@@ -275,19 +274,19 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     @Override
-    public int[] getAvailableSlots(Direction side) {
+    public int[] getSlotsForFace(Direction side) {
         if (side == Direction.DOWN) return SLOTS_BOTTOM;
         else
             return side == Direction.UP ? SLOTS_TOP : SLOTS_SIDES;
     }
 
     @Override
-    public boolean canInsert(int index, ItemStack itemStackIn, Direction direction) {
-        return this.isValid(index, itemStackIn);
+    public boolean canPlaceItemThroughFace(int index, ItemStack itemStackIn, Direction direction) {
+        return this.canPlaceItem(index, itemStackIn);
     }
 
     @Override
-    public boolean canExtract(int index, ItemStack stack, Direction direction) {
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
         if (direction == Direction.DOWN && index == 1) {
             Item item = stack.getItem();
             return item == Items.WATER_BUCKET || item == Items.BUCKET;
@@ -296,28 +295,28 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         this.forgeItemStacks.clear();
     }
 
     @Override
-    protected Text getContainerName() {
-        return Text.translatable("container.dragonforge_fire" + this.getDragonType().name());
+    protected Component getDefaultName() {
+        return Component.translatable("container.dragonforge_fire" + this.getDragonType().name());
     }
 
     @Override
-    protected DefaultedList<ItemStack> getHeldStacks() {
+    protected NonNullList<ItemStack> getItems() {
         return this.forgeItemStacks;
     }
 
     @Override
-    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+    protected void setItems(NonNullList<ItemStack> inventory) {
         this.forgeItemStacks = inventory;
     }
 
     public void transferPower(double i) {
-        assert this.world != null;
-        if (!this.world.isClient) {
+        assert this.level != null;
+        if (!this.level.isClientSide()) {
             if (this.canSmelt()) this.cookTime = Math.min(this.getMaxCookTime() + 1, this.cookTime + i);
             else this.cookTime = 0;
         }
@@ -342,22 +341,22 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     private boolean checkY(BlockPos pos) {
-        return this.doesBlockEqual(pos.up(), this.getBrick()) && this.doesBlockEqual(pos.down(), this.getBrick());
+        return this.doesBlockEqual(pos.above(), this.getBrick()) && this.doesBlockEqual(pos.below(), this.getBrick());
     }
 
     @Override
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbtWithIdentifyingData(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return this.saveWithFullMetadata(registryLookup);
     }
 
     public boolean assembled() {
-        return this.checkBoneCorners(this.pos.down()) && this.checkBrickSlots(this.pos.down()) && this.checkBrickCorners(this.pos)
-                && this.atleastThreeAreBricks(this.pos) && this.checkY(this.pos) && this.checkBoneCorners(this.pos.up()) && this.checkBrickSlots(this.pos.up());
+        return this.checkBoneCorners(this.worldPosition.below()) && this.checkBrickSlots(this.worldPosition.below()) && this.checkBrickCorners(this.worldPosition)
+                && this.atleastThreeAreBricks(this.worldPosition) && this.checkY(this.worldPosition) && this.checkBoneCorners(this.worldPosition.above()) && this.checkBrickSlots(this.worldPosition.above());
     }
 
     private Block getBrick() {
@@ -365,29 +364,29 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     }
 
     private boolean doesBlockEqual(BlockPos pos, Block block) {
-        assert this.world != null;
-        return this.world.getBlockState(pos).getBlock() == block;
+        assert this.level != null;
+        return this.level.getBlockState(pos).getBlock() == block;
     }
 
     private boolean atleastThreeAreBricks(BlockPos pos) {
         int count = 0;
-        for (Direction facing : Direction.Type.HORIZONTAL) {
-            assert this.world != null;
-            if (this.world.getBlockState(pos.offset(facing)).getBlock() == this.getBrick())
+        for (Direction facing : Direction.Plane.HORIZONTAL) {
+            assert this.level != null;
+            if (this.level.getBlockState(pos.relative(facing)).getBlock() == this.getBrick())
                 count++;
         }
         return count > 2;
     }
 
     @Override
-    protected ScreenHandler createScreenHandler(int id, PlayerInventory player) {
+    protected AbstractContainerMenu createMenu(int id, Inventory player) {
         return new DragonForgeScreenHandler(id, this, player, this.getDragonType(), this.delegate);
     }
 
     @Override
-    public void saveExtraData(PacketByteBuf buf) {
-        Optional<RegistryKey<DragonType>> key = IafRegistries.DRAGON_TYPE.getKey(this.getDragonType());
-        key.ifPresent(buf::writeRegistryKey);
+    public void saveExtraData(FriendlyByteBuf buf) {
+        Optional<ResourceKey<DragonType>> key = IafRegistries.DRAGON_TYPE.getResourceKey(this.getDragonType());
+        key.ifPresent(buf::writeResourceKey);
     }
 
     public static class DragonForgeRecipeInput implements RecipeInput {
@@ -398,12 +397,12 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         }
 
         @Override
-        public ItemStack getStackInSlot(int slot) {
+        public ItemStack getItem(int slot) {
             return this.owner.forgeItemStacks.get(slot);
         }
 
         @Override
-        public int getSize() {
+        public int size() {
             return this.owner.forgeItemStacks.size();
         }
 
@@ -412,7 +411,7 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         }
 
         public String getTypeID() {
-            return switch (this.owner.getFireType(this.owner.getCachedState().getBlock())) {
+            return switch (this.owner.getFireType(this.owner.getBlockState().getBlock())) {
                 case 0 -> "fire";
                 case 1 -> "ice";
                 case 2 -> "lightning";

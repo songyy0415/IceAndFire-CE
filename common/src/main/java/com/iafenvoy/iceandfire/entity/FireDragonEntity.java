@@ -110,7 +110,7 @@ public class FireDragonEntity extends DragonBaseEntity {
     public void aiStep() {
         super.aiStep();
         LivingEntity attackTarget = this.getTarget();
-        if (!this.level().isClientSide && attackTarget != null) {
+        if (!this.level().isClientSide() && attackTarget != null) {
             if (this.getBoundingBox().inflate(2.5F + this.getRenderSize() * 0.33F, 2.5F + this.getRenderSize() * 0.33F, 2.5F + this.getRenderSize() * 0.33F).intersects(attackTarget.getBoundingBox())) {
                 this.doHurtTarget(attackTarget);
             }
@@ -169,7 +169,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                         IafEntities.FIRE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
 
                 entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
-                if (!this.level().isClientSide) {
+                if (!this.level().isClientSide()) {
                     this.level().addFreshEntity(entitylargefireball);
                 }
             }
@@ -319,7 +319,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                     FireDragonChargeEntity entitylargefireball = new FireDragonChargeEntity(IafEntities.FIRE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
 
                     entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
-                    if (!this.level().isClientSide)
+                    if (!this.level().isClientSide())
                         this.level().addFreshEntity(entitylargefireball);
                     if (!entity.isAlive())
                         this.setBreathingFire(false);
@@ -392,14 +392,14 @@ public class FireDragonEntity extends DragonBaseEntity {
             double d2 = this.random.nextGaussian() * 0.02D;
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
-            if (this.level().isClientSide)
+            if (this.level().isClientSide())
                 this.level().addParticle(ParticleTypes.FLAME, this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
         }
     }
 
     @Override
     public void spawnBabyParticles() {
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             for (int i = 0; i < 5; i++) {
                 float radiusAdd = i * 0.15F;
                 float headPosX = (float) (this.getX() + 1.8F * this.getRenderSize() * (0.3F + radiusAdd) * Mth.cos((float) ((this.getYRot() + 90) * Math.PI / 180)));

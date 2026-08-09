@@ -2,69 +2,68 @@ package com.iafenvoy.iceandfire.item.tool;
 
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.uranus.object.RegistryHelper;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ArrowItem;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.world.World;
-
 import java.util.function.Predicate;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 
 public class DragonBowItem extends BowItem {
-    private static final Predicate<ItemStack> DRAGON_ARROWS = stack -> stack.isIn(IafItemTags.DRAGON_ARROWS);
+    private static final Predicate<ItemStack> DRAGON_ARROWS = stack -> stack.is(IafItemTags.DRAGON_ARROWS);
 
     public DragonBowItem() {
-        super(new Settings().maxDamage(584));
+        super(new Properties().durability(584));
     }
 
     @Override
-    public Predicate<ItemStack> getProjectiles() {
-        return DRAGON_ARROWS.or(BOW_PROJECTILES);
+    public Predicate<ItemStack> getAllSupportedProjectiles() {
+        return DRAGON_ARROWS.or(ARROW_ONLY);
     }
 
     //Copied from parent
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof PlayerEntity playerEntity) {
-            boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(world.getRegistryManager(), Enchantments.INFINITY), stack) > 0;
-            ItemStack itemStack = playerEntity.getProjectileType(stack);
+    public void releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        if (user instanceof Player playerEntity) {
+            boolean bl = playerEntity.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.INFINITY), stack) > 0;
+            ItemStack itemStack = playerEntity.getProjectile(stack);
             if (!itemStack.isEmpty() || bl) {
                 if (itemStack.isEmpty())
                     itemStack = new ItemStack(Items.ARROW);
-                int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
-                float f = getPullProgress(i);
+                int i = this.getUseDuration(stack, user) - remainingUseTicks;
+                float f = getPowerForTime(i);
                 if (!((double) f < 0.1)) {
-                    boolean bl2 = bl && this.getProjectiles().test(itemStack);
-                    if (!world.isClient) {
+                    boolean bl2 = bl && this.getAllSupportedProjectiles().test(itemStack);
+                    if (!world.isClientSide()) {
                         ArrowItem arrowItem = (ArrowItem) (itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
-                        PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity, stack);
-                        persistentProjectileEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, f * 3.0F, 1.0F);
-                        if (f == 1.0F) persistentProjectileEntity.setCritical(true);
-                        int j = EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(world.getRegistryManager(), Enchantments.POWER), stack);
+                        AbstractArrow persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity, stack);
+                        persistentProjectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, f * 3.0F, 1.0F);
+                        if (f == 1.0F) persistentProjectileEntity.setCritArrow(true);
+                        int j = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.POWER), stack);
                         if (j > 0)
-                            persistentProjectileEntity.setDamage(persistentProjectileEntity.getDamage() + (double) j * 0.5 + 0.5);
-                        if (EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(world.getRegistryManager(), Enchantments.FLAME), stack) > 0)
-                            persistentProjectileEntity.setOnFireFor(100);
-                        stack.damage(1, playerEntity, LivingEntity.getSlotForHand(user.getActiveHand()));
-                        if (bl2 || playerEntity.getAbilities().creativeMode && (itemStack.isOf(Items.SPECTRAL_ARROW) || itemStack.isOf(Items.TIPPED_ARROW)))
-                            persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
-                        world.spawnEntity(persistentProjectileEntity);
+                            persistentProjectileEntity.setBaseDamage(persistentProjectileEntity.getBaseDamage() + (double) j * 0.5 + 0.5);
+                        if (EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.FLAME), stack) > 0)
+                            persistentProjectileEntity.igniteForSeconds(100);
+                        stack.hurtAndBreak(1, playerEntity, LivingEntity.getSlotForHand(user.getUsedItemHand()));
+                        if (bl2 || playerEntity.getAbilities().instabuild && (itemStack.is(Items.SPECTRAL_ARROW) || itemStack.is(Items.TIPPED_ARROW)))
+                            persistentProjectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+                        world.addFreshEntity(persistentProjectileEntity);
                     }
-                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
-                    if (!bl2 && !playerEntity.getAbilities().creativeMode) {
-                        itemStack.decrement(1);
+                    world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    if (!bl2 && !playerEntity.getAbilities().instabuild) {
+                        itemStack.shrink(1);
                         if (itemStack.isEmpty())
-                            playerEntity.getInventory().removeOne(itemStack);
+                            playerEntity.getInventory().removeItem(itemStack);
                     }
-                    playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+                    playerEntity.awardStat(Stats.ITEM_USED.get(this));
                 }
             }
         }

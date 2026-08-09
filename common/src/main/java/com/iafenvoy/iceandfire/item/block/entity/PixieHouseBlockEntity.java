@@ -7,22 +7,21 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.uranus.ServerHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Hand;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class PixieHouseBlockEntity extends BlockEntity {
     private static final float PARTICLE_WIDTH = 0.3F;
@@ -33,7 +32,7 @@ public class PixieHouseBlockEntity extends BlockEntity {
     public boolean tamedPixie;
     public UUID pixieOwnerUUID;
     public int pixieType;
-    public DefaultedList<ItemStack> pixieItems = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    public NonNullList<ItemStack> pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
 
     public PixieHouseBlockEntity(BlockPos pos, BlockState state) {
         super(IafBlockEntities.PIXIE_HOUSE.get(), pos, state);
@@ -50,7 +49,7 @@ public class PixieHouseBlockEntity extends BlockEntity {
         else return 0;
     }
 
-    public static void tickClient(World level, BlockPos pos, BlockState state, PixieHouseBlockEntity entityPixieHouse) {
+    public static void tickClient(Level level, BlockPos pos, BlockState state, PixieHouseBlockEntity entityPixieHouse) {
         if (entityPixieHouse.hasPixie)
             level.addParticle(IafParticles.PIXIE_DUST.get(),
                     pos.getX() + 0.5F + (double) (entityPixieHouse.rand.nextFloat() * PARTICLE_WIDTH * 2F) - PARTICLE_WIDTH,
@@ -60,60 +59,60 @@ public class PixieHouseBlockEntity extends BlockEntity {
                     PixieEntity.PARTICLE_RGB[entityPixieHouse.pixieType][2]);
     }
 
-    public static void tickServer(World level, BlockPos pos, BlockState state, PixieHouseBlockEntity entityPixieHouse) {
+    public static void tickServer(Level level, BlockPos pos, BlockState state, PixieHouseBlockEntity entityPixieHouse) {
         if (entityPixieHouse.hasPixie && ThreadLocalRandom.current().nextInt(100) == 0)
             entityPixieHouse.releasePixie();
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         nbt.putInt("HouseType", this.houseType);
         nbt.putBoolean("HasPixie", this.hasPixie);
         nbt.putInt("PixieType", this.pixieType);
         nbt.putBoolean("TamedPixie", this.tamedPixie);
         if (this.pixieOwnerUUID != null)
-            nbt.putUuid("PixieOwnerUUID", this.pixieOwnerUUID);
-        Inventories.writeNbt(nbt, this.pixieItems, registryLookup);
+            nbt.putUUID("PixieOwnerUUID", this.pixieOwnerUUID);
+        ContainerHelper.saveAllItems(nbt, this.pixieItems, registryLookup);
     }
 
     @Override
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbtWithIdentifyingData(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return this.saveWithFullMetadata(registryLookup);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
         this.houseType = nbt.getInt("HouseType");
         this.hasPixie = nbt.getBoolean("HasPixie");
         this.pixieType = nbt.getInt("PixieType");
         this.tamedPixie = nbt.getBoolean("TamedPixie");
-        if (nbt.containsUuid("PixieOwnerUUID"))
-            this.pixieOwnerUUID = nbt.getUuid("PixieOwnerUUID");
-        this.pixieItems = DefaultedList.ofSize(1, ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.pixieItems, registryLookup);
+        if (nbt.hasUUID("PixieOwnerUUID"))
+            this.pixieOwnerUUID = nbt.getUUID("PixieOwnerUUID");
+        this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(nbt, this.pixieItems, registryLookup);
     }
 
     public void releasePixie() {
-        PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.world);
-        pixie.updatePositionAndAngles(this.pos.getX() + 0.5F, this.pos.getY() + 1F, this.pos.getZ() + 0.5F, ThreadLocalRandom.current().nextInt(360), 0);
-        pixie.setStackInHand(Hand.MAIN_HAND, this.pixieItems.getFirst());
+        PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.level);
+        pixie.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F, ThreadLocalRandom.current().nextInt(360), 0);
+        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst());
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;
-        pixie.setTamed(this.tamedPixie, true);
-        pixie.setOwnerUuid(this.pixieOwnerUUID);
-        assert this.world != null;
-        if (!this.world.isClient)
-            this.world.spawnEntity(pixie);
+        pixie.setTame(this.tamedPixie, true);
+        pixie.setOwnerUUID(this.pixieOwnerUUID);
+        assert this.level != null;
+        if (!this.level.isClientSide())
+            this.level.addFreshEntity(pixie);
         this.hasPixie = false;
         this.pixieType = 0;
-        if (!this.world.isClient)
-            ServerHelper.sendToAll(new UpdatePixieHouseS2CPayload(this.pos, false, 0));
+        if (!this.level.isClientSide())
+            ServerHelper.sendToAll(new UpdatePixieHouseS2CPayload(this.worldPosition, false, 0));
     }
 }

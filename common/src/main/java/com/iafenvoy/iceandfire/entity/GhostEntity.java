@@ -11,76 +11,89 @@ import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.LightType;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
 
-public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHumanoid, BlacklistedFromStatues, IHasCustomizableAttributes {
-    private static final TrackedData<Integer> COLOR = DataTracker.registerData(GhostEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(GhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> IS_DAYTIME_MODE = DataTracker.registerData(GhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> WAS_FROM_CHEST = DataTracker.registerData(GhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Integer> DAYTIME_COUNTER = DataTracker.registerData(GhostEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.goal.FleeSunGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RestrictSunGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.phys.Vec3;
+
+public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHumanoid, BlacklistedFromStatues, IHasCustomizableAttributes {
+    private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(GhostEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> CHARGING = SynchedEntityData.defineId(GhostEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IS_DAYTIME_MODE = SynchedEntityData.defineId(GhostEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> WAS_FROM_CHEST = SynchedEntityData.defineId(GhostEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> DAYTIME_COUNTER = SynchedEntityData.defineId(GhostEntity.class, EntityDataSerializers.INT);
     public static Animation ANIMATION_SCARE;
     public static Animation ANIMATION_HIT;
     private int animationTick;
     private Animation currentAnimation;
 
 
-    public GhostEntity(EntityType<GhostEntity> type, World worldIn) {
+    public GhostEntity(EntityType<GhostEntity> type, Level worldIn) {
         super(type, worldIn);
         ANIMATION_SCARE = Animation.create(30);
         ANIMATION_HIT = Animation.create(10);
         this.moveControl = new MoveHelper(this);
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder bakeAttributes() {
+        return Mob.createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, IafCommonConfig.INSTANCE.ghost.maxHealth.getValue())
+                .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.ghost.maxHealth.getValue())
                 //FOLLOW_RANGE
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64D)
+                .add(Attributes.FOLLOW_RANGE, 64D)
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15D)
+                .add(Attributes.MOVEMENT_SPEED, 0.15D)
                 //ATTACK
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, IafCommonConfig.INSTANCE.ghost.attackDamage.getValue())
+                .add(Attributes.ATTACK_DAMAGE, IafCommonConfig.INSTANCE.ghost.attackDamage.getValue())
                 //ARMOR
-                .add(EntityAttributes.GENERIC_ARMOR, 1D);
+                .add(Attributes.ARMOR, 1D);
     }
 
     @Override
-    protected RegistryKey<LootTable> getLootTableId() {
-        return this.wasFromChest() ? LootTables.EMPTY : this.getType().getLootTableId();
+    protected ResourceKey<LootTable> getDefaultLootTable() {
+        return this.wasFromChest() ? BuiltInLootTables.EMPTY : this.getType().getDefaultLootTable();
     }
 
     @Override
@@ -100,48 +113,48 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
 
     @Override
     public void setConfigurableAttributes() {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(IafCommonConfig.INSTANCE.ghost.maxHealth.getValue());
-        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(IafCommonConfig.INSTANCE.ghost.attackDamage.getValue());
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(IafCommonConfig.INSTANCE.ghost.maxHealth.getValue());
+        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(IafCommonConfig.INSTANCE.ghost.attackDamage.getValue());
     }
 
     @Override
-    public boolean canHaveStatusEffect(StatusEffectInstance potioneffectIn) {
-        return potioneffectIn.getEffectType() != StatusEffects.POISON && potioneffectIn.getEffectType() != StatusEffects.WITHER && super.canHaveStatusEffect(potioneffectIn);
+    public boolean canBeAffected(MobEffectInstance potioneffectIn) {
+        return potioneffectIn.getEffect() != MobEffects.POISON && potioneffectIn.getEffect() != MobEffects.WITHER && super.canBeAffected(potioneffectIn);
     }
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return super.isInvulnerableTo(source) || source.isIn(DamageTypeTags.IS_FIRE) || source.isOf(DamageTypes.IN_WALL) || source.isOf(DamageTypes.CACTUS)
-                || source.isOf(DamageTypes.DROWN) || source.isOf(DamageTypes.FALLING_BLOCK) || source.isOf(DamageTypes.FALLING_ANVIL) || source.isOf(DamageTypes.SWEET_BERRY_BUSH);
+        return super.isInvulnerableTo(source) || source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CACTUS)
+                || source.is(DamageTypes.DROWN) || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.FALLING_ANVIL) || source.is(DamageTypes.SWEET_BERRY_BUSH);
     }
 
     @Override
-    protected EntityNavigation createNavigation(World worldIn) {
+    protected PathNavigation createNavigation(Level worldIn) {
         return new GhostPathNavigatorGoal(this, worldIn);
     }
 
     public boolean isCharging() {
-        return this.dataTracker.get(CHARGING);
+        return this.entityData.get(CHARGING);
     }
 
     public void setCharging(boolean moving) {
-        this.dataTracker.set(CHARGING, moving);
+        this.entityData.set(CHARGING, moving);
     }
 
     public boolean isDaytimeMode() {
-        return this.dataTracker.get(IS_DAYTIME_MODE);
+        return this.entityData.get(IS_DAYTIME_MODE);
     }
 
     public void setDaytimeMode(boolean moving) {
-        this.dataTracker.set(IS_DAYTIME_MODE, moving);
+        this.entityData.set(IS_DAYTIME_MODE, moving);
     }
 
     public boolean wasFromChest() {
-        return this.dataTracker.get(WAS_FROM_CHEST);
+        return this.entityData.get(WAS_FROM_CHEST);
     }
 
     public void setFromChest(boolean moving) {
-        this.dataTracker.set(WAS_FROM_CHEST, moving);
+        this.entityData.set(WAS_FROM_CHEST, moving);
     }
 
     @Override
@@ -155,43 +168,43 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
     }
 
     @Override
-    protected void pushAway(Entity entity) {
+    protected void doPush(Entity entity) {
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new AvoidSunlightGoal(this));
-        this.goalSelector.add(3, new EscapeSunlightGoal(this, 1.0D));
-        this.goalSelector.add(3, new GhostAIChargeGoal(this));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F, 1.0F) {
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new RestrictSunGoal(this));
+        this.goalSelector.addGoal(3, new FleeSunGoal(this, 1.0D));
+        this.goalSelector.addGoal(3, new GhostAIChargeGoal(this));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F, 1.0F) {
             @Override
-            public boolean shouldContinue() {
-                if (this.target != null && this.target instanceof PlayerEntity && ((PlayerEntity) this.target).isCreative()) {
+            public boolean canContinueToUse() {
+                if (this.lookAt != null && this.lookAt instanceof Player && ((Player) this.lookAt).isCreative()) {
                     return false;
                 }
-                return super.shouldContinue();
+                return super.canContinueToUse();
             }
         });
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.6D) {
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.6D) {
             @Override
-            public boolean canStart() {
-                this.chance = 60;
-                return super.canStart();
+            public boolean canUse() {
+                this.interval = 60;
+                return super.canUse();
             }
         });
-        this.goalSelector.add(6, new LookAroundGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, false, false, Entity::isAlive));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, LivingEntity.class, 10, false, false, entity -> DragonUtils.isAlive(entity) && DragonUtils.isVillager(entity)));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, Entity::isAlive));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, entity -> DragonUtils.isAlive(entity) && DragonUtils.isVillager(entity)));
     }
 
     @Override
-    public void tickMovement() {
-        super.tickMovement();
-        this.noClip = true;
-        if (!this.getWorld().isClient) {
-            boolean day = this.isAffectedByDaylight() && !this.wasFromChest();
+    public void aiStep() {
+        super.aiStep();
+        this.noPhysics = true;
+        if (!this.level().isClientSide()) {
+            boolean day = this.isSunBurnTick() && !this.wasFromChest();
             if (day) {
                 if (!this.isDaytimeMode()) {
                     this.setAnimation(ANIMATION_SCARE);
@@ -202,35 +215,35 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
                 this.setDaytimeCounter(0);
             }
             if (this.isDaytimeMode()) {
-                this.setVelocity(Vec3d.ZERO);
+                this.setDeltaMovement(Vec3.ZERO);
                 this.setDaytimeCounter(this.getDaytimeCounter() + 1);
                 if (this.getDaytimeCounter() >= 100) {
                     this.setInvisible(true);
                 }
             } else {
-                this.setInvisible(this.hasStatusEffect(StatusEffects.INVISIBILITY));
+                this.setInvisible(this.hasEffect(MobEffects.INVISIBILITY));
                 this.setDaytimeCounter(0);
             }
         } else {
             if (this.getAnimation() == ANIMATION_SCARE && this.getAnimationTick() == 3 && !this.isHauntedShoppingList() && this.random.nextInt(3) == 0) {
-                this.playSound(IafSounds.GHOST_JUMPSCARE.get(), this.getSoundVolume(), this.getSoundPitch());
-                if (this.getWorld().isClient) {
-                    this.getWorld().addParticle(IafParticles.GHOST_APPEARANCE.get(), this.getX(), this.getY(), this.getZ(), this.getId(), 0, 0);
+                this.playSound(IafSounds.GHOST_JUMPSCARE.get(), this.getSoundVolume(), this.getVoicePitch());
+                if (this.level().isClientSide()) {
+                    this.level().addParticle(IafParticles.GHOST_APPEARANCE.get(), this.getX(), this.getY(), this.getZ(), this.getId(), 0, 0);
                 }
             }
         }
         if (this.getAnimation() == ANIMATION_HIT && this.getTarget() != null) {
             if (this.distanceTo(this.getTarget()) < 1.4D && this.getAnimationTick() >= 4 && this.getAnimationTick() < 6) {
-                this.playSound(IafSounds.GHOST_ATTACK.get(), this.getSoundVolume(), this.getSoundPitch());
-                this.tryAttack(this.getTarget());
+                this.playSound(IafSounds.GHOST_ATTACK.get(), this.getSoundVolume(), this.getVoicePitch());
+                this.doHurtTarget(this.getTarget());
             }
         }
         AnimationHandler.INSTANCE.updateAnimations(this);
     }
 
     @Override
-    public boolean isAiDisabled() {
-        return this.isDaytimeMode() || super.isAiDisabled();
+    public boolean isNoAi() {
+        return this.isDaytimeMode() || super.isNoAi();
     }
 
     @Override
@@ -239,47 +252,47 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
     }
 
     @Override
-    protected boolean isAffectedByDaylight() {
-        if (this.getWorld().isDay() && !this.getWorld().isClient) {
-            float f = this.getWorld().getLightLevel(LightType.BLOCK, this.getBlockPos());
-            BlockPos blockpos = this.getVehicle() instanceof BoatEntity ? (new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ())).up() : new BlockPos(this.getBlockX(), this.getBlockY() + 4, this.getBlockZ());
-            return f > 0.5F && this.getWorld().isSkyVisible(blockpos);
+    protected boolean isSunBurnTick() {
+        if (this.level().isDay() && !this.level().isClientSide()) {
+            float f = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition());
+            BlockPos blockpos = this.getVehicle() instanceof Boat ? (new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ())).above() : new BlockPos(this.getBlockX(), this.getBlockY() + 4, this.getBlockZ());
+            return f > 0.5F && this.level().canSeeSky(blockpos);
         }
 
         return false;
     }
 
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemstack = player.getStackInHand(hand);
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
         if (itemstack != null && itemstack.getItem() == IafItems.MANUSCRIPT.get() && !this.isHauntedShoppingList()) {
             this.setColor(-1);
             this.playSound(IafSounds.BESTIARY_PAGE.get(), 1, 1);
             if (!player.isCreative())
-                itemstack.decrement(1);
-            return ActionResult.SUCCESS;
+                itemstack.shrink(1);
+            return InteractionResult.SUCCESS;
         }
-        return super.interactMob(player, hand);
+        return super.mobInteract(player, hand);
     }
 
     @Override
-    public void travel(Vec3d vec) {
+    public void travel(Vec3 vec) {
         float f4;
         if (this.isDaytimeMode()) {
-            super.travel(Vec3d.ZERO);
+            super.travel(Vec3.ZERO);
             return;
         }
         super.travel(vec);
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess worldIn, LocalDifficulty difficultyIn, SpawnReason reason, EntityData spawnDataIn) {
-        spawnDataIn = super.initialize(worldIn, difficultyIn, reason, spawnDataIn);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, SpawnGroupData spawnDataIn) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setColor(this.random.nextInt(3));
         if (this.random.nextInt(200) == 0)
             this.setColor(-1);
@@ -288,34 +301,34 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
 
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(COLOR, 0);
-        builder.add(CHARGING, false);
-        builder.add(IS_DAYTIME_MODE, false);
-        builder.add(WAS_FROM_CHEST, false);
-        builder.add(DAYTIME_COUNTER, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(COLOR, 0);
+        builder.define(CHARGING, false);
+        builder.define(IS_DAYTIME_MODE, false);
+        builder.define(WAS_FROM_CHEST, false);
+        builder.define(DAYTIME_COUNTER, 0);
     }
 
     public int getColor() {
-        return MathHelper.clamp(this.getDataTracker().get(COLOR), -1, 2);
+        return Mth.clamp(this.getEntityData().get(COLOR), -1, 2);
     }
 
     public void setColor(int color) {
-        this.getDataTracker().set(COLOR, color);
+        this.getEntityData().set(COLOR, color);
     }
 
     public int getDaytimeCounter() {
-        return this.getDataTracker().get(DAYTIME_COUNTER);
+        return this.getEntityData().get(DAYTIME_COUNTER);
     }
 
     public void setDaytimeCounter(int counter) {
-        this.getDataTracker().set(DAYTIME_COUNTER, counter);
+        this.getEntityData().set(DAYTIME_COUNTER, counter);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound compound) {
-        super.readCustomDataFromNbt(compound);
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
         this.setColor(compound.getInt("Color"));
         this.setDaytimeMode(compound.getBoolean("DaytimeMode"));
         this.setDaytimeCounter(compound.getInt("DaytimeCounter"));
@@ -325,8 +338,8 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound compound) {
-        super.writeCustomDataToNbt(compound);
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("Color", this.getColor());
         compound.putBoolean("DaytimeMode", this.isDaytimeMode());
         compound.putInt("DaytimeCounter", this.getDaytimeCounter());
@@ -379,25 +392,25 @@ public class GhostEntity extends HostileEntity implements IAnimatedEntity, IVill
 
         @Override
         public void tick() {
-            if (this.state == State.MOVE_TO) {
-                Vec3d vec3d = new Vec3d(this.getTargetX() - this.ghost.getX(), this.getTargetY() - this.ghost.getY(), this.getTargetZ() - this.ghost.getZ());
+            if (this.operation == Operation.MOVE_TO) {
+                Vec3 vec3d = new Vec3(this.getWantedX() - this.ghost.getX(), this.getWantedY() - this.ghost.getY(), this.getWantedZ() - this.ghost.getZ());
                 double d0 = vec3d.length();
-                double edgeLength = this.ghost.getBoundingBox().getAverageSideLength();
+                double edgeLength = this.ghost.getBoundingBox().getSize();
                 if (d0 < edgeLength) {
-                    this.state = State.WAIT;
-                    this.ghost.setVelocity(this.ghost.getVelocity().multiply(0.5D));
+                    this.operation = Operation.WAIT;
+                    this.ghost.setDeltaMovement(this.ghost.getDeltaMovement().scale(0.5D));
                 } else {
-                    this.ghost.setVelocity(this.ghost.getVelocity().add(vec3d.multiply(this.speed * 0.5D * 0.05D / d0)));
+                    this.ghost.setDeltaMovement(this.ghost.getDeltaMovement().add(vec3d.scale(this.speedModifier * 0.5D * 0.05D / d0)));
                     if (this.ghost.getTarget() == null) {
-                        Vec3d vec3d1 = this.ghost.getVelocity();
+                        Vec3 vec3d1 = this.ghost.getDeltaMovement();
                         //noinspection SuspiciousNameCombination
-                        this.ghost.setYaw(-((float) MathHelper.atan2(vec3d1.x, vec3d1.z)) * (180F / (float) Math.PI));
+                        this.ghost.setYRot(-((float) Mth.atan2(vec3d1.x, vec3d1.z)) * (180F / (float) Math.PI));
                     } else {
                         double d4 = this.ghost.getTarget().getX() - this.ghost.getX();
                         double d5 = this.ghost.getTarget().getZ() - this.ghost.getZ();
-                        this.ghost.setYaw(-((float) MathHelper.atan2(d4, d5)) * (180F / (float) Math.PI));
+                        this.ghost.setYRot(-((float) Mth.atan2(d4, d5)) * (180F / (float) Math.PI));
                     }
-                    this.ghost.bodyYaw = this.ghost.getYaw();
+                    this.ghost.yBodyRot = this.ghost.getYRot();
                 }
             }
         }

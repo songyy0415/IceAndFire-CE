@@ -5,73 +5,72 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.object.RegistryHelper;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 
 public class PixieWandItem extends Item {
     public PixieWandItem() {
-        super(new Settings().maxCount(1).maxDamage(500));
+        super(new Properties().stacksTo(1).durability(500));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStackIn = user.getStackInHand(hand);
-        boolean flag = user.isCreative() || EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(user.getRegistryManager(), Enchantments.INFINITY), itemStackIn) > 0;
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStackIn = user.getItemInHand(hand);
+        boolean flag = user.isCreative() || EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(user.registryAccess(), Enchantments.INFINITY), itemStackIn) > 0;
         ItemStack itemstack = this.findAmmo(user);
-        user.setCurrentHand(hand);
-        user.swingHand(hand);
+        user.startUsingItem(hand);
+        user.swing(hand);
         if (!itemstack.isEmpty() || flag) {
             boolean flag1 = user.isCreative() || this.isInfinite(itemstack, itemStackIn, user);
             if (!flag1) {
-                itemstack.decrement(1);
+                itemstack.shrink(1);
                 if (itemstack.isEmpty())
-                    user.getInventory().removeOne(itemstack);
+                    user.getInventory().removeItem(itemstack);
             }
-            if (!world.isClient) {
-                double d2 = user.getRotationVector().x;
-                double d3 = user.getRotationVector().y;
-                double d4 = user.getRotationVector().z;
+            if (!world.isClientSide()) {
+                double d2 = user.getLookAngle().x;
+                double d3 = user.getLookAngle().y;
+                double d4 = user.getLookAngle().z;
                 float inaccuracy = 1.0F;
                 d2 = d2 + user.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                 d3 = d3 + user.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                 d4 = d4 + user.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                 PixieChargeEntity charge = new PixieChargeEntity(IafEntities.PIXIE_CHARGE.get(), world, user, d2, d3, d4);
-                charge.setPosition(user.getX(), user.getY() + 1, user.getZ());
-                world.spawnEntity(charge);
+                charge.setPos(user.getX(), user.getY() + 1, user.getZ());
+                world.addFreshEntity(charge);
             }
             user.playSound(IafSounds.PIXIE_WAND.get(), 1F, 0.75F + 0.5F * user.getRandom().nextFloat());
-            itemstack.damage(1, user, LivingEntity.getSlotForHand(user.getActiveHand()));
-            user.getItemCooldownManager().set(this, 5);
+            itemstack.hurtAndBreak(1, user, LivingEntity.getSlotForHand(user.getUsedItemHand()));
+            user.getCooldowns().addCooldown(this, 5);
         }
-        return new TypedActionResult<>(ActionResult.SUCCESS, itemStackIn);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
     }
 
-    public boolean isInfinite(ItemStack stack, ItemStack bow, PlayerEntity player) {
-        int enchant = EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(player.getRegistryManager(), Enchantments.INFINITY), bow);
+    public boolean isInfinite(ItemStack stack, ItemStack bow, Player player) {
+        int enchant = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(player.registryAccess(), Enchantments.INFINITY), bow);
         return enchant > 0 && stack.getItem() == IafItems.PIXIE_DUST.get();
     }
 
-    private ItemStack findAmmo(PlayerEntity player) {
-        if (this.isAmmo(player.getStackInHand(Hand.OFF_HAND)))
-            return player.getStackInHand(Hand.OFF_HAND);
-        else if (this.isAmmo(player.getStackInHand(Hand.MAIN_HAND)))
-            return player.getStackInHand(Hand.MAIN_HAND);
+    private ItemStack findAmmo(Player player) {
+        if (this.isAmmo(player.getItemInHand(InteractionHand.OFF_HAND)))
+            return player.getItemInHand(InteractionHand.OFF_HAND);
+        else if (this.isAmmo(player.getItemInHand(InteractionHand.MAIN_HAND)))
+            return player.getItemInHand(InteractionHand.MAIN_HAND);
         else {
-            for (int i = 0; i < player.getInventory().size(); ++i) {
-                ItemStack itemstack = player.getInventory().getStackInSlot(i);
+            for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+                ItemStack itemstack = player.getInventory().getItem(i);
                 if (this.isAmmo(itemstack))
                     return itemstack;
             }
@@ -84,10 +83,10 @@ public class PixieWandItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.pixie_wand.desc_0").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.pixie_wand.desc_1").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, tooltip, type);
+        tooltip.add(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.iceandfire.pixie_wand.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.iceandfire.pixie_wand.desc_1").withStyle(ChatFormatting.GRAY));
     }
 }

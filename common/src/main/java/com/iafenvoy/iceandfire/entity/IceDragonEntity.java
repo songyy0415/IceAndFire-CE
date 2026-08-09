@@ -130,14 +130,14 @@ public class IceDragonEntity extends DragonBaseEntity {
     public void aiStep() {
         super.aiStep();
         LivingEntity attackTarget = this.getTarget();
-        if (!this.level().isClientSide && this.isInLava() && this.isAllowedToTriggerFlight() && !this.isModelDead()) {
+        if (!this.level().isClientSide() && this.isInLava() && this.isAllowedToTriggerFlight() && !this.isModelDead()) {
             this.setHovering(true);
             this.setInSittingPose(false);
             this.setOrderedToSit(false);
             this.flyHovering = 0;
             this.flyTicks = 0;
         }
-        if (!this.level().isClientSide && attackTarget != null) {
+        if (!this.level().isClientSide() && attackTarget != null) {
             if (this.getBoundingBox().inflate(0 + this.getRenderSize() * 0.33F, 0 + this.getRenderSize() * 0.33F, 0 + this.getRenderSize() * 0.33F).intersects(attackTarget.getBoundingBox())) {
                 this.doHurtTarget(attackTarget);
             }
@@ -186,7 +186,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                 this.setSwimming(false);
             }
         }
-        if (!this.level().isClientSide && this.getControllingPassenger() == null && (this.isHovering() && !this.isFlying() && this.isInWater())) {
+        if (!this.level().isClientSide() && this.getControllingPassenger() == null && (this.isHovering() && !this.isFlying() && this.isInWater())) {
             this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.2D, 0.0D));
         }
         if (this.swimCycle < 48) {
@@ -222,7 +222,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                     this.isMature();
                 }
                 entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
-                if (!this.level().isClientSide) {
+                if (!this.level().isClientSide()) {
                     this.level().addFreshEntity(entitylargefireball);
                 }
 
@@ -398,7 +398,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                         this.isMature();
                     }
                     entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
-                    if (!this.level().isClientSide) {
+                    if (!this.level().isClientSide()) {
                         this.level().addFreshEntity(entitylargefireball);
                     }
                     if (!entity.isAlive()) {
@@ -440,7 +440,7 @@ public class IceDragonEntity extends DragonBaseEntity {
 
     @Override
     public boolean isSwimming() {
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             boolean swimming = this.entityData.get(SWIMMING);
             this.isSwimming = swimming;
             return swimming;
@@ -451,7 +451,7 @@ public class IceDragonEntity extends DragonBaseEntity {
     @Override
     public void setSwimming(boolean swimming) {
         this.entityData.set(SWIMMING, swimming);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.isSwimming = swimming;
         }
     }
@@ -513,7 +513,7 @@ public class IceDragonEntity extends DragonBaseEntity {
 
     @Override
     public void spawnBabyParticles() {
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             for (int i = 0; i < 5; i++) {
                 float radiusAdd = i * 0.15F;
                 float headPosX = (float) (this.getX() + 1.8F * this.getRenderSize() * (0.3F + radiusAdd) * Mth.cos((float) ((this.getYRot() + 90) * Math.PI / 180)));

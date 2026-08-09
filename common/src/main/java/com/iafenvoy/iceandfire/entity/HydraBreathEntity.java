@@ -2,89 +2,89 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.entity.util.dragon.IDragonProjectile;
 import com.iafenvoy.iceandfire.registry.IafParticles;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.projectile.AbstractFireballEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
-public class HydraBreathEntity extends AbstractFireballEntity implements IDragonProjectile {
-    public HydraBreathEntity(EntityType<? extends AbstractFireballEntity> t, World worldIn) {
+public class HydraBreathEntity extends Fireball implements IDragonProjectile {
+    public HydraBreathEntity(EntityType<? extends Fireball> t, Level worldIn) {
         super(t, worldIn);
     }
 
-    public HydraBreathEntity(EntityType<? extends AbstractFireballEntity> t, World worldIn, HydraEntity shooter, double accelX, double accelY, double accelZ) {
-        super(t, shooter, new Vec3d(accelX, accelY, accelZ), worldIn);
+    public HydraBreathEntity(EntityType<? extends Fireball> t, Level worldIn, HydraEntity shooter, double accelX, double accelY, double accelZ) {
+        super(t, shooter, new Vec3(accelX, accelY, accelZ), worldIn);
     }
 
     @Override
-    protected boolean isBurning() {
+    protected boolean shouldBurn() {
         return false;
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    public float getTargetingMargin() {
+    public float getPickRadius() {
         return 0F;
     }
 
     @Override
-    public boolean canHit() {
+    public boolean isPickable() {
         return false;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void tick() {
-        this.extinguish();
-        if (this.age > 30) this.remove(RemovalReason.DISCARDED);
+        this.clearFire();
+        if (this.tickCount > 30) this.remove(RemovalReason.DISCARDED);
         Entity shootingEntity = this.getOwner();
-        if (this.getWorld().isClient || (shootingEntity == null || shootingEntity.isAlive()) && this.getWorld().isChunkLoaded(this.getBlockPos())) {
+        if (this.level().isClientSide() || (shootingEntity == null || shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
             this.baseTick();
-            if (this.isBurning()) this.setOnFireFor(1);
-            HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-            if (hitResult.getType() != HitResult.Type.MISS) this.onCollision(hitResult);
+            if (this.shouldBurn()) this.igniteForSeconds(1);
+            HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+            if (hitResult.getType() != HitResult.Type.MISS) this.onHit(hitResult);
 
-            Vec3d Vector3d = this.getVelocity();
+            Vec3 Vector3d = this.getDeltaMovement();
             double d0 = this.getX() + Vector3d.x;
             double d1 = this.getY() + Vector3d.y;
             double d2 = this.getZ() + Vector3d.z;
-            ProjectileUtil.setRotationFromVelocity(this, 0.2F);
-            if (this.getWorld().isClient)
+            ProjectileUtil.rotateTowardsMovement(this, 0.2F);
+            if (this.level().isClientSide())
                 for (int i = 0; i < 15; ++i)
-                    this.getWorld().addParticle(IafParticles.HYDRA_BREATH.get(), this.getX() + (double) (this.random.nextFloat() * this.getWidth()) - (double) this.getWidth() * 0.5F, this.getY() - 0.5D, this.getZ() + (double) (this.random.nextFloat() * this.getWidth()) - (double) this.getWidth() * 0.5F, 0.1D, 1.0D, 0.1D);
+                    this.level().addParticle(IafParticles.HYDRA_BREATH.get(), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth()) - (double) this.getBbWidth() * 0.5F, this.getY() - 0.5D, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth()) - (double) this.getBbWidth() * 0.5F, 0.1D, 1.0D, 0.1D);
 
-            Vec3d vec3d = this.getVelocity();
-            this.setVelocity(vec3d.add(vec3d.normalize().multiply(this.accelerationPower)).multiply(this.getDrag()));
+            Vec3 vec3d = this.getDeltaMovement();
+            this.setDeltaMovement(vec3d.add(vec3d.normalize().scale(this.accelerationPower)).scale(this.getInertia()));
 
-            if (this.isTouchingWater()) {
+            if (this.isInWater()) {
                 for (int i = 0; i < 4; ++i) {
-                    this.getWorld().addParticle(ParticleTypes.BUBBLE, this.getX() - this.getVelocity().x * 0.25D, this.getY() - this.getVelocity().y * 0.25D, this.getZ() - this.getVelocity().z * 0.25D, this.getVelocity().x, this.getVelocity().y, this.getVelocity().z);
+                    this.level().addParticle(ParticleTypes.BUBBLE, this.getX() - this.getDeltaMovement().x * 0.25D, this.getY() - this.getDeltaMovement().y * 0.25D, this.getZ() - this.getDeltaMovement().z * 0.25D, this.getDeltaMovement().x, this.getDeltaMovement().y, this.getDeltaMovement().z);
                 }
             }
-            this.setPosition(d0, d1, d2);
-            this.setPosition(this.getX(), this.getY(), this.getZ());
+            this.setPos(d0, d1, d2);
+            this.setPos(this.getX(), this.getY(), this.getZ());
         }
     }
 
     @Override
-    protected void onCollision(HitResult movingObject) {
-        this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+    protected void onHit(HitResult movingObject) {
+        this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
         Entity shootingEntity = this.getOwner();
-        if (!this.getWorld().isClient) {
+        if (!this.level().isClientSide()) {
             if (movingObject.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) movingObject).getEntity();
 
@@ -92,12 +92,12 @@ public class HydraBreathEntity extends AbstractFireballEntity implements IDragon
                     return;
                 }
                 if (shootingEntity instanceof HydraEntity dragon) {
-                    if (dragon.isTeammate(entity) || dragon.isPartOf(entity)) {
+                    if (dragon.isAlliedTo(entity) || dragon.is(entity)) {
                         return;
                     }
-                    entity.damage(this.getWorld().getDamageSources().mobAttack(dragon), 2.0F);
+                    entity.hurt(this.level().damageSources().mobAttack(dragon), 2.0F);
                     if (entity instanceof LivingEntity) {
-                        ((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60, 0));
+                        ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0));
                     }
 
                 }

@@ -1,84 +1,84 @@
 package com.iafenvoy.iceandfire.util;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.TypeFilter;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldProperties;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.tick.QueryableTickScheduler;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.lighting.LevelLightEngine;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.LevelData;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.ticks.LevelTickAccess;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class RestrictWorldAccess implements ServerWorldAccess {
-    private final ServerWorldAccess origin;
+public class RestrictWorldAccess implements ServerLevelAccessor {
+    private final ServerLevelAccessor origin;
     private final Predicate<BlockPos> checker;
 
-    public RestrictWorldAccess(ServerWorldAccess origin, Predicate<BlockPos> checker) {
+    public RestrictWorldAccess(ServerLevelAccessor origin, Predicate<BlockPos> checker) {
         this.origin = origin;
         this.checker = checker;
     }
 
     @Override
-    public ServerWorld toServerWorld() {
-        return this.origin.toServerWorld();
+    public ServerLevel getLevel() {
+        return this.origin.getLevel();
     }
 
     @Override
-    public long getTickOrder() {
-        return this.origin.getTickOrder();
+    public long nextSubTickCount() {
+        return this.origin.nextSubTickCount();
     }
 
     @Override
-    public QueryableTickScheduler<Block> getBlockTickScheduler() {
-        return this.origin.getBlockTickScheduler();
+    public LevelTickAccess<Block> getBlockTicks() {
+        return this.origin.getBlockTicks();
     }
 
     @Override
-    public QueryableTickScheduler<Fluid> getFluidTickScheduler() {
-        return this.origin.getFluidTickScheduler();
+    public LevelTickAccess<Fluid> getFluidTicks() {
+        return this.origin.getFluidTicks();
     }
 
     @Override
-    public WorldProperties getLevelProperties() {
-        return this.origin.getLevelProperties();
+    public LevelData getLevelData() {
+        return this.origin.getLevelData();
     }
 
     @Override
-    public LocalDifficulty getLocalDifficulty(BlockPos pos) {
-        return this.origin.getLocalDifficulty(pos);
+    public DifficultyInstance getCurrentDifficultyAt(BlockPos pos) {
+        return this.origin.getCurrentDifficultyAt(pos);
     }
 
     @Override
@@ -87,43 +87,43 @@ public class RestrictWorldAccess implements ServerWorldAccess {
     }
 
     @Override
-    public ChunkManager getChunkManager() {
-        return this.origin.getChunkManager();
+    public ChunkSource getChunkSource() {
+        return this.origin.getChunkSource();
     }
 
     @Override
-    public Random getRandom() {
+    public RandomSource getRandom() {
         return this.origin.getRandom();
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+    public void playSound(@Nullable Player except, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {
         this.origin.playSound(except, pos, sound, category, volume, pitch);
     }
 
     @Override
-    public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    public void addParticle(ParticleOptions parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         this.origin.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
     }
 
     @Override
-    public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
-        this.origin.syncWorldEvent(player, eventId, pos, data);
+    public void levelEvent(@Nullable Player player, int eventId, BlockPos pos, int data) {
+        this.origin.levelEvent(player, eventId, pos, data);
     }
 
     @Override
-    public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {
-        this.origin.emitGameEvent(event, emitterPos, emitter);
+    public void gameEvent(Holder<GameEvent> event, Vec3 emitterPos, GameEvent.Context emitter) {
+        this.origin.gameEvent(event, emitterPos, emitter);
     }
 
     @Override
-    public float getBrightness(Direction direction, boolean shaded) {
-        return this.origin.getBrightness(direction, shaded);
+    public float getShade(Direction direction, boolean shaded) {
+        return this.origin.getShade(direction, shaded);
     }
 
     @Override
-    public LightingProvider getLightingProvider() {
-        return this.origin.getLightingProvider();
+    public LevelLightEngine getLightEngine() {
+        return this.origin.getLightEngine();
     }
 
     @Override
@@ -139,35 +139,35 @@ public class RestrictWorldAccess implements ServerWorldAccess {
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        if (!this.checker.test(pos)) return Blocks.AIR.getDefaultState();
+        if (!this.checker.test(pos)) return Blocks.AIR.defaultBlockState();
         return this.origin.getBlockState(pos);
     }
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        if (!this.checker.test(pos)) return Fluids.EMPTY.getDefaultState();
+        if (!this.checker.test(pos)) return Fluids.EMPTY.defaultFluidState();
         return this.origin.getFluidState(pos);
     }
 
     @Override
-    public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
-        return this.origin.getOtherEntities(except, box, predicate);
+    public List<Entity> getEntities(@Nullable Entity except, AABB box, Predicate<? super Entity> predicate) {
+        return this.origin.getEntities(except, box, predicate);
     }
 
     @Override
-    public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate) {
-        return this.origin.getEntitiesByType(filter, box, predicate);
+    public <T extends Entity> List<T> getEntities(EntityTypeTest<Entity, T> filter, AABB box, Predicate<? super T> predicate) {
+        return this.origin.getEntities(filter, box, predicate);
     }
 
     @Override
-    public List<? extends PlayerEntity> getPlayers() {
-        return this.origin.getPlayers();
+    public List<? extends Player> players() {
+        return this.origin.players();
     }
 
     @Override
-    public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+    public boolean setBlock(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
         if (!this.checker.test(pos)) return false;
-        return this.origin.setBlockState(pos, state, flags, maxUpdateDepth);
+        return this.origin.setBlock(pos, state, flags, maxUpdateDepth);
     }
 
     @Override
@@ -176,49 +176,49 @@ public class RestrictWorldAccess implements ServerWorldAccess {
     }
 
     @Override
-    public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
-        return this.origin.breakBlock(pos, drop, breakingEntity, maxUpdateDepth);
+    public boolean destroyBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
+        return this.origin.destroyBlock(pos, drop, breakingEntity, maxUpdateDepth);
     }
 
     @Override
-    public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
-        return this.origin.testBlockState(pos, state);
+    public boolean isStateAtPosition(BlockPos pos, Predicate<BlockState> state) {
+        return this.origin.isStateAtPosition(pos, state);
     }
 
     @Override
-    public boolean testFluidState(BlockPos pos, Predicate<FluidState> state) {
-        return this.origin.testFluidState(pos, state);
+    public boolean isFluidAtPosition(BlockPos pos, Predicate<FluidState> state) {
+        return this.origin.isFluidAtPosition(pos, state);
     }
 
     @Override
-    public @Nullable Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
+    public @Nullable ChunkAccess getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
         return this.origin.getChunk(chunkX, chunkZ, leastStatus, create);
     }
 
     @Override
-    public int getTopY(Heightmap.Type heightmap, int x, int z) {
+    public int getHeight(Heightmap.Types heightmap, int x, int z) {
         if (!this.checker.test(new BlockPos(x, 0, z))) return 64;
-        return this.origin.getTopY(heightmap, x, z);
+        return this.origin.getHeight(heightmap, x, z);
     }
 
     @Override
-    public int getAmbientDarkness() {
-        return this.origin.getAmbientDarkness();
+    public int getSkyDarken() {
+        return this.origin.getSkyDarken();
     }
 
     @Override
-    public BiomeAccess getBiomeAccess() {
-        return this.origin.getBiomeAccess();
+    public BiomeManager getBiomeManager() {
+        return this.origin.getBiomeManager();
     }
 
     @Override
-    public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-        return this.origin.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
+    public Holder<Biome> getUncachedNoiseBiome(int biomeX, int biomeY, int biomeZ) {
+        return this.origin.getUncachedNoiseBiome(biomeX, biomeY, biomeZ);
     }
 
     @Override
-    public boolean isClient() {
-        return this.origin.isClient();
+    public boolean isClientSide() {
+        return this.origin.isClientSide();
     }
 
     @Deprecated
@@ -228,23 +228,23 @@ public class RestrictWorldAccess implements ServerWorldAccess {
     }
 
     @Override
-    public DimensionType getDimension() {
-        return this.origin.getDimension();
+    public DimensionType dimensionType() {
+        return this.origin.dimensionType();
     }
 
     @Override
-    public DynamicRegistryManager getRegistryManager() {
-        return this.origin.getRegistryManager();
+    public RegistryAccess registryAccess() {
+        return this.origin.registryAccess();
     }
 
     @Override
-    public FeatureSet getEnabledFeatures() {
-        return this.origin.getEnabledFeatures();
+    public FeatureFlagSet enabledFeatures() {
+        return this.origin.enabledFeatures();
     }
 
     @Override
-    public boolean spawnEntity(Entity entity) {
-        if (!this.checker.test(entity.getBlockPos())) return false;
-        return this.origin.spawnEntity(entity);
+    public boolean addFreshEntity(Entity entity) {
+        if (!this.checker.test(entity.blockPosition())) return false;
+        return this.origin.addFreshEntity(entity);
     }
 }

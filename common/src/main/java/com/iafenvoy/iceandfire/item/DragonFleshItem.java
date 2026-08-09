@@ -2,38 +2,38 @@ package com.iafenvoy.iceandfire.item;
 
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class DragonFleshItem extends Item {
     private final DragonType type;
 
     public DragonFleshItem(DragonType type) {
-        super(new Settings().food(new FoodComponent.Builder().nutrition(8).saturationModifier(0.8F).build()));
+        super(new Properties().food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build()));
         this.type = type;
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity living) {
-        if (!world.isClient) {
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity living) {
+        if (!world.isClientSide()) {
             if (this.type == IafDragonTypes.FIRE)
-                living.setOnFireFor(5);
+                living.igniteForSeconds(5);
             else if (this.type == IafDragonTypes.ICE)
-                living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2));
+                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
             else {
-                LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(living.getWorld());
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level());
                 assert lightning != null;
-                lightning.refreshPositionAfterTeleport(living.getPos());
-                living.getWorld().spawnEntity(lightning);
+                lightning.moveTo(living.position());
+                living.level().addFreshEntity(lightning);
             }
         }
-        return super.finishUsing(stack, world, living);
+        return super.finishUsingItem(stack, world, living);
     }
 }

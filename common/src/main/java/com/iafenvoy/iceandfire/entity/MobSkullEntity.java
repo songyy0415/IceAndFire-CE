@@ -3,91 +3,91 @@ package com.iafenvoy.iceandfire.entity;
 import com.iafenvoy.iceandfire.data.IafSkullType;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.entity.util.IDeadMob;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-public class MobSkullEntity extends AnimalEntity implements BlacklistedFromStatues, IDeadMob {
-    private static final TrackedData<Float> SKULL_DIRECTION = DataTracker.registerData(MobSkullEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Integer> SKULL_ENUM = DataTracker.registerData(MobSkullEntity.class, TrackedDataHandlerRegistry.INTEGER);
+public class MobSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob {
+    private static final EntityDataAccessor<Float> SKULL_DIRECTION = SynchedEntityData.defineId(MobSkullEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> SKULL_ENUM = SynchedEntityData.defineId(MobSkullEntity.class, EntityDataSerializers.INT);
 
-    public MobSkullEntity(EntityType<? extends MobSkullEntity> t, World worldIn) {
+    public MobSkullEntity(EntityType<? extends MobSkullEntity> t, Level worldIn) {
         super(t, worldIn);
-        this.ignoreCameraFrustum = true;
+        this.noCulling = true;
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder bakeAttributes() {
+        return Mob.createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0D)
+                .add(Attributes.MAX_HEALTH, 10.0D)
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.0D);
+                .add(Attributes.MOVEMENT_SPEED, 0.0D);
     }
 
     @Override
     public boolean isInvulnerableTo(DamageSource i) {
-        return i.getAttacker() != null;
+        return i.getEntity() != null;
     }
 
     @Override
-    public boolean isAiDisabled() {
+    public boolean isNoAi() {
         return true;
     }
 
     public boolean isOnWall() {
-        return this.getWorld().isAir(this.getBlockPos().down());
+        return this.level().isEmptyBlock(this.blockPosition().below());
     }
 
     public void onUpdate() {
-        this.prevBodyYaw = 0;
-        this.prevHeadYaw = 0;
-        this.bodyYaw = 0;
-        this.headYaw = 0;
+        this.yBodyRotO = 0;
+        this.yHeadRotO = 0;
+        this.yBodyRot = 0;
+        this.yHeadRot = 0;
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(SKULL_DIRECTION, 0F);
-        builder.add(SKULL_ENUM, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(SKULL_DIRECTION, 0F);
+        builder.define(SKULL_ENUM, 0);
     }
 
     @Override
-    public float getYaw() {
-        return this.getDataTracker().get(SKULL_DIRECTION);
+    public float getYRot() {
+        return this.getEntityData().get(SKULL_DIRECTION);
     }
 
     @Override
-    public void setYaw(float var1) {
-        this.getDataTracker().set(SKULL_DIRECTION, var1);
+    public void setYRot(float var1) {
+        this.getEntityData().set(SKULL_DIRECTION, var1);
     }
 
     private int getEnumOrdinal() {
-        return this.getDataTracker().get(SKULL_ENUM);
+        return this.getEntityData().get(SKULL_ENUM);
     }
 
     private void setEnumOrdinal(int var1) {
-        this.getDataTracker().set(SKULL_ENUM, var1);
+        this.getEntityData().set(SKULL_ENUM, var1);
     }
 
     public IafSkullType getSkullType() {
-        return IafSkullType.values()[MathHelper.clamp(this.getEnumOrdinal(), 0, IafSkullType.values().length - 1)];
+        return IafSkullType.values()[Mth.clamp(this.getEnumOrdinal(), 0, IafSkullType.values().length - 1)];
     }
 
     public void setSkullType(IafSkullType skullType) {
@@ -95,9 +95,9 @@ public class MobSkullEntity extends AnimalEntity implements BlacklistedFromStatu
     }
 
     @Override
-    public boolean damage(DamageSource var1, float var2) {
+    public boolean hurt(DamageSource var1, float var2) {
         this.turnIntoItem();
-        return super.damage(var1, var2);
+        return super.hurt(var1, var2);
     }
 
     public void turnIntoItem() {
@@ -105,35 +105,35 @@ public class MobSkullEntity extends AnimalEntity implements BlacklistedFromStatu
             return;
         this.remove(RemovalReason.DISCARDED);
         ItemStack stack = new ItemStack(this.getSkullType().getSkullItem(), 1);
-        if (!this.getWorld().isClient)
-            this.dropStack(stack, 0.0F);
+        if (!this.level().isClientSide())
+            this.spawnAtLocation(stack, 0.0F);
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack stack) {
+    public boolean isFood(ItemStack stack) {
         return false;
     }
 
     @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (player.isSneaking()) {
-            this.setYaw(player.getYaw());
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (player.isShiftKeyDown()) {
+            this.setYRot(player.getYRot());
         }
-        return super.interactMob(player, hand);
+        return super.mobInteract(player, hand);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound compound) {
-        this.setYaw(compound.getFloat("SkullYaw"));
+    public void readAdditionalSaveData(CompoundTag compound) {
+        this.setYRot(compound.getFloat("SkullYaw"));
         this.setEnumOrdinal(compound.getInt("SkullType"));
-        super.readCustomDataFromNbt(compound);
+        super.readAdditionalSaveData(compound);
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound compound) {
-        compound.putFloat("SkullYaw", this.getYaw());
+    public void addAdditionalSaveData(CompoundTag compound) {
+        compound.putFloat("SkullYaw", this.getYRot());
         compound.putInt("SkullType", this.getEnumOrdinal());
-        super.writeCustomDataToNbt(compound);
+        super.addAdditionalSaveData(compound);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class MobSkullEntity extends AnimalEntity implements BlacklistedFromStatu
     }
 
     @Override
-    protected void pushAway(Entity entity) {
+    protected void doPush(Entity entity) {
     }
 
     @Override
@@ -156,17 +156,17 @@ public class MobSkullEntity extends AnimalEntity implements BlacklistedFromStatu
     }
 
     @Override
-    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity ageable) {
+    public AgeableMob getBreedOffspring(ServerLevel serverWorld, AgeableMob ageable) {
         return null;
     }
 
     @Override
-    public boolean isPersistent() {
+    public boolean isPersistenceRequired() {
         return true;
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 }

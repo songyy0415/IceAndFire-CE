@@ -3,28 +3,32 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import java.util.Locale;
 
-public class PixieHouseBlock extends BlockWithEntity {
-    private static final MapCodec<? extends BlockWithEntity> CODEC = createCodec(s -> new PixieHouseBlock());
-    public static final DirectionProperty FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
+public class PixieHouseBlock extends BaseEntityBlock {
+    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new PixieHouseBlock());
+    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
 
     public PixieHouseBlock() {
-        super(Settings.create().mapColor(MapColor.OAK_TAN).instrument(NoteBlockInstrument.BASS).burnable().nonOpaque().dynamicBounds().strength(2.0F, 5.0F).ticksRandomly());
-        this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F, 5.0F).randomTicks());
+        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
     public static String name(String type) {
@@ -32,44 +36,44 @@ public class PixieHouseBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext context) {
-        return this.getDefaultState().with(FACING, context.getHorizontalPlayerFacing().getOpposite());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         this.dropPixie(worldIn, pos);
-        dropStack(worldIn, pos, new ItemStack(this, 0));
-        super.onStateReplaced(state, worldIn, pos, newState, isMoving);
+        popResource(worldIn, pos, new ItemStack(this, 0));
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
-    public void dropPixie(World world, BlockPos pos) {
+    public void dropPixie(Level world, BlockPos pos) {
         if (world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof PixieHouseBlockEntity house && house.hasPixie)
             house.releasePixie();
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> entityType) {
-        return level.isClient ? validateTicker(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickClient) : validateTicker(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickServer);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> entityType) {
+        return level.isClientSide() ? createTickerHelper(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickClient) : createTickerHelper(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickServer);
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PixieHouseBlockEntity(pos, state);
     }
 }

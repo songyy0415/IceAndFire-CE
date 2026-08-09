@@ -2,40 +2,40 @@ package com.iafenvoy.iceandfire.item;
 
 import com.iafenvoy.iceandfire.entity.CockatriceEggEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ProjectileItem;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Position;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.level.Level;
 
 public class RottenEggItem extends Item implements ProjectileItem {
     public RottenEggItem() {
-        super(new Item.Settings());
+        super(new Item.Properties());
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getStackInHand(handIn);
-        if (!playerIn.isCreative()) itemstack.decrement(1);
-        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (worldIn.random.nextFloat() * 0.4F + 0.8F));
-        if (!worldIn.isClient) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if (!playerIn.isCreative()) itemstack.shrink(1);
+        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (worldIn.random.nextFloat() * 0.4F + 0.8F));
+        if (!worldIn.isClientSide()) {
             CockatriceEggEntity egg = new CockatriceEggEntity(IafEntities.COCKATRICE_EGG.get(), worldIn, playerIn);
-            egg.setVelocity(playerIn, playerIn.getPitch(), playerIn.getYaw(), 0.0F, 1.5F, 1.0F);
-            worldIn.spawnEntity(egg);
+            egg.shootFromRotation(playerIn, playerIn.getXRot(), playerIn.getYRot(), 0.0F, 1.5F, 1.0F);
+            worldIn.addFreshEntity(egg);
         }
-        return new TypedActionResult<>(ActionResult.SUCCESS, itemstack);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
     }
 
     @Override
-    public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-        return new CockatriceEggEntity(IafEntities.COCKATRICE_EGG.get(), pos.getX(), pos.getY(), pos.getZ(), world);
+    public Projectile asProjectile(Level world, Position pos, ItemStack stack, Direction direction) {
+        return new CockatriceEggEntity(IafEntities.COCKATRICE_EGG.get(), pos.x(), pos.y(), pos.z(), world);
     }
 }

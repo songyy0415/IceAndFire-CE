@@ -2,74 +2,80 @@ package com.iafenvoy.iceandfire.item.block;
 
 import com.iafenvoy.iceandfire.item.block.entity.PodiumBlockEntity;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
-public class PodiumBlock extends BlockWithEntity {
-    private static final MapCodec<? extends BlockWithEntity> CODEC = createCodec(s -> new PodiumBlock());
-    protected static final VoxelShape AABB = Block.createCuboidShape(2, 0, 2, 14, 23, 14);
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+public class PodiumBlock extends BaseEntityBlock {
+    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new PodiumBlock());
+    protected static final VoxelShape AABB = Block.box(2, 0, 2, 14, 23, 14);
 
     public PodiumBlock() {
-        super(Settings.create().mapColor(MapColor.OAK_TAN).instrument(NoteBlockInstrument.BASS).burnable().nonOpaque().dynamicBounds().strength(2.0F).sounds(BlockSoundGroup.WOOD));
+        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F).sound(SoundType.WOOD));
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView worldIn, BlockPos pos, ShapeContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return AABB;
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView worldIn, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return AABB;
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof PodiumBlockEntity) {
-            ItemScatterer.spawn(worldIn, pos, (PodiumBlockEntity) tileentity);
-            worldIn.updateComparators(pos, this);
+            Containers.dropContents(worldIn, pos, (PodiumBlockEntity) tileentity);
+            worldIn.updateNeighbourForOutputSignal(pos, this);
         }
-        super.onStateReplaced(state, worldIn, pos, newState, isMoving);
+        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!player.isSneaking()) {
-            if (!world.isClient) {
-                NamedScreenHandlerFactory screenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!player.isShiftKeyDown()) {
+            if (!world.isClientSide()) {
+                MenuProvider screenHandlerFactory = this.getMenuProvider(state, world, pos);
                 if (screenHandlerFactory != null)
-                    player.openHandledScreen(screenHandlerFactory);
+                    player.openMenu(screenHandlerFactory);
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PodiumBlockEntity(pos, state);
     }
 }

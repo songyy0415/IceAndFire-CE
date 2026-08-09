@@ -2,20 +2,19 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.item.HippogryphEggItem;
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-
 import java.util.EnumSet;
 import java.util.List;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 
 public class HippogryphAIMateGoal extends Goal {
-    final World world;
+    final Level world;
     final double moveSpeed;
     private final HippogryphEntity hippo;
     int spawnBabyDelay;
@@ -25,16 +24,16 @@ public class HippogryphAIMateGoal extends Goal {
         this(animal, speedIn, animal.getClass());
     }
 
-    public HippogryphAIMateGoal(HippogryphEntity hippogryph, double speed, Class<? extends AnimalEntity> mate) {
+    public HippogryphAIMateGoal(HippogryphEntity hippogryph, double speed, Class<? extends Animal> mate) {
         this.hippo = hippogryph;
-        this.world = hippogryph.getWorld();
+        this.world = hippogryph.level();
         this.moveSpeed = speed;
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
-    public boolean canStart() {
-        if (!this.hippo.isInLove() || this.hippo.isSitting()) return false;
+    public boolean canUse() {
+        if (!this.hippo.isInLove() || this.hippo.isOrderedToSit()) return false;
         else {
             this.targetMate = this.getNearbyMate();
             return this.targetMate != null;
@@ -42,7 +41,7 @@ public class HippogryphAIMateGoal extends Goal {
     }
 
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         return this.targetMate.isAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
     }
 
@@ -54,23 +53,23 @@ public class HippogryphAIMateGoal extends Goal {
 
     @Override
     public void tick() {
-        this.hippo.getLookControl().lookAt(this.targetMate, 10.0F, this.hippo.getMaxLookPitchChange());
-        this.hippo.getNavigation().startMovingTo(this.targetMate, this.moveSpeed);
+        this.hippo.getLookControl().setLookAt(this.targetMate, 10.0F, this.hippo.getMaxHeadXRot());
+        this.hippo.getNavigation().moveTo(this.targetMate, this.moveSpeed);
         ++this.spawnBabyDelay;
 
-        if (this.spawnBabyDelay >= 60 && this.hippo.squaredDistanceTo(this.targetMate) < 9.0D)
+        if (this.spawnBabyDelay >= 60 && this.hippo.distanceToSqr(this.targetMate) < 9.0D)
             this.spawnBaby();
     }
 
     private HippogryphEntity getNearbyMate() {
-        List<HippogryphEntity> list = this.world.getNonSpectatingEntities(HippogryphEntity.class, this.hippo.getBoundingBox().expand(8.0D));
+        List<HippogryphEntity> list = this.world.getEntitiesOfClass(HippogryphEntity.class, this.hippo.getBoundingBox().inflate(8.0D));
         double d0 = Double.MAX_VALUE;
         HippogryphEntity entityanimal = null;
 
         for (HippogryphEntity entityanimal1 : list)
-            if (this.hippo.canBreedWith(entityanimal1) && this.hippo.squaredDistanceTo(entityanimal1) < d0) {
+            if (this.hippo.canMate(entityanimal1) && this.hippo.distanceToSqr(entityanimal1) < d0) {
                 entityanimal = entityanimal1;
-                d0 = this.hippo.squaredDistanceTo(entityanimal1);
+                d0 = this.hippo.distanceToSqr(entityanimal1);
             }
 
         return entityanimal;
@@ -78,25 +77,25 @@ public class HippogryphAIMateGoal extends Goal {
 
     private void spawnBaby() {
         ItemEntity egg = new ItemEntity(this.world, this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), HippogryphEggItem.createEggStack(this.hippo.getEnumVariant(), this.targetMate.getEnumVariant()));
-        this.hippo.setBreedingAge(6000);
-        this.targetMate.setBreedingAge(6000);
-        this.hippo.resetLoveTicks();
-        this.targetMate.resetLoveTicks();
-        egg.refreshPositionAndAngles(this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), 0.0F, 0.0F);
-        if (!this.world.isClient) this.world.spawnEntity(egg);
-        Random random = this.hippo.getRandom();
+        this.hippo.setAge(6000);
+        this.targetMate.setAge(6000);
+        this.hippo.resetLove();
+        this.targetMate.resetLove();
+        egg.moveTo(this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), 0.0F, 0.0F);
+        if (!this.world.isClientSide()) this.world.addFreshEntity(egg);
+        RandomSource random = this.hippo.getRandom();
 
         for (int i = 0; i < 7; ++i) {
             final double d0 = random.nextGaussian() * 0.02D;
             final double d1 = random.nextGaussian() * 0.02D;
             final double d2 = random.nextGaussian() * 0.02D;
-            final double d3 = random.nextDouble() * this.hippo.getWidth() * 2.0D - this.hippo.getWidth();
-            final double d4 = 0.5D + random.nextDouble() * this.hippo.getHeight();
-            final double d5 = random.nextDouble() * this.hippo.getWidth() * 2.0D - this.hippo.getWidth();
+            final double d3 = random.nextDouble() * this.hippo.getBbWidth() * 2.0D - this.hippo.getBbWidth();
+            final double d4 = 0.5D + random.nextDouble() * this.hippo.getBbHeight();
+            final double d5 = random.nextDouble() * this.hippo.getBbWidth() * 2.0D - this.hippo.getBbWidth();
             this.world.addParticle(ParticleTypes.HEART, this.hippo.getX() + d3, this.hippo.getY() + d4, this.hippo.getZ() + d5, d0, d1, d2);
         }
 
-        if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))
-            this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), random.nextInt(7) + 1));
+        if (this.world.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
+            this.world.addFreshEntity(new ExperienceOrb(this.world, this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), random.nextInt(7) + 1));
     }
 }

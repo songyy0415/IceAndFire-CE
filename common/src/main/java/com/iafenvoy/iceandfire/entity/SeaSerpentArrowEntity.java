@@ -1,51 +1,51 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafItems;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-public class SeaSerpentArrowEntity extends PersistentProjectileEntity {
-    public SeaSerpentArrowEntity(EntityType<? extends PersistentProjectileEntity> t, World worldIn) {
+public class SeaSerpentArrowEntity extends AbstractArrow {
+    public SeaSerpentArrowEntity(EntityType<? extends AbstractArrow> t, Level worldIn) {
         super(t, worldIn);
-        this.setDamage(3F);
+        this.setBaseDamage(3F);
     }
 
-    public SeaSerpentArrowEntity(EntityType<? extends PersistentProjectileEntity> t, World worldIn, double x, double y, double z) {
+    public SeaSerpentArrowEntity(EntityType<? extends AbstractArrow> t, Level worldIn, double x, double y, double z) {
         this(t, worldIn);
-        this.setPosition(x, y, z);
-        this.setDamage(3F);
+        this.setPos(x, y, z);
+        this.setBaseDamage(3F);
     }
 
-    public SeaSerpentArrowEntity(EntityType<? extends PersistentProjectileEntity> t, World worldIn, LivingEntity shooter, ItemStack shotFrom) {
+    public SeaSerpentArrowEntity(EntityType<? extends AbstractArrow> t, Level worldIn, LivingEntity shooter, ItemStack shotFrom) {
         super(t, shooter, worldIn, new ItemStack(IafItems.SEA_SERPENT_ARROW.get()), shotFrom);
-        this.setDamage(3F);
+        this.setBaseDamage(3F);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (this.getWorld().isClient && !this.inGround) {
+        if (this.level().isClientSide() && !this.inGround) {
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
-            double xRatio = this.getVelocity().x * this.getHeight();
-            double zRatio = this.getVelocity().z * this.getHeight();
-            this.getWorld().addParticle(ParticleTypes.BUBBLE, this.getX() + xRatio + this.random.nextFloat() * this.getWidth() * 1.0F - this.getWidth() - d0 * 10.0D, this.getY() + this.random.nextFloat() * this.getHeight() - d1 * 10.0D, this.getZ() + zRatio + this.random.nextFloat() * this.getWidth() * 1.0F - this.getWidth() - d2 * 10.0D, d0, d1, d2);
-            this.getWorld().addParticle(ParticleTypes.SPLASH, this.getX() + xRatio + this.random.nextFloat() * this.getWidth() * 1.0F - this.getWidth() - d0 * 10.0D, this.getY() + this.random.nextFloat() * this.getHeight() - d1 * 10.0D, this.getZ() + zRatio + this.random.nextFloat() * this.getWidth() * 1.0F - this.getWidth() - d2 * 10.0D, d0, d1, d2);
+            double xRatio = this.getDeltaMovement().x * this.getBbHeight();
+            double zRatio = this.getDeltaMovement().z * this.getBbHeight();
+            this.level().addParticle(ParticleTypes.BUBBLE, this.getX() + xRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * 10.0D, this.getY() + this.random.nextFloat() * this.getBbHeight() - d1 * 10.0D, this.getZ() + zRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * 10.0D, d0, d1, d2);
+            this.level().addParticle(ParticleTypes.SPLASH, this.getX() + xRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * 10.0D, this.getY() + this.random.nextFloat() * this.getBbHeight() - d1 * 10.0D, this.getZ() + zRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * 10.0D, d0, d1, d2);
         }
     }
 
     @Override
-    protected ItemStack getDefaultItemStack() {
+    protected ItemStack getDefaultPickupItem() {
         return new ItemStack(IafItems.SEA_SERPENT_ARROW.get());
     }
 
     @Override
-    public boolean isTouchingWater() {
+    public boolean isInWater() {
         return false;
     }
 }

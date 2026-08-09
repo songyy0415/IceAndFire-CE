@@ -110,7 +110,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
         this.setPathfindingMalus(PathType.WATER_BORDER, 4.0f);
         this.lookHelper = new IAFLookControl(this);
         this.noCulling = true;
-        if (worldIn.isClientSide) {
+        if (worldIn.isClientSide()) {
             this.tail_buffer = new ChainBuffer();
         }
         this.switchNavigator(false);
@@ -417,7 +417,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (this.getWormAge() > 4 && player.getVehicle() == null && player.getMainHandItem().is(Items.FISHING_ROD) && player.getOffhandItem().is(Items.FISHING_ROD)) {
             player.startRiding(this);
-            return InteractionResult.sidedSuccess(this.level().isClientSide);
+            return InteractionResult.sidedSuccess(this.level().isClientSide());
         }
         return super.mobInteract(player, hand);
     }
@@ -541,7 +541,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             this.clearSegments();
             this.heal(15);
             this.setDeathWormScale(this.getDeathwormScale());
-            if (this.level().isClientSide)
+            if (this.level().isClientSide())
                 for (int i = 0; i < 10 * this.getAgeScale(); i++)
                     this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
         }
@@ -631,7 +631,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
         if (this.isInSand()) {
             BlockPos pos = new BlockPos(this.getBlockX(), this.getSurface(this.getBlockX(), this.getBlockY(), this.getBlockZ()), this.getBlockZ()).below();
             BlockState state = this.level().getBlockState(pos);
-            if (state.isSolidRender(this.level(), pos) && this.level().isClientSide)
+            if (state.isSolidRender(this.level(), pos) && this.level().isClientSide())
                 this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
             if (this.tickCount % 10 == 0) this.playSound(SoundEvents.SAND_BREAK, 1, 0.5F);
         }
@@ -639,7 +639,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
         boolean inSand = this.isInSand() || this.getControllingPassenger() == null;
         if (inSand && !this.isSandNavigator) this.switchNavigator(true);
         if (!inSand && this.isSandNavigator) this.switchNavigator(false);
-        if (this.level().isClientSide) this.tail_buffer.calculateChainSwingBuffer(90, 20, 5F, this);
+        if (this.level().isClientSide()) this.tail_buffer.calculateChainSwingBuffer(90, 20, 5F, this);
 
         AnimationHandler.INSTANCE.updateAnimations(this);
     }

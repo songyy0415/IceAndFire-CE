@@ -8,55 +8,60 @@ import com.iafenvoy.iceandfire.registry.IafDamageTypes;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.*;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.util.Unit;
 
 public class GorgonHeadItem extends Item {
     public GorgonHeadItem() {
-        super(new Settings().maxDamage(1));
+        super(new Properties().durability(1));
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return 72000;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World worldIn, LivingEntity entity, int timeLeft) {
+    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entity, int timeLeft) {
         double dist = 32;
-        Vec3d Vector3d = entity.getCameraPosVec(1.0F);
-        Vec3d Vector3d1 = entity.getRotationVec(1.0F);
-        Vec3d Vector3d2 = Vector3d.add(Vector3d1.x * dist, Vector3d1.y * dist, Vector3d1.z * dist);
+        Vec3 Vector3d = entity.getEyePosition(1.0F);
+        Vec3 Vector3d1 = entity.getViewVector(1.0F);
+        Vec3 Vector3d2 = Vector3d.add(Vector3d1.x * dist, Vector3d1.y * dist, Vector3d1.z * dist);
         Entity pointedEntity = null;
-        List<Entity> list = worldIn.getOtherEntities(entity, entity.getBoundingBox().stretch(Vector3d1.x * dist, Vector3d1.y * dist, Vector3d1.z * dist).expand(1.0D, 1.0D, 1.0D), (Predicate<Entity>) entity12 -> {
+        List<Entity> list = worldIn.getEntities(entity, entity.getBoundingBox().expandTowards(Vector3d1.x * dist, Vector3d1.y * dist, Vector3d1.z * dist).inflate(1.0D, 1.0D, 1.0D), (Predicate<Entity>) entity12 -> {
             if (entity12 instanceof LivingEntity livingEntity) {
-                boolean isImmune = livingEntity instanceof BlacklistedFromStatues blacklisted && !blacklisted.canBeTurnedToStone() || entity12.getType().isIn(IafEntityTags.IMMUNE_TO_GORGON_STONE) || livingEntity.hasStatusEffect(StatusEffects.BLINDNESS);
-                return !isImmune && entity12.canHit() && !livingEntity.isDead() && (entity12 instanceof PlayerEntity || DragonUtils.isAlive(livingEntity));
+                boolean isImmune = livingEntity instanceof BlacklistedFromStatues blacklisted && !blacklisted.canBeTurnedToStone() || entity12.getType().is(IafEntityTags.IMMUNE_TO_GORGON_STONE) || livingEntity.hasEffect(MobEffects.BLINDNESS);
+                return !isImmune && entity12.isPickable() && !livingEntity.isDeadOrDying() && (entity12 instanceof Player || DragonUtils.isAlive(livingEntity));
             }
             return false;
         });
         double d2 = dist;
         for (Entity entity1 : list) {
-            Box axisalignedbb = entity1.getBoundingBox().expand(entity1.getTargetingMargin());
-            Optional<Vec3d> optional = axisalignedbb.raycast(Vector3d, Vector3d2);
+            AABB axisalignedbb = entity1.getBoundingBox().inflate(entity1.getPickRadius());
+            Optional<Vec3> optional = axisalignedbb.clip(Vector3d, Vector3d2);
 
             if (axisalignedbb.contains(Vector3d)) {
                 if (d2 >= 0.0D) d2 = 0.0D;
@@ -76,44 +81,44 @@ public class GorgonHeadItem extends Item {
             if (pointedEntity instanceof LivingEntity livingEntity) {
                 boolean wasSuccesful = true;
 
-                if (pointedEntity instanceof PlayerEntity)
-                    wasSuccesful = pointedEntity.damage(IafDamageTypes.causeGorgonDamage(pointedEntity), Integer.MAX_VALUE);
+                if (pointedEntity instanceof Player)
+                    wasSuccesful = pointedEntity.hurt(IafDamageTypes.causeGorgonDamage(pointedEntity), Integer.MAX_VALUE);
                 else {
-                    if (!worldIn.isClient)
+                    if (!worldIn.isClientSide())
                         pointedEntity.remove(Entity.RemovalReason.KILLED);
                 }
 
                 if (wasSuccesful) {
                     pointedEntity.playSound(IafSounds.TURN_STONE.get(), 1, 1);
                     StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(livingEntity);
-                    statue.updatePositionAndAngles(pointedEntity.getX(), pointedEntity.getY(), pointedEntity.getZ(), pointedEntity.getYaw(), pointedEntity.getPitch());
-                    statue.bodyYaw = pointedEntity.getYaw();
-                    if (!worldIn.isClient)
-                        worldIn.spawnEntity(statue);
+                    statue.absMoveTo(pointedEntity.getX(), pointedEntity.getY(), pointedEntity.getZ(), pointedEntity.getYRot(), pointedEntity.getXRot());
+                    statue.yBodyRot = pointedEntity.getYRot();
+                    if (!worldIn.isClientSide())
+                        worldIn.addFreshEntity(statue);
                 }
 
-                if (entity instanceof PlayerEntity player && !player.isCreative())
-                    stack.decrement(1);
+                if (entity instanceof Player player && !player.isCreative())
+                    stack.shrink(1);
             }
         }
         stack.remove(IafDataComponents.ACTIVE.get());
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
-        ItemStack itemStackIn = playerIn.getStackInHand(hand);
-        playerIn.setCurrentHand(hand);
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand hand) {
+        ItemStack itemStackIn = playerIn.getItemInHand(hand);
+        playerIn.startUsingItem(hand);
         itemStackIn.set(IafDataComponents.ACTIVE.get(), Unit.INSTANCE);
-        return new TypedActionResult<>(ActionResult.SUCCESS, itemStackIn);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
     }
 
     @Override
-    public void usageTick(World level, LivingEntity player, ItemStack stack, int count) {
+    public void onUseTick(Level level, LivingEntity player, ItemStack stack, int count) {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, tooltip, type);
+        tooltip.add(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
     }
 }

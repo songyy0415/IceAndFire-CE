@@ -2,92 +2,92 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.AbstractFireballEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
-public class PixieChargeEntity extends AbstractFireballEntity {
+public class PixieChargeEntity extends Fireball {
     private final float[] rgb;
     public int ticksInAir;
 
-    public PixieChargeEntity(EntityType<? extends AbstractFireballEntity> t, World worldIn) {
+    public PixieChargeEntity(EntityType<? extends Fireball> t, Level worldIn) {
         super(t, worldIn);
         this.rgb = PixieEntity.PARTICLE_RGB[this.random.nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
     }
 
-    public PixieChargeEntity(EntityType<? extends AbstractFireballEntity> t, World worldIn, double posX, double posY, double posZ, double accelX, double accelY, double accelZ) {
-        super(t, posX, posY, posZ, new Vec3d(accelX, accelY, accelZ), worldIn);
+    public PixieChargeEntity(EntityType<? extends Fireball> t, Level worldIn, double posX, double posY, double posZ, double accelX, double accelY, double accelZ) {
+        super(t, posX, posY, posZ, new Vec3(accelX, accelY, accelZ), worldIn);
         this.rgb = PixieEntity.PARTICLE_RGB[this.random.nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
     }
 
-    public PixieChargeEntity(EntityType<? extends AbstractFireballEntity> t, World worldIn, PlayerEntity shooter, double accelX, double accelY, double accelZ) {
-        super(t, shooter, new Vec3d(accelX, accelY, accelZ), worldIn);
+    public PixieChargeEntity(EntityType<? extends Fireball> t, Level worldIn, Player shooter, double accelX, double accelY, double accelZ) {
+        super(t, shooter, new Vec3(accelX, accelY, accelZ), worldIn);
         this.rgb = PixieEntity.PARTICLE_RGB[this.random.nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
     }
 
     @Override
-    protected boolean isBurning() {
+    protected boolean shouldBurn() {
         return false;
     }
 
     @Override
-    public boolean canHit() {
+    public boolean isPickable() {
         return false;
     }
 
     @Override
     public void tick() {
         this.setNoGravity(true);
-        if (this.getWorld().isClient)
+        if (this.level().isClientSide())
             for (int i = 0; i < 5; ++i)
-                this.getWorld().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
-        this.extinguish();
-        if (this.age > 30) this.remove(RemovalReason.DISCARDED);
+                this.level().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
+        this.clearFire();
+        if (this.tickCount > 30) this.remove(RemovalReason.DISCARDED);
         super.tick();
     }
 
     @Override
-    protected float getDrag() {
+    protected float getInertia() {
         return 1.05f;
     }
 
     @Override
-    protected ParticleEffect getParticleType() {
+    protected ParticleOptions getTrailParticle() {
         return IafParticles.PIXIE_DUST.get();
     }
 
     @Override
-    protected void onCollision(HitResult movingObject) {
+    protected void onHit(HitResult movingObject) {
         boolean flag = false;
         Entity shootingEntity = this.getOwner();
-        if (!this.getWorld().isClient) {
-            if (movingObject.getType() == HitResult.Type.ENTITY && !((EntityHitResult) movingObject).getEntity().isPartOf(shootingEntity)) {
+        if (!this.level().isClientSide()) {
+            if (movingObject.getType() == HitResult.Type.ENTITY && !((EntityHitResult) movingObject).getEntity().is(shootingEntity)) {
                 Entity entity = ((EntityHitResult) movingObject).getEntity();
                 if (shootingEntity != null && shootingEntity.equals(entity)) flag = true;
                 else {
                     if (entity instanceof LivingEntity living) {
-                        living.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 100, 0));
-                        living.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 100, 0));
-                        entity.damage(this.getWorld().getDamageSources().indirectMagic(shootingEntity, null), 5.0F);
+                        living.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 100, 0));
+                        living.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
+                        entity.hurt(this.level().damageSources().indirectMagic(shootingEntity, null), 5.0F);
                     }
-                    if (this.getWorld().isClient)
+                    if (this.level().isClientSide())
                         for (int i = 0; i < 20; ++i)
-                            this.getWorld().addParticle(this.getParticleType(), this.getX() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
-                    if (!(shootingEntity instanceof PlayerEntity) || !((PlayerEntity) shootingEntity).isCreative())
+                            this.level().addParticle(this.getTrailParticle(), this.getX() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
+                    if (!(shootingEntity instanceof Player) || !((Player) shootingEntity).isCreative())
                         if (this.random.nextInt(3) == 0)
-                            this.dropStack(new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);
+                            this.spawnAtLocation(new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);
                 }
-                if (!flag && this.age > 4)
+                if (!flag && this.tickCount > 4)
                     this.remove(RemovalReason.DISCARDED);
             }
         }

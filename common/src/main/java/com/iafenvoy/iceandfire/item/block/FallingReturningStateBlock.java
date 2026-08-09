@@ -1,53 +1,53 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FallingBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.MapColor;
 
 public class FallingReturningStateBlock extends FallingBlock {
-    public static final BooleanProperty REVERTS = BooleanProperty.of("revert");
+    public static final BooleanProperty REVERTS = BooleanProperty.create("revert");
     private final BlockState returnState;
 
-    public FallingReturningStateBlock(float hardness, float resistance, BlockSoundGroup sound, MapColor color, BlockState revertState) {
-        super(Settings.create().mapColor(color).sounds(sound).strength(hardness, resistance).ticksRandomly());
+    public FallingReturningStateBlock(float hardness, float resistance, SoundType sound, MapColor color, BlockState revertState) {
+        super(Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks());
 
         this.returnState = revertState;
-        this.setDefaultState(this.stateManager.getDefaultState().with(REVERTS, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));
     }
 
-    public FallingReturningStateBlock(float hardness, float resistance, BlockSoundGroup sound, boolean slippery, MapColor color, BlockState revertState) {
-        super(Settings.create().mapColor(color).sounds(sound).strength(hardness, resistance).ticksRandomly());
+    public FallingReturningStateBlock(float hardness, float resistance, SoundType sound, boolean slippery, MapColor color, BlockState revertState) {
+        super(Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks());
 
         this.returnState = revertState;
-        this.setDefaultState(this.stateManager.getDefaultState().with(REVERTS, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));
     }
 
     @Override
-    protected MapCodec<? extends FallingBlock> getCodec() {
-        return createCodec(s -> this);
+    protected MapCodec<? extends FallingBlock> codec() {
+        return simpleCodec(s -> this);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
-        super.scheduledTick(state, world, pos, rand);
-        if (!world.isClient) {
-            if (!world.isRegionLoaded(pos.add(-3, -3, -3), pos.add(3, 3, 3))) return;
-            if (state.get(REVERTS) && rand.nextInt(3) == 0)
-                world.setBlockState(pos, this.returnState);
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
+        super.tick(state, world, pos, rand);
+        if (!world.isClientSide()) {
+            if (!world.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3))) return;
+            if (state.getValue(REVERTS) && rand.nextInt(3) == 0)
+                world.setBlockAndUpdate(pos, this.returnState);
         }
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(REVERTS);
     }
 }

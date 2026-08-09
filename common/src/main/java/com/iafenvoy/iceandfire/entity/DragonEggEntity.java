@@ -14,55 +14,59 @@ import com.iafenvoy.iceandfire.registry.IafDragonColors;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.object.BlockUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.server.ServerConfigHandler;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Arm;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public class DragonEggEntity extends LivingEntity implements BlacklistedFromStatues, IDeadMob {
-    protected static final TrackedData<Optional<UUID>> OWNER_UNIQUE_ID = DataTracker.registerData(DragonEggEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final Map<DragonType, EggTicker> TICKERS = new LinkedHashMap<>();
-    private static final TrackedData<String> DRAGON_TYPE = DataTracker.registerData(DragonEggEntity.class, TrackedDataHandlerRegistry.STRING);
-    private static final TrackedData<Integer> DRAGON_AGE = DataTracker.registerData(DragonEggEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> LOCATION_VALID = DataTracker.registerData(DragonEggEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final EntityDataAccessor<String> DRAGON_TYPE = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> DRAGON_AGE = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> LOCATION_VALID = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public DragonEggEntity(EntityType<DragonEggEntity> type, World worldIn) {
+    public DragonEggEntity(EntityType<DragonEggEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder bakeAttributes() {
+        return Mob.createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0D)
+                .add(Attributes.MAX_HEALTH, 10.0D)
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0D);
+                .add(Attributes.MOVEMENT_SPEED, 0D);
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
         tag.putString("Color", this.getEggType().getName());
         tag.putInt("DragonAge", this.getDragonAge());
         try {
@@ -74,8 +78,8 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
         this.setEggType(DragonColor.getById(tag.getString("Color")));
         this.setDragonAge(tag.getInt("DragonAge"));
         String s;
@@ -83,63 +87,63 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
         if (tag.contains("OwnerUUID", 8)) s = tag.getString("OwnerUUID");
         else {
             String s1 = tag.getString("Owner");
-            UUID converedUUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), s1);
+            UUID converedUUID = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
             s = converedUUID == null ? s1 : converedUUID.toString();
         }
         if (!s.isEmpty()) this.setOwnerId(UUID.fromString(s));
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(DRAGON_TYPE, IafDragonColors.RED.toString());
-        builder.add(DRAGON_AGE, 0);
-        builder.add(OWNER_UNIQUE_ID, Optional.empty());
-        builder.add(LOCATION_VALID, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DRAGON_TYPE, IafDragonColors.RED.toString());
+        builder.define(DRAGON_AGE, 0);
+        builder.define(OWNER_UNIQUE_ID, Optional.empty());
+        builder.define(LOCATION_VALID, false);
     }
 
     @Override
     public boolean isInvulnerableTo(DamageSource i) {
-        return i.getAttacker() != null && super.isInvulnerableTo(i);
+        return i.getEntity() != null && super.isInvulnerableTo(i);
     }
 
     public DragonColor getEggType() {
-        return DragonColor.getById(this.getDataTracker().get(DRAGON_TYPE));
+        return DragonColor.getById(this.getEntityData().get(DRAGON_TYPE));
     }
 
     public void setEggType(DragonColor color) {
-        this.getDataTracker().set(DRAGON_TYPE, color.getName());
+        this.getEntityData().set(DRAGON_TYPE, color.getName());
     }
 
     public int getDragonAge() {
-        return this.getDataTracker().get(DRAGON_AGE);
+        return this.getEntityData().get(DRAGON_AGE);
     }
 
     public void setDragonAge(int i) {
-        this.getDataTracker().set(DRAGON_AGE, i);
+        this.getEntityData().set(DRAGON_AGE, i);
     }
 
     public UUID getOwnerId() {
-        return this.dataTracker.get(OWNER_UNIQUE_ID).orElse(null);
+        return this.entityData.get(OWNER_UNIQUE_ID).orElse(null);
     }
 
     public void setOwnerId(UUID uuid) {
-        this.dataTracker.set(OWNER_UNIQUE_ID, Optional.ofNullable(uuid));
+        this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(uuid));
     }
 
     public boolean isLocationValid() {
-        return this.dataTracker.get(LOCATION_VALID);
+        return this.entityData.get(LOCATION_VALID);
     }
 
     public void setLocationValid(boolean valid) {
-        this.dataTracker.set(LOCATION_VALID, valid);
+        this.entityData.set(LOCATION_VALID, valid);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!this.getWorld().isClient && !this.isRemoved()) {
-            this.setAir(200);
+        if (!this.level().isClientSide() && !this.isRemoved()) {
+            this.setAirSupply(200);
             this.updateEggCondition();
         }
     }
@@ -148,21 +152,21 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
         DragonType dragonType = this.getEggType().getType();
         EggTicker ticker = TICKERS.get(dragonType);
         boolean hatched = this.getDragonAge() > IafCommonConfig.INSTANCE.dragon.eggBornTime.getValue();
-        if (ticker != null) this.setLocationValid(ticker.tick(this, this.getWorld(), this.getBlockPos(), hatched));
+        if (ticker != null) this.setLocationValid(ticker.tick(this, this.level(), this.blockPosition(), hatched));
 
         if (hatched) {
-            this.getWorld().setBlockState(this.getBlockPos(), Blocks.AIR.getDefaultState());
-            DragonBaseEntity dragon = dragonType.createEntity(this.getWorld());
+            this.level().setBlockAndUpdate(this.blockPosition(), Blocks.AIR.defaultBlockState());
+            DragonBaseEntity dragon = dragonType.createEntity(this.level());
             assert dragon != null;
             dragon.setVariant(this.getEggType().getName());
             dragon.setGender(this.getRandom().nextBoolean());
-            dragon.setPosition(this.getBlockPos().getX() + 0.5, this.getBlockPos().getY() + 1, this.getBlockPos().getZ() + 0.5);
+            dragon.setPos(this.blockPosition().getX() + 0.5, this.blockPosition().getY() + 1, this.blockPosition().getZ() + 0.5);
             dragon.setHunger(50);
-            if (!this.getWorld().isClient()) this.getWorld().spawnEntity(dragon);
+            if (!this.level().isClientSide()) this.level().addFreshEntity(dragon);
             if (this.hasCustomName()) dragon.setCustomName(this.getCustomName());
-            dragon.setTamed(true, true);
-            dragon.setOwnerUuid(this.getOwnerId());
-            this.getWorld().playSound(this.getX(), this.getY() + this.getStandingEyeHeight(), this.getZ(), IafSounds.EGG_HATCH.get(), this.getSoundCategory(), 2.5F, 1.0F, false);
+            dragon.setTame(true, true);
+            dragon.setOwnerUUID(this.getOwnerId());
+            this.level().playLocalSound(this.getX(), this.getY() + this.getEyeHeight(), this.getZ(), IafSounds.EGG_HATCH.get(), this.getSoundSource(), 2.5F, 1.0F, false);
             this.discard();
         }
     }
@@ -173,26 +177,26 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public Iterable<ItemStack> getArmorItems() {
+    public Iterable<ItemStack> getArmorSlots() {
         return ImmutableList.of();
     }
 
     @Override
-    public ItemStack getEquippedStack(EquipmentSlot slotIn) {
+    public ItemStack getItemBySlot(EquipmentSlot slotIn) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void equipStack(EquipmentSlot slotIn, ItemStack stack) {
+    public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {
 
     }
 
     @Override
-    public boolean damage(DamageSource var1, float var2) {
-        if (var1.isIn(DamageTypeTags.IS_FIRE) && this.getEggType().getType() == IafDragonTypes.FIRE)
+    public boolean hurt(DamageSource var1, float var2) {
+        if (var1.is(DamageTypeTags.IS_FIRE) && this.getEggType().getType() == IafDragonTypes.FIRE)
             return false;
-        if (!this.getWorld().isClient && !var1.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !this.isRemoved()) {
-            this.dropItem(this.getItem().getItem(), 1);
+        if (!this.level().isClientSide() && !var1.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !this.isRemoved()) {
+            this.spawnAtLocation(this.getItem().getItem(), 1);
         }
         this.remove(RemovalReason.KILLED);
         return true;
@@ -208,12 +212,12 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public Arm getMainArm() {
-        return Arm.RIGHT;
+    public HumanoidArm getMainArm() {
+        return HumanoidArm.RIGHT;
     }
 
     @Override
-    protected void pushAway(Entity entity) {
+    protected void doPush(Entity entity) {
     }
 
     @Override
@@ -221,8 +225,8 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
         return false;
     }
 
-    public void onPlayerPlace(PlayerEntity player) {
-        this.setOwnerId(player.getUuid());
+    public void onPlayerPlace(Player player) {
+        this.setOwnerId(player.getUUID());
     }
 
     @Override
@@ -239,14 +243,14 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
             boolean valid = BlockUtil.isBurning(world.getBlockState(pos));
             if (valid) entity.setDragonAge(entity.getDragonAge() + 1);
             if (hatched)
-                world.playSound(entity.getX(), entity.getY() + entity.getStandingEyeHeight(), entity.getZ(), SoundEvents.BLOCK_FIRE_EXTINGUISH, entity.getSoundCategory(), 2.5F, 1.0F, false);
+                world.playLocalSound(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ(), SoundEvents.FIRE_EXTINGUISH, entity.getSoundSource(), 2.5F, 1.0F, false);
             return valid;
         });
         register(IafDragonTypes.ICE, (entity, world, pos, hatched) -> {
             BlockState state = world.getBlockState(pos);
-            if (state.isOf(Blocks.WATER) && entity.getRandom().nextInt(500) == 0) {
-                world.setBlockState(pos, IafBlocks.EGG_IN_ICE.get().getDefaultState());
-                world.playSound(entity.getX(), entity.getY() + entity.getStandingEyeHeight(), entity.getZ(), SoundEvents.BLOCK_GLASS_BREAK, entity.getSoundCategory(), 2.5F, 1.0F, false);
+            if (state.is(Blocks.WATER) && entity.getRandom().nextInt(500) == 0) {
+                world.setBlockAndUpdate(pos, IafBlocks.EGG_IN_ICE.get().defaultBlockState());
+                world.playLocalSound(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ(), SoundEvents.GLASS_BREAK, entity.getSoundSource(), 2.5F, 1.0F, false);
                 if (world.getBlockEntity(pos) instanceof EggInIceBlockEntity eggInIce) {
                     eggInIce.type = entity.getEggType();
                     eggInIce.ownerUUID = entity.getOwnerId();
@@ -256,16 +260,16 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
             return false;
         });
         register(IafDragonTypes.LIGHTNING, (entity, world, pos, hatched) -> {
-            boolean isRainingAt = world.hasRain(pos) || world.hasRain(BlockPos.ofFloored(entity.getX(), entity.getY() + entity.getHeight(), entity.getZ()));
-            boolean valid = world.isSkyVisible(pos.up()) && isRainingAt;
+            boolean isRainingAt = world.isRainingAt(pos) || world.isRainingAt(BlockPos.containing(entity.getX(), entity.getY() + entity.getBbHeight(), entity.getZ()));
+            boolean valid = world.canSeeSky(pos.above()) && isRainingAt;
             if (valid) entity.setDragonAge(entity.getDragonAge() + 1);
             if (hatched) {
-                LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world);
+                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(world);
                 assert bolt != null;
-                bolt.setPosition(entity.getX(), entity.getY(), entity.getZ());
-                bolt.setCosmetic(true);
-                if (!world.isClient) world.spawnEntity(bolt);
-                world.playSound(entity.getX(), entity.getY() + entity.getStandingEyeHeight(), entity.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, entity.getSoundCategory(), 2.5F, 1.0F, false);
+                bolt.setPos(entity.getX(), entity.getY(), entity.getZ());
+                bolt.setVisualOnly(true);
+                if (!world.isClientSide()) world.addFreshEntity(bolt);
+                world.playLocalSound(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, entity.getSoundSource(), 2.5F, 1.0F, false);
             }
             return valid;
         });
@@ -273,6 +277,6 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
 
     @FunctionalInterface
     public interface EggTicker {
-        boolean tick(DragonEggEntity entity, World world, BlockPos pos, boolean hatched);
+        boolean tick(DragonEggEntity entity, Level world, BlockPos pos, boolean hatched);
     }
 }

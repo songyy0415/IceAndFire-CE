@@ -1,57 +1,57 @@
 package com.iafenvoy.iceandfire.item.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 
 public class ReturningStateBlock extends Block {
-    public static final BooleanProperty REVERTS = BooleanProperty.of("revert");
+    public static final BooleanProperty REVERTS = BooleanProperty.create("revert");
     private final BlockState returnState;
 
-    public ReturningStateBlock(Settings props, BlockState returnToState) {
+    public ReturningStateBlock(Properties props, BlockState returnToState) {
         super(props);
         this.returnState = returnToState;
-        this.setDefaultState(this.stateManager.getDefaultState().with(REVERTS, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));
     }
 
-    public static ReturningStateBlock builder(float hardness, float resistance, BlockSoundGroup sound, boolean slippery, MapColor color, NoteBlockInstrument instrument, PistonBehavior reaction, boolean ignited, BlockState returnToState) {
-        Settings props = Settings.create().mapColor(color).sounds(sound).strength(hardness, resistance).slipperiness(0.98F).ticksRandomly();
+    public static ReturningStateBlock builder(float hardness, float resistance, SoundType sound, boolean slippery, MapColor color, NoteBlockInstrument instrument, PushReaction reaction, boolean ignited, BlockState returnToState) {
+        Properties props = Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).friction(0.98F).randomTicks();
         if (instrument != null) props.instrument(instrument);
-        if (reaction != null) props.pistonBehavior(reaction);
-        if (ignited) props.burnable();
+        if (reaction != null) props.pushReaction(reaction);
+        if (ignited) props.ignitedByLava();
         return new ReturningStateBlock(props, returnToState);
     }
 
-    public static ReturningStateBlock builder(float hardness, float resistance, BlockSoundGroup sound, MapColor color, NoteBlockInstrument instrument, PistonBehavior reaction, boolean ignited, BlockState returnToState) {
-        Settings props = Settings.create().mapColor(color).sounds(sound).strength(hardness, resistance).ticksRandomly();
+    public static ReturningStateBlock builder(float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument, PushReaction reaction, boolean ignited, BlockState returnToState) {
+        Properties props = Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks();
         if (instrument != null) props.instrument(instrument);
-        if (reaction != null) props.pistonBehavior(reaction);
-        if (ignited) props.burnable();
+        if (reaction != null) props.pushReaction(reaction);
+        if (ignited) props.ignitedByLava();
         return new ReturningStateBlock(props, returnToState);
     }
 
     // FIXME :: Unused because isRandomlyTicking is not used -> The chunk check might be a performance problem anyway (and potentially not needed)
     @SuppressWarnings("deprecation")
     @Override
-    public void scheduledTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if (!worldIn.isClient) {
-            if (!worldIn.isRegionLoaded(pos.add(-3, -3, -3), pos.add(3, 3, 3)))
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
+        if (!worldIn.isClientSide()) {
+            if (!worldIn.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3)))
                 return;
-            if (state.get(REVERTS) && rand.nextInt(3) == 0)
-                worldIn.setBlockState(pos, this.returnState);
+            if (state.getValue(REVERTS) && rand.nextInt(3) == 0)
+                worldIn.setBlockAndUpdate(pos, this.returnState);
         }
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(REVERTS);
     }
 }

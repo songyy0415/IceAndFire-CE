@@ -2,90 +2,89 @@ package com.iafenvoy.iceandfire.item.tool;
 
 import com.iafenvoy.iceandfire.entity.TideTridentEntity;
 import com.iafenvoy.uranus.object.RegistryHelper;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.TridentItem;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class TideTridentItem extends TridentItem {
     public TideTridentItem() {
-        super(new Item.Settings().maxDamage(400).component(DataComponentTypes.ATTRIBUTE_MODIFIERS, createAttributeModifiers()));
+        super(new Item.Properties().durability(400).component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes()));
     }
 
-    public static AttributeModifiersComponent createAttributeModifiers() {
-        return AttributeModifiersComponent.builder()
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 12, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
-                .add(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -2.9F, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
+    public static ItemAttributeModifiers createAttributes() {
+        return ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 12, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -2.9F, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                 .build();
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World worldIn, LivingEntity user, int timeLeft) {
-        if (user instanceof PlayerEntity player) {
-            int time = this.getMaxUseTime(stack, user) - timeLeft;
+    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity user, int timeLeft) {
+        if (user instanceof Player player) {
+            int time = this.getUseDuration(stack, user) - timeLeft;
             if (time >= 10) {
-                int riptideLevel = EnchantmentHelper.getLevel(RegistryHelper.getEnchantment(worldIn.getRegistryManager(), Enchantments.RIPTIDE), stack);
-                if (riptideLevel <= 0 || player.isTouchingWaterOrRain()) {
-                    if (!worldIn.isClient) {
-                        stack.damage(1, player, LivingEntity.getSlotForHand(user.getActiveHand()));
+                int riptideLevel = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(worldIn.registryAccess(), Enchantments.RIPTIDE), stack);
+                if (riptideLevel <= 0 || player.isInWaterOrRain()) {
+                    if (!worldIn.isClientSide()) {
+                        stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(user.getUsedItemHand()));
                         if (riptideLevel == 0) {
                             TideTridentEntity tideTrident = new TideTridentEntity(worldIn, player, stack);
-                            tideTrident.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 2.5F + (float) riptideLevel * 0.5F, 1.0F);
-                            if (player.getAbilities().creativeMode)
-                                tideTrident.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
-                            worldIn.spawnEntity(tideTrident);
-                            worldIn.playSoundFromEntity(null, tideTrident, SoundEvents.ITEM_TRIDENT_THROW.value(), SoundCategory.PLAYERS, 1.0F, 1.0F);
-                            if (!player.getAbilities().creativeMode)
-                                player.getInventory().removeOne(stack);
+                            tideTrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float) riptideLevel * 0.5F, 1.0F);
+                            if (player.getAbilities().instabuild)
+                                tideTrident.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+                            worldIn.addFreshEntity(tideTrident);
+                            worldIn.playSound(null, tideTrident, SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                            if (!player.getAbilities().instabuild)
+                                player.getInventory().removeItem(stack);
                         }
                     }
 
-                    player.incrementStat(Stats.USED.getOrCreateStat(this));
+                    player.awardStat(Stats.ITEM_USED.get(this));
                     if (riptideLevel > 0) {
-                        float yaw = player.getYaw();
-                        float pitch = player.getPitch();
-                        float velocityX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-                        float velocityY = -MathHelper.sin(pitch * 0.017453292F);
-                        float velocityZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-                        float speed = MathHelper.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
+                        float yaw = player.getYRot();
+                        float pitch = player.getXRot();
+                        float velocityX = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+                        float velocityY = -Mth.sin(pitch * 0.017453292F);
+                        float velocityZ = Mth.cos(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+                        float speed = Mth.sqrt(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                         float targetSpeed = 3.0F * ((1.0F + (float) riptideLevel) / 4.0F);
                         velocityX *= targetSpeed / speed;
                         velocityY *= targetSpeed / speed;
                         velocityZ *= targetSpeed / speed;
-                        player.addVelocity(velocityX, velocityY, velocityZ);
-                        player.useRiptide(20, 8.0F, stack);
-                        if (player.isOnGround())
-                            player.move(MovementType.SELF, new Vec3d(0.0D, 1.1999999284744263D, 0.0D));
+                        player.push(velocityX, velocityY, velocityZ);
+                        player.startAutoSpinAttack(20, 8.0F, stack);
+                        if (player.onGround())
+                            player.move(MoverType.SELF, new Vec3(0.0D, 1.1999999284744263D, 0.0D));
 
-                        RegistryEntry<SoundEvent> sound;
-                        if (riptideLevel >= 3) sound = SoundEvents.ITEM_TRIDENT_RIPTIDE_3;
-                        else if (riptideLevel == 2) sound = SoundEvents.ITEM_TRIDENT_RIPTIDE_2;
-                        else sound = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
+                        Holder<SoundEvent> sound;
+                        if (riptideLevel >= 3) sound = SoundEvents.TRIDENT_RIPTIDE_3;
+                        else if (riptideLevel == 2) sound = SoundEvents.TRIDENT_RIPTIDE_2;
+                        else sound = SoundEvents.TRIDENT_RIPTIDE_1;
 
-                        worldIn.playSoundFromEntity(null, player, sound.value(), SoundCategory.PLAYERS, 1.0F, 1.0F);
+                        worldIn.playSound(null, player, sound.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
                     }
                 }
             }
@@ -93,10 +92,10 @@ public class TideTridentItem extends TridentItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.tide_trident.desc_0").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.tide_trident.desc_1").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, tooltip, type);
+        tooltip.add(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.iceandfire.tide_trident.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.iceandfire.tide_trident.desc_1").withStyle(ChatFormatting.GRAY));
     }
 }

@@ -81,3 +81,20 @@
 
 ### 参考
 - 26.2 官方验证：`ItemStackRenderState.submit`、`ItemModelResolver.updateForLiving`、`EntityRenderDispatcher.extractEntity/submit`、`ITabulaModelAnimator<T extends LivingEntityRenderState>`。
+
+---
+
+## SeaSerpent Renderer + Animator ✅
+
+### 修改文件
+- `render/entity/state/SeaSerpentRenderState.java`（新增）：texture/blinking/isAncient/seaSerpentScale/swimCycle/jumpProgress/wantJumpProgress/breathProgress/jumpRot/prevJumpRot/yBodyRot/yBodyRotO/deltaMovementY/isInWater/isJumpingOutOfWater/pieceYaw[4]/piecePitch[4] + IAnimatedEntity
+- `render/model/animator/SeaSerpentTabulaModelAnimator.java`：泛型 → `SeaSerpentRenderState`；`setRotationAngles(model, state, …)`；`getTimer`→`getDeltaTracker`；pieceYaw/piecePitch/deltaMovement 读 state 数组
+- `render/entity/SeaSerpentEntityRenderer.java`：`MobRenderer<SeaSerpentEntity, SeaSerpentRenderState, TabulaModel<SeaSerpentRenderState>>` + extract 全量快照 + `scale(state)`/`getTextureLocation(state)`；`SEA_SERPENT_TYPE.get(...).orElseThrow().value()`
+- `render/entity/feature/SeaSerpentAncientFeatureRenderer.java`：`RenderLayer<SeaSerpentRenderState, TabulaModel<SeaSerpentRenderState>>` + submit（`RenderTypes.entityCutout` + submitModel）
+
+### 错误变化（SeaSerpent）
+- SeaSerpentTabulaModelAnimator 18→0；SeaSerpentEntityRenderer 4→0；AncientFeature 20→0；新增 0
+- javac：1,918 → **1,889**；unique：1,676 → **1,653**
+
+### 未处理
+- **LightningDragonEntityRenderer**（6 错误）：闪电渲染 `render/misc/LightningRenderer` + `LightningBoltData` 用旧 `MultiBufferSource`，需 render/misc 闪电渲染 26.2 submit 管线专项（独立子任务）。

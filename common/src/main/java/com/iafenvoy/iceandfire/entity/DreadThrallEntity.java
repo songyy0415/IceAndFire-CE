@@ -11,142 +11,155 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHasArmorVariant {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
-    private static final TrackedData<Boolean> CUSTOM_ARMOR_HEAD = DataTracker.registerData(DreadThrallEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> CUSTOM_ARMOR_CHEST = DataTracker.registerData(DreadThrallEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> CUSTOM_ARMOR_LEGS = DataTracker.registerData(DreadThrallEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> CUSTOM_ARMOR_FEET = DataTracker.registerData(DreadThrallEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Integer> CUSTOM_ARMOR_INDEX = DataTracker.registerData(DreadThrallEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final EntityDataAccessor<Boolean> CUSTOM_ARMOR_HEAD = SynchedEntityData.defineId(DreadThrallEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> CUSTOM_ARMOR_CHEST = SynchedEntityData.defineId(DreadThrallEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> CUSTOM_ARMOR_LEGS = SynchedEntityData.defineId(DreadThrallEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> CUSTOM_ARMOR_FEET = SynchedEntityData.defineId(DreadThrallEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> CUSTOM_ARMOR_INDEX = SynchedEntityData.defineId(DreadThrallEntity.class, EntityDataSerializers.INT);
     private int animationTick;
     private Animation currentAnimation;
 
-    public DreadThrallEntity(EntityType<? extends DreadThrallEntity> type, World worldIn) {
+    public DreadThrallEntity(EntityType<? extends DreadThrallEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
+    public static AttributeSupplier.Builder bakeAttributes() {
         return createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
+                .add(Attributes.MAX_HEALTH, 20.0D)
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D)
+                .add(Attributes.MOVEMENT_SPEED, 0.2D)
                 //ATTACK
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0D)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D)
                 //FOLLOW RANGE
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 128.0D)
+                .add(Attributes.FOLLOW_RANGE, 128.0D)
                 //ARMOR
-                .add(EntityAttributes.GENERIC_ARMOR, 2.0D);
+                .add(Attributes.ARMOR, 2.0D);
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(7, new LookAroundGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this, IDreadMob.class));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
-        this.targetSelector.add(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, IDreadMob.class));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
+        this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(CUSTOM_ARMOR_INDEX, 0);
-        builder.add(CUSTOM_ARMOR_HEAD, Boolean.FALSE);
-        builder.add(CUSTOM_ARMOR_CHEST, Boolean.FALSE);
-        builder.add(CUSTOM_ARMOR_LEGS, Boolean.FALSE);
-        builder.add(CUSTOM_ARMOR_FEET, Boolean.FALSE);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(CUSTOM_ARMOR_INDEX, 0);
+        builder.define(CUSTOM_ARMOR_HEAD, Boolean.FALSE);
+        builder.define(CUSTOM_ARMOR_CHEST, Boolean.FALSE);
+        builder.define(CUSTOM_ARMOR_LEGS, Boolean.FALSE);
+        builder.define(CUSTOM_ARMOR_FEET, Boolean.FALSE);
     }
 
     @Override
-    public void tickMovement() {
-        super.tickMovement();
+    public void aiStep() {
+        super.aiStep();
         if (this.getAnimation() == ANIMATION_SPAWN && this.getAnimationTick() < 30) {
-            BlockState belowBlock = this.getWorld().getBlockState(this.getBlockPos().down());
+            BlockState belowBlock = this.level().getBlockState(this.blockPosition().below());
             if (belowBlock.getBlock() != Blocks.AIR) {
                 for (int i = 0; i < 5; i++) {
-                    this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, belowBlock), this.getX() + (double) (this.random.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.getBoundingBox().minY, this.getZ() + (double) (this.random.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
+                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, belowBlock), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getBoundingBox().minY, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
                 }
             }
-            this.setVelocity(0, this.getVelocity().y, 0);
+            this.setDeltaMovement(0, this.getDeltaMovement().y, 0);
         }
-        if (this.getMainHandStack().getItem() == Items.BOW) {
-            this.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.BONE));
+        if (this.getMainHandItem().getItem() == Items.BOW) {
+            this.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BONE));
         }
         AnimationHandler.INSTANCE.updateAnimations(this);
     }
 
     @Override
-    protected void initEquipment(Random randomSource, LocalDifficulty difficulty) {
-        super.initEquipment(randomSource, difficulty);
+    protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
+        super.populateDefaultEquipmentSlots(randomSource, difficulty);
         if (this.random.nextFloat() < 0.75F) {
             double chance = this.random.nextFloat();
             if (chance < 0.0025F) {
-                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DRAGONSTEEL_ICE_SWORD.get()));
+                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DRAGONSTEEL_ICE_SWORD.get()));
             }
             if (chance < 0.01F) {
-                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
+                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
             }
             if (chance < 0.1F) {
-                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
             }
             if (chance < 0.75F) {
-                this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DREAD_SWORD.get()));
+                this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DREAD_SWORD.get()));
             }
         }
         if (this.random.nextFloat() < 0.75F) {
-            this.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.CHAINMAIL_HELMET));
+            this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CHAINMAIL_HELMET));
             this.setCustomArmorHead(this.random.nextInt(8) != 0);
         }
         if (this.random.nextFloat() < 0.75F) {
-            this.equipStack(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+            this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
             this.setCustomArmorChest(this.random.nextInt(8) != 0);
         }
         if (this.random.nextFloat() < 0.75F) {
-            this.equipStack(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
+            this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
             this.setCustomArmorLegs(this.random.nextInt(8) != 0);
         }
         if (this.random.nextFloat() < 0.75F) {
-            this.equipStack(EquipmentSlot.FEET, new ItemStack(Items.CHAINMAIL_BOOTS));
+            this.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.CHAINMAIL_BOOTS));
             this.setCustomArmorFeet(this.random.nextInt(8) != 0);
         }
         this.setBodyArmorVariant(this.random.nextInt(8));
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess worldIn, LocalDifficulty difficultyIn, SpawnReason reason, EntityData spawnDataIn) {
-        EntityData data = super.initialize(worldIn, difficultyIn, reason, spawnDataIn);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
+        SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
-        this.initEquipment(worldIn.getRandom(), difficultyIn);
+        this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
         return data;
     }
 
@@ -161,8 +174,8 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound compound) {
-        super.writeCustomDataToNbt(compound);
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("ArmorVariant", this.getBodyArmorVariant());
         compound.putBoolean("HasCustomHelmet", this.hasCustomArmorHead());
         compound.putBoolean("HasCustomChestplate", this.hasCustomArmorChest());
@@ -171,8 +184,8 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound compound) {
-        super.readCustomDataFromNbt(compound);
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
         this.setBodyArmorVariant(compound.getInt("ArmorVariant"));
         this.setCustomArmorHead(compound.getBoolean("HasCustomHelmet"));
         this.setCustomArmorChest(compound.getBoolean("HasCustomChestplate"));
@@ -191,45 +204,45 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     }
 
     public boolean hasCustomArmorHead() {
-        return this.dataTracker.get(CUSTOM_ARMOR_HEAD);
+        return this.entityData.get(CUSTOM_ARMOR_HEAD);
     }
 
     public void setCustomArmorHead(boolean head) {
-        this.dataTracker.set(CUSTOM_ARMOR_HEAD, head);
+        this.entityData.set(CUSTOM_ARMOR_HEAD, head);
     }
 
     public boolean hasCustomArmorChest() {
-        return this.dataTracker.get(CUSTOM_ARMOR_CHEST);
+        return this.entityData.get(CUSTOM_ARMOR_CHEST);
     }
 
     public void setCustomArmorChest(boolean head) {
-        this.dataTracker.set(CUSTOM_ARMOR_CHEST, head);
+        this.entityData.set(CUSTOM_ARMOR_CHEST, head);
     }
 
     public boolean hasCustomArmorLegs() {
-        return this.dataTracker.get(CUSTOM_ARMOR_LEGS);
+        return this.entityData.get(CUSTOM_ARMOR_LEGS);
     }
 
     public void setCustomArmorLegs(boolean head) {
-        this.dataTracker.set(CUSTOM_ARMOR_LEGS, head);
+        this.entityData.set(CUSTOM_ARMOR_LEGS, head);
     }
 
     public boolean hasCustomArmorFeet() {
-        return this.dataTracker.get(CUSTOM_ARMOR_FEET);
+        return this.entityData.get(CUSTOM_ARMOR_FEET);
     }
 
     public void setCustomArmorFeet(boolean head) {
-        this.dataTracker.set(CUSTOM_ARMOR_FEET, head);
+        this.entityData.set(CUSTOM_ARMOR_FEET, head);
     }
 
     @Override
     public int getBodyArmorVariant() {
-        return this.dataTracker.get(CUSTOM_ARMOR_INDEX);
+        return this.entityData.get(CUSTOM_ARMOR_INDEX);
     }
 
     @Override
     public void setBodyArmorVariant(int variant) {
-        this.dataTracker.set(CUSTOM_ARMOR_INDEX, variant);
+        this.entityData.set(CUSTOM_ARMOR_INDEX, variant);
     }
 
     @Override
@@ -244,21 +257,21 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_STRAY_AMBIENT;
+        return SoundEvents.STRAY_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_STRAY_HURT;
+        return SoundEvents.STRAY_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_STRAY_DEATH;
+        return SoundEvents.STRAY_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn) {
-        this.playSound(SoundEvents.ENTITY_STRAY_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.STRAY_STEP, 0.15F, 1.0F);
     }
 
 }

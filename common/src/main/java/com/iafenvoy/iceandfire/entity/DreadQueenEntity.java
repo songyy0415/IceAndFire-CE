@@ -9,61 +9,74 @@ import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
+
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.BossEvent;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 
 public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
-    private final ServerBossBar bossInfo = new ServerBossBar(this.getDisplayName(), BossBar.Color.BLUE, BossBar.Style.PROGRESS);
+    private final ServerBossEvent bossInfo = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
     private int animationTick;
     private Animation currentAnimation;
 
-    public DreadQueenEntity(EntityType<? extends DreadQueenEntity> t, World worldIn) {
+    public DreadQueenEntity(EntityType<? extends DreadQueenEntity> t, Level worldIn) {
         super(t, worldIn);
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
+    public static AttributeSupplier.Builder bakeAttributes() {
         return createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, IafCommonConfig.INSTANCE.misc.dreadQueenMaxHealth.getValue())
+                .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.misc.dreadQueenMaxHealth.getValue())
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3D)
+                .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 //ATTACK
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0D)
+                .add(Attributes.ATTACK_DAMAGE, 5.0D)
                 //FOLLOW RANGE
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 256.0D)
+                .add(Attributes.FOLLOW_RANGE, 256.0D)
                 //ARMOR
-                .add(EntityAttributes.GENERIC_ARMOR, 30.0D);
+                .add(Attributes.ARMOR, 30.0D);
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(7, new LookAroundGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
-        this.targetSelector.add(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
+        this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound compound) {
-        super.readCustomDataFromNbt(compound);
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
 
         if (this.hasCustomName()) {
             this.bossInfo.setName(this.getDisplayName());
@@ -71,44 +84,44 @@ public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    protected void mobTick() {
-        super.mobTick();
-        this.bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        this.bossInfo.setProgress(this.getHealth() / this.getMaxHealth());
     }
 
     @Override
-    public void setCustomName(Text name) {
+    public void setCustomName(Component name) {
         super.setCustomName(name);
         this.bossInfo.setName(this.getDisplayName());
     }
 
 
     @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
+    public void startSeenByPlayer(ServerPlayer player) {
+        super.startSeenByPlayer(player);
         this.bossInfo.addPlayer(player);
     }
 
     @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity player) {
-        super.onStoppedTrackingBy(player);
+    public void stopSeenByPlayer(ServerPlayer player) {
+        super.stopSeenByPlayer(player);
         this.bossInfo.removePlayer(player);
     }
 
 
     @Override
-    public EntityData initialize(ServerWorldAccess worldIn, LocalDifficulty difficultyIn, SpawnReason reason, EntityData spawnDataIn) {
-        EntityData data = super.initialize(worldIn, difficultyIn, reason, spawnDataIn);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
+        SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
-        this.initEquipment(worldIn.getRandom(), difficultyIn);
+        this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
         return data;
     }
 
     @Override
-    protected void initEquipment(Random pRandom, LocalDifficulty pDifficulty) {
-        super.initEquipment(pRandom, pDifficulty);
-        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DREAD_QUEEN_SWORD.get()));
-        this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(IafItems.DREAD_QUEEN_STAFF.get()));
+    protected void populateDefaultEquipmentSlots(RandomSource pRandom, DifficultyInstance pDifficulty) {
+        super.populateDefaultEquipmentSlots(pRandom, pDifficulty);
+        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DREAD_QUEEN_SWORD.get()));
+        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(IafItems.DREAD_QUEEN_STAFF.get()));
     }
 
     @Override
@@ -142,12 +155,12 @@ public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public boolean isPersistent() {
+    public boolean isPersistenceRequired() {
         return true;
     }
 
     @Override
-    public boolean canImmediatelyDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 }

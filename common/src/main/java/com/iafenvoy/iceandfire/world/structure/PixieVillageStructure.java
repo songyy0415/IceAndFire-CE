@@ -9,69 +9,68 @@ import com.iafenvoy.iceandfire.registry.IafStructurePieces;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructurePiece;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.structure.Structure;
-import net.minecraft.world.gen.structure.StructureType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 
 public class PixieVillageStructure extends Structure {
     public static final MapCodec<PixieVillageStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(configCodecBuilder(instance)).apply(instance, PixieVillageStructure::new));
+            instance.group(settingsCodec(instance)).apply(instance, PixieVillageStructure::new));
 
-    protected PixieVillageStructure(Config config) {
+    protected PixieVillageStructure(StructureSettings config) {
         super(config);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected Optional<StructurePosition> getStructurePosition(Context context) {
+    protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generatePixieVillageChance.getValue())
             return Optional.empty();
-        BlockRotation blockRotation = BlockRotation.random(context.random());
-        BlockPos blockPos = this.getShiftedPos(context, blockRotation);
-        return Optional.of(new StructurePosition(blockPos, collector -> collector.addPiece(new PixieVillagePiece(0, new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ())))));
+        Rotation blockRotation = Rotation.getRandom(context.random());
+        BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
+        return Optional.of(new GenerationStub(blockPos, collector -> collector.addPiece(new PixieVillagePiece(0, new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ())))));
     }
 
     @Override
-    public StructureType<?> getType() {
+    public StructureType<?> type() {
         return IafStructureTypes.PIXIE_VILLAGE.get();
     }
 
     public static class PixieVillagePiece extends StructurePiece {
 
-        protected PixieVillagePiece(int length, BlockBox boundingBox) {
+        protected PixieVillagePiece(int length, BoundingBox boundingBox) {
             super(IafStructurePieces.PIXIE_VILLAGE.get(), length, boundingBox);
         }
 
-        public PixieVillagePiece(StructureContext context, NbtCompound nbt) {
+        public PixieVillagePiece(StructurePieceSerializationContext context, CompoundTag nbt) {
             super(IafStructurePieces.PIXIE_VILLAGE.get(), nbt);
         }
 
         @Override
-        protected void writeNbt(StructureContext context, NbtCompound nbt) {
+        protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag nbt) {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
+        public void postProcess(WorldGenLevel world, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
+            if (!chunkBox.isInside(pivot))
                 return;
 
             int maxRoads = IafCommonConfig.INSTANCE.pixie.size.getValue() + random.nextInt(5);
@@ -80,53 +79,53 @@ public class PixieVillageStructure extends Structure {
             List<BlockPos> posesInBB = new ArrayList<BlockPos>();
             while (placedRoads < maxRoads) {
                 int roadLength = 10 + random.nextInt(15);
-                Direction buildingDirection = Direction.fromHorizontal(random.nextInt(3));
+                Direction buildingDirection = Direction.from2DDataValue(random.nextInt(3));
                 for (int i = 0; i < roadLength; i++) {
-                    BlockPos buildPosition2 = buildPosition.offset(buildingDirection, i);
-                    buildPosition2 = world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, buildPosition2).down();
-                    if (chunkBox.expand(16, 0, 16).contains(buildPosition2))
+                    BlockPos buildPosition2 = buildPosition.relative(buildingDirection, i);
+                    buildPosition2 = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, buildPosition2).below();
+                    if (chunkBox.inflatedBy(16, 0, 16).isInside(buildPosition2))
                         posesInBB.add(buildPosition2);
                     if (world.getBlockState(buildPosition2).getFluidState().isEmpty()) {
-                        world.setBlockState(buildPosition2, Blocks.DIRT_PATH.getDefaultState(), 2);
+                        world.setBlock(buildPosition2, Blocks.DIRT_PATH.defaultBlockState(), 2);
                     } else {
-                        world.setBlockState(buildPosition2, Blocks.SPRUCE_PLANKS.getDefaultState(), 2);
+                        world.setBlock(buildPosition2, Blocks.SPRUCE_PLANKS.defaultBlockState(), 2);
                     }
                     if (random.nextInt(8) == 0) {
-                        Direction houseDir = random.nextBoolean() ? buildingDirection.rotateYClockwise() : buildingDirection.rotateYCounterclockwise();
+                        Direction houseDir = random.nextBoolean() ? buildingDirection.getClockWise() : buildingDirection.getCounterClockWise();
                         int houseColor = random.nextInt(5);
                         BlockState houseState = switch (houseColor) {
                             case 0 ->
-                                    IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get().getDefaultState().with(PixieHouseBlock.FACING, houseDir.getOpposite());
+                                    IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             case 1 ->
-                                    IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get().getDefaultState().with(PixieHouseBlock.FACING, houseDir.getOpposite());
+                                    IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             case 2 ->
-                                    IafBlocks.PIXIE_HOUSE_OAK.get().getDefaultState().with(PixieHouseBlock.FACING, houseDir.getOpposite());
+                                    IafBlocks.PIXIE_HOUSE_OAK.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             case 3 ->
-                                    IafBlocks.PIXIE_HOUSE_BIRCH.get().getDefaultState().with(PixieHouseBlock.FACING, houseDir.getOpposite());
+                                    IafBlocks.PIXIE_HOUSE_BIRCH.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             case 4 ->
-                                    IafBlocks.PIXIE_HOUSE_SPRUCE.get().getDefaultState().with(PixieHouseBlock.FACING, houseDir.getOpposite());
+                                    IafBlocks.PIXIE_HOUSE_SPRUCE.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             case 5 ->
-                                    IafBlocks.PIXIE_HOUSE_DARK_OAK.get().getDefaultState().with(PixieHouseBlock.FACING, houseDir.getOpposite());
-                            default -> IafBlocks.PIXIE_HOUSE_OAK.get().getDefaultState();
+                                    IafBlocks.PIXIE_HOUSE_DARK_OAK.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
+                            default -> IafBlocks.PIXIE_HOUSE_OAK.get().defaultBlockState();
                         };
-                        PixieEntity pixie = IafEntities.PIXIE.get().create(world.toServerWorld());
+                        PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel());
                         assert pixie != null;
-                        pixie.initialize(world, world.getLocalDifficulty(buildPosition2.up()), SpawnReason.SPAWNER, null);
-                        pixie.setPosition(buildPosition2.getX(), buildPosition2.getY() + 2, buildPosition2.getZ());
-                        pixie.setPersistent();
-                        world.spawnEntity(pixie);
+                        pixie.finalizeSpawn(world, world.getCurrentDifficultyAt(buildPosition2.above()), EntitySpawnReason.SPAWNER, null);
+                        pixie.setPos(buildPosition2.getX(), buildPosition2.getY() + 2, buildPosition2.getZ());
+                        pixie.setPersistenceRequired();
+                        world.addFreshEntity(pixie);
 
-                        world.setBlockState(buildPosition2.offset(houseDir).up(), houseState, 2);
-                        if (!world.getBlockState(buildPosition2.offset(houseDir)).isOpaque()) {
-                            world.setBlockState(buildPosition2.offset(houseDir), Blocks.COARSE_DIRT.getDefaultState(), 2);
-                            world.setBlockState(buildPosition2.offset(houseDir).down(), Blocks.COARSE_DIRT.getDefaultState(), 2);
+                        world.setBlock(buildPosition2.relative(houseDir).above(), houseState, 2);
+                        if (!world.getBlockState(buildPosition2.relative(houseDir)).canOcclude()) {
+                            world.setBlock(buildPosition2.relative(houseDir), Blocks.COARSE_DIRT.defaultBlockState(), 2);
+                            world.setBlock(buildPosition2.relative(houseDir).below(), Blocks.COARSE_DIRT.defaultBlockState(), 2);
                         }
                     }
                 }
-                buildPosition = buildPosition.offset(buildingDirection, random.nextInt(roadLength));
+                buildPosition = buildPosition.relative(buildingDirection, random.nextInt(roadLength));
                 placedRoads++;
             }
-            super.boundingBox = BlockBox.encompassPositions(posesInBB).orElseGet(super::getBoundingBox).expand(0, 2, 0);
+            super.boundingBox = BoundingBox.encapsulatingPositions(posesInBB).orElseGet(super::getBoundingBox).inflatedBy(0, 2, 0);
         }
     }
 }

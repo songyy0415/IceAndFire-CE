@@ -14,7 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
@@ -38,7 +38,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             DreadScuttlerEntity lichSummoned = new DreadScuttlerEntity(IafEntities.DREAD_SCUTTLER.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 1.5F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }
@@ -46,14 +46,14 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             DreadGhoulEntity lichSummoned = new DreadGhoulEntity(IafEntities.DREAD_GHOUL.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 0.6F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }
         if (entity.getType().is(EntityTypeTags.UNDEAD) || entity instanceof AbstractSkeleton || entity instanceof Player) {
             DreadThrallEntity lichSummoned = new DreadThrallEntity(IafEntities.DREAD_THRALL.get(), entity.level());
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess) {
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             }
             lichSummoned.setCustomArmorHead(false);
             lichSummoned.setCustomArmorChest(false);
@@ -69,7 +69,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             DreadBeastEntity lichSummoned = new DreadBeastEntity(IafEntities.DREAD_BEAST.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 1.2F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }

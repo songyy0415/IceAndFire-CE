@@ -1,67 +1,65 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafParticles;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.Monster;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ShieldItem;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
 
-public class DreadLichSkullEntity extends PersistentProjectileEntity {
-    public DreadLichSkullEntity(EntityType<? extends PersistentProjectileEntity> type, World worldIn) {
+public class DreadLichSkullEntity extends AbstractArrow {
+    public DreadLichSkullEntity(EntityType<? extends AbstractArrow> type, Level worldIn) {
         super(type, worldIn);
-        this.setDamage(6F);
+        this.setBaseDamage(6F);
     }
 
-    public DreadLichSkullEntity(EntityType<? extends PersistentProjectileEntity> type, World worldIn, LivingEntity shooter, double dmg) {
+    public DreadLichSkullEntity(EntityType<? extends AbstractArrow> type, Level worldIn, LivingEntity shooter, double dmg) {
         super(type, worldIn);
         this.setOwner(shooter);
-        this.setDamage(dmg);
+        this.setBaseDamage(dmg);
     }
 
     @Override
-    public boolean isTouchingWater() {
+    public boolean isInWater() {
         return false;
     }
 
     @Override
     public void tick() {
-        float sqrt = MathHelper.sqrt((float) (this.getVelocity().x * this.getVelocity().x + this.getVelocity().z * this.getVelocity().z));
-        if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.inGround) && this.age > 5)
+        float sqrt = Mth.sqrt((float) (this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z));
+        if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.inGround) && this.tickCount > 5)
             this.remove(RemovalReason.DISCARDED);
         Entity shootingEntity = this.getOwner();
-        if (shootingEntity instanceof MobEntity mob && mob.getTarget() != null) {
+        if (shootingEntity instanceof Mob mob && mob.getTarget() != null) {
             LivingEntity target = mob.getTarget();
             double minusX = target.getX() - this.getX();
             double minusY = target.getY() - this.getY();
             double minusZ = target.getZ() - this.getZ();
             double speed = 0.15D;
-            this.setVelocity(this.getVelocity().add(minusX * speed * 0.1D, minusY * speed * 0.1D, minusZ * speed * 0.1D));
+            this.setDeltaMovement(this.getDeltaMovement().add(minusX * speed * 0.1D, minusY * speed * 0.1D, minusZ * speed * 0.1D));
         }
-        if (shootingEntity instanceof PlayerEntity player) {
-            LivingEntity target = player.getPrimeAdversary();
+        if (shootingEntity instanceof Player player) {
+            LivingEntity target = player.getKillCredit();
             if (target == null || !target.isAlive()) {
                 double d0 = 10;
-                List<Entity> list = this.getWorld().getOtherEntities(shootingEntity, (new Box(this.getX(), this.getY(), this.getZ(), this.getX() + 1.0D, this.getY() + 1.0D, this.getZ() + 1.0D)).expand(d0, 10.0D, d0), EntityPredicates.VALID_ENTITY);
+                List<Entity> list = this.level().getEntities(shootingEntity, (new AABB(this.getX(), this.getY(), this.getZ(), this.getX() + 1.0D, this.getY() + 1.0D, this.getZ() + 1.0D)).inflate(d0, 10.0D, d0), EntitySelector.ENTITY_STILL_ALIVE);
                 LivingEntity closest = null;
                 if (!list.isEmpty()) {
                     for (Entity e : list) {
-                        if (e instanceof LivingEntity living && !e.getUuid().equals(shootingEntity.getUuid()) && e instanceof Monster) {
+                        if (e instanceof LivingEntity living && !e.getUUID().equals(shootingEntity.getUUID()) && e instanceof Enemy) {
                             if (closest == null || closest.distanceTo(shootingEntity) > e.distanceTo(shootingEntity)) {
                                 closest = living;
                             }
@@ -72,23 +70,23 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
             }
             if (target != null && target.isAlive()) {
                 double minusX = target.getX() - this.getX();
-                double minusY = target.getY() + target.getStandingEyeHeight() - this.getY();
+                double minusY = target.getY() + target.getEyeHeight() - this.getY();
                 double minusZ = target.getZ() - this.getZ();
                 double speed = 0.25D * Math.min(this.distanceTo(target), 10D) / 10D;
-                this.setVelocity(this.getVelocity().add((Math.signum(minusX) * 0.5D - this.getVelocity().x) * 0.10000000149011612D, (Math.signum(minusY) * 0.5D - this.getVelocity().y) * 0.10000000149011612D, (Math.signum(minusZ) * 0.5D - this.getVelocity().z) * 0.10000000149011612D));
-                this.setYaw((float) (MathHelper.atan2(this.getVelocity().x, this.getVelocity().z) * (180D / Math.PI)));
-                this.setPitch((float) (MathHelper.atan2(this.getVelocity().y, sqrt) * (180D / Math.PI)));
+                this.setDeltaMovement(this.getDeltaMovement().add((Math.signum(minusX) * 0.5D - this.getDeltaMovement().x) * 0.10000000149011612D, (Math.signum(minusY) * 0.5D - this.getDeltaMovement().y) * 0.10000000149011612D, (Math.signum(minusZ) * 0.5D - this.getDeltaMovement().z) * 0.10000000149011612D));
+                this.setYRot((float) (Mth.atan2(this.getDeltaMovement().x, this.getDeltaMovement().z) * (180D / Math.PI)));
+                this.setXRot((float) (Mth.atan2(this.getDeltaMovement().y, sqrt) * (180D / Math.PI)));
             }
         }
         double d0 = 0;
         double d1 = 0.01D;
         double d2 = 0D;
-        double x = this.getX() + this.random.nextFloat() * this.getWidth() * 2.0F - this.getWidth();
-        double y = this.getY() + this.random.nextFloat() * this.getHeight() - this.getHeight();
-        double z = this.getZ() + this.random.nextFloat() * this.getWidth() * 2.0F - this.getWidth();
-        float f = (this.getWidth() + this.getHeight() + this.getWidth()) * 0.333F + 0.5F;
+        double x = this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
+        double y = this.getY() + this.random.nextFloat() * this.getBbHeight() - this.getBbHeight();
+        double z = this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
+        float f = (this.getBbWidth() + this.getBbHeight() + this.getBbWidth()) * 0.333F + 0.5F;
         if (this.particleDistSq(x, y, z) < f * f)
-            this.getWorld().addParticle(IafParticles.DREAD_TORCH.get(), x, y + 0.5D, z, d0, d1, d2);
+            this.level().addParticle(IafParticles.DREAD_TORCH.get(), x, y + 0.5D, z, d0, d1, d2);
         super.tick();
     }
 
@@ -101,47 +99,47 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
 
     @Override
     public void playSound(SoundEvent soundIn, float volume, float pitch) {
-        if (!this.isSilent() && soundIn != SoundEvents.ENTITY_ARROW_HIT && soundIn != SoundEvents.ENTITY_ARROW_HIT_PLAYER) {
-            this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), soundIn, this.getSoundCategory(), volume, pitch);
+        if (!this.isSilent() && soundIn != SoundEvents.ARROW_HIT && soundIn != SoundEvents.ARROW_HIT_PLAYER) {
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), soundIn, this.getSoundSource(), volume, pitch);
         }
     }
 
     @Override
-    protected void onEntityHit(EntityHitResult raytraceResultIn) {
+    protected void onHitEntity(EntityHitResult raytraceResultIn) {
         Entity entity = raytraceResultIn.getEntity();
         Entity shootingEntity = this.getOwner();
-        if (entity != null && shootingEntity != null && entity.isTeammate(shootingEntity)) return;
-        super.onEntityHit(raytraceResultIn);
+        if (entity != null && shootingEntity != null && entity.isAlliedTo(shootingEntity)) return;
+        super.onHitEntity(raytraceResultIn);
     }
 
     @Override
-    protected void onHit(LivingEntity living) {
-        super.onHit(living);
+    protected void doPostHurtEffects(LivingEntity living) {
+        super.doPostHurtEffects(living);
         Entity shootingEntity = this.getOwner();
-        if (living != null && (shootingEntity == null || !living.isPartOf(shootingEntity)))
-            if (living instanceof PlayerEntity player)
-                this.damageShield(player, (float) this.getDamage());
+        if (living != null && (shootingEntity == null || !living.is(shootingEntity)))
+            if (living instanceof Player player)
+                this.damageShield(player, (float) this.getBaseDamage());
     }
 
     @Override
-    protected ItemStack getDefaultItemStack() {
+    protected ItemStack getDefaultPickupItem() {
         return new ItemStack(Items.ARROW);
     }
 
-    protected void damageShield(PlayerEntity player, float damage) {
-        if (damage >= 3.0F && player.getActiveItem().getItem() instanceof ShieldItem) {
-            int i = 1 + MathHelper.floor(damage);
-            player.getActiveItem().damage(i, player, LivingEntity.getSlotForHand(player.getActiveHand()));
+    protected void damageShield(Player player, float damage) {
+        if (damage >= 3.0F && player.getUseItem().getItem() instanceof ShieldItem) {
+            int i = 1 + Mth.floor(damage);
+            player.getUseItem().hurtAndBreak(i, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
 
-            if (player.getActiveItem().isEmpty()) {
-                player.clearActiveItem();
-                this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.getWorld().random.nextFloat() * 0.4F);
+            if (player.getUseItem().isEmpty()) {
+                player.stopUsingItem();
+                this.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
             }
         }
     }
 
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return true;
     }
 }

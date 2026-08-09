@@ -41,7 +41,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -247,7 +247,7 @@ public final class ServerEvents {
                         assert ghost != null;
                         ghost.copyPosition(entity);
                         if (world instanceof ServerLevelAccessor serverWorldAccess) {
-                            ghost.finalizeSpawn(serverWorldAccess, world.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null);
+                            ghost.finalizeSpawn(serverWorldAccess, world.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null);
                             world.addFreshEntity(ghost);
                         }
                         ghost.setDaytimeMode(true);

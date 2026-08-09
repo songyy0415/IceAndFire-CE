@@ -4,24 +4,24 @@ import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.util.dragon.IDragonProjectile;
 import com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager;
 import com.iafenvoy.iceandfire.registry.IafDamageTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.AbstractFireballEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
+import net.minecraft.world.level.Level;
 
 public class LightningDragonChargeEntity extends DragonChargeEntity implements IDragonProjectile {
-    public LightningDragonChargeEntity(EntityType<? extends AbstractFireballEntity> type, World worldIn) {
+    public LightningDragonChargeEntity(EntityType<? extends Fireball> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public LightningDragonChargeEntity(EntityType<? extends AbstractFireballEntity> type, World worldIn, double posX,
+    public LightningDragonChargeEntity(EntityType<? extends Fireball> type, Level worldIn, double posX,
                                        double posY, double posZ, double accelX, double accelY, double accelZ) {
         super(type, worldIn, posX, posY, posZ, accelX, accelY, accelZ);
     }
 
-    public LightningDragonChargeEntity(EntityType<? extends AbstractFireballEntity> type, World worldIn,
+    public LightningDragonChargeEntity(EntityType<? extends Fireball> type, Level worldIn,
                                        DragonBaseEntity shooter, double accelX, double accelY, double accelZ) {
         super(type, worldIn, shooter, accelX, accelY, accelZ);
     }
@@ -32,7 +32,7 @@ public class LightningDragonChargeEntity extends DragonChargeEntity implements I
     }
 
     @Override
-    public void destroyArea(World world, BlockPos center, DragonBaseEntity destroyer) {
+    public void destroyArea(Level world, BlockPos center, DragonBaseEntity destroyer) {
         IafDragonDestructionManager.destroyAreaCharge(world, center, destroyer);
     }
 

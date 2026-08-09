@@ -9,7 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -45,7 +45,7 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
             assert ghost != null;
             ghost.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 0.5F, this.worldPosition.getZ() + 0.5F, ThreadLocalRandom.current().nextFloat() * 360F, 0);
             if (this.level instanceof ServerLevel serverWorld) {
-                ghost.finalizeSpawn(serverWorld, this.level.getCurrentDifficultyAt(this.worldPosition), MobSpawnType.SPAWNER, null);
+                ghost.finalizeSpawn(serverWorld, this.level.getCurrentDifficultyAt(this.worldPosition), EntitySpawnReason.SPAWNER, null);
                 if (!player.isCreative()) ghost.setTarget(player);
                 ghost.setPersistenceRequired();
                 this.level.addFreshEntity(ghost);

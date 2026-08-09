@@ -37,7 +37,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -73,9 +73,9 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
         super(type, worldIn);
     }
 
-    public static boolean canLichSpawnOn(EntityType<? extends Mob> typeIn, ServerLevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource randomIn) {
+    public static boolean canLichSpawnOn(EntityType<? extends Mob> typeIn, ServerLevelAccessor worldIn, EntitySpawnReason reason, BlockPos pos, RandomSource randomIn) {
         BlockPos blockpos = pos.below();
-        if (reason == MobSpawnType.SPAWNER) return true;
+        if (reason == EntitySpawnReason.SPAWNER) return true;
         if (!new DangerousGeneration() {
         }.isFarEnoughFromSpawn(worldIn, pos)) return false;
         if (!worldIn.getBlockState(blockpos).isValidSpawn(worldIn, blockpos, typeIn)) return false;
@@ -153,7 +153,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
@@ -266,7 +266,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             minion.setTarget(target);
             Level currentLevel = this.level();
             if (currentLevel instanceof ServerLevelAccessor serverWorldAccess)
-                minion.finalizeSpawn(serverWorldAccess, currentLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                minion.finalizeSpawn(serverWorldAccess, currentLevel.getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             if (minion instanceof DreadMobEntity mob)
                 mob.setCommanderId(this.getUUID());
             if (!currentLevel.isClientSide())

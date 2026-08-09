@@ -4,72 +4,72 @@ import com.iafenvoy.iceandfire.data.HippogryphType;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.thrown.EggEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ItemStackParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrownEgg;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 
-public class HippogryphEggEntity extends EggEntity {
+public class HippogryphEggEntity extends ThrownEgg {
 
     private ItemStack itemstack;
 
-    public HippogryphEggEntity(EntityType<? extends EggEntity> type, World world) {
+    public HippogryphEggEntity(EntityType<? extends ThrownEgg> type, Level world) {
         super(type, world);
     }
 
-    public HippogryphEggEntity(EntityType<? extends EggEntity> type, World worldIn, double x, double y, double z, ItemStack stack) {
+    public HippogryphEggEntity(EntityType<? extends ThrownEgg> type, Level worldIn, double x, double y, double z, ItemStack stack) {
         this(type, worldIn);
-        this.setPosition(x, y, z);
+        this.setPos(x, y, z);
         this.itemstack = stack;
     }
 
-    public HippogryphEggEntity(EntityType<? extends EggEntity> type, World worldIn, LivingEntity throwerIn, ItemStack stack) {
+    public HippogryphEggEntity(EntityType<? extends ThrownEgg> type, Level worldIn, LivingEntity throwerIn, ItemStack stack) {
         this(type, worldIn);
-        this.setPosition(throwerIn.getX(), throwerIn.getEyeY() - 0.1F, throwerIn.getZ());
+        this.setPos(throwerIn.getX(), throwerIn.getEyeY() - 0.1F, throwerIn.getZ());
         this.itemstack = stack;
         this.setOwner(throwerIn);
     }
 
     @Override
-    public void handleStatus(byte id) {
+    public void handleEntityEvent(byte id) {
         if (id == 3) {
             for (int i = 0; i < 8; ++i) {
-                this.getWorld().addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getStack()), this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D);
+                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D);
             }
         }
     }
 
     @Override
-    protected void onCollision(HitResult result) {
+    protected void onHit(HitResult result) {
         Entity thrower = this.getOwner();
         if (result instanceof EntityHitResult hitResult)
-            hitResult.getEntity().damage(this.getWorld().getDamageSources().thrown(this, thrower), 0.0F);
+            hitResult.getEntity().hurt(this.level().damageSources().thrown(this, thrower), 0.0F);
 
-        if (this.getWorld() instanceof ServerWorld serverWorld) {
-            HippogryphEntity hippogryph = new HippogryphEntity(IafEntities.HIPPOGRYPH.get(), this.getWorld());
-            hippogryph.setBreedingAge(-24000);
-            hippogryph.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-            hippogryph.initialize(serverWorld, serverWorld.getLocalDifficulty(this.getBlockPos()), SpawnReason.SPAWN_EGG, null);
+        if (this.level() instanceof ServerLevel serverWorld) {
+            HippogryphEntity hippogryph = new HippogryphEntity(IafEntities.HIPPOGRYPH.get(), this.level());
+            hippogryph.setAge(-24000);
+            hippogryph.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+            hippogryph.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.SPAWN_ITEM_USE, null);
             if (this.itemstack != null) {
                 HippogryphType variant = this.itemstack.get(IafDataComponents.HIPPOGRYPH_EGG.get());
                 if (variant != null) hippogryph.setVariant(variant);
             }
-            if (thrower instanceof PlayerEntity player)
-                hippogryph.setOwner(player);
-            this.getWorld().spawnEntity(hippogryph);
+            if (thrower instanceof Player player)
+                hippogryph.tame(player);
+            this.level().addFreshEntity(hippogryph);
         }
 
-        this.getWorld().sendEntityStatus(this, (byte) 3);
+        this.level().broadcastEntityEvent(this, (byte) 3);
         this.remove(RemovalReason.DISCARDED);
     }
 

@@ -39,7 +39,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -109,7 +109,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         this.aiMelee = new EntityAIAttackMeleeNoCooldownGoal(this, 1.5D, false);
     }
 
-    public static boolean canCockatriceSpawn(EntityType<? extends Mob> type, LevelAccessor world, MobSpawnType spawnReason, BlockPos pos, RandomSource random) {
+    public static boolean canCockatriceSpawn(EntityType<? extends Mob> type, LevelAccessor world, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
         return new DangerousGeneration() {
         }.isFarEnoughFromSpawn(world, pos) && checkMobSpawnRules(type, world, spawnReason, pos, random);
     }
@@ -373,7 +373,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setHen(this.getRandom().nextBoolean());
         return spawnDataIn;

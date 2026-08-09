@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,7 +31,7 @@ public class GraveyardSoilBlock extends Block {
                     GhostEntity ghost = IafEntities.GHOST.get().create(worldIn);
                     assert ghost != null;
                     ghost.absMoveTo(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, ThreadLocalRandom.current().nextFloat() * 360F, 0);
-                    ghost.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.SPAWNER, null);
+                    ghost.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWNER, null);
                     worldIn.addFreshEntity(ghost);
                     ghost.setAnimation(GhostEntity.ANIMATION_SCARE);
                     ghost.restrictTo(pos, 16);

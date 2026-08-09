@@ -5,29 +5,29 @@ import com.iafenvoy.iceandfire.entity.DeathWormEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-public class DeathWormSpawnFeature extends Feature<DefaultFeatureConfig> implements DangerousGeneration {
-    public DeathWormSpawnFeature(Codec<DefaultFeatureConfig> configFactoryIn) {
+public class DeathWormSpawnFeature extends Feature<NoneFeatureConfiguration> implements DangerousGeneration {
+    public DeathWormSpawnFeature(Codec<NoneFeatureConfiguration> configFactoryIn) {
         super(configFactoryIn);
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        StructureWorldAccess world = context.getWorld();
-        BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, context.getOrigin().add(8, 0, 8));
-        if (this.isFarEnoughFromSpawn(world, pos) && context.getRandom().nextDouble() < IafCommonConfig.INSTANCE.deathworm.spawnChance.getValue()) {
-            DeathWormEntity deathWorm = IafEntities.DEATH_WORM.get().create(world.toServerWorld());
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        WorldGenLevel world = context.level();
+        BlockPos pos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, context.origin().offset(8, 0, 8));
+        if (this.isFarEnoughFromSpawn(world, pos) && context.random().nextDouble() < IafCommonConfig.INSTANCE.deathworm.spawnChance.getValue()) {
+            DeathWormEntity deathWorm = IafEntities.DEATH_WORM.get().create(world.getLevel());
             assert deathWorm != null;
-            deathWorm.setPosition(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-            deathWorm.initialize(world, world.getLocalDifficulty(pos), SpawnReason.CHUNK_GENERATION, null);
-            world.spawnEntity(deathWorm);
+            deathWorm.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
+            deathWorm.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.CHUNK_GENERATION, null);
+            world.addFreshEntity(deathWorm);
         }
         return true;
     }

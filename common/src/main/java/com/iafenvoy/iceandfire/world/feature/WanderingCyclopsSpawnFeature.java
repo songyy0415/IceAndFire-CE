@@ -5,39 +5,39 @@ import com.iafenvoy.iceandfire.entity.CyclopsEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-public class WanderingCyclopsSpawnFeature extends Feature<DefaultFeatureConfig> implements DangerousGeneration {
-    public WanderingCyclopsSpawnFeature(Codec<DefaultFeatureConfig> configFactoryIn) {
+public class WanderingCyclopsSpawnFeature extends Feature<NoneFeatureConfiguration> implements DangerousGeneration {
+    public WanderingCyclopsSpawnFeature(Codec<NoneFeatureConfiguration> configFactoryIn) {
         super(configFactoryIn);
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        StructureWorldAccess world = context.getWorld();
-        Random random = context.getRandom();
-        BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, context.getOrigin().add(8, 0, 8));
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        WorldGenLevel world = context.level();
+        RandomSource random = context.random();
+        BlockPos pos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, context.origin().offset(8, 0, 8));
         if (this.isFarEnoughFromSpawn(world, pos) && random.nextDouble() < IafCommonConfig.INSTANCE.cyclops.spawnWanderingChance.getValue() && random.nextInt(12) == 0) {
-            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.toServerWorld());
+            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel());
             assert cyclops != null;
-            cyclops.setPosition(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-            cyclops.initialize(world, world.getLocalDifficulty(pos), SpawnReason.SPAWNER, null);
-            world.spawnEntity(cyclops);
+            cyclops.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
+            cyclops.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWNER, null);
+            world.addFreshEntity(cyclops);
             for (int i = 0; i < 3 + random.nextInt(3); i++) {
-                SheepEntity sheep = EntityType.SHEEP.create(world.toServerWorld());
+                Sheep sheep = EntityType.SHEEP.create(world.getLevel());
                 assert sheep != null;
-                sheep.setPosition(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-                sheep.setColor(SheepEntity.generateDefaultColor(random));
-                world.spawnEntity(sheep);
+                sheep.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
+                sheep.setColor(Sheep.getRandomSheepColor(random));
+                world.addFreshEntity(sheep);
             }
         }
         return true;

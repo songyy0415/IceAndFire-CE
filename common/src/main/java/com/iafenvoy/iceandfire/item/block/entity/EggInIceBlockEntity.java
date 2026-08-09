@@ -14,6 +14,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -45,7 +46,7 @@ public class EggInIceBlockEntity extends BlockEntity {
                 dragon.setGender(ThreadLocalRandom.current().nextBoolean());
                 dragon.setTame(true, false);
                 dragon.setHunger(50);
-                dragon.setOwnerUUID(entityEggInIce.ownerUUID);
+                dragon.setOwnerReference(entityEggInIce.ownerUUID != null ? EntityReference.of(entityEggInIce.ownerUUID) : null);
                 level.addFreshEntity(dragon);
                 entityEggInIce.spawned = true;
                 level.destroyBlock(pos, false);

@@ -29,8 +29,8 @@ public class DragonEggItem extends Item {
     }
 
     @Override
-    public String getDescriptionId() {
-        return "item.iceandfire.dragonegg";
+    public Component getName(ItemStack stack) {
+        return Component.translatable("item.iceandfire.dragonegg");
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DragonEggItem extends Item {
         BlockPos offset = context.getClickedPos().relative(context.getClickedFace());
         DragonEggEntity egg = new DragonEggEntity(IafEntities.DRAGON_EGG.get(), context.getLevel());
         egg.setEggType(this.type);
-        egg.moveTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
+        egg.snapTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
         egg.onPlayerPlace(context.getPlayer());
         if (itemstack.has(DataComponents.CUSTOM_NAME))
             egg.setCustomName(itemstack.getHoverName());

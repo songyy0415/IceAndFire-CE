@@ -28,9 +28,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LightningBolt;
@@ -50,7 +52,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class DragonEggEntity extends LivingEntity implements BlacklistedFromStatues, IDeadMob {
-    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
     private static final Map<DragonType, EggTicker> TICKERS = new LinkedHashMap<>();
     private static final EntityDataAccessor<String> DRAGON_TYPE = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> DRAGON_AGE = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.INT);
@@ -88,10 +90,10 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
         this.setDragonAge(tag.getInt("DragonAge").orElse(0));
         String s;
 
-        if (tag.contains("OwnerUUID", 8)) s = tag.getString("OwnerUUID").orElse("");
+        if (tag.getString("OwnerUUID").isPresent()) s = tag.getString("OwnerUUID").orElse("");
         else {
             String s1 = tag.getString("Owner").orElse("");
-            UUID converedUUID = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
+            UUID converedUUID = OldUsersConverter.convertMobOwnerIfNecessary(this.level().getServer(), s1);
             s = converedUUID == null ? s1 : converedUUID.toString();
         }
         if (!s.isEmpty()) this.setOwnerId(UUID.fromString(s));
@@ -128,11 +130,11 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     public UUID getOwnerId() {
-        return this.entityData.get(OWNER_UNIQUE_ID).orElse(null);
+        return this.entityData.get(OWNER_UNIQUE_ID).map(EntityReference::getUUID).orElse(null);
     }
 
     public void setOwnerId(UUID uuid) {
-        this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(uuid));
+        this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(uuid).map(EntityReference::of));
     }
 
     public boolean isLocationValid() {
@@ -169,7 +171,8 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
             if (!this.level().isClientSide()) this.level().addFreshEntity(dragon);
             if (this.hasCustomName()) dragon.setCustomName(this.getCustomName());
             dragon.setTame(true, true);
-            dragon.setOwnerUUID(this.getOwnerId());
+            UUID ownerId = this.getOwnerId();
+            dragon.setOwnerReference(ownerId != null ? EntityReference.of(ownerId) : null);
             this.level().playLocalSound(this.getX(), this.getY() + this.getEyeHeight(), this.getZ(), IafSounds.EGG_HATCH.get(), this.getSoundSource(), 2.5F, 1.0F, false);
             this.discard();
         }
@@ -178,11 +181,6 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     @Override
     public SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return null;
-    }
-
-    @Override
-    public Iterable<ItemStack> getArmorSlots() {
-        return ImmutableList.of();
     }
 
     @Override
@@ -268,7 +266,7 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
             boolean valid = world.canSeeSky(pos.above()) && isRainingAt;
             if (valid) entity.setDragonAge(entity.getDragonAge() + 1);
             if (hatched) {
-                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(world, EntitySpawnReason.LOAD);
+                LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(world, EntitySpawnReason.LOAD);
                 assert bolt != null;
                 bolt.setPos(entity.getX(), entity.getY(), entity.getZ());
                 bolt.setVisualOnly(true);

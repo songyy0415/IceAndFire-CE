@@ -1,43 +1,39 @@
 package com.iafenvoy.iceandfire.particle;
 
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.SimpleParticleType;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.core.particles.SimpleParticleType;
 
-public class DreadTorchParticle extends SpriteBillboardParticle {
-    protected DreadTorchParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z, velocityX, velocityY, velocityZ);
+public class DreadTorchParticle extends SingleQuadParticle {
+    protected DreadTorchParticle(ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteSet spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider.first());
         this.setPos(x, y, z);
-        this.velocityY += 0.01D;
-        this.setSprite(spriteProvider);
+        this.yd += 0.01D;
+        this.setSprite(spriteProvider.get(this.random));
     }
 
-    public static ParticleFactory<SimpleParticleType> factory(SpriteProvider spriteProvider) {
-        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new DreadTorchParticle(world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
-    }
-
-    @Override
-    public void buildGeometry(VertexConsumer consumer, Camera camera, float tickDelta) {
-        this.scale = 0.125F * (this.maxAge - (this.age));
-        this.scale = this.scale * 0.09F;
-        this.velocityX *= 0.75D;
-        this.velocityY *= 0.75D;
-        this.velocityZ *= 0.75D;
-        super.buildGeometry(consumer, camera, tickDelta);
+    public static ParticleProvider<SimpleParticleType> factory(SpriteSet spriteProvider) {
+        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ, random) -> new DreadTorchParticle(world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
     }
 
     @Override
-    public int getBrightness(float tint) {
-        return 240;
+    public void render(VertexConsumer consumer, Camera camera, float tickDelta) {
+        this.quadSize = 0.125F * (this.lifetime - (this.age));
+        this.quadSize = this.quadSize * 0.09F;
+        this.xd *= 0.75D;
+        this.yd *= 0.75D;
+        this.zd *= 0.75D;
+        super.render(consumer, camera, tickDelta);
     }
 
     @Override
-    public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_LIT;
-    }
+    protected int getLightCoords(float partialTick) { return net.minecraft.util.LightCoordsUtil.FULL_BRIGHT; }
+
+    @Override
+    public SingleQuadParticle.Layer getLayer() { return SingleQuadParticle.Layer.OPAQUE; }
 }

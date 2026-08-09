@@ -1,46 +1,41 @@
 package com.iafenvoy.iceandfire.particle;
 
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.Mth;
 
-public class HydraBreathParticle extends SpriteBillboardParticle {
+public class HydraBreathParticle extends SingleQuadParticle {
     private final float newScale;
 
-    protected HydraBreathParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider) {
-        super(world, x, y, z, 0, 0, 0);
-        this.velocityX *= 0.1;
-        this.velocityY *= 0.1;
-        this.velocityZ *= 0.1;
-        this.newScale = this.scale;
-        this.setSprite(spriteProvider);
+    protected HydraBreathParticle(ClientLevel world, double x, double y, double z, SpriteSet spriteProvider) {
+        super(world, x, y, z, 0, 0, 0, spriteProvider.first());
+        this.xd *= 0.1;
+        this.yd *= 0.1;
+        this.zd *= 0.1;
+        this.newScale = this.quadSize;
+        this.setSprite(spriteProvider.get(this.random));
     }
 
-    public static ParticleFactory<SimpleParticleType> factory(SpriteProvider spriteProvider) {
-        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new HydraBreathParticle(world, x, y, z, spriteProvider);
-    }
-
-    @Override
-    public void buildGeometry(VertexConsumer consumer, Camera camera, float tickDelta) {
-        float scaley = ((float) this.age + tickDelta) / (float) this.maxAge * 32.0F;
-        scaley = MathHelper.clamp(scaley, 0.0F, 1.0F);
-        this.scale = this.newScale * scaley;
-        super.buildGeometry(consumer, camera, tickDelta);
+    public static ParticleProvider<SimpleParticleType> factory(SpriteSet spriteProvider) {
+        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ, random) -> new HydraBreathParticle(world, x, y, z, spriteProvider);
     }
 
     @Override
-    public int getBrightness(float partialTick) {
-        return super.getBrightness(partialTick);
+    public float getQuadSize(float a) {
+        float scaley = ((float) this.age + a) / (float) this.lifetime * 32.0F;
+        scaley = Mth.clamp(scaley, 0.0F, 1.0F);
+        return this.newScale * scaley;
     }
 
     @Override
-    public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_LIT;
-    }
+    protected int getLightCoords(float partialTick) { return super.getLightCoords(partialTick); }
+
+    @Override
+    public SingleQuadParticle.Layer getLayer() { return SingleQuadParticle.Layer.OPAQUE; }
 }

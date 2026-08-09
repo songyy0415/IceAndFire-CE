@@ -5,67 +5,65 @@ import com.iafenvoy.iceandfire.registry.IafRenderLayers;
 import com.iafenvoy.iceandfire.render.entity.GhostEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.GhostModel;
 import com.iafenvoy.iceandfire.util.Color4i;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.Perspective;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 
 public class GhostAppearanceParticle extends Particle {
     private final GhostModel model = new GhostModel(0.0F);
     private final int ghost;
     private final boolean fromLeft;
 
-    protected GhostAppearanceParticle(ClientWorld world, double x, double y, double z, int ghost) {
-        super(world, x, y, z);
-        this.gravityStrength = 0.0F;
-        this.maxAge = 15;
+    protected GhostAppearanceParticle(ClientLevel level, double x, double y, double z, int ghost) {
+        super(level, x, y, z);
+        this.gravity = 0.0F;
+        this.lifetime = 15;
         this.ghost = ghost;
-        this.fromLeft = world.random.nextBoolean();
+        this.fromLeft = level.getRandom().nextBoolean();
     }
 
-    public static ParticleFactory<SimpleParticleType> factory() {
-        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new GhostAppearanceParticle(world, x, y, z, 1);
+    public static ParticleProvider<SimpleParticleType> factory() {
+        return (parameters, level, x, y, z, velocityX, velocityY, velocityZ) -> new GhostAppearanceParticle(level, x, y, z, 1);
     }
 
     @Override
-    public void buildGeometry(VertexConsumer consumer, Camera camera, float tickDelta) {
-        float f = (this.age + tickDelta) / this.maxAge;
-        float f1 = 0.05F + 0.5F * MathHelper.sin(f * (float) Math.PI);
-        Entity entity = this.world.getEntityById(this.ghost);
-        if (entity instanceof GhostEntity ghostEntity && MinecraftClient.getInstance().options.getPerspective() == Perspective.FIRST_PERSON) {
-            MatrixStack matrixstack = new MatrixStack();
-            matrixstack.multiply(camera.getRotation());
+    public void render(VertexConsumer consumer, Camera camera, float tickDelta) {
+        float f = (this.age + tickDelta) / this.lifetime;
+        float f1 = 0.05F + 0.5F * Mth.sin(f * (float) Math.PI);
+        Entity entity = this.level.getEntity(this.ghost);
+        if (entity instanceof GhostEntity ghostEntity && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+            PoseStack poseStack = new PoseStack();
+            poseStack.mulPose(camera.rotation());
             if (this.fromLeft) {
-                matrixstack.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(150 * f - 60));
-                matrixstack.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(150 * f - 60));
+                poseStack.mulPose(Axis.YN.rotationDegrees(150 * f - 60));
+                poseStack.mulPose(Axis.ZN.rotationDegrees(150 * f - 60));
             } else {
-                matrixstack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(150 * f - 60));
-                matrixstack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(150 * f - 60));
+                poseStack.mulPose(Axis.YP.rotationDegrees(150 * f - 60));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(150 * f - 60));
             }
-            matrixstack.scale(-1.0F, -1.0F, 1.0F);
-            matrixstack.translate(0.0D, 0.3F, 1.25D);
-            VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-            VertexConsumer consumer1 = immediate.getBuffer(IafRenderLayers.getGhost(GhostEntityRenderer.getGhostOverlayForType(ghostEntity.getColor())));
-            this.model.setAngles(ghostEntity, 0, 0, entity.age + tickDelta, 0, 0);
-            this.model.render(matrixstack, consumer1, 240, OverlayTexture.DEFAULT_UV, new Color4i(1.0F, 1.0F, 1.0F, f1).getIntValue());
-            immediate.draw();
+            poseStack.scale(-1.0F, -1.0F, 1.0F);
+            poseStack.translate(0.0D, 0.3F, 1.25D);
+            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            VertexConsumer consumer1 = bufferSource.getBuffer(IafRenderLayers.getGhost(GhostEntityRenderer.getGhostOverlayForType(ghostEntity.getColor())));
+            this.model.setupAnim(ghostEntity, 0, 0, entity.tickCount + tickDelta, 0, 0);
+            this.model.renderToBuffer(poseStack, consumer1, 240, OverlayTexture.NO_OVERLAY, new Color4i(1.0F, 1.0F, 1.0F, f1).getIntValue());
+            bufferSource.endBatch();
         }
     }
 
     @Override
-    public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.CUSTOM;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.CUSTOM;
     }
 }
-

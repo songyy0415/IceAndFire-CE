@@ -2,46 +2,44 @@ package com.iafenvoy.iceandfire.particle;
 
 import com.iafenvoy.uranus.object.VecUtil;
 import com.iafenvoy.uranus.util.RandomHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-public class DragonFlameParticle extends SpriteBillboardParticle {
-    protected DragonFlameParticle(DragonFlameParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z);
+public class DragonFlameParticle extends SingleQuadParticle {
+    protected DragonFlameParticle(DragonFlameParticleType parameters, ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteSet spriteProvider) {
+        super(world, x, y, z, spriteProvider.first());
         float size = parameters.getScale();
-        this.scale *= (float) RandomHelper.nextDouble(size, size * 2);
-        this.maxAge = 30;
-        this.gravityStrength = 0.0F;
-        this.collidesWithWorld = false;
-        this.setVelocity(RandomHelper.randomize(velocityX, 0.5), RandomHelper.randomize(velocityY, 0.5), RandomHelper.randomize(velocityZ, 0.5));
-        this.setSprite(spriteProvider);
+        this.quadSize *= (float) RandomHelper.nextDouble(size, size * 2);
+        this.lifetime = 30;
+        this.gravity = 0.0F;
+        this.hasPhysics = false;
+        this.setParticleSpeed(RandomHelper.randomize(velocityX, 0.5), RandomHelper.randomize(velocityY, 0.5), RandomHelper.randomize(velocityZ, 0.5));
+        this.setSprite(spriteProvider.get(this.random));
     }
 
-    public static ParticleFactory<DragonFlameParticleType> factory(SpriteProvider spriteProvider) {
-        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new DragonFlameParticle(parameters, world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
+    public static ParticleProvider<DragonFlameParticleType> factory(SpriteSet spriteProvider) {
+        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ, random) -> new DragonFlameParticle(parameters, world, x, y, z, velocityX, velocityY, velocityZ, spriteProvider);
     }
 
     @Override
-    public int getBrightness(float partialTick) {
-        return 240;
-    }
+    protected int getLightCoords(float partialTick) { return net.minecraft.util.LightCoordsUtil.FULL_BRIGHT; }
 
     @SuppressWarnings("deprecation")
     @Override
     public void tick() {
         super.tick();
-        BlockState state = this.world.getBlockState(VecUtil.createBlockPos(this.x, this.y, this.z));
+        BlockState state = this.level.getBlockState(VecUtil.createBlockPos(this.x, this.y, this.z));
         if (state != null && state.isSolid())
-            this.markDead();
+            this.remove();
     }
 
     @Override
-    public @NotNull ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_LIT;
+    public @NotNull ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_LIT;
     }
 }

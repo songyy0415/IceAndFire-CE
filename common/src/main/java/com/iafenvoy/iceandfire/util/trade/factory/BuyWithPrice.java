@@ -1,16 +1,16 @@
 package com.iafenvoy.iceandfire.util.trade.factory;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOffers;
-import net.minecraft.village.TradedItem;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.trading.VillagerTrades;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.ItemCost;
+import net.minecraft.world.item.trading.MerchantOffer;
 
-public class BuyWithPrice implements TradeOffers.Factory {
+public class BuyWithPrice implements VillagerTrades.ItemListing {
     private final ItemStack input1;
     private final ItemStack input2;
     private final ItemStack output;
@@ -33,9 +33,9 @@ public class BuyWithPrice implements TradeOffers.Factory {
 
     @Nullable
     @Override
-    public TradeOffer create(Entity entity, Random random) {
+    public MerchantOffer getOffer(Entity entity, RandomSource random) {
         if (this.input2 == null)
-            return new TradeOffer(new TradedItem(this.input1.getItem(), this.input1.getCount()), this.output, this.maxUses, this.experience, this.multiplier);
-        return new TradeOffer(new TradedItem(this.input1.getItem(), this.input1.getCount()), Optional.of(new TradedItem(this.input2.getItem(), this.input2.getCount())), this.output, this.maxUses, this.experience, this.multiplier);
+            return new MerchantOffer(new ItemCost(this.input1.getItem(), this.input1.getCount()), this.output, this.maxUses, this.experience, this.multiplier);
+        return new MerchantOffer(new ItemCost(this.input1.getItem(), this.input1.getCount()), Optional.of(new ItemCost(this.input2.getItem(), this.input2.getCount())), this.output, this.maxUses, this.experience, this.multiplier);
     }
 }

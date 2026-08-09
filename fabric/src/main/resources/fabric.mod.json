@@ -40,8 +40,13 @@
   ],
   "accessWidener": "iceandfire.accesswidener",
   "depends": {
-    "minecraft": "1.21.x",
+    "minecraft": "26.x",
     "jupiter": ">=2.3",
     "uranus": ">=2.3.2"
-  }
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/integration-fabric.jar"
+    }
+  ]
 }

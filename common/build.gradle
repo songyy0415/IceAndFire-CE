@@ -10,20 +10,27 @@ dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,
     // which get remapped to the correct annotations on each platform.
     // Do NOT use other classes from Fabric Loader.
-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+    // loom-no-remap (MC 26.2) has no `modImplementation` config — plain `implementation` is used.
+    implementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
     // Architectury API. This is optional, and you can comment it out if you don't need it.
-    modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+    implementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
-    modImplementation "com.github.IAFEnvoy.Integration:integration-common:$integration_version"
+    implementation "com.github.IAFEnvoy.Integration:integration-common:$integration_version"
 
-    modImplementation "maven.modrinth:uranus:FH0tB0dy"
-    modImplementation "maven.modrinth:jupiter:5pNXzmee"
+    // uranus 26.2 (2.4.1-bugfix) is not published to a public maven — built from
+    // the local ported source (D:/aiminecraftdev/Uranus26.2) and installed to mavenLocal.
+    implementation "com.iafenvoy.uranus:uranus-fabric:2.4.1-bugfix"
+    // jupiter: no official 26.2 build — 1.21.1 jar kept for P1 (no access widener, does not
+    // block configuration); the local 26.2 port (D:/aiminecraftdev/Jupiter new, 2.4.2) is wired in P3.
+    implementation "maven.modrinth:jupiter:5pNXzmee"
 
-    modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
-    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
+    // EMI 26.2 (1.1.24) built from local port (D:/aiminecraftdev/emi26.2) → mavenLocal.
+    compileOnly "dev.emi:emi-fabric:${emi_version}:api"
+    compileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
 
-    modImplementation "maven.modrinth:jade:pA0xvozk"
+    implementation "maven.modrinth:jade:JB4B8a9g"
 
-    modImplementation "net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_version}"
+    // [P1 待确认] No Ponder-Fabric-26.2 artifact exists yet — disabled until a 26.2 coordinate is available.
+    // implementation "net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_version}"
 }

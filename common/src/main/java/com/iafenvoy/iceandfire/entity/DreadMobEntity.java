@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.entity.util.IHumanoid;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -37,7 +38,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
     }
 
     public static Entity necromancyEntity(LivingEntity entity) {
-        if (entity.getType().is(EntityTypeTags.ARTHROPOD)) {
+        if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(EntityTypeTags.ARTHROPOD)) {
             DreadScuttlerEntity lichSummoned = new DreadScuttlerEntity(IafEntities.DREAD_SCUTTLER.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 1.5F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
@@ -53,7 +54,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }
-        if (entity.getType().is(EntityTypeTags.UNDEAD) || entity instanceof AbstractSkeleton || entity instanceof Player) {
+        if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(EntityTypeTags.UNDEAD) || entity instanceof AbstractSkeleton || entity instanceof Player) {
             DreadThrallEntity lichSummoned = new DreadThrallEntity(IafEntities.DREAD_THRALL.get(), entity.level());
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess) {
                 lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);

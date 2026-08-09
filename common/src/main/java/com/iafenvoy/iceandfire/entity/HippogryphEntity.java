@@ -657,7 +657,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
 
     @Override
     public void travel(Vec3 pTravelVector) {
-        if (this.isControlledByLocalInstance()) {
+        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
             if (this.isInWater()) {
                 this.moveRelative(0.02F, pTravelVector);
                 this.move(MoverType.SELF, this.getDeltaMovement());
@@ -684,7 +684,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         Vec2 vec2 = this.getRiddenRotation(player);
         this.setRot(vec2.y, vec2.x);
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
-        if (this.isControlledByLocalInstance()) {
+        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
             Vec3 vec3 = this.getDeltaMovement();
             float vertical = this.isGoingUp() ? 0.2F : this.isGoingDown() ? -0.2F : 0F;
             if (!this.isFlying() && !this.isHovering()) {

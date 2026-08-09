@@ -308,7 +308,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         Vec2 vec2 = this.getRiddenRotation(player);
         this.setRot(vec2.y, vec2.x);
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
-        if (this.isControlledByLocalInstance()) {
+        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
             Vec3 vec3 = this.getDeltaMovement();
 
             if (this.isGoingUp()) {
@@ -512,7 +512,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
 
     @Override
     public void travel(Vec3 pTravelVector) {
-        if (this.isControlledByLocalInstance() && this.isInWater()) {
+        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide() && this.isInWater()) {
             this.moveRelative(0.1F, pTravelVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));

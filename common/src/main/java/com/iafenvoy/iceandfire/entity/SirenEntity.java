@@ -70,7 +70,7 @@ import java.util.List;
 
 public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFear, IHasCustomizableAttributes {
     public static final int SEARCH_RANGE = 32;
-    public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof Player player && !player.isCreative() && !entity.isSpectator()) || entity.getType().is(IafEntityTags.SIREN_CHARMABLE);
+    public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof Player player && !player.isCreative() && !entity.isSpectator()) || BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SIREN_CHARMABLE);
     public static final Animation ANIMATION_BITE = Animation.create(20);
     public static final Animation ANIMATION_PULL = Animation.create(20);
     private static final EntityDataAccessor<Integer> HAIR_COLOR = SynchedEntityData.defineId(SirenEntity.class, EntityDataSerializers.INT);

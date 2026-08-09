@@ -62,7 +62,7 @@ public class ChainItem extends Item {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player playerIn, LivingEntity target, InteractionHand hand) {
-        if (target.getType().is(IafEntityTags.CHAIN_UNTIEABLE)) return InteractionResult.PASS;
+        if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHAIN_UNTIEABLE)) return InteractionResult.PASS;
 
         ChainData targetData = ChainData.get(target);
         if (targetData.isChainedTo(playerIn.getUUID()))

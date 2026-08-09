@@ -26,6 +26,7 @@ import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -144,13 +145,13 @@ public final class ServerEvents {
 
     public static void onLivingSetTarget(Entity tracking, ServerPlayer player) {
         if (tracking instanceof LivingEntity target) {
-            if (target.getType().is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
             else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
         }
     }
 
     public static EventResult onPlayerAttack(Player player, Level world, Entity entity, InteractionHand hand, @Nullable EntityHitResult hitResult) {
-        if (entity != null && entity.getType().is(IafEntityTags.SHEEP)) {
+        if (entity != null && BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SHEEP)) {
             float dist = IafCommonConfig.INSTANCE.cyclops.sheepSearchLength.getValue();
             final List<Entity> list = entity.level().getEntities(entity, entity.getBoundingBox().inflate(dist, dist, dist));
             if (!list.isEmpty())
@@ -207,7 +208,7 @@ public final class ServerEvents {
                 NetworkManager.sendToServer(new PlayerHitMultipartC2SPayload(parent.getId(), extraData));
         }
         if (entity instanceof LivingEntity livingEntity) {
-            if (entity.getType().is(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);
             else if (DragonUtils.isVillager(entity)) signalAmphithereAlarm(livingEntity, player);
         }
         return EventResult.pass();
@@ -324,12 +325,12 @@ public final class ServerEvents {
     public static boolean onEntityJoinWorld(Entity entity, Level world) {
         if (entity instanceof Mob mob)
             try {
-                if (mob.getType().is(IafEntityTags.SHEEP) && mob instanceof Animal animal)
+                if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.SHEEP) && mob instanceof Animal animal)
                     animal.goalSelector.addGoal(8, new EntitySheepAIFollowCyclopsGoal(animal, 1.2D));
-                if (mob.getType().is(IafEntityTags.VILLAGERS))
+                if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.VILLAGERS))
                     if (IafCommonConfig.INSTANCE.dragon.villagersFear.getValue())
                         mob.goalSelector.addGoal(1, new VillagerAIFearUntamedGoal((PathfinderMob) mob, LivingEntity.class, 8.0F, 0.8D, 0.8D, VILLAGER_FEAR));
-                if (mob.getType().is(IafEntityTags.FEAR_DRAGONS))
+                if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.FEAR_DRAGONS))
                     if (IafCommonConfig.INSTANCE.dragon.animalsFear.getValue())
                         mob.goalSelector.addGoal(1, new VillagerAIFearUntamedGoal((PathfinderMob) mob, LivingEntity.class, 30, 1.0D, 0.5D, e -> e instanceof IAnimalFear fear && fear.shouldAnimalsFear(mob)));
             } catch (Exception e) {

@@ -16,7 +16,7 @@ public record DamageBonusAbility(float bonus, TagKey<EntityType<?>> targetType,
     @Override
     public void active(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker instanceof Player player && player.getAttackStrengthScale(0) != 1.0F) return;
-        if (target.getType().is(this.targetType))
+        if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(this.targetType))
             target.hurt(IafDamageTypes.bonusDamage(attacker), this.bonus);
     }
 

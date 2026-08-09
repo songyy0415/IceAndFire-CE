@@ -292,7 +292,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                     vertical = 1f;
                 } else if (this.isGoingDown() && !this.isGoingUp()) {
                     vertical = -1f;
-                } else if (this.isGoingUp() && this.isGoingDown() && this.isControlledByLocalInstance()) {
+                } else if (this.isGoingUp() && this.isGoingDown() && this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                     // Try floating
                     this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.5f, 1.0f));
                 }
@@ -302,7 +302,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                         vertical,
                         rider.zza
                 );
-                if (this.isControlledByLocalInstance()) {
+                if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                     this.setSpeed(speed);
 
                     this.moveRelative(this.getSpeed(), travelVector);
@@ -347,7 +347,7 @@ public class IceDragonEntity extends DragonBaseEntity {
             // Slower going sideway
             strafing *= 0.05f;
 
-            if (this.isControlledByLocalInstance()) {
+            if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                 this.setSpeed(speed);
 
                 // Vanilla walking behavior includes going up steps

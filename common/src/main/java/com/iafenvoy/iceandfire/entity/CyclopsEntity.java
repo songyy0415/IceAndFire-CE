@@ -19,6 +19,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -145,7 +146,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
                     return false;
                 }
             }
-            return !entity.getType().is(IafEntityTags.SHEEP);
+            return !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SHEEP);
         }));
 
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, true, entity -> entity instanceof Player player && !(player.isCreative() || player.isSpectator())));
@@ -154,7 +155,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
 
     @Override
     protected void doPush(Entity entityIn) {
-        if (!entityIn.getType().is(IafEntityTags.SHEEP)) {
+        if (!BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityIn.getType()).is(IafEntityTags.SHEEP)) {
             entityIn.push(this);
         }
     }
@@ -169,7 +170,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
             if (!entityIn.hasPassenger(this)
                     && entityIn.getBbWidth() < 1.95F
                     && !(entityIn instanceof DragonBaseEntity)
-                    && !entityIn.getType().is(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
+                    && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityIn.getType()).is(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
                 this.setAnimation(ANIMATION_EATPLAYER);
                 entityIn.stopRiding();
                 entityIn.startRiding(this, true);

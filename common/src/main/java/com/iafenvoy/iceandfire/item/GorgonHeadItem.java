@@ -54,7 +54,7 @@ public class GorgonHeadItem extends Item {
         Entity pointedEntity = null;
         List<Entity> list = worldIn.getEntities(entity, entity.getBoundingBox().expandTowards(Vector3d1.x * dist, Vector3d1.y * dist, Vector3d1.z * dist).inflate(1.0D, 1.0D, 1.0D), (Predicate<Entity>) entity12 -> {
             if (entity12 instanceof LivingEntity livingEntity) {
-                boolean isImmune = livingEntity instanceof BlacklistedFromStatues blacklisted && !blacklisted.canBeTurnedToStone() || entity12.getType().is(IafEntityTags.IMMUNE_TO_GORGON_STONE) || livingEntity.hasEffect(MobEffects.BLINDNESS);
+                boolean isImmune = livingEntity instanceof BlacklistedFromStatues blacklisted && !blacklisted.canBeTurnedToStone() || BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity12.getType()).is(IafEntityTags.IMMUNE_TO_GORGON_STONE) || livingEntity.hasEffect(MobEffects.BLINDNESS);
                 return !isImmune && entity12.isPickable() && !livingEntity.isDeadOrDying() && (entity12 instanceof Player || DragonUtils.isAlive(livingEntity));
             }
             return false;
@@ -83,7 +83,7 @@ public class GorgonHeadItem extends Item {
                 boolean wasSuccesful = true;
 
                 if (pointedEntity instanceof Player)
-                    wasSuccesful = pointedEntity.hurt(IafDamageTypes.causeGorgonDamage(pointedEntity), Integer.MAX_VALUE);
+                    wasSuccesful = pointedEntity.hurtOrSimulate(IafDamageTypes.causeGorgonDamage(pointedEntity), Integer.MAX_VALUE);
                 else {
                     if (!worldIn.isClientSide())
                         pointedEntity.remove(Entity.RemovalReason.KILLED);

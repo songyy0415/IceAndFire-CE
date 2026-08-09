@@ -162,9 +162,9 @@ public class FireDragonEntity extends DragonBaseEntity {
                 double d3 = controller.getLookAngle().y;
                 double d4 = controller.getLookAngle().z;
                 float inaccuracy = 1.0F;
-                d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                 FireDragonChargeEntity entitylargefireball = new FireDragonChargeEntity(
                         IafEntities.FIRE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
 
@@ -223,13 +223,13 @@ public class FireDragonEntity extends DragonBaseEntity {
                     vertical = 0.8f;
                 } else if (this.isGoingDown() && !this.isGoingUp()) {
                     vertical = -0.8f;
-                } else if (this.isGoingUp() && this.isGoingDown() && this.isControlledByLocalInstance()) {
+                } else if (this.isGoingUp() && this.isGoingDown() && this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                     // Try floating
                     this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.3f, 1.0f));
                 }
 
                 Vec3 travelVector = new Vec3(rider.xxa, vertical, rider.zza);
-                if (this.isControlledByLocalInstance()) {
+                if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                     this.setSpeed(speed);
 
                     this.moveRelative(this.getSpeed(), travelVector);
@@ -270,7 +270,7 @@ public class FireDragonEntity extends DragonBaseEntity {
             // Slower going sideway
             strafing *= 0.05f;
 
-            if (this.isControlledByLocalInstance()) {
+            if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                 this.setSpeed(speed);
 
                 // Vanilla walking behavior includes going up steps
@@ -312,9 +312,9 @@ public class FireDragonEntity extends DragonBaseEntity {
                     double d3 = entity.getY() - headVec.y;
                     double d4 = entity.getZ() - headVec.z;
                     float inaccuracy = 1.0F;
-                    d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                     this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
                     FireDragonChargeEntity entitylargefireball = new FireDragonChargeEntity(IafEntities.FIRE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
 
@@ -389,11 +389,11 @@ public class FireDragonEntity extends DragonBaseEntity {
     @Override
     protected void spawnDeathParticles() {
         for (int k = 0; k < 3; ++k) {
-            double d2 = this.random.nextGaussian() * 0.02D;
-            double d0 = this.random.nextGaussian() * 0.02D;
-            double d1 = this.random.nextGaussian() * 0.02D;
+            double d2 = this.getRandom().nextGaussian() * 0.02D;
+            double d0 = this.getRandom().nextGaussian() * 0.02D;
+            double d1 = this.getRandom().nextGaussian() * 0.02D;
             if (this.level().isClientSide())
-                this.level().addParticle(ParticleTypes.FLAME, this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
+                this.level().addParticle(ParticleTypes.FLAME, this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
         }
     }
 

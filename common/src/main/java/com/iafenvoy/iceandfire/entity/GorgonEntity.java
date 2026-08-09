@@ -15,6 +15,7 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.particles.ParticleTypes;
 
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.server.level.ServerLevel;
@@ -70,7 +71,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         if (attackTarget == null) return false;
         if (attackTarget.getItemBySlot(EquipmentSlot.HEAD).getItem() == IafItems.BLINDFOLD.get() || attackTarget.hasEffect(MobEffects.BLINDNESS))
             return true;
-        return attackTarget.getType().is(IafEntityTags.BLINDED);
+        return BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(attackTarget.getType()).is(IafEntityTags.BLINDED);
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {

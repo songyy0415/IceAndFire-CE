@@ -1962,8 +1962,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                     else if (this.isGoingDown() && !this.isGoingUp())
                         vertical = -1f;
                         // Damp the vertical motion so the dragon's head is more responsive to the control
-                    else
-                        this.isControlledByLocalInstance();
+                    else { }
                     // this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.8f, 1.0f));
                 } else {
                     // Mouse controlled yaw and pitch
@@ -1988,15 +1987,14 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                         vertical *= 1;
                     else if (this.getXRot() > 0)
                         vertical *= -1;
-                    else
-                        this.isControlledByLocalInstance();
+                    else { }
                     // this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.8f, 1.0f));
 
                 }
                 // Speed bonus damping
                 this.glidingSpeedBonus -= (float) (this.glidingSpeedBonus * 0.01d);
 
-                if (this.isControlledByLocalInstance()) {
+                if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                     // Vanilla friction on Y axis is smaller, which will influence terminal speed for climbing and diving
                     // use same friction coefficient on all axis simplifies how travel vector is computed
                     flyingSpeed = speed * 0.1F;
@@ -2056,7 +2054,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 // Slower going back
                 forward *= rider.zza > 0 ? 1.0f : 0.2f;
 
-                if (this.isControlledByLocalInstance()) {
+                if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                     this.setSpeed(speed);
                     // Vanilla walking behavior includes going up steps
                     super.travel(new Vec3(strafing, vertical, forward));
@@ -2291,7 +2289,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (this.isVehicle()) {
             // When riding, the server side movement check is performed in ServerGamePacketListenerImpl#handleMoveVehicle
             // verticalCollide tag might get inconsistent due to dragon's large bounding box and causes move wrongly msg
-            if (this.isControlledByLocalInstance()) {
+            if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
                 // This is how DragonBaseEntity#breakBlock handles movement when breaking blocks
                 // it's done by server, however client does not fire server side events, so breakBlock() here won't work
                 if (this.horizontalCollision) {

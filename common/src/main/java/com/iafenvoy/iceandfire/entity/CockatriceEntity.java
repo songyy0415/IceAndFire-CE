@@ -19,6 +19,7 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -153,7 +154,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 14.0F, 1.0D, 1.0D, (Predicate<LivingEntity>) entity -> {
             if (entity instanceof Player player) return !player.isCreative() && !entity.isSpectator();
             else
-                return entity.getType().is(IafEntityTags.SCARES_COCKATRICES) && !entity.getType().is(IafEntityTags.CHICKENS);
+                return BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SCARES_COCKATRICES) && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS);
         }));
         this.goalSelector.addGoal(4, new CockatriceAIWanderGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new CockatriceAIAggroLookGoal(this));
@@ -166,7 +167,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         this.targetSelector.addGoal(5, new CockatriceAITargetGoal<>(this, LivingEntity.class, true, entity -> {
             if (entity instanceof Player player) return !player.isCreative() && !entity.isSpectator();
             else
-                return (entity instanceof Enemy) && CockatriceEntity.this.isTame() && !(entity instanceof Creeper) && !(entity instanceof ZombifiedPiglin) && !(entity instanceof EnderMan) || entity.getType().is(IafEntityTags.COCKATRICE_TARGETS) && (!entity.getType().is(IafEntityTags.CHICKENS));
+                return (entity instanceof Enemy) && CockatriceEntity.this.isTame() && !(entity instanceof Creeper) && !(entity instanceof ZombifiedPiglin) && !(entity instanceof EnderMan) || BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.COCKATRICE_TARGETS) && (!BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS));
         }));
     }
 
@@ -199,7 +200,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
 
     @Override
     public boolean isAlliedTo(Entity entityIn) {
-        if (entityIn.getType().is(IafEntityTags.CHICKENS))
+        if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityIn.getType()).is(IafEntityTags.CHICKENS))
             return true;
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
@@ -218,7 +219,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (source.getEntity() != null) {
             Entity entity = source.getEntity();
-            if (entity.getType().is(IafEntityTags.SCARES_COCKATRICES))
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SCARES_COCKATRICES))
                 damage *= 5;
         }
         if (source == this.level().damageSources().inWall())
@@ -227,7 +228,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     private boolean canUseStareOn(Entity entity) {
-        return (!(entity instanceof BlacklistedFromStatues statues) || statues.canBeTurnedToStone()) && !entity.getType().is(IafEntityTags.COCKATRICE_TARGETS);
+        return (!(entity instanceof BlacklistedFromStatues statues) || statues.canBeTurnedToStone()) && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.COCKATRICE_TARGETS);
     }
 
     private void switchAI(boolean melee) {
@@ -623,7 +624,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         if (this.getTarget() != null) {
             if (this.distanceTo(this.getTarget()) < 4D) return true;
             Entity entity = this.getTarget();
-            return entity.getType().is(IafEntityTags.COCKATRICE_TARGETS) || blindness || !this.canUseStareOn(this.getTarget());
+            return BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.COCKATRICE_TARGETS) || blindness || !this.canUseStareOn(this.getTarget());
         }
         return false;
     }

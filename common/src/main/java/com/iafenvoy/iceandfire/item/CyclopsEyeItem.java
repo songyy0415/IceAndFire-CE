@@ -11,8 +11,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.Item;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import java.util.function.Consumer;
@@ -24,7 +26,7 @@ public class CyclopsEyeItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, EquipmentSlot slot) {
         if (entity instanceof LivingEntity living) {
             int tick = stack.getOrDefault(IafDataComponents.TICK_COUNTER.get(), 0);
             if (living.getMainHandItem() == stack || living.getOffhandItem() == stack) {

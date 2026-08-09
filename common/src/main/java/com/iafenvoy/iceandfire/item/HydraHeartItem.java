@@ -8,8 +8,10 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -20,8 +22,8 @@ public class HydraHeartItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof Player player && itemSlot >= 0 && itemSlot <= 8) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, EquipmentSlot slot) {
+        if (entity instanceof Player player && slot == EquipmentSlot.MAINHAND) {
             double healthPercentage = player.getHealth() / Math.max(1, player.getMaxHealth());
             if (healthPercentage < 1.0D) {
                 int level = 0;

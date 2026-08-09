@@ -9,7 +9,6 @@ import java.util.List;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,7 +22,7 @@ public class DragonFluteItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player player, InteractionHand hand) {
+    public InteractionResult use(Level worldIn, Player player, InteractionHand hand) {
         ItemStack itemStackIn = player.getItemInHand(hand);
         player.getCooldowns().addCooldown(this, 60);
 
@@ -37,7 +36,7 @@ public class DragonFluteItem extends Item {
         for (IDragonFlute dragon : dragons)
             dragon.onHearFlute(player);
         worldIn.playSound(player, player.blockPosition(), IafSounds.DRAGONFLUTE.get(), SoundSource.NEUTRAL, 1, 1.75F);
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
+        return InteractionResult.SUCCESS;
     }
 
     public static class Sorter implements Comparator<Entity> {

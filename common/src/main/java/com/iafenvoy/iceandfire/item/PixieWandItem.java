@@ -10,7 +10,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -28,7 +27,7 @@ public class PixieWandItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
         ItemStack itemStackIn = user.getItemInHand(hand);
         boolean flag = user.isCreative() || EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(user.registryAccess(), Enchantments.INFINITY), itemStackIn) > 0;
         ItemStack itemstack = this.findAmmo(user);
@@ -57,7 +56,7 @@ public class PixieWandItem extends Item {
             itemstack.hurtAndBreak(1, user, LivingEntity.getSlotForHand(user.getUsedItemHand()));
             user.getCooldowns().addCooldown(this, 5);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
+        return InteractionResult.SUCCESS;
     }
 
     public boolean isInfinite(ItemStack stack, ItemStack bow, Player player) {

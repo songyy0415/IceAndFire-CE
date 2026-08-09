@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -107,11 +106,11 @@ public class GorgonHeadItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand hand) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand hand) {
         ItemStack itemStackIn = playerIn.getItemInHand(hand);
         playerIn.startUsingItem(hand);
         itemStackIn.set(IafDataComponents.ACTIVE.get(), Unit.INSTANCE);
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
+        return InteractionResult.SUCCESS;
     }
 
     @Override

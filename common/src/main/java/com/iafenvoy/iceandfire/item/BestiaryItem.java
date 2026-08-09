@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,14 +35,14 @@ public class BestiaryItem extends Item implements MenuProvider {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (playerIn instanceof ServerPlayer serverPlayer)
             MenuRegistry.openExtendedMenu(serverPlayer, this, buf -> {
                 CompoundTag compound = new CompoundTag();
                 compound.put("data", ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, playerIn.getItemInHand(handIn)).resultOrPartial(IceAndFire.LOGGER::error).orElse(new CompoundTag()));
                 buf.writeNbt(compound);
             });
-        return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
+        return InteractionResult.PASS;
     }
 
     @Override

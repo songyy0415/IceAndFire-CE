@@ -10,7 +10,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -31,7 +30,7 @@ public class SirenFluteItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player player, InteractionHand hand) {
+    public InteractionResult use(Level worldIn, Player player, InteractionHand hand) {
         ItemStack itemStackIn = player.getItemInHand(hand);
         player.startUsingItem(hand);
         player.getCooldowns().addCooldown(this, 900);
@@ -76,7 +75,7 @@ public class SirenFluteItem extends Item {
         }
 
         player.playSound(IafSounds.SIREN_SONG.get(), 1, 1);
-        return new InteractionResultHolder<>(InteractionResult.PASS, itemStackIn);
+        return InteractionResult.PASS;
     }
 
     @Override

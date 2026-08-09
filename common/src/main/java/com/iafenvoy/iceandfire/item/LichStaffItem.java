@@ -6,7 +6,6 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -24,7 +23,7 @@ public class LichStaffItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand hand) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand hand) {
         ItemStack itemStackIn = playerIn.getItemInHand(hand);
         if (!worldIn.isClientSide()) {
             playerIn.startUsingItem(hand);
@@ -45,6 +44,6 @@ public class LichStaffItem extends Item {
             itemStackIn.hurtAndBreak(1, playerIn, LivingEntity.getSlotForHand(hand));
             playerIn.getCooldowns().addCooldown(this, 4);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
+        return InteractionResult.SUCCESS;
     }
 }

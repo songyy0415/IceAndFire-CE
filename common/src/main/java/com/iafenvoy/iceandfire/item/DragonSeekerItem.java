@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -32,7 +31,7 @@ public class DragonSeekerItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
         if (world.isClientSide()) return super.use(world, user, hand);
         if (!IafCommonConfig.INSTANCE.misc.enableDragonSeeker.getValue()) {
             user.sendSystemMessage(Component.translatable("text.iceandfire.not_enable"));
@@ -46,7 +45,7 @@ public class DragonSeekerItem extends Item {
         }), user, user.getX(), user.getY(), user.getZ(), new AABB(this.type.add(user.position(), true), this.type.add(user.position(), false)));
         if (dragon == null) {
             user.sendSystemMessage(Component.translatable("item.iceandfire.dragon_seeker.not_found"));
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
         if (this.type.admin) {
             String pos1 = String.format("[%d, %d, %d]", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ()), pos2 = String.format("/tp @s %d %d %d", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ());
@@ -54,7 +53,7 @@ public class DragonSeekerItem extends Item {
             user.sendSystemMessage(Component.translatable("item.iceandfire.dragon_seeker.found_location").append(locationText));
         } else
             user.sendSystemMessage(Component.translatable("item.iceandfire.dragon_seeker.found"));
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override

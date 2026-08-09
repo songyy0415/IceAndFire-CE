@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.TrollEntity;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class TrollModel extends DragonBaseModel<TrollEntity> {
+public class TrollModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox body;
     public final AdvancedModelBox upperBody;
     public final AdvancedModelBox loin;
@@ -346,7 +347,7 @@ public class TrollModel extends DragonBaseModel<TrollEntity> {
     }
 
     @Override
-    public void setAngles(TrollEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(TrollEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.log1.showModel = true;
 
@@ -393,9 +394,9 @@ public class TrollModel extends DragonBaseModel<TrollEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
         this.animateStatue((TrollEntity) living);
         this.log1.showModel = false;
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

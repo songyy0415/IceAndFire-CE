@@ -1,18 +1,19 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 
-public class GorgonModel extends DragonBaseModel<GorgonEntity> {
+public class GorgonModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Tail_1;
     public final AdvancedModelBox Tail_2;
     public final AdvancedModelBox Body;
@@ -607,7 +608,7 @@ public class GorgonModel extends DragonBaseModel<GorgonEntity> {
     }
 
     @Override
-    public void setAngles(GorgonEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(GorgonEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
@@ -635,8 +636,8 @@ public class GorgonModel extends DragonBaseModel<GorgonEntity> {
         this.walk(this.Left_Arm, speed_idle * 1.5F, degree_idle * 0.4F, true, 2, 0.3F, animationProgress, 1);
         this.flap(this.Right_Arm, speed_idle * 1.5F, degree_idle * 0.2F, false, 2, 0.2F, animationProgress, 1);
         this.flap(this.Left_Arm, speed_idle * 1.5F, degree_idle * 0.2F, true, 2, 0.2F, animationProgress, 1);
-        this.Right_Arm.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 2.0F * limbDistance * 0.5F;
-        this.Left_Arm.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F) * 2.0F * limbDistance * 0.5F;
+        this.Right_Arm.rotateAngleX = Mth.cos(limbAngle * 0.6662F + (float) Math.PI) * 2.0F * limbDistance * 0.5F;
+        this.Left_Arm.rotateAngleX = Mth.cos(limbAngle * 0.6662F) * 2.0F * limbDistance * 0.5F;
 
         float f12 = (float) Math.toRadians(-1.29f) + limbDistance;
         if (f12 < 0.0F) f12 = 0.0F;
@@ -722,7 +723,7 @@ public class GorgonModel extends DragonBaseModel<GorgonEntity> {
 
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

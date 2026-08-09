@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.HippocampusEntity;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
+public class HippocampusModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox FrontThighR;
     public final AdvancedModelBox FrontThighL;
@@ -242,9 +243,9 @@ public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
     }
 
     @Override
-    public void setAngles(HippocampusEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(HippocampusEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
-        if (this.child) {
+        if (this.young) {
             this.Body.setShouldScaleChildren(true);
             this.Body.setScale(0.5F, 0.5F, 0.5F);
             this.Head.setScale(1.5F, 1.5F, 1.5F);
@@ -275,7 +276,7 @@ public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
         this.progressRotation(this.FlukeL, Math.max(0, entity.sitProgress), (float) Math.toRadians(-50F), (float) Math.toRadians(-5F), (float) Math.toRadians(-30F));
         this.progressRotation(this.Body, entity.sitProgress * entity.onLandProgress * 0.05F, (float) Math.toRadians(-5F), (float) Math.toRadians(-5F), (float) Math.toRadians(85F));
         this.progressPosition(this.Body, entity.sitProgress * entity.onLandProgress * 0.05F, 0.0F, 10, 0.0F);
-        if (entity.isOnGround() && !entity.isTouchingWater()) {
+        if (entity.onGround() && !entity.isInWater()) {
             this.progressRotation(this.FrontThighL, Math.max(0, entity.sitProgress), 0.0F, 0.0F, (float) Math.toRadians(60F));
             this.progressRotation(this.FrontThighR, Math.max(0, entity.sitProgress), 0.0F, 0.0F, (float) Math.toRadians(-60F));
         }
@@ -288,7 +289,7 @@ public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
         AdvancedModelBox[] LEG_L = {this.FrontThighL, this.FrontLegL};
         AdvancedModelBox[] LEG_R = {this.FrontThighR, this.FrontLegR};
         AdvancedModelBox[] NECK = new AdvancedModelBox[]{this.Neck, this.Head};
-        if (entity.isTouchingWater()) {
+        if (entity.isInWater()) {
             this.chainWave(NECK, speed_swim, degree_swim * 0.15F, -2, limbAngle, limbDistance);
             this.chainWave(TAIL_W_BODY, speed_swim, degree_swim * 0.15F, -3, limbAngle, limbDistance);
             this.walk(this.Tail_3, speed_swim, degree_swim * -0.5F, false, 0, 0, limbAngle, limbDistance);
@@ -317,8 +318,8 @@ public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         this.NoseBand.showModel = false;
         this.ReinL.showModel = false;
         this.ReinR.showModel = false;

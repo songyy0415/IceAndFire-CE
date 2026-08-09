@@ -2,9 +2,16 @@ package com.iafenvoy.iceandfire.render.model;
 
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
-import net.minecraft.entity.Entity;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 
-public abstract class DragonBaseModel<T extends Entity> extends AdvancedEntityModel<T> implements ICustomStatueModel {
+public abstract class DragonBaseModel<T extends EntityRenderState> extends AdvancedEntityModel<T> implements ICustomStatueModel {
+    public DragonBaseModel() {
+        super(new ModelPart(List.of(), Map.of()));
+    }
+
     public void progressRotationInterp(AdvancedModelBox model, float progress, float rotX, float rotY, float rotZ, float max) {
         model.rotateAngleX += progress * (rotX - model.defaultRotationX) / max;
         model.rotateAngleY += progress * (rotY - model.defaultRotationY) / max;

@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
 import com.iafenvoy.iceandfire.entity.HydraEntity;
@@ -7,14 +8,14 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 
-public class HydraHeadModel extends DragonBaseModel<HydraEntity> {
+public class HydraHeadModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Neck1;
     public final AdvancedModelBox Neck2;
     public final AdvancedModelBox Neck3;
@@ -118,7 +119,7 @@ public class HydraHeadModel extends DragonBaseModel<HydraEntity> {
     }
 
     @Override
-    public void setAngles(HydraEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(HydraEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
@@ -127,7 +128,7 @@ public class HydraHeadModel extends DragonBaseModel<HydraEntity> {
         if (GorgonEntity.isStoneMob(entity)) {
             return;
         }
-        float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         AdvancedModelBox[] ENTIRE_HEAD = new AdvancedModelBox[]{this.Neck1, this.Neck2, this.Neck3, this.Neck4};
         this.chainFlap(ENTIRE_HEAD, speed_idle, degree_idle * 0.15F, -3 + this.headIndex % 4, animationProgress, 1);
         this.chainSwing(ENTIRE_HEAD, speed_idle, degree_idle * 0.05F, -3 + this.headIndex % 3, animationProgress, 1);
@@ -137,7 +138,7 @@ public class HydraHeadModel extends DragonBaseModel<HydraEntity> {
         this.walk(this.neckSpike2, speed_idle * 1.5F, degree_idle * 0.4F, false, 3, -0.1F, animationProgress, 1);
         this.chainSwing(ENTIRE_HEAD, speed_walk, degree_walk * 0.75F, -3, limbAngle, limbDistance);
         float speakProgress = entity.prevSpeakingProgress[this.headIndex] + partialTicks * (entity.speakingProgress[this.headIndex] - entity.prevSpeakingProgress[this.headIndex]);
-        this.progressRotationInterp(this.LowerJaw1, MathHelper.sin((float) (speakProgress * Math.PI)) * 10F, (float) Math.toRadians(25), 0.0F, 0.0F, 10F);
+        this.progressRotationInterp(this.LowerJaw1, Mth.sin((float) (speakProgress * Math.PI)) * 10F, (float) Math.toRadians(25), 0.0F, 0.0F, 10F);
         float strikeProgress = entity.prevStrikeProgress[this.headIndex] + partialTicks * (entity.strikingProgress[this.headIndex] - entity.prevStrikeProgress[this.headIndex]);
         this.progressRotationInterp(this.Neck2, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.Neck3, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);
@@ -158,8 +159,8 @@ public class HydraHeadModel extends DragonBaseModel<HydraEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 
 

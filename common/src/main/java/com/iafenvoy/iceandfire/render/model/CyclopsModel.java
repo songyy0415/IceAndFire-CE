@@ -3,16 +3,17 @@ package com.iafenvoy.iceandfire.render.model;
 
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.CyclopsEntity;
+import com.iafenvoy.iceandfire.render.entity.state.CyclopsRenderState;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class CyclopsModel extends DragonBaseModel<CyclopsEntity> {
+public class CyclopsModel extends DragonBaseModel<CyclopsRenderState> {
     public final AdvancedModelBox body;
     public final AdvancedModelBox UpperBody;
     public final AdvancedModelBox Loin;
@@ -377,8 +378,13 @@ public class CyclopsModel extends DragonBaseModel<CyclopsEntity> {
     }
 
     @Override
-    public void setAngles(CyclopsEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+    public void setupAnim(CyclopsRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         float speed_walk = 0.2F;
         float speed_idle = 0.05F;
         float degree_walk = 0.75F;
@@ -399,14 +405,14 @@ public class CyclopsModel extends DragonBaseModel<CyclopsEntity> {
         this.flap(this.rightarm, speed_idle, degree_idle * -0.1F, false, 0, 0F, animationProgress, 1);
         this.flap(this.leftarm2, speed_idle, degree_idle * -0.1F, true, 0, -0.1F, animationProgress, 1);
         this.flap(this.rightarm2, speed_idle, degree_idle * -0.1F, false, 0, -0.1F, animationProgress, 1);
-        if (entity.getAnimation() != CyclopsEntity.ANIMATION_EATPLAYER)
+        if (!state.eatingPlayer)
             this.faceTarget(headYaw, headPitch, 1, this.Head);
         this.walk(this.Jaw, speed_idle, degree_idle * -0.15F, true, 0F, -0.1F, animationProgress, 1);
 
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

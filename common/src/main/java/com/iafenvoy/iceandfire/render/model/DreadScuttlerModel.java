@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.DreadScuttlerEntity;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class DreadScuttlerModel extends DragonBaseModel<DreadScuttlerEntity> {
+public class DreadScuttlerModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Body2;
     public final AdvancedModelBox Body3;
     public final AdvancedModelBox Body1;
@@ -259,7 +260,7 @@ public class DreadScuttlerModel extends DragonBaseModel<DreadScuttlerEntity> {
     }
 
     @Override
-    public void setAngles(DreadScuttlerEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(DreadScuttlerEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_idle = 0.05F;
         float degree_idle = 0.5F;
@@ -308,8 +309,8 @@ public class DreadScuttlerModel extends DragonBaseModel<DreadScuttlerEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 
 

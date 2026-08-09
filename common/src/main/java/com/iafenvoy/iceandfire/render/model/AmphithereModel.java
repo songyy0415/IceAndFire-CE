@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
+public class AmphithereModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox BodyUpper;
     public final AdvancedModelBox BodyLower;
     public final AdvancedModelBox Neck1;
@@ -432,10 +433,10 @@ public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
     }
 
     @Override
-    public void setAngles(AmphithereEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(AmphithereEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
-        if (this.child) {
+        if (this.young) {
             this.BodyUpper.setShouldScaleChildren(true);
             this.HeadFront.setShouldScaleChildren(true);
             this.Jaw.setShouldScaleChildren(true);
@@ -561,7 +562,7 @@ public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
             this.progressRotation(this.Neck3, sitProgress, 0.18203784098300857F, -0.0F, 0.0F);
         }
 
-        if (entity.groundProgress <= 0 && entity.getAnimation() != AmphithereEntity.ANIMATION_WING_BLAST && !entity.isOnGround()) {
+        if (entity.groundProgress <= 0 && entity.getAnimation() != AmphithereEntity.ANIMATION_WING_BLAST && !entity.onGround()) {
             entity.roll_buffer.applyChainFlapBuffer(this.BodyUpper);
             entity.pitch_buffer.applyChainWaveBuffer(this.BodyUpper);
             entity.tail_buffer.applyChainSwingBuffer(TAIL);
@@ -569,7 +570,7 @@ public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

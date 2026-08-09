@@ -2,16 +2,17 @@ package com.iafenvoy.iceandfire.render.model;
 
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
+import com.iafenvoy.iceandfire.render.entity.state.DeathWormRenderState;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
+public class DeathWormModel extends DragonBaseModel<DeathWormRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox Head;
     public final AdvancedModelBox Spine1;
@@ -259,12 +260,17 @@ public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
     }
 
     @Override
-    public void setAngles(DeathWormEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(DeathWormRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
         float speed_idle = 0.1F;
         float degree_idle = 0.5F;
         float speed_walk = 0.2F;
         float degree_walk = 0.15F;
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         AdvancedModelBox[] WORM = {this.Body, this.Body2, this.Body3, this.Body4, this.Body5, this.Body6, this.Body7, this.Body8, this.Body9, this.Tail1, this.Tail2, this.Tail3, this.Tail4};
         this.walk(this.ToothT, speed_idle, degree_idle * 0.15F, true, 0.1F, 0F, animationProgress, 1);
         this.walk(this.ToothB, speed_idle, degree_idle * 0.15F, false, 0.1F, 0F, animationProgress, 1);
@@ -275,7 +281,7 @@ public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
         this.chainSwing(WORM, speed_walk, degree_walk * 0.1F, -3, animationProgress, 1);
         this.chainSwing(WORM, speed_walk, degree_walk, -3, limbAngle, limbDistance);
         this.chainFlap(WORM, speed_walk, degree_walk * 0.75F, -3, limbAngle, limbDistance);
-        float jumpProgress = entity.prevJumpProgress + (entity.jumpProgress - entity.prevJumpProgress) * (animationProgress - entity.age);
+        float jumpProgress = state.prevJumpProgress + (state.jumpProgress - state.prevJumpProgress) * (state.ageInTicks - state.tickCount);
         this.progressRotation(this.Head, jumpProgress, (float) Math.toRadians(25), 0.0F, 0.0F);
         this.progressRotation(this.Body, jumpProgress, (float) Math.toRadians(65), 0.0F, 0.0F);
         this.progressRotation(this.Body2, jumpProgress, (float) Math.toRadians(-21), 0.0F, 0.0F);
@@ -289,10 +295,10 @@ public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
         this.progressRotation(this.Tail2, jumpProgress, (float) Math.toRadians(-21), 0.0F, 0.0F);
         this.progressRotation(this.Tail3, jumpProgress, (float) Math.toRadians(-21), 0.0F, 0.0F);
         this.progressRotation(this.Tail4, jumpProgress, (float) Math.toRadians(-21), 0.0F, 0.0F);
-        if (entity.tail_buffer != null)
-            entity.tail_buffer.applyChainSwingBuffer(WORM);
+        if (state.tailBuffer != null)
+            state.tailBuffer.applyChainSwingBuffer(WORM);
 
-        if (entity.getWormJumping() > 0)
+        if (state.wormJumping > 0)
             this.Body.rotateAngleX += headPitch * ((float) Math.PI / 180F);
     }
 
@@ -307,7 +313,7 @@ public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

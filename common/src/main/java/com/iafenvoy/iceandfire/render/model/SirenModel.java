@@ -1,17 +1,18 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.SirenEntity;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class SirenModel extends DragonBaseModel<SirenEntity> {
+public class SirenModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Tail_1;
     public final AdvancedModelBox Tail_2;
     public final AdvancedModelBox Body;
@@ -169,7 +170,7 @@ public class SirenModel extends DragonBaseModel<SirenEntity> {
     }
 
     @Override
-    public void setAngles(SirenEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(SirenEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;
@@ -212,7 +213,7 @@ public class SirenModel extends DragonBaseModel<SirenEntity> {
                     this.progressPosition(this.Head, entity.singProgress, 0, -12.0F, -0.5F);
                     this.walk(this.Right_Arm, speed_idle * 1.5F, degree_idle * 0.6F, false, 2, 0F, animationProgress, 1);
                     this.flap(this.Right_Arm, speed_idle * 1.5F, degree_idle * 0.6F, false, 2, 0F, animationProgress, 1);
-                    if (entity.isOnGround()) {
+                    if (entity.onGround()) {
                         this.chainFlap(TAIL_NO_BASE, speed_idle, degree_idle, 0, animationProgress, 1);
                         this.swing(this.Tail_2, speed_idle, degree_idle * 0.4F, false, 0F, -0.4F, animationProgress, 1);
                         this.swing(this.Tail_3, speed_idle, degree_idle * 0.4F, false, 0F, 0.6F, animationProgress, 1);
@@ -229,7 +230,7 @@ public class SirenModel extends DragonBaseModel<SirenEntity> {
                     this.progressPosition(this.Tail_1, entity.singProgress, 0.0F, 18.9F, -0.2F);
                     this.walk(this.Right_Arm, speed_idle * 1.5F, degree_idle * 0.6F, false, 2, 0F, animationProgress, 1);
                     this.walk(this.Left_Arm, speed_idle * 1.5F, degree_idle * 0.6F, true, 2, 0F, animationProgress, 1);
-                    if (entity.isOnGround())
+                    if (entity.onGround())
                         this.chainFlap(TAIL_NO_BASE, speed_idle, degree_idle, 0, animationProgress, 1);
                 }
                 default -> {
@@ -245,7 +246,7 @@ public class SirenModel extends DragonBaseModel<SirenEntity> {
                     this.walk(this.Left_Arm, speed_idle * 1.5F, degree_idle * 0.6F, true, 2, 0F, animationProgress, 1);
                     this.flap(this.Right_Arm, speed_idle * 1.5F, degree_idle * 0.6F, false, 2, 0F, animationProgress, 1);
                     this.flap(this.Left_Arm, speed_idle * 1.5F, degree_idle * 0.6F, true, 2, 0F, animationProgress, 1);
-                    if (entity.isOnGround())
+                    if (entity.onGround())
                         this.chainFlap(TAIL_NO_BASE, speed_idle, degree_idle * 0.5F, -1, animationProgress, 1);
                 }
             }
@@ -256,7 +257,7 @@ public class SirenModel extends DragonBaseModel<SirenEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

@@ -1,21 +1,22 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
-public class PixieModel extends DragonBaseModel<PixieEntity> {
+public class PixieModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox Left_Arm;
     public final AdvancedModelBox Head;
@@ -103,7 +104,7 @@ public class PixieModel extends DragonBaseModel<PixieEntity> {
     }
 
     @Override
-    public void setAngles(PixieEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(PixieEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         float speed_fly = 1.1F;
         float speed_idle = 0.05F;
@@ -112,8 +113,8 @@ public class PixieModel extends DragonBaseModel<PixieEntity> {
         AdvancedModelBox[] LEFT_WINGS = new AdvancedModelBox[]{this.Left_Wing, this.Left_Wing2};
         AdvancedModelBox[] RIGHT_WINGS = new AdvancedModelBox[]{this.Right_Wing, this.Right_Wing2};
 
-        this.Left_Leg.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.0F * limbDistance * 0.5F;
-        this.Right_Leg.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F) * 1.0F * limbDistance * 0.5F;
+        this.Left_Leg.rotateAngleX = Mth.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.0F * limbDistance * 0.5F;
+        this.Right_Leg.rotateAngleX = Mth.cos(limbAngle * 0.6662F) * 1.0F * limbDistance * 0.5F;
 
         float f12 = limbDistance;
         if (f12 < 0.0F) {
@@ -124,7 +125,7 @@ public class PixieModel extends DragonBaseModel<PixieEntity> {
         }
         this.Body.rotateAngleX = f12;
         this.Head.rotateAngleX -= f12;
-        ItemStack itemstack = entity.getStackInHand(Hand.MAIN_HAND);
+        ItemStack itemstack = entity.getItemInHand(InteractionHand.MAIN_HAND);
         if (!itemstack.isEmpty()) {
 
             this.faceTarget(headYaw, headPitch, 1, this.Head);
@@ -135,8 +136,8 @@ public class PixieModel extends DragonBaseModel<PixieEntity> {
             this.Right_Leg.rotateAngleX += (float) Math.toRadians(-10);
             this.Head.rotateAngleX += (float) Math.toRadians(-10);
         } else {
-            this.Right_Arm.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.0F * limbDistance * 0.5F;
-            this.Left_Arm.rotateAngleX = MathHelper.cos(limbAngle * 0.6662F) * 1.0F * limbDistance * 0.5F;
+            this.Right_Arm.rotateAngleX = Mth.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.0F * limbDistance * 0.5F;
+            this.Left_Arm.rotateAngleX = Mth.cos(limbAngle * 0.6662F) * 1.0F * limbDistance * 0.5F;
         }
 
         if (entity.isPixieSitting()) {
@@ -213,14 +214,14 @@ public class PixieModel extends DragonBaseModel<PixieEntity> {
             this.Left_Wing2.rotateAngleZ = (float) Math.toRadians(-8);
             this.Right_Wing2.rotateAngleZ = (float) Math.toRadians(8);
         } else if (jar != null) {
-            float partialTicks = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+            float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
             this.chainWave(LEFT_WINGS, speed_fly, degree_fly * 0.75F, 1, jar.ticksExisted + partialTicks, 1);
             this.chainWave(RIGHT_WINGS, speed_fly, degree_fly * 0.75F, 1, jar.ticksExisted + partialTicks, 1);
         }
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

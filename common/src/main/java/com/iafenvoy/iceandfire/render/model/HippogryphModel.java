@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.registry.IafHippogryphTypes;
@@ -7,12 +8,12 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
 
-public class HippogryphModel extends DragonBaseModel<HippogryphEntity> {
+public class HippogryphModel extends DragonBaseModel<LivingEntityRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox Neck;
     public final AdvancedModelBox HindThighR;
@@ -388,9 +389,9 @@ public class HippogryphModel extends DragonBaseModel<HippogryphEntity> {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
-        if (this.child) {
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        if (this.young) {
             this.Body.setShouldScaleChildren(true);
             this.Head.setShouldScaleChildren(false);
             this.Body.setScale(0.5F, 0.5F, 0.5F);
@@ -538,9 +539,9 @@ public class HippogryphModel extends DragonBaseModel<HippogryphEntity> {
     }
 
     @Override
-    public void setAngles(HippogryphEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(HippogryphEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
-        if (this.child) {
+        if (this.young) {
             this.Body.setShouldScaleChildren(true);
             this.Head.setShouldScaleChildren(false);
             this.Body.setScale(0.5F, 0.5F, 0.5F);
@@ -555,7 +556,7 @@ public class HippogryphModel extends DragonBaseModel<HippogryphEntity> {
             this.Quill_L.setScale(1, 1, 1);
             this.Quill_R.setScale(1, 1, 1);
         }
-        if (this.child) {
+        if (this.young) {
             this.progressPosition(this.Body, entity.sitProgress, 0, 16, 0);
         } else {
             this.progressPosition(this.Body, entity.sitProgress, 0, 18, 0);

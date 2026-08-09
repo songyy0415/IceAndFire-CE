@@ -1,19 +1,23 @@
 package com.iafenvoy.iceandfire.render.model;
 
 import com.google.common.collect.ImmutableList;
-import com.iafenvoy.iceandfire.entity.DragonEggEntity;
 import com.iafenvoy.iceandfire.item.block.entity.EggInIceBlockEntity;
+import com.iafenvoy.iceandfire.render.entity.state.DragonEggRenderState;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.client.model.geom.ModelPart;
 
-public class DragonEggModel extends AdvancedEntityModel<DragonEggEntity> {
+public class DragonEggModel extends AdvancedEntityModel<DragonEggRenderState> {
     public final AdvancedModelBox Egg1;
     public final AdvancedModelBox Egg2;
     public final AdvancedModelBox Egg3;
     public final AdvancedModelBox Egg4;
 
     public DragonEggModel() {
+        super(new ModelPart(List.of(), Map.of()));
         this.texWidth = 64;
         this.texHeight = 32;
         this.Egg3 = new AdvancedModelBox(this, 0, 0);
@@ -45,13 +49,13 @@ public class DragonEggModel extends AdvancedEntityModel<DragonEggEntity> {
     }
 
     @Override
-    public void setAngles(DragonEggEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(DragonEggRenderState state) {
         this.resetToDefaultPose();
         this.Egg1.setPos(0.0F, 19.6F, 0.0F);
         this.Egg4.setPos(0.0F, -0.9F, 0.0F);
-        if (entity instanceof DragonEggEntity egg && egg.isLocationValid()) {
-            this.walk(this.Egg1, 0.3F, 0.3F, true, 1, 0, animationProgress, 1);
-            this.flap(this.Egg1, 0.3F, 0.3F, false, 0, 0, animationProgress, 1);
+        if (state.locationValid) {
+            this.walk(this.Egg1, 0.3F, 0.3F, true, 1, 0, state.ageInTicks, 1);
+            this.flap(this.Egg1, 0.3F, 0.3F, false, 0, 0, state.ageInTicks, 1);
         }
     }
 

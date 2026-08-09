@@ -12,7 +12,7 @@ import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import com.iafenvoy.uranus.object.entity.collision.ICustomCollisions;
+import com.iafenvoy.iceandfire.entity.pathfinding.collision.ICustomCollisions;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

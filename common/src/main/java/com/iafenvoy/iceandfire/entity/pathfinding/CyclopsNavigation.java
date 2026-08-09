@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.entity.pathfinding;
 
 import com.iafenvoy.iceandfire.entity.CyclopsEntity;
-import com.iafenvoy.uranus.object.entity.collision.CustomCollisionsNavigator;
+import com.iafenvoy.iceandfire.entity.pathfinding.collision.CustomCollisionsNavigator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;

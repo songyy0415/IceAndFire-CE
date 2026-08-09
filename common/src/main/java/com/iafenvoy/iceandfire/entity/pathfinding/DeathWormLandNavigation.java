@@ -46,6 +46,11 @@ public class DeathWormLandNavigation extends PathNavigation {
     }
 
     @Override
+    public boolean canNavigateGround() {
+        return true;
+    }
+
+    @Override
     protected Vec3 getTempMobPos() {
         return new Vec3(this.mob.getX(), this.getPathablePosY(), this.mob.getZ());
     }
@@ -62,7 +67,7 @@ public class DeathWormLandNavigation extends PathNavigation {
             while (blockpos.getY() > 0 && this.level.getBlockState(blockpos).isAir())
                 blockpos = blockpos.below();
             if (blockpos.getY() > 0) return super.createPath(blockpos.above(), i);
-            while (blockpos.getY() < this.level.getMaxBuildHeight() && this.level.getBlockState(blockpos).isAir())
+            while (blockpos.getY() < this.level.getMaxY() && this.level.getBlockState(blockpos).isAir())
                 blockpos = blockpos.above();
             pos = blockpos;
         }
@@ -71,7 +76,7 @@ public class DeathWormLandNavigation extends PathNavigation {
             return super.createPath(pos, i);
         else {
             BlockPos blockpos1 = pos.above();
-            while (blockpos1.getY() < this.level.getMaxBuildHeight() && this.level.getBlockState(blockpos1).isSolid())
+            while (blockpos1.getY() < this.level.getMaxY() && this.level.getBlockState(blockpos1).isSolid())
                 blockpos1 = blockpos1.above();
             return super.createPath(blockpos1, i);
         }
@@ -195,7 +200,7 @@ public class DeathWormLandNavigation extends PathNavigation {
                         float f = this.mob.getPathfindingMalus(pathnodetype);
 
                         if (f < 0.0F || f >= 8.0F) return false;
-                        if (pathnodetype == PathType.DAMAGE_FIRE || pathnodetype == PathType.DANGER_FIRE || pathnodetype == PathType.DAMAGE_OTHER)
+                        if (pathnodetype == PathType.FIRE || pathnodetype == PathType.FIRE_IN_NEIGHBOR || pathnodetype == PathType.DAMAGING)
                             return false;
                     }
                 }

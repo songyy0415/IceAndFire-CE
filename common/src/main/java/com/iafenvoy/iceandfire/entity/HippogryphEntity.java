@@ -19,7 +19,7 @@ import com.iafenvoy.iceandfire.screen.handler.HippogryphScreenHandler;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.AdvancedPathNavigate;
+import com.iafenvoy.iceandfire.entity.pathfinding.raycoms.AdvancedPathNavigate;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.ChatFormatting;

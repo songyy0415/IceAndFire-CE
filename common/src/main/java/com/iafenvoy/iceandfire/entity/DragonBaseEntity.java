@@ -31,16 +31,15 @@ import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.object.EntityUtil;
-import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.AdvancedPathNavigate;
-import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.IPassabilityNavigator;
-import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.PathingStuckHandler;
-import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.pathjobs.ICustomSizeNavigator;
+import com.iafenvoy.iceandfire.entity.pathfinding.raycoms.AdvancedPathNavigate;
+import com.iafenvoy.iceandfire.entity.pathfinding.raycoms.ICustomSizeNavigator;
+import com.iafenvoy.iceandfire.entity.pathfinding.raycoms.IPassabilityNavigator;
+import com.iafenvoy.iceandfire.entity.pathfinding.raycoms.PathingStuckHandler;
 import com.iafenvoy.uranus.object.item.FoodUtils;
 import com.iafenvoy.uranus.util.RandomHelper;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
-import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -1646,7 +1645,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.prevAnimationProgresses[5] = this.ridingProgress;
         this.prevAnimationProgresses[6] = this.tackleProgress;
         //TODO: Better detect logic
-        if (!IntegrationExecutor.getWhenLoad("ponder", () -> () -> this.level() instanceof SchematicLevel, () -> false)) {
+        if (!IntegrationExecutor.getWhenLoad("ponder", () -> () -> this.level().getClass().getSimpleName().equals("SchematicLevel"), () -> false)) {
             this.refreshDimensions();
             this.updateParts();
         }

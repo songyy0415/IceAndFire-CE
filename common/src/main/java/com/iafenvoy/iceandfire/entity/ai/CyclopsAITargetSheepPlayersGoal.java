@@ -1,16 +1,15 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.mob.MobEntity;
-
 import java.util.EnumSet;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 
-public class CyclopsAITargetSheepPlayersGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-    public CyclopsAITargetSheepPlayersGoal(MobEntity goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
+public class CyclopsAITargetSheepPlayersGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
+    public CyclopsAITargetSheepPlayersGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
         super(goalOwnerIn, targetClassIn, 0, checkSight, true, livingEntity -> {
             return false; //TODO Sheep hunt cyclops
         });
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 }

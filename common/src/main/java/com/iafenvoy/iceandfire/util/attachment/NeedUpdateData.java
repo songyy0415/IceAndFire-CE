@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.util.attachment;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 public class NeedUpdateData<T extends Entity> implements IafEntityAttachment<T> {
     private boolean dirty;

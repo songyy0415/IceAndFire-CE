@@ -28,13 +28,13 @@ public class AmphithereArrowEntity extends AbstractArrow {
         if ((this.tickCount == 1 || this.tickCount % 70 == 0) && !this.inGround && !this.onGround())
             this.playSound(IafSounds.AMPHITHERE_GUST.get(), 1, 1);
         if (this.level().isClientSide() && !this.inGround) {
-            double d0 = this.random.nextGaussian() * 0.02D;
-            double d1 = this.random.nextGaussian() * 0.02D;
-            double d2 = this.random.nextGaussian() * 0.02D;
+            double d0 = this.getRandom().nextGaussian() * 0.02D;
+            double d1 = this.getRandom().nextGaussian() * 0.02D;
+            double d2 = this.getRandom().nextGaussian() * 0.02D;
             double d3 = 10.0D;
             double xRatio = this.getDeltaMovement().x * this.getBbWidth();
             double zRatio = this.getDeltaMovement().z * this.getBbWidth();
-            this.level().addParticle(ParticleTypes.CLOUD, this.getX() + xRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * d3, this.getY() + this.random.nextFloat() * this.getBbHeight() - d1 * d3, this.getZ() + zRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * d3, d0, d1, d2);
+            this.level().addParticle(ParticleTypes.CLOUD, this.getX() + xRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * d3, this.getY() + this.getRandom().nextFloat() * this.getBbHeight() - d1 * d3, this.getZ() + zRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * d3, d0, d1, d2);
         }
     }
 
@@ -56,15 +56,15 @@ public class AmphithereArrowEntity extends AbstractArrow {
 
     public void spawnExplosionParticle() {
         if (this.level().isClientSide()) {
-            for (int height = 0; height < 1 + this.random.nextInt(2); height++)
+            for (int height = 0; height < 1 + this.getRandom().nextInt(2); height++)
                 for (int i = 0; i < 20; ++i) {
-                    double d0 = this.random.nextGaussian() * 0.02D;
-                    double d1 = this.random.nextGaussian() * 0.02D;
-                    double d2 = this.random.nextGaussian() * 0.02D;
+                    double d0 = this.getRandom().nextGaussian() * 0.02D;
+                    double d1 = this.getRandom().nextGaussian() * 0.02D;
+                    double d2 = this.getRandom().nextGaussian() * 0.02D;
                     double d3 = 10.0D;
                     double xRatio = this.getDeltaMovement().x * this.getBbWidth();
                     double zRatio = this.getDeltaMovement().z * this.getBbWidth();
-                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + xRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * d3, this.getY() + this.random.nextFloat() * this.getBbHeight() - d1 * d3, this.getZ() + zRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * d3, d0, d1, d2);
+                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + xRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * d3, this.getY() + this.getRandom().nextFloat() * this.getBbHeight() - d1 * d3, this.getZ() + zRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * d3, d0, d1, d2);
                 }
         } else
             this.level().broadcastEntityEvent(this, (byte) 20);

@@ -25,7 +25,7 @@ public class StymphalianFeatherBundleItem extends Item {
     public InteractionResult use(Level worldIn, Player player, InteractionHand hand) {
         ItemStack itemStackIn = player.getItemInHand(hand);
         player.startUsingItem(hand);
-        player.getCooldowns().addCooldown(this, 15);
+        player.getCooldowns().addCooldown(new ItemStack(this), 15);
         player.playSound(SoundEvents.EGG_THROW, 1, 1);
         if (!worldIn.isClientSide()) {
             float rotation = player.yHeadRot;

@@ -167,7 +167,8 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity)
@@ -178,7 +179,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
                 return livingentity.isAlliedTo(entityIn);
         }
 
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     @Override
@@ -224,12 +225,12 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
             for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.inventory.getItem(i);
                 if (!itemstack.isEmpty() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(this.level().registryAccess(), Enchantments.VANISHING_CURSE), itemstack) == 0)
-                    this.spawnAtLocation(itemstack);
+                    this.spawnAtLocation((ServerLevel) this.level(), itemstack);
             }
         }
         if (this.isChested()) {
             if (!this.level().isClientSide()) {
-                this.spawnAtLocation(Blocks.CHEST);
+                this.spawnAtLocation((ServerLevel) this.level(), Blocks.CHEST);
             }
             this.setChested(false);
         }
@@ -239,7 +240,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         for (int i = 3; i < 18; i++)
             if (!this.inventory.getItem(i).isEmpty()) {
                 if (!this.level().isClientSide())
-                    this.spawnAtLocation(this.inventory.getItem(i), 1);
+                    this.spawnAtLocation((ServerLevel) this.level(), this.inventory.getItem(i), 1);
                 this.inventory.removeItemNoUpdate(i);
             }
     }

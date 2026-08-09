@@ -36,7 +36,7 @@ public class DeathWormEggEntity extends ThrowableItemProjectile {
     public void handleEntityEvent(byte id) {
         if (id == 3) {
             for (int i = 0; i < 8; ++i) {
-                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D);
+                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), (this.getRandom().nextFloat() - 0.5D) * 0.08D, (this.getRandom().nextFloat() - 0.5D) * 0.08D, (this.getRandom().nextFloat() - 0.5D) * 0.08D);
             }
         }
     }
@@ -54,7 +54,7 @@ public class DeathWormEggEntity extends ThrowableItemProjectile {
             float wormSize = 0.25F + (float) (Math.random() * 0.35F);
 
             DeathWormEntity deathworm = new DeathWormEntity(IafEntities.DEATH_WORM.get(), this.level());
-            deathworm.setVariant(this.random.nextInt(3));
+            deathworm.setVariant(this.getRandom().nextInt(3));
             deathworm.setTame(true, false);
             deathworm.setWormHome(this.blockPosition());
             deathworm.setWormAge(1);

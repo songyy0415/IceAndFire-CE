@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.DreadQueenEntity;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -246,9 +247,9 @@ public class IafDragonLogic {
 
     public boolean attackTarget(Entity target, Player ridingPlayer, float damage) {
         if (ridingPlayer == null)
-            return target.hurt(target.level().damageSources().mobAttack(this.dragon), damage);
+            return target.hurtServer((ServerLevel) target.level(), target.level().damageSources().mobAttack(this.dragon), damage);
         else
-            return target.hurt(target.level().damageSources().indirectMagic(this.dragon, ridingPlayer), damage);
+            return target.hurtServer((ServerLevel) target.level(), target.level().damageSources().indirectMagic(this.dragon, ridingPlayer), damage);
     }
 
     /*
@@ -412,14 +413,14 @@ public class IafDragonLogic {
                 } else if (this.dragon.getAnimation() == DragonBaseEntity.ANIMATION_TAILWHACK) {
                     if (this.dragon.getAnimationTick() > 20 && this.dragon.getAnimationTick() < 30) {
                         this.attackTarget(target, ridingPlayer, (int) this.dragon.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
-                        target.knockback(this.dragon.getDragonStage() * 0.6F, Mth.sin(this.dragon.getYRot() * 0.017453292F), -Mth.cos(this.dragon.getYRot() * 0.017453292F));
+                        target.knockback(this.dragon.getDragonStage() * 0.6F, Mth.sin(this.dragon.getYRot() * 0.017453292F), -Mth.cos(this.dragon.getYRot() * 0.017453292F), this.dragon.level().damageSources().mobAttack(this.dragon), 0);
                         this.dragon.usingGroundAttack = this.dragon.getRandom().nextBoolean();
                         this.dragon.randomizeAttacks();
                     }
                 } else if (this.dragon.getAnimation() == DragonBaseEntity.ANIMATION_WINGBLAST)
                     if ((this.dragon.getAnimationTick() == 15 || this.dragon.getAnimationTick() == 25 || this.dragon.getAnimationTick() == 35)) {
                         this.attackTarget(target, ridingPlayer, (int) this.dragon.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
-                        target.knockback(this.dragon.getDragonStage() * 0.6F, Mth.sin(this.dragon.getYRot() * 0.017453292F), -Mth.cos(this.dragon.getYRot() * 0.017453292F));
+                        target.knockback(this.dragon.getDragonStage() * 0.6F, Mth.sin(this.dragon.getYRot() * 0.017453292F), -Mth.cos(this.dragon.getYRot() * 0.017453292F), this.dragon.level().damageSources().mobAttack(this.dragon), 0);
                         this.dragon.usingGroundAttack = this.dragon.getRandom().nextBoolean();
                         this.dragon.randomizeAttacks();
                     }

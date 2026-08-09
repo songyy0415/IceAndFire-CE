@@ -4,38 +4,38 @@ import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
 import com.iafenvoy.iceandfire.entity.StymphalianBirdEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.GolemEntity;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Box;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 
-public class StymphalianBirdAITargetGoal extends ActiveTargetGoal<LivingEntity> {
+public class StymphalianBirdAITargetGoal extends NearestAttackableTargetGoal<LivingEntity> {
     private final StymphalianBirdEntity bird;
 
     public StymphalianBirdAITargetGoal(StymphalianBirdEntity entityIn, Class<LivingEntity> classTarget, boolean checkSight) {
-        super(entityIn, classTarget, 0, checkSight, false, (Predicate<LivingEntity>) entity -> {
+        super(entityIn, classTarget, 0, checkSight, false, (entity, level) -> {
             if (GorgonEntity.isStoneMob(entity)) return false;
-            if (entity instanceof PlayerEntity && !((PlayerEntity) entity).isCreative() || entity instanceof MerchantEntity || entity instanceof GolemEntity)
+            if (entity instanceof Player && !((Player) entity).isCreative() || entity instanceof AbstractVillager || entity instanceof AbstractGolem)
                 return true;
-            if (!(entity instanceof AnimalEntity)) return false;
+            if (!(entity instanceof Animal)) return false;
             return IafCommonConfig.INSTANCE.stymphalianBird.attackAnimals.getValue();
         });
         this.bird = entityIn;
     }
 
     @Override
-    public boolean canStart() {
-        boolean supe = super.canStart();
-        if (this.targetEntity != null && this.bird.getVictor() != null && this.bird.getVictor().getUuid().equals(this.targetEntity.getUuid()))
+    public boolean canUse() {
+        boolean supe = super.canUse();
+        if (this.target != null && this.bird.getVictor() != null && this.bird.getVictor().getUUID().equals(this.target.getUUID()))
             return false;
-        return supe && this.targetEntity != null && !this.targetEntity.getClass().equals(this.bird.getClass());
+        return supe && this.target != null && !this.target.getClass().equals(this.bird.getClass());
     }
 
     @Override
-    protected Box getSearchBox(double targetDistance) {
-        return this.bird.getBoundingBox().expand(targetDistance, targetDistance, targetDistance);
+    protected AABB getTargetSearchArea(double targetDistance) {
+        return this.bird.getBoundingBox().inflate(targetDistance, targetDistance, targetDistance);
     }
 }

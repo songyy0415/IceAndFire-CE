@@ -15,6 +15,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -54,7 +55,7 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     public static StoneStatueEntity buildStatueEntity(LivingEntity parent) {
-        StoneStatueEntity statue = IafEntities.STONE_STATUE.get().create(parent.level());
+        StoneStatueEntity statue = IafEntities.STONE_STATUE.get().create(parent.level(), EntitySpawnReason.LOAD);
         CompoundTag entityTag = new CompoundTag();
         try {
             if (!(parent instanceof Player)) {
@@ -192,7 +193,7 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.is(DamageTypeTags.IS_PROJECTILE) && amount > 0) {
-            if (this.level() instanceof ServerLevel serverWorld && this.getTrappedEntityType().create(serverWorld) instanceof LivingEntity livingEntity)
+            if (this.level() instanceof ServerLevel serverWorld && this.getTrappedEntityType().create(serverWorld, EntitySpawnReason.LOAD) instanceof LivingEntity livingEntity)
                 ExperienceOrb.award(serverWorld, this.position(), livingEntity.getBaseExperienceReward(serverWorld));
             this.remove(RemovalReason.KILLED);
             return true;

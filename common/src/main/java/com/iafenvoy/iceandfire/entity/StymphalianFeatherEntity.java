@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafItems;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,8 +28,8 @@ public class StymphalianFeatherEntity extends AbstractArrow {
         super.remove(reason);
         if (IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue() > 0)
             if (this.level().isClientSide())
-                if (this.random.nextDouble() < IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue())
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+                if (this.getRandom().nextDouble() < IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue())
+                    this.spawnAtLocation((ServerLevel) this.level(), this.getPickupItem(), 0.1F);
     }
 
     @Override

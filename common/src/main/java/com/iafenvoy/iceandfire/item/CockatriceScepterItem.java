@@ -57,7 +57,7 @@ public class CockatriceScepterItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
         if (user instanceof Player player)
-            player.getCooldowns().addCooldown(this, 20);
+            player.getCooldowns().addCooldown(new ItemStack(this), 20);
         return super.finishUsingItem(stack, world, user);
     }
 

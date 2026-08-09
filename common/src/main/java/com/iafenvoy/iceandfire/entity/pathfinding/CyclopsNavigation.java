@@ -2,20 +2,20 @@ package com.iafenvoy.iceandfire.entity.pathfinding;
 
 import com.iafenvoy.iceandfire.entity.CyclopsEntity;
 import com.iafenvoy.uranus.object.entity.collision.CustomCollisionsNavigator;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 
 public class CyclopsNavigation extends CustomCollisionsNavigator {
-    public CyclopsNavigation(CyclopsEntity LivingEntityIn, World worldIn) {
+    public CyclopsNavigation(CyclopsEntity LivingEntityIn, Level worldIn) {
         super(LivingEntityIn, worldIn);
     }
 
     @Override
-    protected PathNodeNavigator createPathNodeNavigator(int i) {
-        this.nodeMaker = new LandPathNodeMaker();
-        this.nodeMaker.setCanOpenDoors(true);
-        this.nodeMaker.setCanSwim(true);
-        return new PathNodeNavigator(this.nodeMaker, i);
+    protected PathFinder createPathFinder(int i) {
+        this.nodeEvaluator = new WalkNodeEvaluator();
+        this.nodeEvaluator.setCanOpenDoors(true);
+        this.nodeEvaluator.setCanFloat(true);
+        return new PathFinder(this.nodeEvaluator, i);
     }
 }

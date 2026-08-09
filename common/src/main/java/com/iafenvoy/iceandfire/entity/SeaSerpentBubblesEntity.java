@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -103,7 +103,7 @@ public class SeaSerpentBubblesEntity extends Fireball implements IDragonProjecti
 
     @Override
     protected void onHit(HitResult movingObject) {
-        boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        boolean flag = ((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING);
         if (!this.level().isClientSide()) {
             if (movingObject.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) movingObject).getEntity();

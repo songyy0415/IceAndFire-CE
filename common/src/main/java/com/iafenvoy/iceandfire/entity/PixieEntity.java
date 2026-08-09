@@ -151,7 +151,7 @@ public class PixieEntity extends TamableAnimal {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (!this.level().isClientSide() && this.getRandom().nextInt(3) == 0 && !this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
-            this.spawnAtLocation(this.getItemInHand(InteractionHand.MAIN_HAND), 0);
+            this.spawnAtLocation((ServerLevel) this.level(), this.getItemInHand(InteractionHand.MAIN_HAND), 0);
             this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             this.stealCooldown = STEAL_COOLDOWN;
             return true;
@@ -163,8 +163,8 @@ public class PixieEntity extends TamableAnimal {
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        boolean invulnerable = super.isInvulnerableTo(source);
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
+        boolean invulnerable = super.isInvulnerableTo(level, source);
         if (!invulnerable) {
             Entity owner = this.getOwner();
             if (owner != null && source.getEntity() == owner) {
@@ -177,7 +177,7 @@ public class PixieEntity extends TamableAnimal {
     @Override
     public void die(DamageSource cause) {
         if (!this.level().isClientSide() && !this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
-            this.spawnAtLocation(this.getItemInHand(InteractionHand.MAIN_HAND), 0);
+            this.spawnAtLocation((ServerLevel) this.level(), this.getItemInHand(InteractionHand.MAIN_HAND), 0);
             this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
         super.die(cause);
@@ -227,11 +227,11 @@ public class PixieEntity extends TamableAnimal {
             ItemStack stack = new ItemStack(jar, 1);
             if (!this.level().isClientSide()) {
                 if (!this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
-                    this.spawnAtLocation(this.getItemInHand(InteractionHand.MAIN_HAND), 0.0F);
+                    this.spawnAtLocation((ServerLevel) this.level(), this.getItemInHand(InteractionHand.MAIN_HAND), 0.0F);
                     this.stealCooldown = STEAL_COOLDOWN;
                 }
 
-                this.spawnAtLocation(stack, 0.0F);
+                this.spawnAtLocation((ServerLevel) this.level(), stack, 0.0F);
             }
             this.remove(RemovalReason.DISCARDED);
         }
@@ -383,7 +383,8 @@ public class PixieEntity extends TamableAnimal {
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity)
@@ -393,7 +394,7 @@ public class PixieEntity extends TamableAnimal {
             if (livingentity != null)
                 return livingentity.isAlliedTo(entityIn);
         }
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     class AIMoveControl extends MoveControl {

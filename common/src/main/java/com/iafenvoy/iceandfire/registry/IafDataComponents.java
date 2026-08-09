@@ -9,51 +9,51 @@ import com.iafenvoy.iceandfire.item.component.StoneStatusComponent;
 import com.mojang.serialization.Codec;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.component.ComponentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Unit;
 
 public final class IafDataComponents {
-    public static final DeferredRegister<ComponentType<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.DATA_COMPONENT_TYPE);
-    public static final RegistrySupplier<ComponentType<Integer>> TICK_COUNTER = register("tick_counter", ComponentType.<Integer>builder()
-            .codec(Codec.INT)
-            .packetCodec(PacketCodecs.INTEGER)
+    public static final DeferredRegister<DataComponentType<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.DATA_COMPONENT_TYPE);
+    public static final RegistrySupplier<DataComponentType<Integer>> TICK_COUNTER = register("tick_counter", DataComponentType.<Integer>builder()
+            .persistent(Codec.INT)
+            .networkSynchronized(ByteBufCodecs.INT)
     );
-    public static final RegistrySupplier<ComponentType<Integer>> USER_ID = register("user_id", ComponentType.<Integer>builder()
-            .codec(Codec.INT)
-            .packetCodec(PacketCodecs.INTEGER)
+    public static final RegistrySupplier<DataComponentType<Integer>> USER_ID = register("user_id", DataComponentType.<Integer>builder()
+            .persistent(Codec.INT)
+            .networkSynchronized(ByteBufCodecs.INT)
     );
-    public static final RegistrySupplier<ComponentType<Unit>> ACTIVE = register("active", ComponentType.<Unit>builder()
-            .codec(Unit.CODEC)
-            .packetCodec(PacketCodec.unit(Unit.INSTANCE))
+    public static final RegistrySupplier<DataComponentType<Unit>> ACTIVE = register("active", DataComponentType.<Unit>builder()
+            .persistent(Unit.CODEC)
+            .networkSynchronized(StreamCodec.unit(Unit.INSTANCE))
     );
-    public static final RegistrySupplier<ComponentType<HippogryphType>> HIPPOGRYPH_EGG = register("hippogryph_egg", ComponentType.<HippogryphType>builder()
-            .codec(IafRegistries.HIPPOGRYPH_TYPE.getCodec())
+    public static final RegistrySupplier<DataComponentType<HippogryphType>> HIPPOGRYPH_EGG = register("hippogryph_egg", DataComponentType.<HippogryphType>builder()
+            .persistent(IafRegistries.HIPPOGRYPH_TYPE.byNameCodec())
     );
     //FIXME::Data Fix For Crystal
-    public static final RegistrySupplier<ComponentType<NbtCompound>> NBT_COMPOUND = register("nbt_compound", ComponentType.<NbtCompound>builder()
-            .codec(NbtCompound.CODEC)
+    public static final RegistrySupplier<DataComponentType<CompoundTag>> NBT_COMPOUND = register("nbt_compound", DataComponentType.<CompoundTag>builder()
+            .persistent(CompoundTag.CODEC)
     );
-    public static final RegistrySupplier<ComponentType<NbtCompound>> CRYSTAL_DRAGON_DATA = register("crystal_dragon_data", ComponentType.<NbtCompound>builder()
-            .codec(NbtCompound.CODEC)
+    public static final RegistrySupplier<DataComponentType<CompoundTag>> CRYSTAL_DRAGON_DATA = register("crystal_dragon_data", DataComponentType.<CompoundTag>builder()
+            .persistent(CompoundTag.CODEC)
     );
-    public static final RegistrySupplier<ComponentType<BestiaryPageComponent>> BESTIARY_PAGES = register("bestiary_pages", ComponentType.<BestiaryPageComponent>builder()
-            .codec(BestiaryPageComponent.CODEC)
+    public static final RegistrySupplier<DataComponentType<BestiaryPageComponent>> BESTIARY_PAGES = register("bestiary_pages", DataComponentType.<BestiaryPageComponent>builder()
+            .persistent(BestiaryPageComponent.CODEC)
     );
-    public static final RegistrySupplier<ComponentType<DragonHornComponent>> DRAGON_HORN = register("dragon_horn", ComponentType.<DragonHornComponent>builder()
-            .codec(DragonHornComponent.CODEC)
+    public static final RegistrySupplier<DataComponentType<DragonHornComponent>> DRAGON_HORN = register("dragon_horn", DataComponentType.<DragonHornComponent>builder()
+            .persistent(DragonHornComponent.CODEC)
     );
-    public static final RegistrySupplier<ComponentType<DragonSkullComponent>> DRAGON_SKULL = register("dragon_skull", ComponentType.<DragonSkullComponent>builder()
-            .codec(DragonSkullComponent.CODEC)
+    public static final RegistrySupplier<DataComponentType<DragonSkullComponent>> DRAGON_SKULL = register("dragon_skull", DataComponentType.<DragonSkullComponent>builder()
+            .persistent(DragonSkullComponent.CODEC)
     );
-    public static final RegistrySupplier<ComponentType<StoneStatusComponent>> STONE_STATUS = register("stone_status", ComponentType.<StoneStatusComponent>builder()
-            .codec(StoneStatusComponent.CODEC)
+    public static final RegistrySupplier<DataComponentType<StoneStatusComponent>> STONE_STATUS = register("stone_status", DataComponentType.<StoneStatusComponent>builder()
+            .persistent(StoneStatusComponent.CODEC)
     );
 
-    public static <T> RegistrySupplier<ComponentType<T>> register(String id, ComponentType.Builder<T> builder) {
+    public static <T> RegistrySupplier<DataComponentType<T>> register(String id, DataComponentType.Builder<T> builder) {
         return REGISTRY.register(id, builder::build);
     }
 }

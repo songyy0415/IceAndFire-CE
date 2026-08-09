@@ -149,7 +149,7 @@ public class DreadScuttlerEntity extends DreadMobEntity implements IAnimatedEnti
             this.lookAt(attackTarget, 360, 80);
             if (this.getAnimation() == ANIMATION_BITE && this.getAnimationTick() == 6) {
                 attackTarget.hurt(this.level().damageSources().mobAttack(this), (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
-                attackTarget.knockback(0.25F, this.getX() - attackTarget.getX(), this.getZ() - attackTarget.getZ());
+                attackTarget.knockback(0.25F,this.getX() - attackTarget.getX(),this.getZ() - attackTarget.getZ(),this.level().damageSources().mobAttack(this),0);
             }
         }
 
@@ -226,7 +226,8 @@ public class DreadScuttlerEntity extends DreadMobEntity implements IAnimatedEnti
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
     }
 

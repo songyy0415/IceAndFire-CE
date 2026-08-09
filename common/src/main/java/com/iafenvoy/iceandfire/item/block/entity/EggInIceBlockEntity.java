@@ -14,6 +14,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,7 +36,7 @@ public class EggInIceBlockEntity extends BlockEntity {
         entityEggInIce.age++;
         if (entityEggInIce.age >= IafCommonConfig.INSTANCE.dragon.eggBornTime.getValue() && entityEggInIce.type != null && !entityEggInIce.spawned)
             if (!level.isClientSide()) {
-                IceDragonEntity dragon = IafEntities.ICE_DRAGON.get().create(level);
+                IceDragonEntity dragon = IafEntities.ICE_DRAGON.get().create(level, EntitySpawnReason.LOAD);
                 assert dragon != null;
                 dragon.setPos(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
                 dragon.setVariant(entityEggInIce.type.getName());

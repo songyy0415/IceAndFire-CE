@@ -1,19 +1,18 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-
 import java.util.EnumSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class DeathWormAIGetInSandGoal extends Goal {
     private final DeathWormEntity creature;
     private final double movementSpeed;
-    private final World world;
+    private final Level world;
     private double shelterX;
     private double shelterY;
     private double shelterZ;
@@ -21,16 +20,16 @@ public class DeathWormAIGetInSandGoal extends Goal {
     public DeathWormAIGetInSandGoal(DeathWormEntity theCreatureIn, double movementSpeedIn) {
         this.creature = theCreatureIn;
         this.movementSpeed = movementSpeedIn;
-        this.world = theCreatureIn.getWorld();
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.world = theCreatureIn.level();
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
-    public boolean canStart() {
-        if (this.creature.hasPassengers() || this.creature.isInSand() || this.creature.getTarget() != null && !this.creature.getTarget().isTouchingWater() || this.creature.targetItemsGoal.targetEntity != null)
+    public boolean canUse() {
+        if (this.creature.isVehicle() || this.creature.isInSand() || this.creature.getTarget() != null && !this.creature.getTarget().isInWater() || this.creature.targetItemsGoal.targetEntity != null)
             return false;
         else {
-            Vec3d Vector3d = this.findPossibleShelter();
+            Vec3 Vector3d = this.findPossibleShelter();
 
             if (Vector3d == null) return false;
             else {
@@ -46,8 +45,8 @@ public class DeathWormAIGetInSandGoal extends Goal {
      * Returns whether an in-progress Goal should continue executing
      */
     @Override
-    public boolean shouldContinue() {
-        return !this.creature.getNavigation().isIdle();
+    public boolean canContinueToUse() {
+        return !this.creature.getNavigation().isDone();
     }
 
     /**
@@ -55,17 +54,17 @@ public class DeathWormAIGetInSandGoal extends Goal {
      */
     @Override
     public void start() {
-        this.creature.getNavigation().startMovingTo(this.shelterX, this.shelterY, this.shelterZ, this.movementSpeed);
+        this.creature.getNavigation().moveTo(this.shelterX, this.shelterY, this.shelterZ, this.movementSpeed);
     }
 
-    private Vec3d findPossibleShelter() {
-        Random random = this.creature.getRandom();
-        BlockPos blockpos = BlockPos.ofFloored(this.creature.getBlockX(), this.creature.getBoundingBox().minY, this.creature.getBlockZ());
+    private Vec3 findPossibleShelter() {
+        RandomSource random = this.creature.getRandom();
+        BlockPos blockpos = BlockPos.containing(this.creature.getBlockX(), this.creature.getBoundingBox().minY, this.creature.getBlockZ());
 
         for (int i = 0; i < 10; ++i) {
-            BlockPos blockpos1 = blockpos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-            if (this.world.getBlockState(blockpos1).isIn(BlockTags.SAND))
-                return new Vec3d(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
+            BlockPos blockpos1 = blockpos.offset(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
+            if (this.world.getBlockState(blockpos1).is(BlockTags.SAND))
+                return new Vec3(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
         }
 
         return null;

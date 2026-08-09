@@ -26,7 +26,7 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
     @Override
     protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         super.loadAdditional(nbt, registryLookup);
-        this.generatedGhost = nbt.getBoolean("generatedGhost").orElse(false);
+        this.generatedGhost = nbt.getBooleanOr("generatedGhost", false);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
         assert this.level != null;
         if ((!this.generatedGhost || IafCommonConfig.INSTANCE.ghost.alwaysSpawnFromChest.getValue()) && this.level.getDifficulty() != Difficulty.PEACEFUL) {
             this.generatedGhost = true;
-            GhostEntity ghost = IafEntities.GHOST.get().create(this.level);
+            GhostEntity ghost = IafEntities.GHOST.get().create(this.level, EntitySpawnReason.SPAWNER);
             assert ghost != null;
             ghost.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 0.5F, this.worldPosition.getZ() + 0.5F, ThreadLocalRandom.current().nextFloat() * 360F, 0);
             if (this.level instanceof ServerLevel serverWorld) {

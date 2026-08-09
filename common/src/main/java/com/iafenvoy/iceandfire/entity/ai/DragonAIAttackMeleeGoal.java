@@ -2,12 +2,11 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.AdvancedPathNavigate;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-
 import java.util.EnumSet;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 
 public class DragonAIAttackMeleeGoal extends Goal {
     protected final DragonBaseEntity dragon;
@@ -23,11 +22,11 @@ public class DragonAIAttackMeleeGoal extends Goal {
         this.dragon = dragon;
         this.longMemory = useLongMemory;
         this.speedTowardsTarget = speedIn;
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         LivingEntity livingEntity = this.dragon.getTarget();
         if (!(this.dragon.getNavigation() instanceof AdvancedPathNavigate)) return false;
 
@@ -41,7 +40,7 @@ public class DragonAIAttackMeleeGoal extends Goal {
     }
 
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         if (!(this.dragon.getNavigation() instanceof AdvancedPathNavigate)) return false;
         LivingEntity livingEntity = this.dragon.getTarget();
         if (livingEntity != null && !livingEntity.isAlive()) {
@@ -59,7 +58,7 @@ public class DragonAIAttackMeleeGoal extends Goal {
     @Override
     public void stop() {
         LivingEntity LivingEntity = this.dragon.getTarget();
-        if (LivingEntity instanceof PlayerEntity && (LivingEntity.isSpectator() || ((PlayerEntity) LivingEntity).isCreative()))
+        if (LivingEntity instanceof Player && (LivingEntity.isSpectator() || ((Player) LivingEntity).isCreative()))
             this.dragon.setTarget(null);
         this.dragon.getNavigation().stop();
     }
@@ -76,10 +75,10 @@ public class DragonAIAttackMeleeGoal extends Goal {
 
             ((AdvancedPathNavigate) this.dragon.getNavigation()).moveToLivingEntity(entity, this.speedTowardsTarget);
 
-            final double d0 = this.dragon.squaredDistanceTo(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
+            final double d0 = this.dragon.distanceToSqr(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
             final double d1 = this.getAttackReachSqr(entity);
             --this.delayCounter;
-            if ((this.longMemory || this.dragon.getVisibilityCache().canSee(entity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.dragon.getRandom().nextFloat() < 0.05F)) {
+            if ((this.longMemory || this.dragon.getSensing().hasLineOfSight(entity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entity.distanceToSqr(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.dragon.getRandom().nextFloat() < 0.05F)) {
                 this.targetX = entity.getX();
                 this.targetY = entity.getBoundingBox().minY;
                 this.targetZ = entity.getZ();
@@ -94,13 +93,13 @@ public class DragonAIAttackMeleeGoal extends Goal {
 
             if (d0 <= d1 && this.attackTick == 0) {
                 this.attackTick = 20;
-                this.dragon.swingHand(Hand.MAIN_HAND);
-                this.dragon.tryAttack(entity);
+                this.dragon.swing(InteractionHand.MAIN_HAND);
+                this.dragon.doHurtTarget(entity);
             }
         }
     }
 
     protected double getAttackReachSqr(LivingEntity attackTarget) {
-        return this.dragon.getWidth() * 2.0F * this.dragon.getWidth() * 2.0F + attackTarget.getWidth();
+        return this.dragon.getBbWidth() * 2.0F * this.dragon.getBbWidth() * 2.0F + attackTarget.getBbWidth();
     }
 }

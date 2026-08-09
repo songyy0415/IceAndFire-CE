@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -22,17 +23,17 @@ public class PixieChargeEntity extends Fireball {
 
     public PixieChargeEntity(EntityType<? extends Fireball> t, Level worldIn) {
         super(t, worldIn);
-        this.rgb = PixieEntity.PARTICLE_RGB[this.random.nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
+        this.rgb = PixieEntity.PARTICLE_RGB[this.getRandom().nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
     }
 
     public PixieChargeEntity(EntityType<? extends Fireball> t, Level worldIn, double posX, double posY, double posZ, double accelX, double accelY, double accelZ) {
         super(t, posX, posY, posZ, new Vec3(accelX, accelY, accelZ), worldIn);
-        this.rgb = PixieEntity.PARTICLE_RGB[this.random.nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
+        this.rgb = PixieEntity.PARTICLE_RGB[this.getRandom().nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
     }
 
     public PixieChargeEntity(EntityType<? extends Fireball> t, Level worldIn, Player shooter, double accelX, double accelY, double accelZ) {
         super(t, shooter, new Vec3(accelX, accelY, accelZ), worldIn);
-        this.rgb = PixieEntity.PARTICLE_RGB[this.random.nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
+        this.rgb = PixieEntity.PARTICLE_RGB[this.getRandom().nextInt(PixieEntity.PARTICLE_RGB.length - 1)];
     }
 
     @Override
@@ -50,7 +51,7 @@ public class PixieChargeEntity extends Fireball {
         this.setNoGravity(true);
         if (this.level().isClientSide())
             for (int i = 0; i < 5; ++i)
-                this.level().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
+                this.level().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + this.getRandom().nextDouble() * 0.15F * (this.getRandom().nextBoolean() ? -1 : 1), this.getY() + this.getRandom().nextDouble() * 0.15F * (this.getRandom().nextBoolean() ? -1 : 1), this.getZ() + this.getRandom().nextDouble() * 0.15F * (this.getRandom().nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
         this.clearFire();
         if (this.tickCount > 30) this.remove(RemovalReason.DISCARDED);
         super.tick();
@@ -82,10 +83,10 @@ public class PixieChargeEntity extends Fireball {
                     }
                     if (this.level().isClientSide())
                         for (int i = 0; i < 20; ++i)
-                            this.level().addParticle(this.getTrailParticle(), this.getX() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
+                            this.level().addParticle(this.getTrailParticle(), this.getX() + this.getRandom().nextDouble() * 1F * (this.getRandom().nextBoolean() ? -1 : 1), this.getY() + this.getRandom().nextDouble() * 1F * (this.getRandom().nextBoolean() ? -1 : 1), this.getZ() + this.getRandom().nextDouble() * 1F * (this.getRandom().nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
                     if (!(shootingEntity instanceof Player) || !((Player) shootingEntity).isCreative())
-                        if (this.random.nextInt(3) == 0)
-                            this.spawnAtLocation(new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);
+                        if (this.getRandom().nextInt(3) == 0)
+                            this.spawnAtLocation((ServerLevel) this.level(), new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);
                 }
                 if (!flag && this.tickCount > 4)
                     this.remove(RemovalReason.DISCARDED);

@@ -1,19 +1,19 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 
-public class EntityAIWatchClosestIgnoreRiderGoal extends LookAtEntityGoal {
+public class EntityAIWatchClosestIgnoreRiderGoal extends LookAtPlayerGoal {
     LivingEntity entity;
 
-    public EntityAIWatchClosestIgnoreRiderGoal(MobEntity entity, Class<? extends LivingEntity> type, float dist) {
+    public EntityAIWatchClosestIgnoreRiderGoal(Mob entity, Class<? extends LivingEntity> type, float dist) {
         super(entity, type, dist);
     }
 
     public static boolean isRidingOrBeingRiddenBy(Entity first, Entity entityIn) {
-        for (Entity entity : first.getPassengerList()) {
+        for (Entity entity : first.getPassengers()) {
             if (entity.equals(entityIn)) return true;
             if (isRidingOrBeingRiddenBy(entity, entityIn)) return true;
         }
@@ -21,7 +21,7 @@ public class EntityAIWatchClosestIgnoreRiderGoal extends LookAtEntityGoal {
     }
 
     @Override
-    public boolean canStart() {
-        return super.canStart() && this.target != null && isRidingOrBeingRiddenBy(this.target, this.entity);
+    public boolean canUse() {
+        return super.canUse() && this.lookAt != null && isRidingOrBeingRiddenBy(this.lookAt, this.entity);
     }
 }

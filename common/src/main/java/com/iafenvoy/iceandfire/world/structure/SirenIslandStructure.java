@@ -8,100 +8,99 @@ import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructurePiece;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.structure.Structure;
-import net.minecraft.world.gen.structure.StructureType;
-
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 
 public class SirenIslandStructure extends Structure implements DangerousGeneration {
     public static final MapCodec<SirenIslandStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(configCodecBuilder(instance)).apply(instance, SirenIslandStructure::new));
+            instance.group(settingsCodec(instance)).apply(instance, SirenIslandStructure::new));
 
-    protected SirenIslandStructure(Config config) {
+    protected SirenIslandStructure(StructureSettings config) {
         super(config);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected Optional<StructurePosition> getStructurePosition(Context context) {
+    protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateSirenIslandChance.getValue())
             return Optional.empty();
-        BlockRotation blockRotation = BlockRotation.random(context.random());
-        BlockPos blockPos = this.getShiftedPos(context, blockRotation);
+        Rotation blockRotation = Rotation.getRandom(context.random());
+        BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
         if (!this.isFarEnoughFromSpawn(blockPos)) return Optional.empty();
-        return Optional.of(new StructurePosition(blockPos, collector -> collector.addPiece(new SirenIslandPiece(0, new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ())))));
+        return Optional.of(new GenerationStub(blockPos, collector -> collector.addPiece(new SirenIslandPiece(0, new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ())))));
     }
 
     @Override
-    public StructureType<?> getType() {
+    public StructureType<?> type() {
         return IafStructureTypes.SIREN_ISLAND.get();
     }
 
     public static class SirenIslandPiece extends StructurePiece {
-        protected SirenIslandPiece(int length, BlockBox boundingBox) {
+        protected SirenIslandPiece(int length, BoundingBox boundingBox) {
             super(IafStructurePieces.SIREN_ISLAND.get(), length, boundingBox);
         }
 
-        public SirenIslandPiece(StructureContext context, NbtCompound nbt) {
+        public SirenIslandPiece(StructurePieceSerializationContext context, CompoundTag nbt) {
             super(IafStructurePieces.SIREN_ISLAND.get(), nbt);
         }
 
         @Override
-        protected void writeNbt(StructureContext context, NbtCompound nbt) {
+        protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag nbt) {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
+        public void postProcess(WorldGenLevel world, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
+            if (!chunkBox.isInside(pivot))
                 return;
 
             int up = random.nextInt(4) + 1;
-            BlockPos center = pivot.up(up);
+            BlockPos center = pivot.above(up);
             int layer = 0;
             int sirens = 1 + random.nextInt(3);
 
             int radius = this.getRadius(up, up);
-            super.boundingBox = new BlockBox(center.getX() - radius, center.getY() - up, center.getZ() - radius,
+            super.boundingBox = new BoundingBox(center.getX() - radius, center.getY() - up, center.getZ() - radius,
                                              center.getX() + radius, center.getY() + 1, center.getZ() + radius);
 
-            while (!world.getBlockState(center).isOpaque() && center.getY() >= world.getBottomY()) {
+            while (!world.getBlockState(center).canOcclude() && center.getY() >= world.getMinBuildHeight()) {
                 layer++;
                 for (float i = 0; i < this.getRadius(layer, up); i += 0.5f) {
                     for (float j = 0; j < 2 * Math.PI * i + random.nextInt(2); j += 0.5f) {
-                        BlockPos stonePos = BlockPos.ofFloored(Math.floor(center.getX() + MathHelper.sin(j) * i + random.nextInt(2)), center.getY(), Math.floor(center.getZ() + MathHelper.cos(j) * i + random.nextInt(2)));
-                        world.setBlockState(stonePos, this.getStone(random), Block.NOTIFY_ALL);
-                        BlockPos upPos = stonePos.up();
-                        if (world.isAir(upPos) && world.isAir(upPos.east()) && world.isAir(upPos.north()) && world.isAir(upPos.north().east()) && random.nextInt(3) == 0 && sirens > 0) {
+                        BlockPos stonePos = BlockPos.containing(Math.floor(center.getX() + Mth.sin(j) * i + random.nextInt(2)), center.getY(), Math.floor(center.getZ() + Mth.cos(j) * i + random.nextInt(2)));
+                        world.setBlock(stonePos, this.getStone(random), Block.UPDATE_ALL);
+                        BlockPos upPos = stonePos.above();
+                        if (world.isEmptyBlock(upPos) && world.isEmptyBlock(upPos.east()) && world.isEmptyBlock(upPos.north()) && world.isEmptyBlock(upPos.north().east()) && random.nextInt(3) == 0 && sirens > 0) {
                             this.spawnSiren(world, random, upPos.north().east());
                             sirens--;
                         }
                     }
                 }
-                center = center.down();
+                center = center.below();
             }
             layer++;
             for (float i = 0; i < this.getRadius(layer, up); i += 0.5f)
                 for (float j = 0; j < 2 * Math.PI * i + random.nextInt(2); j += 0.5f) {
-                    BlockPos stonePos = BlockPos.ofFloored(Math.floor(center.getX() + MathHelper.sin(j) * i + random.nextInt(2)), center.getY(), Math.floor(center.getZ() + MathHelper.cos(j) * i + random.nextInt(2)));
-                    while (!world.getBlockState(stonePos).isOpaque() && stonePos.getY() >= 0) {
-                        world.setBlockState(stonePos, this.getStone(random), Block.NOTIFY_ALL);
-                        stonePos = stonePos.down();
+                    BlockPos stonePos = BlockPos.containing(Math.floor(center.getX() + Mth.sin(j) * i + random.nextInt(2)), center.getY(), Math.floor(center.getZ() + Mth.cos(j) * i + random.nextInt(2)));
+                    while (!world.getBlockState(stonePos).canOcclude() && stonePos.getY() >= 0) {
+                        world.setBlock(stonePos, this.getStone(random), Block.UPDATE_ALL);
+                        stonePos = stonePos.below();
                     }
                 }
         }
@@ -111,21 +110,21 @@ public class SirenIslandStructure extends Structure implements DangerousGenerati
             return layer > up ? (int) (layer * 0.25) + up : Math.min(layer, MAX_ISLAND_RADIUS);
         }
 
-        private BlockState getStone(Random random) {
+        private BlockState getStone(RandomSource random) {
             int chance = random.nextInt(100);
-            if (chance > 90) return Blocks.MOSSY_COBBLESTONE.getDefaultState();
-            else if (chance > 70) return Blocks.GRAVEL.getDefaultState();
-            else if (chance > 45) return Blocks.COBBLESTONE.getDefaultState();
-            else return Blocks.STONE.getDefaultState();
+            if (chance > 90) return Blocks.MOSSY_COBBLESTONE.defaultBlockState();
+            else if (chance > 70) return Blocks.GRAVEL.defaultBlockState();
+            else if (chance > 45) return Blocks.COBBLESTONE.defaultBlockState();
+            else return Blocks.STONE.defaultBlockState();
         }
 
-        private void spawnSiren(ServerWorldAccess worldIn, Random rand, BlockPos position) {
-            SirenEntity siren = new SirenEntity(IafEntities.SIREN.get(), worldIn.toServerWorld());
+        private void spawnSiren(ServerLevelAccessor worldIn, RandomSource rand, BlockPos position) {
+            SirenEntity siren = new SirenEntity(IafEntities.SIREN.get(), worldIn.getLevel());
             siren.setSinging(true);
             siren.setHairColor(rand.nextInt(2));
             siren.setSingingPose(rand.nextInt(2));
-            siren.updatePositionAndAngles(position.getX() + 0.5D, position.getY() + 1, position.getZ() + 0.5D, rand.nextFloat() * 360, 0);
-            worldIn.spawnEntity(siren);
+            siren.absMoveTo(position.getX() + 0.5D, position.getY() + 1, position.getZ() + 0.5D, rand.nextFloat() * 360, 0);
+            worldIn.addFreshEntity(siren);
         }
     }
 }

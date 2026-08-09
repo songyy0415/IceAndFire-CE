@@ -11,4 +11,3 @@ rootProject.name = 'iceandfire'
 
 include 'common'
 include 'fabric'
-include 'neoforge'

@@ -126,8 +126,8 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F, 1.0F));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, entity -> entity instanceof Player player && SirenEntity.this.isAgressive() && !(player.isCreative() || player.isSpectator())));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, 10, true, false, entity -> SirenEntity.this.isAgressive()));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (entity, level) -> entity instanceof Player player && SirenEntity.this.isAgressive() && !(player.isCreative() || player.isSpectator())));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, 10, true, false, (entity, level) -> SirenEntity.this.isAgressive()));
     }
 
     @Override

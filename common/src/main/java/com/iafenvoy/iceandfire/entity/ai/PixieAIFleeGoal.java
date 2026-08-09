@@ -1,24 +1,23 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.PixieEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.NoPenaltyTargeting;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.phys.Vec3;
 
 public class PixieAIFleeGoal<T extends Entity> extends Goal {
     protected final PixieEntity pixie;
     private final float avoidDistance;
     private final Class<T> classToAvoid;
     protected T closestLivingEntity;
-    private Vec3d hidePlace;
+    private Vec3 hidePlace;
 
     private List<T> list = Collections.emptyList();
 
@@ -26,30 +25,30 @@ public class PixieAIFleeGoal<T extends Entity> extends Goal {
         this.pixie = pixie;
         this.classToAvoid = classToAvoidIn;
         this.avoidDistance = avoidDistanceIn;
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
-    public boolean canStart() {
-        if (this.pixie.getStackInHand(Hand.MAIN_HAND).isEmpty() || this.pixie.isTamed()) {
+    public boolean canUse() {
+        if (this.pixie.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() || this.pixie.isTame()) {
             this.list = Collections.emptyList();
             return false;
         }
 
-        if (this.pixie.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.pixie.getWorld().getEntitiesByClass(this.classToAvoid, this.pixie.getBoundingBox().expand(this.avoidDistance, 3.0D, this.avoidDistance), EntityPredicates.EXCEPT_SPECTATOR);
+        if (this.pixie.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            this.list = this.pixie.level().getEntitiesOfClass(this.classToAvoid, this.pixie.getBoundingBox().inflate(this.avoidDistance, 3.0D, this.avoidDistance), EntitySelector.NO_SPECTATORS);
 
         if (this.list.isEmpty()) return false;
 
         this.closestLivingEntity = this.list.getFirst();
         if (this.closestLivingEntity != null) {
-            Vec3d Vector3d = NoPenaltyTargeting.findFrom(this.pixie, 16, 4, new Vec3d(this.closestLivingEntity.getX(), this.closestLivingEntity.getY(), this.closestLivingEntity.getZ()));
+            Vec3 Vector3d = DefaultRandomPos.getPosAway(this.pixie, 16, 4, new Vec3(this.closestLivingEntity.getX(), this.closestLivingEntity.getY(), this.closestLivingEntity.getZ()));
 
             if (Vector3d == null) return false;
             else {
                 Vector3d = Vector3d.add(0, 1, 0);
-                this.pixie.getMoveControl().moveTo(Vector3d.x, Vector3d.y, Vector3d.z, this.calculateRunSpeed());
-                this.pixie.getLookControl().lookAt(Vector3d.x, Vector3d.y, Vector3d.z, 180.0F, 20.0F);
+                this.pixie.getMoveControl().setWantedPosition(Vector3d.x, Vector3d.y, Vector3d.z, this.calculateRunSpeed());
+                this.pixie.getLookControl().setLookAt(Vector3d.x, Vector3d.y, Vector3d.z, 180.0F, 20.0F);
                 this.hidePlace = Vector3d;
                 this.pixie.slowSpeed = true;
                 return true;
@@ -66,14 +65,14 @@ public class PixieAIFleeGoal<T extends Entity> extends Goal {
     }
 
     @Override
-    public boolean shouldContinue() {
-        return this.hidePlace != null && this.pixie.squaredDistanceTo(this.hidePlace.add(0.5, 0.5, 0.5)) < 2;
+    public boolean canContinueToUse() {
+        return this.hidePlace != null && this.pixie.distanceToSqr(this.hidePlace.add(0.5, 0.5, 0.5)) < 2;
     }
 
     @Override
     public void start() {
-        this.pixie.getMoveControl().moveTo(this.hidePlace.x, this.hidePlace.y, this.hidePlace.z, this.calculateRunSpeed());
-        this.pixie.getLookControl().lookAt(this.hidePlace.x, this.hidePlace.y, this.hidePlace.z, 180.0F, 20.0F);
+        this.pixie.getMoveControl().setWantedPosition(this.hidePlace.x, this.hidePlace.y, this.hidePlace.z, this.calculateRunSpeed());
+        this.pixie.getLookControl().setLookAt(this.hidePlace.x, this.hidePlace.y, this.hidePlace.z, 180.0F, 20.0F);
     }
 
     @Override

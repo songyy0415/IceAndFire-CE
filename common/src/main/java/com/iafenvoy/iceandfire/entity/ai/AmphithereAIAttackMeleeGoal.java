@@ -1,14 +1,13 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-
 import java.util.EnumSet;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 
 public class AmphithereAIAttackMeleeGoal extends Goal {
     protected final AmphithereEntity attacker;
@@ -39,14 +38,14 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
         this.attacker = amphithere;
         this.speedTowardsTarget = speedIn;
         this.longMemory = useLongMemory;
-        this.setControls(EnumSet.of(Control.MOVE, Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.TARGET));
     }
 
     /**
      * Returns whether the Goal should begin execution.
      */
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         LivingEntity LivingEntity = this.attacker.getTarget();
         if (!this.attacker.canMove()) return false;
         if (LivingEntity == null) return false;
@@ -54,15 +53,15 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
         else {
             if (this.canPenalize)
                 if (--this.delayCounter <= 0) {
-                    this.path = this.attacker.getNavigation().findPathTo(LivingEntity, 0);
+                    this.path = this.attacker.getNavigation().createPath(LivingEntity, 0);
                     this.delayCounter = 4 + this.attacker.getRandom().nextInt(7);
                     return this.path != null;
                 } else return true;
-            this.path = this.attacker.getNavigation().findPathTo(LivingEntity, 0);
+            this.path = this.attacker.getNavigation().createPath(LivingEntity, 0);
 
             if (this.path != null) return true;
             else
-                return this.getAttackReachSqr(LivingEntity) >= this.attacker.squaredDistanceTo(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
+                return this.getAttackReachSqr(LivingEntity) >= this.attacker.distanceToSqr(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
         }
     }
 
@@ -70,13 +69,13 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
      * Returns whether an in-progress Goal should continue executing
      */
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         LivingEntity living = this.attacker.getTarget();
         if (living == null) return false;
         else if (!living.isAlive()) return false;
-        else if (!this.longMemory) return !this.attacker.getNavigation().isIdle();
-        else if (!this.attacker.isInWalkTargetRange(living.getBlockPos())) return false;
-        else return !(living instanceof PlayerEntity) || !living.isSpectator() && !((PlayerEntity) living).isCreative();
+        else if (!this.longMemory) return !this.attacker.getNavigation().isDone();
+        else if (!this.attacker.isWithinRestriction(living.blockPosition())) return false;
+        else return !(living instanceof Player) || !living.isSpectator() && !((Player) living).isCreative();
     }
 
     /**
@@ -85,8 +84,8 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
     @Override
     public void start() {
         if (this.attacker.isFlying())
-            this.attacker.getMoveControl().moveTo(this.targetX, this.targetY, this.targetZ, 0.1F);
-        else this.attacker.getNavigation().startMovingAlong(this.path, this.speedTowardsTarget);
+            this.attacker.getMoveControl().setWantedPosition(this.targetX, this.targetY, this.targetZ, 0.1F);
+        else this.attacker.getNavigation().moveTo(this.path, this.speedTowardsTarget);
         this.delayCounter = 0;
     }
 
@@ -96,7 +95,7 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
     @Override
     public void stop() {
         LivingEntity LivingEntity = this.attacker.getTarget();
-        if (LivingEntity instanceof PlayerEntity && (LivingEntity.isSpectator() || ((PlayerEntity) LivingEntity).isCreative()))
+        if (LivingEntity instanceof Player && (LivingEntity.isSpectator() || ((Player) LivingEntity).isCreative()))
             this.attacker.setTarget(null);
         this.attacker.getNavigation().stop();
     }
@@ -106,14 +105,14 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
         LivingEntity LivingEntity = this.attacker.getTarget();
         if (this.attacker.isFlying()) {
             assert LivingEntity != null;
-            this.attacker.getMoveControl().moveTo(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getStandingEyeHeight(), LivingEntity.getZ(), 0.1D);
+            this.attacker.getMoveControl().setWantedPosition(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getEyeHeight(), LivingEntity.getZ(), 0.1D);
         }
-        this.attacker.getLookControl().lookAt(LivingEntity, 30.0F, 30.0F);
+        this.attacker.getLookControl().setLookAt(LivingEntity, 30.0F, 30.0F);
         assert LivingEntity != null;
-        double d0 = this.attacker.squaredDistanceTo(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
+        double d0 = this.attacker.distanceToSqr(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
         --this.delayCounter;
 
-        if ((this.longMemory || this.attacker.getVisibilityCache().canSee(LivingEntity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || LivingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRandom().nextFloat() < 0.05F)) {
+        if ((this.longMemory || this.attacker.getSensing().hasLineOfSight(LivingEntity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || LivingEntity.distanceToSqr(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRandom().nextFloat() < 0.05F)) {
             this.targetX = LivingEntity.getX();
             this.targetY = LivingEntity.getBoundingBox().minY;
             this.targetZ = LivingEntity.getZ();
@@ -121,9 +120,9 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
 
             if (this.canPenalize) {
                 this.delayCounter += this.failedPathFindingPenalty;
-                if (this.attacker.getNavigation().getCurrentPath() != null) {
-                    PathNode finalPathPoint = this.attacker.getNavigation().getCurrentPath().getEnd();
-                    if (finalPathPoint != null && LivingEntity.squaredDistanceTo(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
+                if (this.attacker.getNavigation().getPath() != null) {
+                    Node finalPathPoint = this.attacker.getNavigation().getPath().getEndNode();
+                    if (finalPathPoint != null && LivingEntity.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
                         this.failedPathFindingPenalty = 0;
                     else this.failedPathFindingPenalty += 10;
                 } else this.failedPathFindingPenalty += 10;
@@ -132,7 +131,7 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
             if (d0 > 1024.0D) this.delayCounter += 10;
             else if (d0 > 256.0D) this.delayCounter += 5;
 
-            if (!this.attacker.getNavigation().startMovingTo(LivingEntity, this.speedTowardsTarget))
+            if (!this.attacker.getNavigation().moveTo(LivingEntity, this.speedTowardsTarget))
                 this.delayCounter += 15;
         }
         this.attackTick = Math.max(this.attackTick - 1, 0);
@@ -143,12 +142,12 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
         double d0 = this.getAttackReachSqr(enemy);
         if (distToEnemySqr <= d0) {
             this.attackTick = 20;
-            this.attacker.swingHand(Hand.MAIN_HAND);
-            this.attacker.tryAttack(enemy);
+            this.attacker.swing(InteractionHand.MAIN_HAND);
+            this.attacker.doHurtTarget(enemy);
         }
     }
 
     protected double getAttackReachSqr(LivingEntity attackTarget) {
-        return this.attacker.getWidth() * 2.0F * this.attacker.getWidth() * 2.0F + attackTarget.getWidth();
+        return this.attacker.getBbWidth() * 2.0F * this.attacker.getBbWidth() * 2.0F + attackTarget.getBbWidth();
     }
 }

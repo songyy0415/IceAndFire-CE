@@ -42,7 +42,7 @@ public class LichStaffItem extends Item {
             charge.shoot(d2, d3, d4, 1, 1);
             playerIn.playSound(SoundEvents.ZOMBIE_INFECT, 1F, 0.75F + 0.5F * playerIn.getRandom().nextFloat());
             itemStackIn.hurtAndBreak(1, playerIn, LivingEntity.getSlotForHand(hand));
-            playerIn.getCooldowns().addCooldown(this, 4);
+            playerIn.getCooldowns().addCooldown(new ItemStack(this), 4);
         }
         return InteractionResult.SUCCESS;
     }

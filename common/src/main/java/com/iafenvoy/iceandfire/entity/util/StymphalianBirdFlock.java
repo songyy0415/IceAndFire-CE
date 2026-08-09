@@ -3,21 +3,20 @@ package com.iafenvoy.iceandfire.entity.util;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.StymphalianBirdEntity;
 import com.iafenvoy.iceandfire.entity.ai.StymphalianBirdAIAirTargetGoal;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.random.Random;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 
 public class StymphalianBirdFlock {
     private final int distance = 15;
     private StymphalianBirdEntity leader;
     private ArrayList<StymphalianBirdEntity> members = new ArrayList<>();
     private BlockPos leaderTarget;
-    private Random random;
+    private RandomSource random;
 
     private StymphalianBirdFlock() {
     }
@@ -28,13 +27,13 @@ public class StymphalianBirdFlock {
         flock.members = new ArrayList<>();
         flock.members.add(bird);
         flock.leaderTarget = bird.airTarget;
-        flock.random = bird.getRandom();
+        flock.getRandom() = bird.getRandom();
         return flock;
     }
 
     public static StymphalianBirdFlock getNearbyFlock(StymphalianBirdEntity bird) {
         float d0 = IafCommonConfig.INSTANCE.stymphalianBird.flockLength.getValue();
-        List<Entity> list = bird.getWorld().getOtherEntities(bird, (new Box(bird.getX(), bird.getY(), bird.getZ(), bird.getX() + 1.0D, bird.getY() + 1.0D, bird.getZ() + 1.0D)).expand(d0, 10.0D, d0), StymphalianBirdEntity.STYMPHALIAN_PREDICATE);
+        List<Entity> list = bird.level().getEntities(bird, (new AABB(bird.getX(), bird.getY(), bird.getZ(), bird.getX() + 1.0D, bird.getY() + 1.0D, bird.getZ() + 1.0D)).inflate(d0, 10.0D, d0), StymphalianBirdEntity.STYMPHALIAN_PREDICATE);
         if (!list.isEmpty())
             for (Entity entity : list)
                 if (entity instanceof StymphalianBirdEntity other)
@@ -53,7 +52,7 @@ public class StymphalianBirdFlock {
 
     public void update() {
         if (!this.members.isEmpty() && (this.leader == null || !this.leader.isAlive()))
-            this.leader = this.members.get(this.random.nextInt(this.members.size()));
+            this.leader = this.members.get(this.getRandom().nextInt(this.members.size()));
         if (this.leader != null && this.leader.isAlive()) {
             BlockPos prevLeaderTarget = this.leaderTarget;
             this.leaderTarget = this.leader.airTarget;

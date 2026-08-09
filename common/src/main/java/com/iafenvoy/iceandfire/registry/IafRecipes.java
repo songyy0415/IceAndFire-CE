@@ -4,12 +4,12 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.DispenserBlock;
 
 public final class IafRecipes {
-    public static final DeferredRegister<RecipeType<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.RECIPE_TYPE);
+    public static final DeferredRegister<RecipeType<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.RECIPE_TYPE);
     public static final RegistrySupplier<RecipeType<DragonForgeRecipe>> DRAGON_FORGE_TYPE = REGISTRY.register("dragonforge", () -> new RecipeType<>() {
         @Override
         public String toString() {

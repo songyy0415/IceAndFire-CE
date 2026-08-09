@@ -53,7 +53,7 @@ public class PortalData extends NeedUpdateData<LivingEntity> {
                 if (dreadLand == null) return;
                 living.changeDimension(new DimensionTransition(server.getLevel(IafWorld.DREAD_LAND), living.position(), Vec3.ZERO, living.yHeadRot, living.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
                 if (!dreadLand.getBlockState(living.blockPosition()).is(IafBlocks.DREAD_PORTAL.get()))
-                    server.getStructureManager().get(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dread_exit_portal")).ifPresent(structureTemplate -> structureTemplate.placeInWorld(dreadLand, living.blockPosition().subtract(new BlockPos(2, 1, 2)), BlockPos.ZERO, new StructurePlaceSettings().addProcessor(new DreadPortalProcessor()), dreadLand.random, 2));
+                    server.getStructureManager().get(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dread_exit_portal")).ifPresent(structureTemplate -> structureTemplate.placeInWorld(dreadLand, living.blockPosition().subtract(new BlockPos(2, 1, 2)), BlockPos.ZERO, new StructurePlaceSettings().addProcessor(new DreadPortalProcessor()), dreadLand.getRandom(), 2));
                 living.sendSystemMessage(Component.translatable("warning.iceandfire.dreadland.not_complete"));
             }
         }

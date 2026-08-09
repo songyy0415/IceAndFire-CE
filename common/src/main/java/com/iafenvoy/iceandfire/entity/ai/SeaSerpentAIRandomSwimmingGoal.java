@@ -1,44 +1,43 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.phys.Vec3;
 
-public class SeaSerpentAIRandomSwimmingGoal extends WanderAroundGoal {
-    public SeaSerpentAIRandomSwimmingGoal(PathAwareEntity creature, double speed, int chance) {
+public class SeaSerpentAIRandomSwimmingGoal extends RandomStrollGoal {
+    public SeaSerpentAIRandomSwimmingGoal(PathfinderMob creature, double speed, int chance) {
         super(creature, speed, chance, false);
     }
 
     @Override
-    public boolean canStart() {
-        if (this.mob.hasPassengers() || this.mob.getTarget() != null)
+    public boolean canUse() {
+        if (this.mob.isVehicle() || this.mob.getTarget() != null)
             return false;
         else {
-            if (!this.ignoringChance && this.mob.getRandom().nextInt(this.chance) != 0)
+            if (!this.forceTrigger && this.mob.getRandom().nextInt(this.interval) != 0)
                 return false;
-            Vec3d vector3d = this.getWanderTarget();
+            Vec3 vector3d = this.getPosition();
             if (vector3d == null)
                 return false;
             else {
-                this.targetX = vector3d.x;
-                this.targetY = vector3d.y;
-                this.targetZ = vector3d.z;
-                this.ignoringChance = false;
+                this.wantedX = vector3d.x;
+                this.wantedY = vector3d.y;
+                this.wantedZ = vector3d.z;
+                this.forceTrigger = false;
                 return true;
             }
         }
     }
 
     @Override
-    protected Vec3d getWanderTarget() {
+    protected Vec3 getPosition() {
         if (((SeaSerpentEntity) this.mob).jumpCooldown <= 0) {
-            Vec3d vector3d = this.findSurfaceTarget(this.mob);
+            Vec3 vector3d = this.findSurfaceTarget(this.mob);
             if (vector3d != null)
                 return vector3d.add(0, 1, 0);
         } else {
@@ -46,33 +45,33 @@ public class SeaSerpentAIRandomSwimmingGoal extends WanderAroundGoal {
             final Random random = ThreadLocalRandom.current();
             final int range = 16;
             for (int i = 0; i < 15; i++) {
-                BlockPos blockpos1 = this.mob.getBlockPos().add(random.nextInt(range) - range / 2, random.nextInt(range) - range / 2, random.nextInt(range) - range / 2);
-                while (this.mob.getWorld().isAir(blockpos1) && this.mob.getWorld().getFluidState(blockpos1).isEmpty() && blockpos1.getY() > 1)
-                    blockpos1 = blockpos1.down();
-                if (this.mob.getWorld().getFluidState(blockpos1).isIn(FluidTags.WATER))
+                BlockPos blockpos1 = this.mob.blockPosition().offset(random.nextInt(range) - range / 2, random.nextInt(range) - range / 2, random.nextInt(range) - range / 2);
+                while (this.mob.level().isEmptyBlock(blockpos1) && this.mob.level().getFluidState(blockpos1).isEmpty() && blockpos1.getY() > 1)
+                    blockpos1 = blockpos1.below();
+                if (this.mob.level().getFluidState(blockpos1).is(FluidTags.WATER))
                     blockpos = blockpos1;
             }
-            return blockpos == null ? null : new Vec3d(blockpos.getX() + 0.5D, blockpos.getY() + 0.5D, blockpos.getZ() + 0.5D);
+            return blockpos == null ? null : new Vec3(blockpos.getX() + 0.5D, blockpos.getY() + 0.5D, blockpos.getZ() + 0.5D);
         }
         return null;
     }
 
     @SuppressWarnings("deprecation")
     private boolean canJumpTo(BlockPos pos) {
-        BlockPos blockpos = pos.add(0, 0, 0);
-        return this.mob.getWorld().getFluidState(blockpos).isIn(FluidTags.WATER) && !this.mob.getWorld().getBlockState(blockpos).blocksMovement();
+        BlockPos blockpos = pos.offset(0, 0, 0);
+        return this.mob.level().getFluidState(blockpos).is(FluidTags.WATER) && !this.mob.level().getBlockState(blockpos).blocksMotion();
     }
 
     private boolean isAirAbove(BlockPos pos) {
-        return this.mob.getWorld().getBlockState(pos.add(0, 1, 0)).isAir() && this.mob.getWorld().getBlockState(pos.add(0, 2, 0)).isAir();
+        return this.mob.level().getBlockState(pos.offset(0, 1, 0)).isAir() && this.mob.level().getBlockState(pos.offset(0, 2, 0)).isAir();
     }
 
-    private Vec3d findSurfaceTarget(PathAwareEntity creature) {
-        BlockPos upPos = creature.getBlockPos();
-        while (creature.getWorld().getFluidState(upPos).isIn(FluidTags.WATER))
-            upPos = upPos.up();
-        if (this.isAirAbove(upPos.down()) && this.canJumpTo(upPos.down()))
-            return new Vec3d(upPos.getX() + 0.5F, upPos.getY() + 3.5F, upPos.getZ() + 0.5F);
+    private Vec3 findSurfaceTarget(PathfinderMob creature) {
+        BlockPos upPos = creature.blockPosition();
+        while (creature.level().getFluidState(upPos).is(FluidTags.WATER))
+            upPos = upPos.above();
+        if (this.isAirAbove(upPos.below()) && this.canJumpTo(upPos.below()))
+            return new Vec3(upPos.getX() + 0.5F, upPos.getY() + 3.5F, upPos.getZ() + 0.5F);
         return null;
     }
 }

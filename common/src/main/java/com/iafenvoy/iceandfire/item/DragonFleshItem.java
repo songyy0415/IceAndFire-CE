@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,7 +29,7 @@ public class DragonFleshItem extends Item {
             else if (this.type == IafDragonTypes.ICE)
                 living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
             else {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level());
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level(), EntitySpawnReason.LOAD);
                 assert lightning != null;
                 lightning.moveTo(living.position());
                 living.level().addFreshEntity(lightning);

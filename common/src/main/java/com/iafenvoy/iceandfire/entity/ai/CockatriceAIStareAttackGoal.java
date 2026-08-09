@@ -3,12 +3,11 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.EnumSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.phys.Vec3;
 
 public class CockatriceAIStareAttackGoal extends Goal {
     private final CockatriceEntity entity;
@@ -19,34 +18,34 @@ public class CockatriceAIStareAttackGoal extends Goal {
     public CockatriceAIStareAttackGoal(CockatriceEntity cockatrice, double speedAmplifier, int delay, float maxDistance) {
         this.entity = cockatrice;
         this.moveSpeedAmp = speedAmplifier;
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isEntityLookingAt(LivingEntity looker, LivingEntity seen, double degree) {
-        Vec3d Vector3d = looker.getRotationVec(1.0F).normalize();
-        Vec3d Vector3d1 = new Vec3d(seen.getX() - looker.getX(), seen.getBoundingBox().minY + seen.getStandingEyeHeight() - (looker.getY() + looker.getStandingEyeHeight()), seen.getZ() - looker.getZ());
+        Vec3 Vector3d = looker.getViewVector(1.0F).normalize();
+        Vec3 Vector3d1 = new Vec3(seen.getX() - looker.getX(), seen.getBoundingBox().minY + seen.getEyeHeight() - (looker.getY() + looker.getEyeHeight()), seen.getZ() - looker.getZ());
         Vector3d1 = Vector3d1.normalize();
         final double d0 = Vector3d1.length();
-        final double d1 = Vector3d.dotProduct(Vector3d1);
+        final double d1 = Vector3d.dot(Vector3d1);
         return d1 > 1.0D - degree / d0 && !looker.isSpectator();
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         return this.entity.getTarget() != null;
     }
 
     @Override
-    public boolean shouldContinue() {
-        return this.canStart();
+    public boolean canContinueToUse() {
+        return this.canUse();
     }
 
     @Override
     public void stop() {
         super.stop();
         this.seeTime = 0;
-        this.entity.clearActiveItem();
+        this.entity.stopUsingItem();
         this.entity.getNavigation().stop();
         this.target = null;
     }
@@ -61,16 +60,16 @@ public class CockatriceAIStareAttackGoal extends Goal {
                 this.stop();
                 return;
             }
-            if (!isEntityLookingAt(LivingEntity, this.entity, CockatriceEntity.VIEW_RADIUS) || (LivingEntity.prevX != this.entity.getX() || LivingEntity.prevY != this.entity.getY() || LivingEntity.prevZ != this.entity.getZ())) {
+            if (!isEntityLookingAt(LivingEntity, this.entity, CockatriceEntity.VIEW_RADIUS) || (LivingEntity.xo != this.entity.getX() || LivingEntity.yo != this.entity.getY() || LivingEntity.zo != this.entity.getZ())) {
                 this.entity.getNavigation().stop();
                 BlockPos pos = DragonUtils.getBlockInTargetsViewCockatrice(this.entity, LivingEntity);
-                if (this.target == null || pos.getSquaredDistance(this.target) > 4)
+                if (this.target == null || pos.distSqr(this.target) > 4)
                     this.target = pos;
             }
             this.entity.setTargetedEntity(LivingEntity.getId());
 
-            this.entity.squaredDistanceTo(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
-            final boolean flag = this.entity.getVisibilityCache().canSee(LivingEntity);
+            this.entity.distanceToSqr(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
+            final boolean flag = this.entity.getSensing().hasLineOfSight(LivingEntity);
             final boolean flag1 = this.seeTime > 0;
 
             if (flag != flag1) this.seeTime = 0;
@@ -78,9 +77,9 @@ public class CockatriceAIStareAttackGoal extends Goal {
             else --this.seeTime;
 
             if (this.target != null)
-                if (this.entity.squaredDistanceTo(this.target.getX(), this.target.getY(), this.target.getZ()) > 16 && !isEntityLookingAt(LivingEntity, this.entity, CockatriceEntity.VIEW_RADIUS))
-                    this.entity.getNavigation().startMovingTo(this.target.getX(), this.target.getY(), this.target.getZ(), this.moveSpeedAmp);
-            this.entity.getLookControl().lookAt(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getStandingEyeHeight(), LivingEntity.getZ(), this.entity.getMaxHeadRotation(), this.entity.getMaxLookPitchChange());
+                if (this.entity.distanceToSqr(this.target.getX(), this.target.getY(), this.target.getZ()) > 16 && !isEntityLookingAt(LivingEntity, this.entity, CockatriceEntity.VIEW_RADIUS))
+                    this.entity.getNavigation().moveTo(this.target.getX(), this.target.getY(), this.target.getZ(), this.moveSpeedAmp);
+            this.entity.getLookControl().setLookAt(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getEyeHeight(), LivingEntity.getZ(), this.entity.getMaxHeadYRot(), this.entity.getMaxHeadXRot());
         }
     }
 

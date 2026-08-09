@@ -4,21 +4,20 @@ import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.util.IafMath;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Box;
-
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
 
-public class PixieAIPickupItemGoal<T extends ItemEntity> extends TrackTargetGoal {
+public class PixieAIPickupItemGoal<T extends ItemEntity> extends TargetGoal {
     protected final DragonAITargetItemsGoal.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected ItemEntity targetEntity;
@@ -37,20 +36,20 @@ public class PixieAIPickupItemGoal<T extends ItemEntity> extends TrackTargetGoal
         super(creature, checkSight, onlyNearby);
         this.theNearestAttackableTargetSorter = new DragonAITargetItemsGoal.Sorter(creature);
 
-        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getStack().isEmpty() && (item.getStack().getItem() == Items.CAKE
-                && !creature.isTamed()
-                || item.getStack().getItem() == Items.SUGAR && creature.isTamed()
+        this.targetEntitySelector = (Predicate<ItemEntity>) item -> item != null && !item.getItem().isEmpty() && (item.getItem().getItem() == Items.CAKE
+                && !creature.isTame()
+                || item.getItem().getItem() == Items.SUGAR && creature.isTame()
                 && creature.getHealth() < creature.getMaxHealth());
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         PixieEntity pixie = (PixieEntity) this.mob;
         if (pixie.isPixieSitting()) return false;
 
-        if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
         else {
@@ -60,18 +59,18 @@ public class PixieAIPickupItemGoal<T extends ItemEntity> extends TrackTargetGoal
         }
     }
 
-    protected Box getTargetableArea(double targetDistance) {
-        return this.mob.getBoundingBox().expand(targetDistance, 4.0, targetDistance);
+    protected AABB getTargetableArea(double targetDistance) {
+        return this.mob.getBoundingBox().inflate(targetDistance, 4.0, targetDistance);
     }
 
     @Override
     public void start() {
         // behaviour changed to the same as AmphitereAITargetItems
-        this.mob.getMoveControl().moveTo(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 0.25D);
+        this.mob.getMoveControl().setWantedPosition(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 0.25D);
 
         LivingEntity attackTarget = this.mob.getTarget();
         if (attackTarget == null)
-            this.mob.getLookControl().lookAt(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 180.0F, 20.0F);
+            this.mob.getLookControl().setLookAt(this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), 180.0F, 20.0F);
         super.start();
     }
 
@@ -80,27 +79,27 @@ public class PixieAIPickupItemGoal<T extends ItemEntity> extends TrackTargetGoal
         super.tick();
         if (this.targetEntity == null || !this.targetEntity.isAlive())
             this.stop();
-        else if (this.mob.squaredDistanceTo(this.targetEntity) < 1) {
+        else if (this.mob.distanceToSqr(this.targetEntity) < 1) {
             PixieEntity pixie = (PixieEntity) this.mob;
-            if (this.targetEntity.getStack() != null && this.targetEntity.getStack().getItem() != null)
-                if (this.targetEntity.getStack().isIn(IafItemTags.HEAL_PIXIE)) {
+            if (this.targetEntity.getItem() != null && this.targetEntity.getItem().getItem() != null)
+                if (this.targetEntity.getItem().is(IafItemTags.HEAL_PIXIE)) {
                     pixie.heal(5);
-                } else if (this.targetEntity.getStack().isIn(IafItemTags.TAME_PIXIE))
-                    if (!pixie.isTamed() && this.targetEntity.getOwner() instanceof PlayerEntity player) {
-                        pixie.setOwner(player);
+                } else if (this.targetEntity.getItem().is(IafItemTags.TAME_PIXIE))
+                    if (!pixie.isTame() && this.targetEntity.getOwner() instanceof Player player) {
+                        pixie.tame(player);
                         pixie.setPixieSitting(true);
                         pixie.setOnGround(true);  //  Entity.onGround = true
                     }
 
-            pixie.setStackInHand(Hand.MAIN_HAND, this.targetEntity.getStack());
-            this.targetEntity.getStack().decrement(1);
+            pixie.setItemInHand(InteractionHand.MAIN_HAND, this.targetEntity.getItem());
+            this.targetEntity.getItem().shrink(1);
             pixie.playSound(IafSounds.PIXIE_TAUNT.get(), 1F, 1F);
             this.stop();
         }
     }
 
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         return true;
     }
 
@@ -113,8 +112,8 @@ public class PixieAIPickupItemGoal<T extends ItemEntity> extends TrackTargetGoal
 
         @Override
         public int compare(Entity p_compare_1_, Entity p_compare_2_) {
-            final double d0 = this.theEntity.squaredDistanceTo(p_compare_1_);
-            final double d1 = this.theEntity.squaredDistanceTo(p_compare_2_);
+            final double d0 = this.theEntity.distanceToSqr(p_compare_1_);
+            final double d1 = this.theEntity.distanceToSqr(p_compare_2_);
             return Double.compare(d0, d1);
         }
     }

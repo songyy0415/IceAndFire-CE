@@ -89,7 +89,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
 
         public DragonCavePiece(StructurePieceType type, CompoundTag nbt) {
             super(type, nbt);
-            this.male = nbt.getBoolean("male").orElse(false);
+            this.male = nbt.getBooleanOr("male", false);
             this.offset = BlockPos.of(nbt.getLong("offset").orElse(0L));
             this.y = nbt.getInt("down").orElse(0);
             this.seed = nbt.getLong("seed").orElse(0L);

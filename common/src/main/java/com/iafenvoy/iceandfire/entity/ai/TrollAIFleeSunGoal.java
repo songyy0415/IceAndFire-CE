@@ -1,18 +1,17 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.TrollEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-
 import java.util.EnumSet;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class TrollAIFleeSunGoal extends Goal {
     private final TrollEntity troll;
     private final double movementSpeed;
-    private final World world;
+    private final Level world;
     private double shelterX;
     private double shelterY;
     private double shelterZ;
@@ -20,17 +19,17 @@ public class TrollAIFleeSunGoal extends Goal {
     public TrollAIFleeSunGoal(TrollEntity theCreatureIn, double movementSpeedIn) {
         this.troll = theCreatureIn;
         this.movementSpeed = movementSpeedIn;
-        this.world = theCreatureIn.getWorld();
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.world = theCreatureIn.level();
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         if (!this.world.isDay()) return false;
-        else if (!this.world.isSkyVisible(BlockPos.ofFloored(this.troll.getBlockX(), this.troll.getBoundingBox().minY, this.troll.getBlockZ())))
+        else if (!this.world.canSeeSky(BlockPos.containing(this.troll.getBlockX(), this.troll.getBoundingBox().minY, this.troll.getBlockZ())))
             return false;
         else {
-            Vec3d Vector3d = this.findPossibleShelter();
+            Vec3 Vector3d = this.findPossibleShelter();
             if (Vector3d == null) return false;
             else {
                 this.shelterX = Vector3d.x;
@@ -45,8 +44,8 @@ public class TrollAIFleeSunGoal extends Goal {
      * Returns whether an in-progress Goal should continue executing
      */
     @Override
-    public boolean shouldContinue() {
-        return !this.troll.getNavigation().isIdle();
+    public boolean canContinueToUse() {
+        return !this.troll.getNavigation().isDone();
     }
 
     /**
@@ -54,16 +53,16 @@ public class TrollAIFleeSunGoal extends Goal {
      */
     @Override
     public void start() {
-        this.troll.getNavigation().startMovingTo(this.shelterX, this.shelterY, this.shelterZ, this.movementSpeed);
+        this.troll.getNavigation().moveTo(this.shelterX, this.shelterY, this.shelterZ, this.movementSpeed);
     }
 
-    private Vec3d findPossibleShelter() {
-        Random random = this.troll.getRandom();
-        BlockPos blockpos = BlockPos.ofFloored(this.troll.getBlockX(), this.troll.getBoundingBox().minY, this.troll.getBlockZ());
+    private Vec3 findPossibleShelter() {
+        RandomSource random = this.troll.getRandom();
+        BlockPos blockpos = BlockPos.containing(this.troll.getBlockX(), this.troll.getBoundingBox().minY, this.troll.getBlockZ());
         for (int i = 0; i < 10; ++i) {
-            BlockPos blockpos1 = blockpos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-            if (!this.world.isSkyVisible(blockpos1) && this.troll.getPathfindingFavor(blockpos1) < 0.0F)
-                return new Vec3d(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
+            BlockPos blockpos1 = blockpos.offset(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
+            if (!this.world.canSeeSky(blockpos1) && this.troll.getWalkTargetValue(blockpos1) < 0.0F)
+                return new Vec3(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
         }
         return null;
     }

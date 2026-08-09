@@ -24,7 +24,7 @@ public class DragonFluteItem extends Item {
     @Override
     public InteractionResult use(Level worldIn, Player player, InteractionHand hand) {
         ItemStack itemStackIn = player.getItemInHand(hand);
-        player.getCooldowns().addCooldown(this, 60);
+        player.getCooldowns().addCooldown(new ItemStack(this), 60);
 
         float range = 16 * IafCommonConfig.INSTANCE.dragon.fluteDistance.getValue();
         List<Entity> list = worldIn.getEntities(player, (new AABB(player.getX(), player.getY(), player.getZ(), player.getX() + 1.0D, player.getY() + 1.0D, player.getZ() + 1.0D)).inflate(range, 256, range));

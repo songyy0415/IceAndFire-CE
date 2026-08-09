@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.event;
 
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.uranus.event.Event;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public final class IafEvents {
     public static final Event<GriefBreakBlock> ON_GRIEF_BREAK_BLOCK = new Event<>(callbacks -> (griefer, targetX, targetY, targetZ) -> {

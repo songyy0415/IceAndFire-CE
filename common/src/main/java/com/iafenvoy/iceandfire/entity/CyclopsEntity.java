@@ -173,7 +173,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
                     && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityIn.getType()).is(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
                 this.setAnimation(ANIMATION_EATPLAYER);
                 entityIn.stopRiding();
-                entityIn.startRiding(this, true);
+                entityIn.startRiding(this, true, false);
             } else {
                 this.setAnimation(ANIMATION_STOMP);
             }
@@ -286,7 +286,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         if (this.getAnimation() == ANIMATION_KICK && this.getTarget() != null && this.distanceToSqr(this.getTarget()) < 14D && this.getAnimationTick() == 12) {
             this.getTarget().hurt(this.level().damageSources().mobAttack(this), (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
             if (this.getTarget() != null)
-                this.getTarget().knockback(2, this.getX() - this.getTarget().getX(), this.getZ() - this.getTarget().getZ());
+                this.getTarget().knockback(2,this.getX() - this.getTarget().getX(),this.getZ() - this.getTarget().getZ(),this.level().damageSources().mobAttack(this),0);
 
         }
         if (this.getAnimation() != ANIMATION_EATPLAYER && this.getTarget() != null && !this.getPassengers().isEmpty() && this.getPassengers().contains(this.getTarget())) {

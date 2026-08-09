@@ -1,48 +1,53 @@
 package com.iafenvoy.iceandfire.entity.pathfinding;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.pathing.*;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
-public class DeathWormNodeMaker extends PathNodeMaker {
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.NodeEvaluator;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
+import net.minecraft.world.level.pathfinder.Target;
+
+public class DeathWormNodeMaker extends NodeEvaluator {
     @Override
-    public PathNode getStart() {
-        return this.getNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5D), MathHelper.floor(this.entity.getBoundingBox().minZ));
+    public Node getStart() {
+        return this.getNode(Mth.floor(this.mob.getBoundingBox().minX), Mth.floor(this.mob.getBoundingBox().minY + 0.5D), Mth.floor(this.mob.getBoundingBox().minZ));
     }
 
     @Override
-    public TargetPathNode getNode(double x, double y, double z) {
-        return new TargetPathNode(this.getNode(MathHelper.floor(x - 0.4), MathHelper.floor(y + 0.5D), MathHelper.floor(z - 0.4)));
+    public Target getTarget(double x, double y, double z) {
+        return new Target(this.getNode(Mth.floor(x - 0.4), Mth.floor(y + 0.5D), Mth.floor(z - 0.4)));
     }
 
     @Override
-    public PathNodeType getNodeType(PathContext context, int x, int y, int z, MobEntity entitylivingIn) {
-        return this.getDefaultNodeType(context, x, y, z);
+    public PathType getPathTypeOfMob(PathfindingContext context, int x, int y, int z, Mob entitylivingIn) {
+        return this.getPathType(context, x, y, z);
     }
 
     @Override
-    public PathNodeType getDefaultNodeType(PathContext context, int x, int y, int z) {
+    public PathType getPathType(PathfindingContext context, int x, int y, int z) {
         BlockPos blockpos = new BlockPos(x, y, z);
         BlockState blockstate = context.getBlockState(blockpos);
-        if (!this.isPassable(context.getWorld(), blockpos.down()) && (blockstate.isAir() || this.isPassable(context.getWorld(), blockpos))) {
-            return PathNodeType.BREACH;
+        if (!this.isPassable(context.level(), blockpos.below()) && (blockstate.isAir() || this.isPassable(context.level(), blockpos))) {
+            return PathType.BREACH;
         } else {
-            return this.isPassable(context.getWorld(), blockpos) ? PathNodeType.WATER : PathNodeType.BLOCKED;
+            return this.isPassable(context.level(), blockpos) ? PathType.WATER : PathType.BLOCKED;
         }
     }
 
     @Override
-    public int getSuccessors(PathNode[] p_222859_1_, PathNode p_222859_2_) {
+    public int getNeighbors(Node[] p_222859_1_, Node p_222859_2_) {
         int i = 0;
 
         for (Direction direction : Direction.values()) {
-            PathNode pathpoint = this.getSandNode(p_222859_2_.x + direction.getOffsetX(), p_222859_2_.y + direction.getOffsetY(), p_222859_2_.z + direction.getOffsetZ());
-            if (pathpoint != null && !pathpoint.visited) {
+            Node pathpoint = this.getSandNode(p_222859_2_.x + direction.getStepX(), p_222859_2_.y + direction.getStepY(), p_222859_2_.z + direction.getStepZ());
+            if (pathpoint != null && !pathpoint.closed) {
                 p_222859_1_[i++] = pathpoint;
             }
         }
@@ -50,35 +55,35 @@ public class DeathWormNodeMaker extends PathNodeMaker {
         return i;
     }
 
-    private PathNode getSandNode(int p_186328_1_, int p_186328_2_, int p_186328_3_) {
-        PathNodeType pathnodetype = this.isFree(p_186328_1_, p_186328_2_, p_186328_3_);
-        return pathnodetype != PathNodeType.BREACH && pathnodetype != PathNodeType.WATER ? null : this.getNode(p_186328_1_, p_186328_2_, p_186328_3_);
+    private Node getSandNode(int p_186328_1_, int p_186328_2_, int p_186328_3_) {
+        PathType pathnodetype = this.isFree(p_186328_1_, p_186328_2_, p_186328_3_);
+        return pathnodetype != PathType.BREACH && pathnodetype != PathType.WATER ? null : this.getNode(p_186328_1_, p_186328_2_, p_186328_3_);
     }
 
-    private PathNodeType isFree(int p_186327_1_, int p_186327_2_, int p_186327_3_) {
-        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-        for (int i = p_186327_1_; i < p_186327_1_ + this.entityBlockXSize; ++i) {
-            for (int j = p_186327_2_; j < p_186327_2_ + this.entityBlockYSize; ++j) {
-                for (int k = p_186327_3_; k < p_186327_3_ + this.entityBlockZSize; ++k) {
-                    BlockState blockstate = this.context.getBlockState(blockpos$mutable.set(i, j, k));
-                    if (!this.isPassable(this.context.getWorld(), blockpos$mutable.down()) && (blockstate.isAir() || this.isPassable(this.context.getWorld(), blockpos$mutable))) {
-                        return PathNodeType.BREACH;
+    private PathType isFree(int p_186327_1_, int p_186327_2_, int p_186327_3_) {
+        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
+        for (int i = p_186327_1_; i < p_186327_1_ + this.entityWidth; ++i) {
+            for (int j = p_186327_2_; j < p_186327_2_ + this.entityHeight; ++j) {
+                for (int k = p_186327_3_; k < p_186327_3_ + this.entityDepth; ++k) {
+                    BlockState blockstate = this.currentContext.getBlockState(blockpos$mutable.set(i, j, k));
+                    if (!this.isPassable(this.currentContext.level(), blockpos$mutable.below()) && (blockstate.isAir() || this.isPassable(this.currentContext.level(), blockpos$mutable))) {
+                        return PathType.BREACH;
                     }
 
                 }
             }
         }
 
-        BlockState blockstate1 = this.context.getBlockState(blockpos$mutable);
-        return this.isPassable(blockstate1) ? PathNodeType.WATER : PathNodeType.BLOCKED;
+        BlockState blockstate1 = this.currentContext.getBlockState(blockpos$mutable);
+        return this.isPassable(blockstate1) ? PathType.WATER : PathType.BLOCKED;
     }
 
 
-    private boolean isPassable(BlockView world, BlockPos pos) {
-        return world.getBlockState(pos).isIn(BlockTags.SAND) || world.getBlockState(pos).isAir();
+    private boolean isPassable(BlockGetter world, BlockPos pos) {
+        return world.getBlockState(pos).is(BlockTags.SAND) || world.getBlockState(pos).isAir();
     }
 
     private boolean isPassable(BlockState state) {
-        return state.isIn(BlockTags.SAND) || state.isAir();
+        return state.is(BlockTags.SAND) || state.isAir();
     }
 }

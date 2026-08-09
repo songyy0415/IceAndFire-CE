@@ -2,10 +2,9 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DreadLichEntity;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-
 import java.util.EnumSet;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 public class DreadLichAIStrifeGoal extends Goal {
     private final DreadLichEntity entity;
@@ -22,7 +21,7 @@ public class DreadLichAIStrifeGoal extends Goal {
         this.moveSpeedAmp = moveSpeedAmpIn;
         this.attackCooldown = attackCooldownIn;
         this.maxAttackDistance = maxAttackDistanceIn * maxAttackDistanceIn;
-        this.setControls(EnumSet.of(Control.MOVE));
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     public void setAttackCooldown(int attackCooldownIn) {
@@ -30,24 +29,24 @@ public class DreadLichAIStrifeGoal extends Goal {
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         return this.entity.getTarget() != null && this.isStaffInHand();
     }
 
     protected boolean isStaffInHand() {
-        return !this.entity.getMainHandStack().isEmpty() && this.entity.getMainHandStack().getItem() == IafItems.LICH_STAFF.get();
+        return !this.entity.getMainHandItem().isEmpty() && this.entity.getMainHandItem().getItem() == IafItems.LICH_STAFF.get();
     }
 
     @Override
-    public boolean shouldContinue() {
-        return (this.canStart() || !this.entity.getNavigation().isIdle()) && this.isStaffInHand();
+    public boolean canContinueToUse() {
+        return (this.canUse() || !this.entity.getNavigation().isDone()) && this.isStaffInHand();
     }
 
     @Override
     public void stop() {
         super.stop();
         this.seeTime = 0;
-        this.entity.clearActiveItem();
+        this.entity.stopUsingItem();
     }
 
     @Override
@@ -55,8 +54,8 @@ public class DreadLichAIStrifeGoal extends Goal {
         LivingEntity LivingEntity = this.entity.getTarget();
 
         if (LivingEntity != null) {
-            final double d0 = this.entity.squaredDistanceTo(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
-            final boolean flag = this.entity.getVisibilityCache().canSee(LivingEntity);
+            final double d0 = this.entity.distanceToSqr(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
+            final boolean flag = this.entity.getSensing().hasLineOfSight(LivingEntity);
             final boolean flag1 = this.seeTime > 0;
 
             if (flag != flag1) this.seeTime = 0;
@@ -67,7 +66,7 @@ public class DreadLichAIStrifeGoal extends Goal {
                 this.entity.getNavigation().stop();
                 ++this.strafingTime;
             } else {
-                this.entity.getNavigation().startMovingTo(LivingEntity, this.moveSpeedAmp);
+                this.entity.getNavigation().moveTo(LivingEntity, this.moveSpeedAmp);
                 this.strafingTime = -1;
             }
 
@@ -85,16 +84,16 @@ public class DreadLichAIStrifeGoal extends Goal {
                 else if (d0 < this.maxAttackDistance * 0.25F)
                     this.strafingBackwards = true;
 
-                this.entity.getMoveControl().strafeTo(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
-                this.entity.lookAtEntity(LivingEntity, 30.0F, 30.0F);
+                this.entity.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
+                this.entity.lookAt(LivingEntity, 30.0F, 30.0F);
             } else
-                this.entity.getLookControl().lookAt(LivingEntity, 30.0F, 30.0F);
+                this.entity.getLookControl().setLookAt(LivingEntity, 30.0F, 30.0F);
 
             if (!flag && this.seeTime < -60)
-                this.entity.clearActiveItem();
+                this.entity.stopUsingItem();
             else if (flag) {
-                this.entity.clearActiveItem();
-                this.entity.shootAt(LivingEntity, 0);
+                this.entity.stopUsingItem();
+                this.entity.performRangedAttack(LivingEntity, 0);
             }
         }
     }

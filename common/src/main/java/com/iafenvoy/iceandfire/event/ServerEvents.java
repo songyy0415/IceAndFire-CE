@@ -28,6 +28,7 @@ import net.minecraft.core.Direction;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
@@ -179,9 +180,9 @@ public final class ServerEvents {
                             ItemStack statuette = new ItemStack(IafItems.STONE_STATUE.get());
                             statuette.set(IafDataComponents.STONE_STATUS.get(), new StoneStatusComponent(statue.getTrappedEntityTypeString().equalsIgnoreCase("minecraft:player"), statue.getTrappedEntityTypeString(), writtenTag));
                             if (!statue.level().isClientSide())
-                                statue.spawnAtLocation(statuette, 1);
+                                statue.spawnAtLocation((ServerLevel) statue.level(), statuette, 1);
                         } else if (!statue.level().isClientSide())
-                            statue.spawnAtLocation(Blocks.COBBLESTONE, 2 + player.getRandom().nextInt(4));
+                            statue.spawnAtLocation((ServerLevel) statue.level(), new ItemStack(Blocks.COBBLESTONE), 2 + player.getRandom().nextInt(4));
 
                         statue.remove(Entity.RemovalReason.KILLED);
                     }
@@ -231,7 +232,7 @@ public final class ServerEvents {
         }
 
         if (entity.getUUID().equals(ServerEvents.ALEX_UUID))
-            entity.spawnAtLocation(new ItemStack(IafItems.WEEZER_BLUE_ALBUM.get()), 1);
+            entity.spawnAtLocation((ServerLevel) entity.level(), new ItemStack(IafItems.WEEZER_BLUE_ALBUM.get()), 1);
 
         if (entity instanceof Player) {
             if (IafCommonConfig.INSTANCE.ghost.fromPlayerDeaths.getValue()) {
@@ -244,7 +245,7 @@ public final class ServerEvents {
                         flag = true;
                     if (flag) {
                         Level world = entity.level();
-                        GhostEntity ghost = IafEntities.GHOST.get().create(world);
+                        GhostEntity ghost = IafEntities.GHOST.get().create(world, EntitySpawnReason.LOAD);
                         assert ghost != null;
                         ghost.copyPosition(entity);
                         if (world instanceof ServerLevelAccessor serverWorldAccess) {
@@ -266,7 +267,7 @@ public final class ServerEvents {
             if (chainData.isChainedTo(entity.getUUID())) {
                 chainData.removeChain(entity.getUUID());
                 if (!player.level().isClientSide())
-                    entity.spawnAtLocation(IafItems.CHAIN.get(), 1);
+                    entity.spawnAtLocation((ServerLevel) entity.level(), new ItemStack(IafItems.CHAIN.get()), 1);
                 return EventResult.interruptTrue();
             }
         }

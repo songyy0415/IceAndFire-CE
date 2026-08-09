@@ -75,7 +75,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         public DragonRoostPiece(StructurePieceType type, CompoundTag nbt) {
             super(type, nbt);
             this.treasureBlock = BuiltInRegistries.BLOCK.get(Identifier.tryParse(nbt.getString("treasureBlock").orElse("")));
-            this.isMale = nbt.getBoolean("isMale").orElse(false);
+            this.isMale = nbt.getBooleanOr("isMale", false);
         }
 
         @Override

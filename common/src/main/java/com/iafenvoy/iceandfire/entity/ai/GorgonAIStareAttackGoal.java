@@ -1,10 +1,9 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-
 import java.util.EnumSet;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 public class GorgonAIStareAttackGoal extends Goal {
     private final GorgonEntity entity;
@@ -19,24 +18,24 @@ public class GorgonAIStareAttackGoal extends Goal {
         this.entity = gorgon;
         this.moveSpeedAmp = speedAmplifier;
         this.maxAttackDistance = maxDistance * maxDistance;
-        this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         return this.entity.getTarget() != null;
     }
 
     @Override
-    public boolean shouldContinue() {
-        return (this.canStart() || !this.entity.getNavigation().isIdle());
+    public boolean canContinueToUse() {
+        return (this.canUse() || !this.entity.getNavigation().isDone());
     }
 
     @Override
     public void stop() {
         super.stop();
         this.seeTime = 0;
-        this.entity.clearActiveItem();
+        this.entity.stopUsingItem();
     }
 
     @Override
@@ -49,10 +48,10 @@ public class GorgonAIStareAttackGoal extends Goal {
                 this.stop();
                 return;
             }
-            this.entity.getLookControl().lookAt(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getStandingEyeHeight(), LivingEntity.getZ(), this.entity.getMaxHeadRotation(), this.entity.getMaxLookPitchChange());
+            this.entity.getLookControl().setLookAt(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getEyeHeight(), LivingEntity.getZ(), this.entity.getMaxHeadYRot(), this.entity.getMaxHeadXRot());
 
-            final double d0 = this.entity.squaredDistanceTo(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
-            final boolean flag = this.entity.getVisibilityCache().canSee(LivingEntity);
+            final double d0 = this.entity.distanceToSqr(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
+            final boolean flag = this.entity.getSensing().hasLineOfSight(LivingEntity);
             final boolean flag1 = this.seeTime > 0;
 
             if (flag != flag1) this.seeTime = 0;
@@ -63,7 +62,7 @@ public class GorgonAIStareAttackGoal extends Goal {
                 this.entity.getNavigation().stop();
                 ++this.strafingTime;
             } else {
-                this.entity.getNavigation().startMovingTo(LivingEntity, this.moveSpeedAmp);
+                this.entity.getNavigation().moveTo(LivingEntity, this.moveSpeedAmp);
                 this.strafingTime = -1;
             }
 
@@ -81,11 +80,11 @@ public class GorgonAIStareAttackGoal extends Goal {
                 else if (d0 < this.maxAttackDistance * 0.25F)
                     this.strafingBackwards = true;
 
-                this.entity.getMoveControl().strafeTo(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
-                this.entity.getLookControl().lookAt(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getStandingEyeHeight(), LivingEntity.getZ(), this.entity.getMaxHeadRotation(), this.entity.getMaxLookPitchChange());
+                this.entity.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
+                this.entity.getLookControl().setLookAt(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getEyeHeight(), LivingEntity.getZ(), this.entity.getMaxHeadYRot(), this.entity.getMaxHeadXRot());
                 this.entity.forcePreyToLook(LivingEntity);
             } else {
-                this.entity.getLookControl().lookAt(LivingEntity, 30.0F, 30.0F);
+                this.entity.getLookControl().setLookAt(LivingEntity, 30.0F, 30.0F);
                 this.entity.forcePreyToLook(LivingEntity);
             }
 

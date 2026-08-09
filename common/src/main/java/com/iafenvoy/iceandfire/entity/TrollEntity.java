@@ -60,7 +60,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -361,7 +361,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
             float f6 = Mth.cos(this.getYRot() * 0.017453292F);
             target.setDeltaMovement(f5, f6, 0.4F);
         }
-        if (this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+        if (this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && ((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
             this.lookAt(this.getTarget(), 30, 30);
             if (this.getAnimation() == NO_ANIMATION && this.getRandom().nextInt(15) == 0)
                 this.setAnimation(ANIMATION_STRIKE_VERTICAL);
@@ -375,7 +375,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                     explosion.explode();
                     explosion.finalizeExplosion(true);
                 }
-                this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1, 1);
+                this.playSound(SoundEvents.GENERIC_EXPLODE, 1, 1);
             }
         }
         if (this.getAnimation() == ANIMATION_STRIKE_VERTICAL && this.getAnimationTick() == 10)

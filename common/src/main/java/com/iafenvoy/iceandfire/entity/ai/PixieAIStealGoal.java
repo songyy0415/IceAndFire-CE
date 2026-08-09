@@ -4,19 +4,18 @@ import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class PixieAIStealGoal extends Goal {
     private final PixieEntity temptedEntity;
-    private PlayerEntity temptingPlayer;
+    private Player temptingPlayer;
     private int delayTemptCounter = 0;
     private boolean isRunning;
 
@@ -25,23 +24,23 @@ public class PixieAIStealGoal extends Goal {
     }
 
     @Override
-    public boolean canStart() {
-        if (!IafCommonConfig.INSTANCE.pixie.stealItems.getValue() || !this.temptedEntity.getMainHandStack().isEmpty() || this.temptedEntity.stealCooldown > 0)
+    public boolean canUse() {
+        if (!IafCommonConfig.INSTANCE.pixie.stealItems.getValue() || !this.temptedEntity.getMainHandItem().isEmpty() || this.temptedEntity.stealCooldown > 0)
             return false;
         if (this.temptedEntity.getRandom().nextInt(200) == 0) return false;
-        if (this.temptedEntity.isTamed()) return false;
+        if (this.temptedEntity.isTame()) return false;
         if (this.delayTemptCounter > 0) {
             --this.delayTemptCounter;
             return false;
         } else {
-            this.temptingPlayer = this.temptedEntity.getWorld().getClosestPlayer(this.temptedEntity, 10.0D);
-            return this.temptingPlayer != null && (this.temptedEntity.getStackInHand(Hand.MAIN_HAND).isEmpty() && !this.temptingPlayer.getInventory().isEmpty() && !this.temptingPlayer.isCreative());
+            this.temptingPlayer = this.temptedEntity.level().getNearestPlayer(this.temptedEntity, 10.0D);
+            return this.temptingPlayer != null && (this.temptedEntity.getItemInHand(InteractionHand.MAIN_HAND).isEmpty() && !this.temptingPlayer.getInventory().isEmpty() && !this.temptingPlayer.isCreative());
         }
     }
 
     @Override
-    public boolean shouldContinue() {
-        return !this.temptedEntity.isTamed() && this.temptedEntity.getMainHandStack().isEmpty() && this.delayTemptCounter == 0 && this.temptedEntity.stealCooldown == 0;
+    public boolean canContinueToUse() {
+        return !this.temptedEntity.isTame() && this.temptedEntity.getMainHandItem().isEmpty() && this.delayTemptCounter == 0 && this.temptedEntity.stealCooldown == 0;
     }
 
     @Override
@@ -59,30 +58,30 @@ public class PixieAIStealGoal extends Goal {
 
     @Override
     public void tick() {
-        this.temptedEntity.getLookControl().lookAt(this.temptingPlayer, this.temptedEntity.getMaxHeadRotation() + 20, this.temptedEntity.getMaxLookPitchChange());
+        this.temptedEntity.getLookControl().setLookAt(this.temptingPlayer, this.temptedEntity.getMaxHeadYRot() + 20, this.temptedEntity.getMaxHeadXRot());
         ArrayList<Integer> slotlist = new ArrayList<>();
-        if (this.temptedEntity.squaredDistanceTo(this.temptingPlayer) < 3D && !this.temptingPlayer.getInventory().isEmpty()) {
+        if (this.temptedEntity.distanceToSqr(this.temptingPlayer) < 3D && !this.temptingPlayer.getInventory().isEmpty()) {
 
-            for (int i = 0; i < this.temptingPlayer.getInventory().size(); i++) {
-                ItemStack targetStack = this.temptingPlayer.getInventory().getStackInSlot(i);
-                if (!PlayerInventory.isValidHotbarIndex(i) && !targetStack.isEmpty() && targetStack.isStackable() && !targetStack.isIn(IafItemTags.PIXIE_STOLEN_BLACKLIST))
+            for (int i = 0; i < this.temptingPlayer.getInventory().getContainerSize(); i++) {
+                ItemStack targetStack = this.temptingPlayer.getInventory().getItem(i);
+                if (!Inventory.isHotbarSlot(i) && !targetStack.isEmpty() && targetStack.isStackable() && !targetStack.is(IafItemTags.PIXIE_STOLEN_BLACKLIST))
                     slotlist.add(i);
             }
             if (!slotlist.isEmpty()) {
                 final int slot = slotlist.size() == 1 ? slotlist.getFirst() : slotlist.get(ThreadLocalRandom.current().nextInt(slotlist.size()));
-                ItemStack randomItem = this.temptingPlayer.getInventory().getStackInSlot(slot);
-                this.temptedEntity.setStackInHand(Hand.MAIN_HAND, randomItem);
-                this.temptingPlayer.getInventory().removeStack(slot);
+                ItemStack randomItem = this.temptingPlayer.getInventory().getItem(slot);
+                this.temptedEntity.setItemInHand(InteractionHand.MAIN_HAND, randomItem);
+                this.temptingPlayer.getInventory().removeItemNoUpdate(slot);
                 this.temptedEntity.playSound(IafSounds.PIXIE_TAUNT.get(), 1F, 1F);
 
-                for (PixieEntity pixie : this.temptingPlayer.getWorld().getNonSpectatingEntities(PixieEntity.class, this.temptedEntity.getBoundingBox().expand(40)))
+                for (PixieEntity pixie : this.temptingPlayer.level().getEntitiesOfClass(PixieEntity.class, this.temptedEntity.getBoundingBox().inflate(40)))
                     pixie.stealCooldown = 1000 + pixie.getRandom().nextInt(3000);
                 if (this.temptingPlayer != null)
-                    this.temptingPlayer.addStatusEffect(new StatusEffectInstance(this.temptedEntity.negativePotions[this.temptedEntity.getColor()], 100));
+                    this.temptingPlayer.addEffect(new MobEffectInstance(this.temptedEntity.negativePotions[this.temptedEntity.getColor()], 100));
             } else//If the pixie couldn't steal anything
                 this.delayTemptCounter = 10 * 20;
         } else
-            this.temptedEntity.getMoveControl().moveTo(this.temptingPlayer.getX(), this.temptingPlayer.getY() + 1.5F, this.temptingPlayer.getZ(), 1D);
+            this.temptedEntity.getMoveControl().setWantedPosition(this.temptingPlayer.getX(), this.temptingPlayer.getY() + 1.5F, this.temptingPlayer.getZ(), 1D);
     }
 
     public boolean isRunning() {

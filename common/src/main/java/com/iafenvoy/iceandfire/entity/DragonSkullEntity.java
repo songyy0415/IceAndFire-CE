@@ -59,8 +59,8 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource i) {
-        return i.getEntity() != null && super.isInvulnerableTo(i);
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource i) {
+        return i.getEntity() != null && super.isInvulnerableTo(level, i);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
         ItemStack stack = new ItemStack(this.getDragonSkullItem());
         stack.set(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(this.getStage(), this.getDragonAge()));
         if (!this.level().isClientSide())
-            this.spawnAtLocation(stack, 0.0F);
+            this.spawnAtLocation((ServerLevel) this.level(), stack, 0.0F);
     }
 
     public Item getDragonSkullItem() {

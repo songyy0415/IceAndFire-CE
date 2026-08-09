@@ -1,14 +1,14 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
-import net.minecraft.entity.ai.goal.DiveJumpingGoal;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.goal.JumpGoal;
+import net.minecraft.world.phys.Vec3;
 
-public class DeathWormAIJumpGoal extends DiveJumpingGoal {
+public class DeathWormAIJumpGoal extends JumpGoal {
     private static final int[] JUMP_DISTANCES = new int[]{
             0, 1, 4, 5, 6, 7
     };
@@ -23,15 +23,15 @@ public class DeathWormAIJumpGoal extends DiveJumpingGoal {
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         if (this.jumpCooldown > 0) this.jumpCooldown--;
-        if (this.dolphin.getRandom().nextInt(this.chance) != 0 || this.dolphin.hasPassengers() || this.dolphin.getTarget() != null)
+        if (this.dolphin.getRandom().nextInt(this.chance) != 0 || this.dolphin.isVehicle() || this.dolphin.getTarget() != null)
             return false;
         else {
-            Direction direction = this.dolphin.getMovementDirection();
-            final int i = direction.getOffsetX();
-            final int j = direction.getOffsetZ();
-            BlockPos blockpos = this.dolphin.getBlockPos();
+            Direction direction = this.dolphin.getMotionDirection();
+            final int i = direction.getStepX();
+            final int j = direction.getStepZ();
+            BlockPos blockpos = this.dolphin.blockPosition();
             for (int k : JUMP_DISTANCES)
                 if (!this.canJumpTo(blockpos, i, j, k) || !this.isAirAbove(blockpos, i, j, k))
                     return false;
@@ -40,27 +40,27 @@ public class DeathWormAIJumpGoal extends DiveJumpingGoal {
     }
 
     private boolean canJumpTo(BlockPos pos, int dx, int dz, int scale) {
-        BlockPos blockpos = pos.add(dx * scale, 0, dz * scale);
-        return this.dolphin.getWorld().getBlockState(blockpos).isIn(BlockTags.SAND);
+        BlockPos blockpos = pos.offset(dx * scale, 0, dz * scale);
+        return this.dolphin.level().getBlockState(blockpos).is(BlockTags.SAND);
     }
 
     private boolean isAirAbove(BlockPos pos, int dx, int dz, int scale) {
-        return this.dolphin.getWorld().getBlockState(pos.add(dx * scale, 1, dz * scale)).isAir()
-                && this.dolphin.getWorld().getBlockState(pos.add(dx * scale, 2, dz * scale)).isAir();
+        return this.dolphin.level().getBlockState(pos.offset(dx * scale, 1, dz * scale)).isAir()
+                && this.dolphin.level().getBlockState(pos.offset(dx * scale, 2, dz * scale)).isAir();
     }
 
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean shouldContinue() {
-        final double d0 = this.dolphin.getVelocity().y;
-        return this.jumpCooldown > 0 && (d0 * d0 >= 0.03F || this.dolphin.getPitch() == 0.0F
-                || Math.abs(this.dolphin.getPitch()) >= 10.0F || !this.dolphin.isInSand()) && !this.dolphin.isOnGround();
+    public boolean canContinueToUse() {
+        final double d0 = this.dolphin.getDeltaMovement().y;
+        return this.jumpCooldown > 0 && (d0 * d0 >= 0.03F || this.dolphin.getXRot() == 0.0F
+                || Math.abs(this.dolphin.getXRot()) >= 10.0F || !this.dolphin.isInSand()) && !this.dolphin.onGround();
     }
 
     @Override
-    public boolean canStop() {
+    public boolean isInterruptable() {
         return false;
     }
 
@@ -69,9 +69,9 @@ public class DeathWormAIJumpGoal extends DiveJumpingGoal {
      */
     @Override
     public void start() {
-        Direction direction = this.dolphin.getMovementDirection();
-        final float up = (this.dolphin.getScaleFactor() > 3 ? 0.7F : 0.4F) + this.dolphin.getRandom().nextFloat() * 0.4F;
-        this.dolphin.setVelocity(this.dolphin.getVelocity().add(direction.getOffsetX() * 0.6D, up, direction.getOffsetZ() * 0.6D));
+        Direction direction = this.dolphin.getMotionDirection();
+        final float up = (this.dolphin.getAgeScale() > 3 ? 0.7F : 0.4F) + this.dolphin.getRandom().nextFloat() * 0.4F;
+        this.dolphin.setDeltaMovement(this.dolphin.getDeltaMovement().add(direction.getStepX() * 0.6D, up, direction.getStepZ() * 0.6D));
         this.dolphin.getNavigation().stop();
         this.dolphin.setWormJumping(30);
         this.jumpCooldown = this.dolphin.getRandom().nextInt(65) + 32;
@@ -83,7 +83,7 @@ public class DeathWormAIJumpGoal extends DiveJumpingGoal {
      */
     @Override
     public void stop() {
-        this.dolphin.setPitch(0.0F);
+        this.dolphin.setXRot(0.0F);
     }
 
     /**
@@ -93,14 +93,14 @@ public class DeathWormAIJumpGoal extends DiveJumpingGoal {
     public void tick() {
         final boolean flag = this.inWater;
         if (!flag)
-            this.inWater = this.dolphin.getWorld().getBlockState(this.dolphin.getBlockPos()).isIn(BlockTags.SAND);
-        Vec3d vector3d = this.dolphin.getVelocity();
-        if (vector3d.y * vector3d.y < 0.1F && this.dolphin.getPitch() != 0.0F)
-            this.dolphin.setPitch(MathHelper.lerpAngleDegrees(this.dolphin.getPitch(), 0.0F, 0.2F));
+            this.inWater = this.dolphin.level().getBlockState(this.dolphin.blockPosition()).is(BlockTags.SAND);
+        Vec3 vector3d = this.dolphin.getDeltaMovement();
+        if (vector3d.y * vector3d.y < 0.1F && this.dolphin.getXRot() != 0.0F)
+            this.dolphin.setXRot(Mth.rotLerp(this.dolphin.getXRot(), 0.0F, 0.2F));
         else {
-            final double d0 = (vector3d.horizontalLength());
+            final double d0 = (vector3d.horizontalDistance());
             final double d1 = Math.signum(-vector3d.y) * Math.acos(d0 / vector3d.length()) * (180F / (float) Math.PI);
-            this.dolphin.setPitch((float) d1);
+            this.dolphin.setXRot((float) d1);
         }
     }
 }

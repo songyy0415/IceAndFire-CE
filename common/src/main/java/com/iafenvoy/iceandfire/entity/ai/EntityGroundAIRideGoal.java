@@ -2,24 +2,23 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
 import com.iafenvoy.iceandfire.entity.util.IGroundMount;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.EnumSet;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
-public class EntityGroundAIRideGoal<T extends MobEntity & IGroundMount> extends Goal {
+public class EntityGroundAIRideGoal<T extends Mob & IGroundMount> extends Goal {
     private final T dragon;
-    private PlayerEntity player;
+    private Player player;
 
     public EntityGroundAIRideGoal(T dragon) {
-        this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         this.dragon = dragon;
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         this.player = this.dragon.getRidingPlayer();
         return this.player != null;
     }
@@ -39,21 +38,21 @@ public class EntityGroundAIRideGoal<T extends MobEntity & IGroundMount> extends 
             y = worm.processRiderY(y);
         double z = this.dragon.getZ();
         double speed = 1.8F * this.dragon.getRideSpeedModifier();
-        if (this.player.sidewaysSpeed != 0 || this.player.forwardSpeed != 0) {
-            Vec3d lookVec = this.player.getRotationVector();
-            if (this.player.forwardSpeed < 0)
-                lookVec = lookVec.rotateY((float) Math.PI);
-            else if (this.player.sidewaysSpeed > 0)
-                lookVec = lookVec.rotateY((float) Math.PI * 0.5f);
-            else if (this.player.sidewaysSpeed < 0)
-                lookVec = lookVec.rotateY((float) Math.PI * -0.5f);
-            if (Math.abs(this.player.sidewaysSpeed) > 0.0)
+        if (this.player.xxa != 0 || this.player.zza != 0) {
+            Vec3 lookVec = this.player.getLookAngle();
+            if (this.player.zza < 0)
+                lookVec = lookVec.yRot((float) Math.PI);
+            else if (this.player.xxa > 0)
+                lookVec = lookVec.yRot((float) Math.PI * 0.5f);
+            else if (this.player.xxa < 0)
+                lookVec = lookVec.yRot((float) Math.PI * -0.5f);
+            if (Math.abs(this.player.xxa) > 0.0)
                 speed *= 0.25D;
-            if (this.player.forwardSpeed < 0.0)
+            if (this.player.zza < 0.0)
                 speed *= 0.15D;
             x += lookVec.x * 10;
             z += lookVec.z * 10;
         }
-        this.dragon.getMoveControl().moveTo(x, y, z, speed);
+        this.dragon.getMoveControl().setWantedPosition(x, y, z, speed);
     }
 }

@@ -1,15 +1,15 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public class SlowPartEntity extends MultipartPartEntity {
     private final float baseRadius, baseOffsetY, baseSizeX, baseSizeY;
 
-    public SlowPartEntity(EntityType<?> t, World world) {
+    public SlowPartEntity(EntityType<?> t, Level world) {
         super(t, world);
         this.baseRadius = 0;
         this.baseOffsetY = 0;

@@ -29,13 +29,13 @@ public class SeaSerpentArrowEntity extends AbstractArrow {
     public void tick() {
         super.tick();
         if (this.level().isClientSide() && !this.inGround) {
-            double d0 = this.random.nextGaussian() * 0.02D;
-            double d1 = this.random.nextGaussian() * 0.02D;
-            double d2 = this.random.nextGaussian() * 0.02D;
+            double d0 = this.getRandom().nextGaussian() * 0.02D;
+            double d1 = this.getRandom().nextGaussian() * 0.02D;
+            double d2 = this.getRandom().nextGaussian() * 0.02D;
             double xRatio = this.getDeltaMovement().x * this.getBbHeight();
             double zRatio = this.getDeltaMovement().z * this.getBbHeight();
-            this.level().addParticle(ParticleTypes.BUBBLE, this.getX() + xRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * 10.0D, this.getY() + this.random.nextFloat() * this.getBbHeight() - d1 * 10.0D, this.getZ() + zRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * 10.0D, d0, d1, d2);
-            this.level().addParticle(ParticleTypes.SPLASH, this.getX() + xRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * 10.0D, this.getY() + this.random.nextFloat() * this.getBbHeight() - d1 * 10.0D, this.getZ() + zRatio + this.random.nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * 10.0D, d0, d1, d2);
+            this.level().addParticle(ParticleTypes.BUBBLE, this.getX() + xRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * 10.0D, this.getY() + this.getRandom().nextFloat() * this.getBbHeight() - d1 * 10.0D, this.getZ() + zRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * 10.0D, d0, d1, d2);
+            this.level().addParticle(ParticleTypes.SPLASH, this.getX() + xRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d0 * 10.0D, this.getY() + this.getRandom().nextFloat() * this.getBbHeight() - d1 * 10.0D, this.getZ() + zRatio + this.getRandom().nextFloat() * this.getBbWidth() * 1.0F - this.getBbWidth() - d2 * 10.0D, d0, d1, d2);
         }
     }
 

@@ -68,10 +68,10 @@ public class DeathwormGauntletItem extends Item {
                 boolean canSee = d1 > 1.0D - 0.5D / d0 && player.hasLineOfSight(livingEntity);
                 if (canSee) {
                     livingEntity.hurt(world.damageSources().playerAttack(player), 3F);
-                    livingEntity.knockback(0.5F, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
+                    livingEntity.knockback(0.5F,livingEntity.getX() - player.getX(),livingEntity.getZ() - player.getZ(),player.level().damageSources().playerAttack(player),0);
                 }
             }
-            player.getCooldowns().addCooldown(this, 20);
+            player.getCooldowns().addCooldown(new ItemStack(this), 20);
         }
         user.playSound(IafSounds.DEATHWORM_ATTACK.get(), 1F, 1F);
         stack.set(IafDataComponents.USER_ID.get(), -1);

@@ -1,8 +1,7 @@
 package com.iafenvoy.iceandfire.data;
 
-import net.minecraft.entity.EquipmentSlot;
-
 import java.util.Locale;
+import net.minecraft.world.entity.EquipmentSlot;
 
 public enum DragonArmorPart {
     HEAD, NECK, BODY, TAIL;

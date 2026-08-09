@@ -6,6 +6,6 @@ import net.minecraft.world.item.ItemStack;
 public class TakeKnockbackAbility implements PostHitAbility {
     @Override
     public void active(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        target.knockback(1F, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+        target.knockback(1F,attacker.getX() - target.getX(),attacker.getZ() - target.getZ(),attacker.level().damageSources().mobAttack(attacker),0);
     }
 }

@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.compat.jade;
 
 import com.iafenvoy.iceandfire.entity.*;
-import net.minecraft.block.DragonEggBlock;
+import net.minecraft.world.level.block.DragonEggBlock;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;

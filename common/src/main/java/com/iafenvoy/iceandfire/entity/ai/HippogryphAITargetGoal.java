@@ -2,14 +2,13 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.function.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
 
-public class HippogryphAITargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
+public class HippogryphAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final HippogryphEntity hippogryph;
 
     public HippogryphAITargetGoal(HippogryphEntity entityIn, Class<T> classTarget, boolean checkSight, Predicate<LivingEntity> targetPredicate) {
@@ -24,15 +23,15 @@ public class HippogryphAITargetGoal<T extends LivingEntity> extends ActiveTarget
 
 
     @Override
-    public boolean canStart() {
-        if (super.canStart() && this.targetEntity != null && !this.targetEntity.getClass().equals(this.hippogryph.getClass())) {
-            if (this.hippogryph.getWidth() >= this.targetEntity.getWidth()) {
-                if (this.targetEntity instanceof PlayerEntity)
-                    return !this.hippogryph.isTamed();
+    public boolean canUse() {
+        if (super.canUse() && this.target != null && !this.target.getClass().equals(this.hippogryph.getClass())) {
+            if (this.hippogryph.getBbWidth() >= this.target.getBbWidth()) {
+                if (this.target instanceof Player)
+                    return !this.hippogryph.isTame();
                 else {
-                    if (!this.hippogryph.isOwner(this.targetEntity) && this.hippogryph.canMove() && this.targetEntity instanceof AnimalEntity) {
-                        if (this.hippogryph.isTamed())
-                            return DragonUtils.canTameDragonAttack(this.hippogryph, this.targetEntity);
+                    if (!this.hippogryph.isOwnedBy(this.target) && this.hippogryph.canMove() && this.target instanceof Animal) {
+                        if (this.hippogryph.isTame())
+                            return DragonUtils.canTameDragonAttack(this.hippogryph, this.target);
                         else return true;
                     }
                 }

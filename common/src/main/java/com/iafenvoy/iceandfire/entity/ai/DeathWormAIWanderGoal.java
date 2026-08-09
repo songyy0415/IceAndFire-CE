@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
-import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 
-public class DeathWormAIWanderGoal extends WanderAroundFarGoal {
+public class DeathWormAIWanderGoal extends WaterAvoidingRandomStrollGoal {
     private final DeathWormEntity worm;
 
     public DeathWormAIWanderGoal(DeathWormEntity creatureIn, double speedIn) {
@@ -12,12 +12,12 @@ public class DeathWormAIWanderGoal extends WanderAroundFarGoal {
     }
 
     @Override
-    public boolean canStart() {
-        return !this.worm.isInSand() && !this.worm.hasPassengers() && super.canStart();
+    public boolean canUse() {
+        return !this.worm.isInSand() && !this.worm.isVehicle() && super.canUse();
     }
 
     @Override
-    public boolean shouldContinue() {
-        return !this.worm.isInSand() && !this.worm.hasPassengers() && super.shouldContinue();
+    public boolean canContinueToUse() {
+        return !this.worm.isInSand() && !this.worm.isVehicle() && super.canContinueToUse();
     }
 }

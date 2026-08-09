@@ -17,6 +17,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,7 +75,7 @@ public class DragonHornItem extends Item {
             Level world = context.getLevel();
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(component.entityType()).orElse(null);
             if (type != null) {
-                Entity entity = type.create(world);
+                Entity entity = type.create(world, EntitySpawnReason.LOAD);
                 if (entity instanceof DragonBaseEntity dragon)
                     dragon.load(component.entityData());
                 //Still needed to allow for intercompatibility
@@ -109,7 +110,7 @@ public class DragonHornItem extends Item {
                         name = entityTag.getString("CustomName").orElse("");
 
                     tooltip.accept((Component.literal(name)).withStyle(ChatFormatting.GRAY));
-                    String gender = (Component.translatable("dragon.gender")).getString() + " " + (Component.translatable(entityTag.getBoolean("Gender").orElse(false) ? "dragon.gender.male" : "dragon.gender.female")).getString();
+                    String gender = (Component.translatable("dragon.gender")).getString() + " " + (Component.translatable(entityTag.getBooleanOr("Gender", false) ? "dragon.gender.male" : "dragon.gender.female")).getString();
                     tooltip.accept((Component.literal(gender)).withStyle(ChatFormatting.GRAY));
                     int stagenumber = entityTag.getInt("AgeTicks").orElse(0) / 24000;
                     int stage1;

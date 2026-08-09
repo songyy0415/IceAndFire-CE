@@ -1,11 +1,11 @@
 package com.iafenvoy.iceandfire.effect;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
-public class SirenCharmStatusEffect extends StatusEffect {
+public class SirenCharmStatusEffect extends MobEffect {
     public SirenCharmStatusEffect() {
-        super(StatusEffectCategory.HARMFUL, 0xFFFFC0CB, ParticleTypes.HEART);
+        super(MobEffectCategory.HARMFUL, 0xFFFFC0CB, ParticleTypes.HEART);
     }
 }

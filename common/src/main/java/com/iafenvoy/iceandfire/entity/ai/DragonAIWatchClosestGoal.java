@@ -1,26 +1,26 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 
-public class DragonAIWatchClosestGoal extends LookAtEntityGoal {
-    public DragonAIWatchClosestGoal(PathAwareEntity LivingEntityIn, Class<? extends LivingEntity> watchTargetClass, float maxDistance) {
+public class DragonAIWatchClosestGoal extends LookAtPlayerGoal {
+    public DragonAIWatchClosestGoal(PathfinderMob LivingEntityIn, Class<? extends LivingEntity> watchTargetClass, float maxDistance) {
         super(LivingEntityIn, watchTargetClass, maxDistance);
     }
 
     @Override
-    public boolean canStart() {
+    public boolean canUse() {
         if (this.mob instanceof DragonBaseEntity && ((DragonBaseEntity) this.mob).getAnimation() == DragonBaseEntity.ANIMATION_SHAKEPREY)
             return false;
-        return super.canStart();
+        return super.canUse();
     }
 
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         if (this.mob instanceof DragonBaseEntity && !((DragonBaseEntity) this.mob).canMove())
             return false;
-        return super.shouldContinue();
+        return super.canContinueToUse();
     }
 }

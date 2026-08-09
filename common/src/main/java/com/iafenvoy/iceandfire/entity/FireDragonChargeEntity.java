@@ -32,7 +32,7 @@ public class FireDragonChargeEntity extends DragonChargeEntity {
     @Override
     public void tick() {
         for (int i = 0; i < 4; ++i)
-            this.level().addParticle(new DragonFlameParticleType(3), this.getX() + ((this.random.nextDouble() - 0.5D) * this.getBbWidth()), this.getY() + ((this.random.nextDouble() - 0.5D) * this.getBbWidth()), this.getZ() + ((this.random.nextDouble() - 0.5D) * this.getBbWidth()), 0.0D, 0.0D, 0.0D);
+            this.level().addParticle(new DragonFlameParticleType(3), this.getX() + ((this.getRandom().nextDouble() - 0.5D) * this.getBbWidth()), this.getY() + ((this.getRandom().nextDouble() - 0.5D) * this.getBbWidth()), this.getZ() + ((this.getRandom().nextDouble() - 0.5D) * this.getBbWidth()), 0.0D, 0.0D, 0.0D);
         if (this.isInWater())
             this.remove(RemovalReason.DISCARDED);
         if (this.shouldBurn())

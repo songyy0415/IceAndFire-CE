@@ -1,81 +1,81 @@
 package com.iafenvoy.iceandfire.entity.pathfinding;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
-import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class DeathWormSandNavigation extends SwimNavigation {
-    public DeathWormSandNavigation(DeathWormEntity deathworm, World worldIn) {
+public class DeathWormSandNavigation extends WaterBoundPathNavigation {
+    public DeathWormSandNavigation(DeathWormEntity deathworm, Level worldIn) {
         super(deathworm, worldIn);
     }
 
     @Override
-    public boolean canSwim() {
-        return this.nodeMaker.canSwim();
+    public boolean canFloat() {
+        return this.nodeEvaluator.canFloat();
     }
 
     @Override
-    protected PathNodeNavigator createPathNodeNavigator(int i) {
-        this.nodeMaker = new DeathWormNodeMaker();
-        this.nodeMaker.setCanEnterOpenDoors(true);
-        this.nodeMaker.setCanSwim(true);
-        return new PathNodeNavigator(this.nodeMaker, i);
+    protected PathFinder createPathFinder(int i) {
+        this.nodeEvaluator = new DeathWormNodeMaker();
+        this.nodeEvaluator.setCanPassDoors(true);
+        this.nodeEvaluator.setCanFloat(true);
+        return new PathFinder(this.nodeEvaluator, i);
     }
 
     @Override
-    protected boolean isAtValidPosition() {
+    protected boolean canUpdatePath() {
         return true;
     }
 
     @Override
-    protected Vec3d getPos() {
-        return new Vec3d(this.entity.getX(), this.entity.getY() + 0.5D, this.entity.getZ());
+    protected Vec3 getTempMobPos() {
+        return new Vec3(this.mob.getX(), this.mob.getY() + 0.5D, this.mob.getZ());
     }
 
     @Override
-    protected boolean canPathDirectlyThrough(final Vec3d start, final Vec3d end) {
-        HitResult raytraceresult = this.world.raycast(new CustomRayTraceContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this.entity));
+    protected boolean canMoveDirectly(final Vec3 start, final Vec3 end) {
+        HitResult raytraceresult = this.level.clip(new CustomRayTraceContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
 
         if (raytraceresult.getType() == HitResult.Type.BLOCK) {
-            Vec3d vec3i = raytraceresult.getPos();
-            return this.entity.getWorld().getBlockState(BlockPos.ofFloored(vec3i)).isIn(BlockTags.SAND);
+            Vec3 vec3i = raytraceresult.getLocation();
+            return this.mob.level().getBlockState(BlockPos.containing(vec3i)).is(BlockTags.SAND);
         }
 
         return raytraceresult.getType() == HitResult.Type.MISS;
     }
 
     @Override
-    public boolean isValidPosition(BlockPos pos) {
-        return this.world.getBlockState(pos).isOpaque();
+    public boolean isStableDestination(BlockPos pos) {
+        return this.level.getBlockState(pos).canOcclude();
     }
 
-    public static class CustomRayTraceContext extends RaycastContext {
+    public static class CustomRayTraceContext extends ClipContext {
 
-        private final ShapeType blockMode;
-        private final ShapeContext context;
+        private final Block blockMode;
+        private final CollisionContext context;
 
-        public CustomRayTraceContext(Vec3d startVecIn, Vec3d endVecIn, ShapeType blockModeIn, FluidHandling fluidModeIn, Entity entityIn) {
+        public CustomRayTraceContext(Vec3 startVecIn, Vec3 endVecIn, Block blockModeIn, Fluid fluidModeIn, Entity entityIn) {
             super(startVecIn, endVecIn, blockModeIn, fluidModeIn, entityIn);
             this.blockMode = blockModeIn;
-            this.context = ShapeContext.of(entityIn);
+            this.context = CollisionContext.of(entityIn);
         }
 
         @Override
-        public VoxelShape getBlockShape(BlockState blockState, BlockView world, BlockPos pos) {
-            if (blockState.isIn(BlockTags.SAND))
-                return VoxelShapes.empty();
+        public VoxelShape getBlockShape(BlockState blockState, BlockGetter world, BlockPos pos) {
+            if (blockState.is(BlockTags.SAND))
+                return Shapes.empty();
             return this.blockMode.get(blockState, world, pos, this.context);
         }
     }

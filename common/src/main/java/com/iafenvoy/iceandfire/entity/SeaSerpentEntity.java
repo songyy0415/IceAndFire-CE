@@ -58,7 +58,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -160,8 +160,8 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, MultipartPartEntity.class).setAlertOthers());
-        this.targetSelector.addGoal(2, new FlyingAITargetGoal<>(this, LivingEntity.class, 150, false, false, entity1 -> !(entity1 instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity1) && entity1.isInWaterOrBubble()));
-        this.targetSelector.addGoal(3, new FlyingAITargetGoal<>(this, Player.class, 0, false, false, entity -> !(entity instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity)));
+        this.targetSelector.addGoal(2, new FlyingAITargetGoal<>(this, LivingEntity.class, 150, false, false, (entity1, level) -> !(entity1 instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity1) && entity1.isInWaterOrBubble()));
+        this.targetSelector.addGoal(3, new FlyingAITargetGoal<>(this, Player.class, 0, false, false, (entity, level) -> !(entity instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity)));
     }
 
     @Override
@@ -568,7 +568,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     public void destroyBoat(Entity sailor) {
         if (sailor.getVehicle() != null && sailor.getVehicle() instanceof Boat boat && !this.level().isClientSide()) {
             boat.remove(RemovalReason.KILLED);
-            if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+            if (((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
                 for (int i = 0; i < 3; ++i) {
                     boat.spawnAtLocation(new ItemStack(boat.getVariant().getPlanks().asItem()), 0.0F);
                 }
@@ -815,11 +815,11 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         DamageSources damageSources = this.level().damageSources();
         return source == damageSources.fall() || source == damageSources.drown() || source == damageSources.inWall()
                 || (source.getEntity() != null && source == damageSources.fallingBlock(source.getEntity()))
-                || source == damageSources.lava() || source.is(DamageTypes.IN_FIRE) || super.isInvulnerableTo(source);
+                || source == damageSources.lava() || source.is(DamageTypes.IN_FIRE) || super.isInvulnerableTo(level, source);
     }
 
     public static class SwimmingMoveHelper extends MoveControl {

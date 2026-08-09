@@ -23,6 +23,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -106,13 +107,13 @@ public class LightningDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource i) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource i) {
         if (i.getMsgId().equals(this.level().damageSources().lightningBolt().getMsgId())) {
             this.heal(15F);
             this.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20, 1));
             return true;
         }
-        return super.isInvulnerableTo(i);
+        return super.isInvulnerableTo(level, i);
     }
 
     public void setHasLightningTarget(boolean lightning_target) {
@@ -210,7 +211,7 @@ public class LightningDragonEntity extends DragonBaseEntity {
 
     @Override
     public void riderShootFire(Entity controller) {
-        if (this.getRandom().nextInt(5) == 0 && !this.isBaby()) {
+        if (this.getRandom().nextInt(5) == 0 && !this.isDragonBaby()) {
             if (this.getAnimation() != ANIMATION_FIRECHARGE)
                 this.setAnimation(ANIMATION_FIRECHARGE);
             else if (this.getAnimationTick() == 20) {
@@ -221,9 +222,9 @@ public class LightningDragonEntity extends DragonBaseEntity {
                 double d3 = controller.getLookAngle().y;
                 double d4 = controller.getLookAngle().z;
                 float inaccuracy = 1.0F;
-                d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                 LightningDragonChargeEntity entitylargefireball = new LightningDragonChargeEntity(IafEntities.LIGHTNING_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
                 entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
                 if (!this.level().isClientSide())
@@ -279,9 +280,9 @@ public class LightningDragonEntity extends DragonBaseEntity {
                     double d3 = entity.getY() - headVec.y;
                     double d4 = entity.getZ() - headVec.z;
                     float inaccuracy = 1.0F;
-                    d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                     this.playSound(IafSounds.LIGHTNINGDRAGON_BREATH.get(), 4, 1);
                     LightningDragonChargeEntity entitylargefireball = new LightningDragonChargeEntity(IafEntities.LIGHTNING_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
                     entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
@@ -340,9 +341,9 @@ public class LightningDragonEntity extends DragonBaseEntity {
             }
         }
         if (this.burnProgress >= 40D && this.canPositionBeSeen(burnX, burnY, burnZ)) {
-            double spawnX = burnX + (this.random.nextFloat() * 3.0) - 1.5;
-            double spawnY = burnY + (this.random.nextFloat() * 3.0) - 1.5;
-            double spawnZ = burnZ + (this.random.nextFloat() * 3.0) - 1.5;
+            double spawnX = burnX + (this.getRandom().nextFloat() * 3.0) - 1.5;
+            double spawnY = burnY + (this.getRandom().nextFloat() * 3.0) - 1.5;
+            double spawnZ = burnZ + (this.getRandom().nextFloat() * 3.0) - 1.5;
             this.setHasLightningTarget(true);
             this.setLightningTargetVec((float) spawnX, (float) spawnY, (float) spawnZ);
             if (!this.level().isClientSide())
@@ -394,14 +395,14 @@ public class LightningDragonEntity extends DragonBaseEntity {
     @Override
     protected void spawnDeathParticles() {
         for (int k = 0; k < 3; ++k) {
-            double d2 = this.random.nextGaussian() * 0.02D;
-            double d0 = this.random.nextGaussian() * 0.02D;
-            double d1 = this.random.nextGaussian() * 0.02D;
+            double d2 = this.getRandom().nextGaussian() * 0.02D;
+            double d0 = this.getRandom().nextGaussian() * 0.02D;
+            double d1 = this.getRandom().nextGaussian() * 0.02D;
             if (this.level().isClientSide()) {
                 this.level().addParticle(ParticleTypes.RAIN,
-                        this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(),
-                        this.getY() + this.random.nextFloat() * this.getBbHeight(),
-                        this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
+                        this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(),
+                        this.getY() + this.getRandom().nextFloat() * this.getBbHeight(),
+                        this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
             }
         }
     }

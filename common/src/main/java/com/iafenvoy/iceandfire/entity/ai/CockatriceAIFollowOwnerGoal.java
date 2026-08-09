@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
-import net.minecraft.entity.ai.goal.FollowOwnerGoal;
+import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 
 public class CockatriceAIFollowOwnerGoal extends FollowOwnerGoal {
     final CockatriceEntity cockatrice;
@@ -12,7 +12,7 @@ public class CockatriceAIFollowOwnerGoal extends FollowOwnerGoal {
     }
 
     @Override
-    public boolean canStart() {
-        return super.canStart() && this.cockatrice.getCommand() == 2;
+    public boolean canUse() {
+        return super.canUse() && this.cockatrice.getCommand() == 2;
     }
 }

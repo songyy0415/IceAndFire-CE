@@ -155,7 +155,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
                 if (attackTarget != null && this.distanceTo(attackTarget) < 6) {
                     attackTarget.hurt(this.level().damageSources().mobAttack(this), (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
                     attackTarget.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 3, false, false));
-                    attackTarget.knockback(0.25F, this.getX() - attackTarget.getX(), this.getZ() - attackTarget.getZ());
+                    attackTarget.knockback(0.25F,this.getX() - attackTarget.getX(),this.getZ() - attackTarget.getZ(),this.level().damageSources().mobAttack(this),0);
                 }
             }
             if (breathing) {

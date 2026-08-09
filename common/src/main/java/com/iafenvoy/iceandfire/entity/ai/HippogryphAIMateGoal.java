@@ -6,11 +6,12 @@ import java.util.EnumSet;
 import java.util.List;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 
 public class HippogryphAIMateGoal extends Goal {
@@ -95,7 +96,7 @@ public class HippogryphAIMateGoal extends Goal {
             this.world.addParticle(ParticleTypes.HEART, this.hippo.getX() + d3, this.hippo.getY() + d4, this.hippo.getZ() + d5, d0, d1, d2);
         }
 
-        if (this.world.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
+        if (((ServerLevel) this.world).getGameRules().get(GameRules.MOB_DROPS))
             this.world.addFreshEntity(new ExperienceOrb(this.world, this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), random.nextInt(7) + 1));
     }
 }

@@ -2,36 +2,35 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Box;
-
 import java.util.EnumSet;
 import java.util.function.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 
-public class DeathWormAITargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
+public class DeathWormAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final DeathWormEntity deathworm;
 
     public DeathWormAITargetGoal(DeathWormEntity entityIn, Class<T> classTarget, boolean checkSight, Predicate<LivingEntity> targetPredicate) {
         super(entityIn, classTarget, 20, checkSight, false, targetPredicate);
         this.deathworm = entityIn;
-        this.setControls(EnumSet.of(Control.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     @Override
-    public boolean canStart() {
-        boolean canUse = super.canStart();
+    public boolean canUse() {
+        boolean canUse = super.canUse();
 
-        if (canUse && this.targetEntity != null && this.targetEntity.getType() != IafEntities.DEATH_WORM.get()) {
-            if (this.targetEntity instanceof PlayerEntity && !this.deathworm.isOwner(this.targetEntity))
-                return !this.deathworm.isTamed();
-            else if (this.deathworm.isOwner(this.targetEntity)) return false;
+        if (canUse && this.target != null && this.target.getType() != IafEntities.DEATH_WORM.get()) {
+            if (this.target instanceof Player && !this.deathworm.isOwnedBy(this.target))
+                return !this.deathworm.isTame();
+            else if (this.deathworm.isOwnedBy(this.target)) return false;
 
-            if (this.targetEntity instanceof HostileEntity && this.deathworm.getWormAge() > 2) {
-                if (this.targetEntity instanceof PathAwareEntity)
+            if (this.target instanceof Monster && this.deathworm.getWormAge() > 2) {
+                if (this.target instanceof PathfinderMob)
                     return this.deathworm.getWormAge() > 3;
                 return true;
             }
@@ -40,8 +39,8 @@ public class DeathWormAITargetGoal<T extends LivingEntity> extends ActiveTargetG
     }
 
     @Override
-    protected Box getSearchBox(double targetDistance) {
+    protected AABB getTargetSearchArea(double targetDistance) {
         // Increasing the y-range too much makes it target entities in caves etc., which will be unreachable (thus no target will be set)
-        return this.deathworm.getBoundingBox().expand(targetDistance, 6, targetDistance);
+        return this.deathworm.getBoundingBox().inflate(targetDistance, 6, targetDistance);
     }
 }

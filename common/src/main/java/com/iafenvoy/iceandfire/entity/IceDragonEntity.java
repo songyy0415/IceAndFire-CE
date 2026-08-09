@@ -181,7 +181,7 @@ public class IceDragonEntity extends DragonBaseEntity {
         }
         if (this.isSwimming() && !this.isModelDead()) {
             this.ticksSwiming++;
-            if (this.isInWater() && (this.ticksSwiming > 4000 || this.getTarget() != null && this.isInWater() != this.getTarget().isInWater()) && !this.isBaby() && !this.isHovering() && !this.isFlying()) {
+            if (this.isInWater() && (this.ticksSwiming > 4000 || this.getTarget() != null && this.isInWater() != this.getTarget().isInWater()) && !this.isDragonBaby() && !this.isHovering() && !this.isFlying()) {
                 this.setHovering(true);
                 this.jumpFromGround();
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.8D, 0.0D));
@@ -203,7 +203,7 @@ public class IceDragonEntity extends DragonBaseEntity {
 
     @Override
     public void riderShootFire(Entity controller) {
-        if (this.getRandom().nextInt(5) == 0 && !this.isBaby()) {
+        if (this.getRandom().nextInt(5) == 0 && !this.isDragonBaby()) {
             if (this.getAnimation() != ANIMATION_FIRECHARGE) {
                 this.setAnimation(ANIMATION_FIRECHARGE);
             } else if (this.getAnimationTick() == 15) {
@@ -220,7 +220,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                 IceDragonChargeEntity entitylargefireball = new IceDragonChargeEntity(
                         IafEntities.ICE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
                 float size;
-                if (!this.isBaby()) {
+                if (!this.isDragonBaby()) {
                     this.isMature();
                 }
                 entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
@@ -396,7 +396,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                     IceDragonChargeEntity entitylargefireball = new IceDragonChargeEntity(
                             IafEntities.ICE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
                     float size;
-                    if (!this.isBaby()) {
+                    if (!this.isDragonBaby()) {
                         this.isMature();
                     }
                     entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);

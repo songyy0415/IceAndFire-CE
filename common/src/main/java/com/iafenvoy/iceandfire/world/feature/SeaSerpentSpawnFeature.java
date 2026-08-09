@@ -5,34 +5,34 @@ import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.material.Fluids;
 
-public class SeaSerpentSpawnFeature extends Feature<DefaultFeatureConfig> implements DangerousGeneration {
-    public SeaSerpentSpawnFeature(Codec<DefaultFeatureConfig> configFactoryIn) {
+public class SeaSerpentSpawnFeature extends Feature<NoneFeatureConfiguration> implements DangerousGeneration {
+    public SeaSerpentSpawnFeature(Codec<NoneFeatureConfiguration> configFactoryIn) {
         super(configFactoryIn);
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        StructureWorldAccess world = context.getWorld();
-        Random random = context.getRandom();
-        BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, context.getOrigin().add(8, 0, 8));
-        BlockPos oceanPos = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR_WG, pos.add(8, 0, 8));
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        WorldGenLevel world = context.level();
+        RandomSource random = context.random();
+        BlockPos pos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, context.origin().offset(8, 0, 8));
+        BlockPos oceanPos = world.getHeightmapPos(Heightmap.Types.OCEAN_FLOOR_WG, pos.offset(8, 0, 8));
         if (this.isFarEnoughFromSpawn(world, pos) && random.nextDouble() < IafCommonConfig.INSTANCE.seaSerpent.spawnChance.getValue()) {
-            BlockPos spawnPos = oceanPos.add(random.nextInt(10) - 5, random.nextInt(30), random.nextInt(10) - 5);
-            if (world.getFluidState(spawnPos).getFluid() == Fluids.WATER) {
-                SeaSerpentEntity serpent = IafEntities.SEA_SERPENT.get().create(world.toServerWorld());
+            BlockPos spawnPos = oceanPos.offset(random.nextInt(10) - 5, random.nextInt(30), random.nextInt(10) - 5);
+            if (world.getFluidState(spawnPos).getType() == Fluids.WATER) {
+                SeaSerpentEntity serpent = IafEntities.SEA_SERPENT.get().create(world.getLevel());
                 assert serpent != null;
                 serpent.onWorldSpawn(random);
-                serpent.refreshPositionAndAngles(spawnPos.getX() + 0.5F, spawnPos.getY() + 0.5F, spawnPos.getZ() + 0.5F, 0, 0);
-                world.spawnEntity(serpent);
+                serpent.moveTo(spawnPos.getX() + 0.5F, spawnPos.getY() + 0.5F, spawnPos.getZ() + 0.5F, 0, 0);
+                world.addFreshEntity(serpent);
             }
         }
         return true;

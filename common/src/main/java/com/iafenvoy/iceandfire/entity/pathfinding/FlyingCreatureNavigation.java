@@ -1,17 +1,17 @@
 package com.iafenvoy.iceandfire.entity.pathfinding;
 
-import net.minecraft.entity.ai.pathing.BirdNavigation;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.level.Level;
 
-public class FlyingCreatureNavigation extends BirdNavigation {
-    public FlyingCreatureNavigation(MobEntity entity, World world) {
+public class FlyingCreatureNavigation extends FlyingPathNavigation {
+    public FlyingCreatureNavigation(Mob entity, Level world) {
         super(entity, world);
     }
 
     @Override
-    public boolean isValidPosition(BlockPos pos) {
-        return this.world.isAir(pos.down());
+    public boolean isStableDestination(BlockPos pos) {
+        return this.level.isEmptyBlock(pos.below());
     }
 }

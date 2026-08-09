@@ -1,14 +1,13 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.SirenEntity;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.Vec3;
 
 public class SirenAIFindWaterTargetGoal extends Goal {
     private final SirenEntity mob;
@@ -18,13 +17,13 @@ public class SirenAIFindWaterTargetGoal extends Goal {
     }
 
     @Override
-    public boolean canStart() {
-        if (!this.mob.isTouchingWater())
+    public boolean canUse() {
+        if (!this.mob.isInWater())
             return false;
         if (this.mob.getRandom().nextFloat() < 0.5F) {
-            Path path = this.mob.getNavigation().getCurrentPath();
+            Path path = this.mob.getNavigation().getPath();
             if (path != null
-                    && path.getEnd() != null /*
+                    && path.getEndNode() != null /*
              * TODO: path is nullable here !this.mob.getNavigator().noPath() &&
              * !this.mob.isDirectPathBetweenPoints(this.mob.getPositionVec(),
              * new Vector3d(path.getFinalPathPoint().x,
@@ -32,10 +31,10 @@ public class SirenAIFindWaterTargetGoal extends Goal {
              */) {
                 this.mob.getNavigation().stop();
             }
-            if (this.mob.getNavigation().isIdle()) {
-                Vec3d vec3 = this.findWaterTarget();
+            if (this.mob.getNavigation().isDone()) {
+                Vec3 vec3 = this.findWaterTarget();
                 if (vec3 != null) {
-                    this.mob.getNavigation().startMovingTo(vec3.x, vec3.y, vec3.z, 1.0);
+                    this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, 1.0);
                     return true;
                 }
             }
@@ -44,15 +43,15 @@ public class SirenAIFindWaterTargetGoal extends Goal {
     }
 
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         return false;
     }
 
     @SuppressWarnings("deprecation")
-    public Vec3d findWaterTarget() {
+    public Vec3 findWaterTarget() {
         if (this.mob.getTarget() == null || !this.mob.getTarget().isAlive()) {
-            List<Vec3d> water = new ArrayList<>();
-            List<Vec3d> singTargets = new ArrayList<>();
+            List<Vec3> water = new ArrayList<>();
+            List<Vec3> singTargets = new ArrayList<>();
             final int posX = (int) this.mob.getX();
             final int posY = (int) this.mob.getY();
             final int posZ = (int) this.mob.getZ();
@@ -60,10 +59,10 @@ public class SirenAIFindWaterTargetGoal extends Goal {
                 for (int y = posY - 5; y < posY + 5; y++)
                     for (int z = posZ - 5; z < posZ + 5; z++) {
                         if (this.mob.wantsToSing())
-                            if (this.mob.getWorld().getBlockState(new BlockPos(x, y, z)).isSolid() && this.mob.getWorld().isAir(new BlockPos(x, y + 1, z)) && this.mob.isDirectPathBetweenPoints(this.mob.getPos(), new Vec3d(x, y + 1, z)))
-                                singTargets.add(new Vec3d(x, y + 1, z));
-                        if (this.mob.getWorld().getBlockState(new BlockPos(x, y, z)).isOf(Blocks.WATER) && this.mob.isDirectPathBetweenPoints(this.mob.getPos(), new Vec3d(x, y, z)))
-                            water.add(new Vec3d(x, y, z));
+                            if (this.mob.level().getBlockState(new BlockPos(x, y, z)).isSolid() && this.mob.level().isEmptyBlock(new BlockPos(x, y + 1, z)) && this.mob.isDirectPathBetweenPoints(this.mob.position(), new Vec3(x, y + 1, z)))
+                                singTargets.add(new Vec3(x, y + 1, z));
+                        if (this.mob.level().getBlockState(new BlockPos(x, y, z)).is(Blocks.WATER) && this.mob.isDirectPathBetweenPoints(this.mob.position(), new Vec3(x, y, z)))
+                            water.add(new Vec3(x, y, z));
 
                     }
             if (!singTargets.isEmpty())
@@ -71,8 +70,8 @@ public class SirenAIFindWaterTargetGoal extends Goal {
             if (!water.isEmpty())
                 return water.get(this.mob.getRandom().nextInt(water.size()));
         } else {
-            BlockPos blockpos1 = this.mob.getTarget().getBlockPos();
-            return new Vec3d(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
+            BlockPos blockpos1 = this.mob.getTarget().blockPosition();
+            return new Vec3(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
         }
         return null;
     }

@@ -5,19 +5,18 @@ import com.iafenvoy.iceandfire.effect.FrozenStatusEffect;
 import com.iafenvoy.iceandfire.effect.SirenCharmStatusEffect;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.registry.RegistryKeys;
-
 import java.util.function.Supplier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.effect.MobEffect;
 
 @SuppressWarnings("unused")
 public final class IafStatusEffects {
-    public static final DeferredRegister<StatusEffect> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.STATUS_EFFECT);
+    public static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.MOB_EFFECT);
 
     public static final RegistrySupplier<FrozenStatusEffect> FROZEN = register("frozen", FrozenStatusEffect::new);
     public static final RegistrySupplier<SirenCharmStatusEffect> SIREN_CHARM = register("siren_charm", SirenCharmStatusEffect::new);
 
-    private static <T extends StatusEffect> RegistrySupplier<T> register(String name, Supplier<T> obj) {
+    private static <T extends MobEffect> RegistrySupplier<T> register(String name, Supplier<T> obj) {
         return REGISTRY.register(name, obj);
     }
 }

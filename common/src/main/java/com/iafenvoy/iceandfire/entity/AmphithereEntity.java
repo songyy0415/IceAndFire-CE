@@ -517,7 +517,8 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity) return true;
@@ -526,7 +527,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             if (livingentity != null)
                 return livingentity.isAlliedTo(entityIn);
         }
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     @Override
@@ -593,7 +594,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         if (target != null && this.getAnimation() == ANIMATION_BITE && this.getAnimationTick() == 7) {
             double dist = this.distanceToSqr(target);
             if (dist < 10) {
-                target.knockback(0.6F, Mth.sin(this.getYRot() * 0.017453292F), -Mth.cos(this.getYRot() * 0.017453292F));
+                target.knockback(0.6F,Mth.sin(this.getYRot() * 0.017453292F),-Mth.cos(this.getYRot() * 0.017453292F),this.level().damageSources().mobAttack(this),0);
                 target.hurt(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
             }
         }

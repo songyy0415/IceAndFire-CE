@@ -1,47 +1,53 @@
 package com.iafenvoy.iceandfire.entity.pathfinding;
 
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.pathing.*;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkCache;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 
-public class DeathWormLandNavigation extends EntityNavigation {
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.PathNavigationRegion;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import net.minecraft.world.phys.Vec3;
+
+public class DeathWormLandNavigation extends PathNavigation {
     private final DeathWormEntity worm;
     private boolean shouldAvoidSun;
 
-    public DeathWormLandNavigation(DeathWormEntity worm, World world) {
+    public DeathWormLandNavigation(DeathWormEntity worm, Level world) {
         super(worm, world);
         this.worm = worm;
     }
 
     @Override
-    protected PathNodeNavigator createPathNodeNavigator(int i) {
-        this.nodeMaker = new LandPathNodeMaker();
+    protected PathFinder createPathFinder(int i) {
+        this.nodeEvaluator = new WalkNodeEvaluator();
         Vec3i vec3i = new BlockPos(64, 64, 64);
-        this.nodeMaker.init(new ChunkCache(this.world, this.entity.getBlockPos().subtract(vec3i), this.entity.getBlockPos().add(vec3i)), this.entity);
-        this.nodeMaker.setCanEnterOpenDoors(true);
-        this.nodeMaker.setCanSwim(true);
-        return new PathNodeNavigator(this.nodeMaker, i);
+        this.nodeEvaluator.prepare(new PathNavigationRegion(this.level, this.mob.blockPosition().subtract(vec3i), this.mob.blockPosition().offset(vec3i)), this.mob);
+        this.nodeEvaluator.setCanPassDoors(true);
+        this.nodeEvaluator.setCanFloat(true);
+        return new PathFinder(this.nodeEvaluator, i);
     }
 
     /**
      * If on ground or swimming and can swim
      */
     @Override
-    protected boolean isAtValidPosition() {
-        return this.entity.isOnGround() || this.worm.isInSand() || this.entity.hasVehicle();
+    protected boolean canUpdatePath() {
+        return this.mob.onGround() || this.worm.isInSand() || this.mob.isPassenger();
     }
 
     @Override
-    protected Vec3d getPos() {
-        return new Vec3d(this.entity.getX(), this.getPathablePosY(), this.entity.getZ());
+    protected Vec3 getTempMobPos() {
+        return new Vec3(this.mob.getX(), this.getPathablePosY(), this.mob.getZ());
     }
 
     /**
@@ -49,25 +55,25 @@ public class DeathWormLandNavigation extends EntityNavigation {
      */
     @SuppressWarnings("deprecation")
     @Override
-    public Path findPathTo(BlockPos pos, int i) {
-        if (this.world.getBlockState(pos).isAir()) {
+    public Path createPath(BlockPos pos, int i) {
+        if (this.level.getBlockState(pos).isAir()) {
             BlockPos blockpos;
-            blockpos = pos.down();
-            while (blockpos.getY() > 0 && this.world.getBlockState(blockpos).isAir())
-                blockpos = blockpos.down();
-            if (blockpos.getY() > 0) return super.findPathTo(blockpos.up(), i);
-            while (blockpos.getY() < this.world.getTopY() && this.world.getBlockState(blockpos).isAir())
-                blockpos = blockpos.up();
+            blockpos = pos.below();
+            while (blockpos.getY() > 0 && this.level.getBlockState(blockpos).isAir())
+                blockpos = blockpos.below();
+            if (blockpos.getY() > 0) return super.createPath(blockpos.above(), i);
+            while (blockpos.getY() < this.level.getMaxBuildHeight() && this.level.getBlockState(blockpos).isAir())
+                blockpos = blockpos.above();
             pos = blockpos;
         }
 
-        if (!this.world.getBlockState(pos).isSolid())
-            return super.findPathTo(pos, i);
+        if (!this.level.getBlockState(pos).isSolid())
+            return super.createPath(pos, i);
         else {
-            BlockPos blockpos1 = pos.up();
-            while (blockpos1.getY() < this.world.getTopY() && this.world.getBlockState(blockpos1).isSolid())
-                blockpos1 = blockpos1.up();
-            return super.findPathTo(blockpos1, i);
+            BlockPos blockpos1 = pos.above();
+            while (blockpos1.getY() < this.level.getMaxBuildHeight() && this.level.getBlockState(blockpos1).isSolid())
+                blockpos1 = blockpos1.above();
+            return super.createPath(blockpos1, i);
         }
     }
 
@@ -75,8 +81,8 @@ public class DeathWormLandNavigation extends EntityNavigation {
      * Returns the path to the given LivingEntity. Args : entity
      */
     @Override
-    public Path findPathTo(Entity entityIn, int i) {
-        return this.findPathTo(entityIn.getBlockPos(), i);
+    public Path createPath(Entity entityIn, int i) {
+        return this.createPath(entityIn.blockPosition(), i);
     }
 
     /**
@@ -84,33 +90,33 @@ public class DeathWormLandNavigation extends EntityNavigation {
      */
     private int getPathablePosY() {
         if (this.worm.isInSand()) {
-            int i = (int) this.entity.getBoundingBox().minY;
-            BlockState blockstate = this.world.getBlockState(new BlockPos(this.entity.getBlockX(), i, this.entity.getBlockZ()));
+            int i = (int) this.mob.getBoundingBox().minY;
+            BlockState blockstate = this.level.getBlockState(new BlockPos(this.mob.getBlockX(), i, this.mob.getBlockZ()));
             int j = 0;
 
-            while (blockstate.isIn(BlockTags.SAND)) {
+            while (blockstate.is(BlockTags.SAND)) {
                 ++i;
-                blockstate = this.world.getBlockState(new BlockPos(this.entity.getBlockX(), i, this.entity.getBlockZ()));
+                blockstate = this.level.getBlockState(new BlockPos(this.mob.getBlockX(), i, this.mob.getBlockZ()));
                 ++j;
-                if (j > 16) return (int) this.entity.getBoundingBox().minY;
+                if (j > 16) return (int) this.mob.getBoundingBox().minY;
             }
             return i;
-        } else return (int) (this.entity.getBoundingBox().minY + 0.5D);
+        } else return (int) (this.mob.getBoundingBox().minY + 0.5D);
     }
 
     /**
      * Checks if the specified entity can safely walk to the specified location.
      */
     @Override
-    protected boolean canPathDirectlyThrough(Vec3d posVec31, Vec3d posVec32) {
-        int i = MathHelper.floor(posVec31.x);
-        int j = MathHelper.floor(posVec31.z);
+    protected boolean canMoveDirectly(Vec3 posVec31, Vec3 posVec32) {
+        int i = Mth.floor(posVec31.x);
+        int j = Mth.floor(posVec31.z);
         double d0 = posVec32.x - posVec31.x;
         double d1 = posVec32.z - posVec31.z;
         double d2 = d0 * d0 + d1 * d1;
-        int sizeX = (int) this.worm.getBoundingBox().getLengthX();
-        int sizeY = (int) this.worm.getBoundingBox().getLengthY();
-        int sizeZ = (int) this.worm.getBoundingBox().getLengthZ();
+        int sizeX = (int) this.worm.getBoundingBox().getXsize();
+        int sizeY = (int) this.worm.getBoundingBox().getYsize();
+        int sizeZ = (int) this.worm.getBoundingBox().getZsize();
 
 
         if (d2 < 1.0E-8D) {
@@ -139,8 +145,8 @@ public class DeathWormLandNavigation extends EntityNavigation {
                 d7 = d7 / d1;
                 int k = d0 < 0.0D ? -1 : 1;
                 int l = d1 < 0.0D ? -1 : 1;
-                int i1 = MathHelper.floor(posVec32.x);
-                int j1 = MathHelper.floor(posVec32.z);
+                int i1 = Mth.floor(posVec32.x);
+                int j1 = Mth.floor(posVec32.z);
                 int k1 = i1 - i;
                 int l1 = j1 - j;
 
@@ -168,10 +174,10 @@ public class DeathWormLandNavigation extends EntityNavigation {
      * Returns true when an entity could stand at a position, including solid blocks under the entire entity.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean isSafeToStandAt(int x, int y, int z, int sizeX, int sizeY, int sizeZ, Vec3d vec31, double p_179683_8_, double p_179683_10_) {
+    private boolean isSafeToStandAt(int x, int y, int z, int sizeX, int sizeY, int sizeZ, Vec3 vec31, double p_179683_8_, double p_179683_10_) {
         int i = x - sizeX / 2;
         int j = z - sizeZ / 2;
-        this.nodeMaker.entity = this.worm;
+        this.nodeEvaluator.mob = this.worm;
 
         if (!this.isPositionClear(i, y, j, sizeX, sizeY, sizeZ, vec31, p_179683_8_, p_179683_10_))
             return false;
@@ -182,14 +188,14 @@ public class DeathWormLandNavigation extends EntityNavigation {
                     double d1 = (double) l + 0.5D - vec31.z;
 
                     if (d0 * p_179683_8_ + d1 * p_179683_10_ >= 0.0D) {
-                        PathNodeType pathnodetype = this.nodeMaker.getNodeType(new PathContext(this.world, this.entity), k, y - 1, l, this.entity);
-                        if (pathnodetype == PathNodeType.LAVA) return false;
+                        PathType pathnodetype = this.nodeEvaluator.getPathTypeOfMob(new PathfindingContext(this.level, this.mob), k, y - 1, l, this.mob);
+                        if (pathnodetype == PathType.LAVA) return false;
 
-                        pathnodetype = this.nodeMaker.getNodeType(new PathContext(this.world, this.entity), k, y, l, this.entity);
-                        float f = this.entity.getPathfindingPenalty(pathnodetype);
+                        pathnodetype = this.nodeEvaluator.getPathTypeOfMob(new PathfindingContext(this.level, this.mob), k, y, l, this.mob);
+                        float f = this.mob.getPathfindingMalus(pathnodetype);
 
                         if (f < 0.0F || f >= 8.0F) return false;
-                        if (pathnodetype == PathNodeType.DAMAGE_FIRE || pathnodetype == PathNodeType.DANGER_FIRE || pathnodetype == PathNodeType.DAMAGE_OTHER)
+                        if (pathnodetype == PathType.DAMAGE_FIRE || pathnodetype == PathType.DANGER_FIRE || pathnodetype == PathType.DAMAGE_OTHER)
                             return false;
                     }
                 }
@@ -203,11 +209,11 @@ public class DeathWormLandNavigation extends EntityNavigation {
      * Returns true if an entity does not collide with any solid blocks at the position.
      */
     @SuppressWarnings("deprecation")
-    private boolean isPositionClear(int x, int y, int z, int sizeX, int sizeY, int sizeZ, Vec3d vec3d, double p_179692_8_, double p_179692_10_) {
-        for (BlockPos blockpos : BlockPos.stream(new BlockPos(x, y, z), new BlockPos(x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1)).toList()) {
+    private boolean isPositionClear(int x, int y, int z, int sizeX, int sizeY, int sizeZ, Vec3 vec3d, double p_179692_8_, double p_179692_10_) {
+        for (BlockPos blockpos : BlockPos.betweenClosedStream(new BlockPos(x, y, z), new BlockPos(x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1)).toList()) {
             double d0 = (double) blockpos.getX() + 0.5D - vec3d.x;
             double d1 = (double) blockpos.getZ() + 0.5D - vec3d.z;
-            if (d0 * p_179692_8_ + d1 * p_179692_10_ >= 0.0D && this.world.getBlockState(blockpos).blocksMovement() || this.world.getBlockState(blockpos).isIn(BlockTags.SAND))
+            if (d0 * p_179692_8_ + d1 * p_179692_10_ >= 0.0D && this.level.getBlockState(blockpos).blocksMotion() || this.level.getBlockState(blockpos).is(BlockTags.SAND))
                 return false;
         }
 
@@ -215,12 +221,12 @@ public class DeathWormLandNavigation extends EntityNavigation {
     }
 
     @Override
-    public boolean canSwim() {
-        return this.nodeMaker.canSwim();
+    public boolean canFloat() {
+        return this.nodeEvaluator.canFloat();
     }
 
     @Override
-    public void setCanSwim(boolean canSwim) {
-        this.nodeMaker.setCanSwim(canSwim);
+    public void setCanFloat(boolean canSwim) {
+        this.nodeEvaluator.setCanFloat(canSwim);
     }
 }

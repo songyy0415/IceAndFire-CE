@@ -31,7 +31,7 @@ public class CockatriceEggEntity extends ThrowableItemProjectile {
     public void handleEntityEvent(byte id) {
         if (id == 3) {
             for (int i = 0; i < 8; ++i) {
-                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D);
+                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), (this.getRandom().nextFloat() - 0.5D) * 0.08D, (this.getRandom().nextFloat() - 0.5D) * 0.08D, (this.getRandom().nextFloat() - 0.5D) * 0.08D);
             }
         }
 
@@ -48,17 +48,17 @@ public class CockatriceEggEntity extends ThrowableItemProjectile {
         }
 
         if (!this.level().isClientSide()) {
-            if (this.random.nextInt(4) == 0) {
+            if (this.getRandom().nextInt(4) == 0) {
                 int i = 1;
 
-                if (this.random.nextInt(32) == 0) {
+                if (this.getRandom().nextInt(32) == 0) {
                     i = 4;
                 }
 
                 for (int j = 0; j < i; ++j) {
                     CockatriceEntity cockatrice = new CockatriceEntity(IafEntities.COCKATRICE.get(), this.level());
                     cockatrice.setAge(-24000);
-                    cockatrice.setHen(this.random.nextBoolean());
+                    cockatrice.setHen(this.getRandom().nextBoolean());
                     cockatrice.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
                     if (thrower instanceof Player) {
                         cockatrice.tame((Player) thrower);

@@ -1,8 +1,7 @@
 package com.iafenvoy.iceandfire.entity.util.dragon;
 
-import net.minecraft.util.math.MathHelper;
-
 import java.util.List;
+import net.minecraft.util.Mth;
 
 public record DragonSize(float x0, float x1) {
     private static final List<DragonSize> GROWTH_STAGES = List.of(
@@ -18,6 +17,6 @@ public record DragonSize(float x0, float x1) {
     }
 
     public static DragonSize getSize(int stage) {
-        return GROWTH_STAGES.get(MathHelper.clamp(stage - 1, 0, GROWTH_STAGES.size()));
+        return GROWTH_STAGES.get(Mth.clamp(stage - 1, 0, GROWTH_STAGES.size()));
     }
 }

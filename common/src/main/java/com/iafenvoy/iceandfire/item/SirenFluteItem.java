@@ -33,7 +33,7 @@ public class SirenFluteItem extends Item {
     public InteractionResult use(Level worldIn, Player player, InteractionHand hand) {
         ItemStack itemStackIn = player.getItemInHand(hand);
         player.startUsingItem(hand);
-        player.getCooldowns().addCooldown(this, 900);
+        player.getCooldowns().addCooldown(new ItemStack(this), 900);
 
         double dist = 32;
         Vec3 Vector3d = player.getEyePosition(1.0F);
@@ -71,7 +71,7 @@ public class SirenFluteItem extends Item {
         if (pointedEntity instanceof LivingEntity livingEntity) {
             MiscData.get(livingEntity).setLoveTicks(10 * 20);
             itemStackIn.hurtAndBreak(2, player, EquipmentSlot.MAINHAND);
-            player.getCooldowns().addCooldown(itemStackIn.getItem(), 45 * 20);
+            player.getCooldowns().addCooldown(itemStackIn, 45 * 20);
         }
 
         player.playSound(IafSounds.SIREN_SONG.get(), 1, 1);

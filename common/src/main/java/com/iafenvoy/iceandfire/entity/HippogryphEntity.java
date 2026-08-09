@@ -193,8 +193,8 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(4, new HippogryphAITargetItemsGoal<>(this, false));
-        this.targetSelector.addGoal(5, new HippogryphAITargetGoal<>(this, LivingEntity.class, false, entity -> !(entity instanceof AbstractHorse) && DragonUtils.isAlive(entity)));
-        this.targetSelector.addGoal(5, new HippogryphAITargetGoal<>(this, Player.class, 350, false, entity -> entity instanceof Player player && !player.isCreative()));
+        this.targetSelector.addGoal(5, new HippogryphAITargetGoal<>(this, LivingEntity.class, false, (entity, level) -> !(entity instanceof AbstractHorse) && DragonUtils.isAlive(entity)));
+        this.targetSelector.addGoal(5, new HippogryphAITargetGoal<>(this, Player.class, 350, false, (entity, level) -> entity instanceof Player player && !player.isCreative()));
     }
 
     @Override
@@ -331,7 +331,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                         MenuRegistry.openExtendedMenu(serverPlayer, this);
                     return InteractionResult.sidedSuccess(this.level().isClientSide());
                 } else if (this.isSaddled() && !this.isBaby() && !player.isPassenger()) {
-                    player.startRiding(this, true);
+                    player.startRiding(this, true, false);
                     return InteractionResult.SUCCESS;
                 }
         }
@@ -769,7 +769,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             for (int i = 3; i < 18; i++) {
                 if (!this.hippogryphInventory.getItem(i).isEmpty()) {
                     if (!this.level().isClientSide()) {
-                        this.spawnAtLocation(this.hippogryphInventory.getItem(i), 1);
+                        this.spawnAtLocation((ServerLevel) this.level(), this.hippogryphInventory.getItem(i), 1);
                     }
                     this.hippogryphInventory.removeItemNoUpdate(i);
                 }
@@ -937,7 +937,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             for (int i = 0; i < this.hippogryphInventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.hippogryphInventory.getItem(i);
                 if (!itemstack.isEmpty())
-                    this.spawnAtLocation(itemstack, 0.0F);
+                    this.spawnAtLocation((ServerLevel) this.level(), itemstack, 0.0F);
             }
     }
 
@@ -971,14 +971,15 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity) return true;
             if (entityIn instanceof TamableAnimal tameable) return tameable.isOwnedBy(livingentity);
             if (livingentity != null) return livingentity.isAlliedTo(entityIn);
         }
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     @Override

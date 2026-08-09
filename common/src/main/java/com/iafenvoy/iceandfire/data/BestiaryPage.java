@@ -4,12 +4,11 @@ import com.iafenvoy.iceandfire.item.BestiaryItem;
 import com.iafenvoy.iceandfire.item.component.BestiaryPageComponent;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import net.minecraft.item.ItemStack;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.world.item.ItemStack;
 
 public record BestiaryPage(String name, int pageCount) {
     public static List<BestiaryPage> possiblePages(ItemStack book) {

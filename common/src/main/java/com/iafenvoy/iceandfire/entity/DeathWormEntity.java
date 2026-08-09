@@ -61,7 +61,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -146,7 +146,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
         this.targetSelector.addGoal(3, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(4, this.targetItemsGoal = new DeathwormAITargetItemsGoal<>(this, false, false));
-        this.targetSelector.addGoal(5, new DeathWormAITargetGoal<>(this, LivingEntity.class, false, input -> {
+        this.targetSelector.addGoal(5, new DeathWormAITargetGoal<>(this, LivingEntity.class, false, (input, level) -> {
             if (DeathWormEntity.this.isTame()) {
                 return input instanceof Monster;
             } else if (input != null) {
@@ -241,7 +241,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             this.setAnimation(ANIMATION_BITE);
             this.playSound(this.getAgeScale() > 3 ? IafSounds.DEATHWORM_GIANT_ATTACK.get() : IafSounds.DEATHWORM_ATTACK.get(), 1, 1);
         }
-        if (this.getRandom().nextInt(3) == 0 && this.getAgeScale() > 1 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+        if (this.getRandom().nextInt(3) == 0 && this.getAgeScale() > 1 && ((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
             if (!IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, entityIn.getX(), entityIn.getY(), entityIn.getZ())) {
                 BlockLaunchExplosion explosion = new BlockLaunchExplosion(this.level(), this, entityIn.getX(), entityIn.getY(), entityIn.getZ(), this.getAgeScale());
                 explosion.explode();
@@ -503,14 +503,15 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity) return true;
             if (entityIn instanceof TamableAnimal tameable) return tameable.isOwnedBy(livingentity);
             if (livingentity != null) return livingentity.isAlliedTo(entityIn);
         }
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     @Override

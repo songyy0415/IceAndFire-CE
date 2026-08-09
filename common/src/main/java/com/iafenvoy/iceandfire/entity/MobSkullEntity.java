@@ -43,7 +43,7 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource i) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource i) {
         return i.getEntity() != null;
     }
 
@@ -108,7 +108,7 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
         this.remove(RemovalReason.DISCARDED);
         ItemStack stack = new ItemStack(this.getSkullType().getSkullItem(), 1);
         if (!this.level().isClientSide())
-            this.spawnAtLocation(stack, 0.0F);
+            this.spawnAtLocation((ServerLevel) this.level(), stack, 0.0F);
     }
 
     @Override

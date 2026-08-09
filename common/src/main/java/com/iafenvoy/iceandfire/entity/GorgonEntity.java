@@ -43,7 +43,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -122,8 +122,8 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         });
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, LivingEntity::isAlive));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, entity -> entity instanceof LivingEntity && DragonUtils.isAlive(entity) || (entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone())));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (entity, level) -> LivingEntity.isAlive(entity)));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> entity instanceof LivingEntity && DragonUtils.isAlive(entity) || (entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone())));
         this.goalSelector.removeGoal(this.aiMelee);
     }
 
@@ -174,7 +174,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
             }
         }
         if (this.deathTime >= 200) {
-            if (!this.level().isClientSide() && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS))) {
+            if (!this.level().isClientSide() && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && ((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS))) {
                 int i = this.getBaseExperienceReward((ServerLevel) this.level());
                 while (i > 0) {
                     int j = ExperienceOrb.getExperienceValue(i);

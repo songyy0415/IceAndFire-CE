@@ -28,6 +28,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -106,8 +107,8 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource i) {
-        return i.getEntity() != null && super.isInvulnerableTo(i);
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource i) {
+        return i.getEntity() != null && super.isInvulnerableTo(level, i);
     }
 
     public DragonColor getEggType() {
@@ -199,7 +200,7 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
         if (var1.is(DamageTypeTags.IS_FIRE) && this.getEggType().getType() == IafDragonTypes.FIRE)
             return false;
         if (!this.level().isClientSide() && !var1.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !this.isRemoved()) {
-            this.spawnAtLocation(this.getItem().getItem(), 1);
+            this.spawnAtLocation((ServerLevel) this.level(), new ItemStack(this.getItem().getItem()), 1);
         }
         this.remove(RemovalReason.KILLED);
         return true;
@@ -267,7 +268,7 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
             boolean valid = world.canSeeSky(pos.above()) && isRainingAt;
             if (valid) entity.setDragonAge(entity.getDragonAge() + 1);
             if (hatched) {
-                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(world);
+                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(world, EntitySpawnReason.LOAD);
                 assert bolt != null;
                 bolt.setPos(entity.getX(), entity.getY(), entity.getZ());
                 bolt.setVisualOnly(true);

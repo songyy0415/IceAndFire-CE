@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -71,7 +72,7 @@ public class TideTridentEntity extends ThrownTrident {
         if (this.level() instanceof ServerLevel && this.level().isThundering() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(this.level().registryAccess(), Enchantments.CHANNELING), this.getPickupItemStackOrigin()) > 0) {
             BlockPos blockpos = entity.blockPosition();
             if (this.level().canSeeSky(blockpos)) {
-                LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.level());
+                LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.level(), EntitySpawnReason.LOAD);
                 assert lightningboltentity != null;
                 lightningboltentity.moveTo(Vec3.atCenterOf(blockpos));
                 lightningboltentity.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer) entity1 : null);

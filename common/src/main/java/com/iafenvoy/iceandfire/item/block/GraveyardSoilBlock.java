@@ -28,7 +28,7 @@ public class GraveyardSoilBlock extends Block {
                 int checkRange = 32;
                 int k = worldIn.getEntitiesOfClass(GhostEntity.class, (new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)).inflate(checkRange)).size();
                 if (k < 10) {
-                    GhostEntity ghost = IafEntities.GHOST.get().create(worldIn);
+                    GhostEntity ghost = IafEntities.GHOST.get().create(worldIn, EntitySpawnReason.LOAD);
                     assert ghost != null;
                     ghost.absMoveTo(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, ThreadLocalRandom.current().nextFloat() * 360F, 0);
                     ghost.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWNER, null);

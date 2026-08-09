@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.entity.util;
 
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ChainBuffer {
     private int yawTimer;
@@ -34,12 +34,12 @@ public class ChainBuffer {
      */
     public void calculateChainSwingBuffer(float maxAngle, int bufferTime, float angleDecrement, float divisor, LivingEntity entity) {
         this.prevYawVariation = this.yawVariation;
-        if (entity.bodyYaw != entity.prevBodyYaw && MathHelper.abs(entity.prevBodyYaw - entity.bodyYaw) < 0.1F && MathHelper.abs(this.yawVariation) < maxAngle)
-            this.yawVariation += (entity.prevBodyYaw - entity.bodyYaw) / divisor;
+        if (entity.yBodyRot != entity.yBodyRotO && Mth.abs(entity.yBodyRotO - entity.yBodyRot) < 0.1F && Mth.abs(this.yawVariation) < maxAngle)
+            this.yawVariation += (entity.yBodyRotO - entity.yBodyRot) / divisor;
         if (this.yawVariation > 0.7F * angleDecrement) {
             if (this.yawTimer > bufferTime) {
                 this.yawVariation -= angleDecrement;
-                if (MathHelper.abs(this.yawVariation) < angleDecrement) {
+                if (Mth.abs(this.yawVariation) < angleDecrement) {
                     this.yawVariation = 0.0F;
                     this.yawTimer = 0;
                 }
@@ -47,7 +47,7 @@ public class ChainBuffer {
         } else if (this.yawVariation < -0.7F * angleDecrement) {
             if (this.yawTimer > bufferTime) {
                 this.yawVariation += angleDecrement;
-                if (MathHelper.abs(this.yawVariation) < angleDecrement) {
+                if (Mth.abs(this.yawVariation) < angleDecrement) {
                     this.yawVariation = 0.0F;
                     this.yawTimer = 0;
                 }
@@ -66,12 +66,12 @@ public class ChainBuffer {
      */
     public void calculateChainWaveBuffer(float maxAngle, int bufferTime, float angleDecrement, float divisor, LivingEntity entity) {
         this.prevPitchVariation = this.pitchVariation;
-        if (entity.getPitch() != entity.prevPitch && MathHelper.abs(this.pitchVariation) < maxAngle)
-            this.pitchVariation += (entity.prevPitch - entity.getPitch()) / divisor;
+        if (entity.getXRot() != entity.xRotO && Mth.abs(this.pitchVariation) < maxAngle)
+            this.pitchVariation += (entity.xRotO - entity.getXRot()) / divisor;
         if (this.pitchVariation > 0.7F * angleDecrement) {
             if (this.pitchTimer > bufferTime) {
                 this.pitchVariation -= angleDecrement;
-                if (MathHelper.abs(this.pitchVariation) < angleDecrement) {
+                if (Mth.abs(this.pitchVariation) < angleDecrement) {
                     this.pitchVariation = 0.0F;
                     this.pitchTimer = 0;
                 }
@@ -79,7 +79,7 @@ public class ChainBuffer {
         } else if (this.pitchVariation < -0.7F * angleDecrement) {
             if (this.pitchTimer > bufferTime) {
                 this.pitchVariation += angleDecrement;
-                if (MathHelper.abs(this.pitchVariation) < angleDecrement) {
+                if (Mth.abs(this.pitchVariation) < angleDecrement) {
                     this.pitchVariation = 0.0F;
                     this.pitchTimer = 0;
                 }
@@ -117,12 +117,12 @@ public class ChainBuffer {
      * @param boxes the box array
      */
     public void applyChainSwingBuffer(BasicModelPart... boxes) {
-        float rotateAmount = 0.01745329251F * MathHelper.lerp(this.getPartialTicks(), this.prevYawVariation, this.yawVariation) / boxes.length;
+        float rotateAmount = 0.01745329251F * Mth.lerp(this.getPartialTicks(), this.prevYawVariation, this.yawVariation) / boxes.length;
         for (BasicModelPart box : boxes) box.rotateAngleY += rotateAmount;
     }
 
     private float getPartialTicks() {
-        return MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        return Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
     }
 
     /**
@@ -131,7 +131,7 @@ public class ChainBuffer {
      * @param boxes the box array
      */
     public void applyChainWaveBuffer(BasicModelPart... boxes) {
-        float rotateAmount = 0.01745329251F * MathHelper.lerp(this.getPartialTicks(), this.prevYawVariation, this.yawVariation) / boxes.length;
+        float rotateAmount = 0.01745329251F * Mth.lerp(this.getPartialTicks(), this.prevYawVariation, this.yawVariation) / boxes.length;
         for (BasicModelPart box : boxes) box.rotateAngleX += rotateAmount;
     }
 }

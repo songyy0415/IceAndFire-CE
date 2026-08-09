@@ -62,9 +62,9 @@ public class GhostSwordEntity extends AbstractArrow {
         double d0 = 0;
         double d1 = 0.0D;
         double d2 = 0.01D;
-        double x = this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
-        double y = this.getY() + this.random.nextFloat() * this.getBbHeight() - this.getBbHeight();
-        double z = this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
+        double x = this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
+        double y = this.getY() + this.getRandom().nextFloat() * this.getBbHeight() - this.getBbHeight();
+        double z = this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth();
         float f = (this.getBbWidth() + this.getBbHeight() + this.getBbWidth()) * 0.333F + 0.5F;
         if (this.particleDistSq(x, y, z) < f * f)
             this.level().addParticle(ParticleTypes.SNEEZE, x, y + 0.5D, z, d0, d1, d2);
@@ -147,7 +147,7 @@ public class GhostSwordEntity extends AbstractArrow {
         }
 
         if (this.isCritArrow())
-            i += this.random.nextInt(i / 2 + 2);
+            i += this.getRandom().nextInt(i / 2 + 2);
 
         Entity entity1 = this.getOwner();
         DamageSource damagesource = this.level().damageSources().magic();
@@ -163,7 +163,7 @@ public class GhostSwordEntity extends AbstractArrow {
         if (this.isOnFire() && !flag)
             entity.igniteForSeconds(5);
 
-        if (entity.hurt(damagesource, i)) {
+        if (entity.hurtOrSimulate(damagesource, i)) {
             if (flag) return;
 
             if (entity instanceof LivingEntity livingentity) {
@@ -181,7 +181,7 @@ public class GhostSwordEntity extends AbstractArrow {
                     this.hitEntities.add(livingentity);
             }
 
-            this.playSound(this.getHitGroundSoundEvent(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
+            this.playSound(this.getHitGroundSoundEvent(), 1.0F, 1.2F / (this.getRandom().nextFloat() * 0.2F + 0.9F));
             if (this.getPierceLevel() <= 0)
                 this.remove(RemovalReason.DISCARDED);
         } else {

@@ -107,7 +107,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -348,14 +348,14 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.targetSelector.addGoal(2, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(4, new DragonAITargetItemsGoal(this, 60, false, false, true));
-        this.targetSelector.addGoal(5, new DragonAITargetNonTamedGoal<>(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> {
+        this.targetSelector.addGoal(5, new DragonAITargetNonTamedGoal<>(this, LivingEntity.class, false, (entity, level) -> {
             if (entity instanceof Player player)
                 return !player.isCreative() && !IafCommonConfig.INSTANCE.dragon.neutralToPlayer.getValue();
             if (this.getRandom().nextInt(100) > this.getHunger())
                 return entity.getType() != this.getType() && DragonUtils.canHostilesTarget(entity) && DragonUtils.isAlive(entity) && this.shouldTarget(entity);
             return false;
         }));
-        this.targetSelector.addGoal(6, new DragonAITargetGoal<>(this, LivingEntity.class, true, (Predicate<LivingEntity>) entity -> entity instanceof Player ? !IafCommonConfig.INSTANCE.dragon.neutralToPlayer.getValue() : DragonUtils.canHostilesTarget(entity) && entity.getType() != this.getType() && this.shouldTarget(entity) && DragonUtils.isAlive(entity)));
+        this.targetSelector.addGoal(6, new DragonAITargetGoal<>(this, LivingEntity.class, true, (entity, level) -> entity instanceof Player ? !IafCommonConfig.INSTANCE.dragon.neutralToPlayer.getValue() : DragonUtils.canHostilesTarget(entity) && entity.getType() != this.getType() && this.shouldTarget(entity) && DragonUtils.isAlive(entity)));
         this.targetSelector.addGoal(7, new DragonAITargetItemsGoal(this, false));
     }
 
@@ -492,7 +492,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     public void updateBurnTarget() {
-        if (this.burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isBaby()) {
+        if (this.burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isDragonBaby()) {
             float maxDist = 115 * this.getDragonStage();
             if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && this.distanceToSqr(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D) < maxDist && this.canPositionBeSeen(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D)) {
                 this.getLookControl().setLookAt(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D, 180F, 180F);
@@ -557,8 +557,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(ServerLevel level) {
+        super.customServerAiStep(level);
         this.breakBlocks(false);
     }
 
@@ -1132,11 +1132,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                         if (dragonStage < 2) {
                             if (player.getPassengers().size() >= 3)
                                 return InteractionResult.FAIL;
-                            this.startRiding(player, true);
+                            this.startRiding(player, true, false);
                             NetworkManager.sendToPlayer(serverPlayer, new StartRidingMobS2CPayload(this.getId(), true, true));
                         } else if (dragonStage > 2 && !player.isPassenger()) {
                             player.setShiftKeyDown(false);
-                            player.startRiding(this, true);
+                            player.startRiding(this, true, false);
                             NetworkManager.sendToPlayer(serverPlayer, new StartRidingMobS2CPayload(this.getId(), true, false));
                             this.setInSittingPose(false);
                         }
@@ -1225,17 +1225,17 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 if (this.getDeathStage() >= lastDeathStage - 1 && IafCommonConfig.INSTANCE.dragon.lootSkull.getValue()) {
                     ItemStack skull = new ItemStack(this.getSkull());
                     skull.set(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(this.getDragonStage(), this.getAgeInDays()));
-                    this.spawnAtLocation(skull, 1);
+                    this.spawnAtLocation((ServerLevel) this.level(), skull, 1);
                     this.remove(RemovalReason.DISCARDED);
                 } else if (this.getDeathStage() == (lastDeathStage / 2) - 1 && IafCommonConfig.INSTANCE.dragon.lootHeart.getValue()) {
                     ItemStack heart = new ItemStack(this.getHeartItem(), 1);
                     ItemStack egg = new ItemStack(RandomHelper.randomOne(this.dragonType.colors()).getEggItem(), 1);
-                    this.spawnAtLocation(heart, 1);
+                    this.spawnAtLocation((ServerLevel) this.level(), heart, 1);
                     if (!this.isMale() && this.getDragonStage() > 3)
-                        this.spawnAtLocation(egg, 1);
+                        this.spawnAtLocation((ServerLevel) this.level(), egg, 1);
                 } else {
                     ItemStack drop = this.getRandomDrop();
-                    if (!drop.isEmpty()) this.spawnAtLocation(drop, 1);
+                    if (!drop.isEmpty()) this.spawnAtLocation((ServerLevel) this.level(), drop, 1);
                 }
                 this.setDeathStage(this.getDeathStage() + 1);
             } else return InteractionResult.PASS;
@@ -1410,7 +1410,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         }
 
         if (doBreak) {
-            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+            if (((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
                 if (DragonUtils.canGrief(this)) {
                     // TODO :: make `force` ignore the dragon stage?
                     if (!this.isModelDead() && this.getDragonStage() >= 3 && (this.canMove() || this.getControllingPassenger() != null)) {
@@ -1565,8 +1565,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         return this.isMature();
     }
 
-    @Override
-    public boolean isBaby() {
+    public boolean isDragonBaby() {
         return this.getDragonStage() < 2;
     }
 
@@ -2527,7 +2526,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         // Workaround to make sure dragons won't be attacked when dead
         if (this.isModelDead())
             return true;
@@ -2541,7 +2541,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 return livingentity.isAlliedTo(entityIn);
         }
 
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     public Vec3 getHeadPosition() {
@@ -2722,7 +2722,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     public boolean isAllowedToTriggerFlight() {
-        return (this.hasFlightClearance() && this.onGround() || this.isInWater()) && !this.isOrderedToSit() && this.getPassengers().isEmpty() && !this.isBaby() && !this.isSleeping() && this.canMove();
+        return (this.hasFlightClearance() && this.onGround() || this.isInWater()) && !this.isOrderedToSit() && this.getPassengers().isEmpty() && !this.isDragonBaby() && !this.isSleeping() && this.canMove();
     }
 
     public BlockPos getEscortPosition() {

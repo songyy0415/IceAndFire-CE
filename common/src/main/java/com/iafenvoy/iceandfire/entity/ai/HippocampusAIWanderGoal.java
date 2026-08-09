@@ -1,21 +1,21 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 
-public class HippocampusAIWanderGoal extends WanderAroundGoal {
-    public HippocampusAIWanderGoal(PathAwareEntity creatureIn, double speedIn) {
+public class HippocampusAIWanderGoal extends RandomStrollGoal {
+    public HippocampusAIWanderGoal(PathfinderMob creatureIn, double speedIn) {
         super(creatureIn, speedIn);
     }
 
     @Override
-    public boolean canStart() {
-        return !(this.mob instanceof TameableEntity tameable && tameable.isSitting()) && !this.mob.isTouchingWater() && super.canStart();
+    public boolean canUse() {
+        return !(this.mob instanceof TamableAnimal tameable && tameable.isOrderedToSit()) && !this.mob.isInWater() && super.canUse();
     }
 
     @Override
-    public boolean shouldContinue() {
-        return !(this.mob instanceof TameableEntity tameable && tameable.isSitting()) && !this.mob.isTouchingWater() && super.shouldContinue();
+    public boolean canContinueToUse() {
+        return !(this.mob instanceof TamableAnimal tameable && tameable.isOrderedToSit()) && !this.mob.isInWater() && super.canContinueToUse();
     }
 }

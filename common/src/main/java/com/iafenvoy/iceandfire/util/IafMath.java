@@ -1,18 +1,17 @@
 package com.iafenvoy.iceandfire.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class IafMath {
-    public static final List<PlayerEntity> emptyPlayerEntityList = Collections.emptyList();
+    public static final List<Player> emptyPlayerEntityList = Collections.emptyList();
     public static final List<ItemEntity> emptyItemEntityList = Collections.emptyList();
-    public static final List<AbstractHorseEntity> emptyAbstractHorseEntityList = Collections.emptyList();
+    public static final List<AbstractHorse> emptyAbstractHorseEntityList = Collections.emptyList();
     public static final List<Entity> emptyEntityList = Collections.emptyList();
     public static final List<LivingEntity> emptyLivingEntityList = Collections.emptyList();
     private static final double coeff_1 = Math.PI / 4;

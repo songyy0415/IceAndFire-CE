@@ -8,6 +8,12 @@
     "minecraft:cod",
     "minecraft:pufferfish",
     "minecraft:salmon",
-    "minecraft:tropical_fish"
+    "minecraft:tropical_fish",
+    "minecraft:axolotl",
+    "minecraft:guardian",
+    "minecraft:elder_guardian",
+    "minecraft:squid",
+    "minecraft:glow_squid",
+    "minecraft:tadpole"
   ]
 }

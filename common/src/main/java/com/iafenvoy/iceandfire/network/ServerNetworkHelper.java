@@ -7,13 +7,13 @@ import com.iafenvoy.iceandfire.network.payload.*;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.TamableAnimal;
 
 public class ServerNetworkHelper {
     public static void registerReceivers() {
@@ -27,9 +27,9 @@ public class ServerNetworkHelper {
         }
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, DragonControlC2SPayload.ID, DragonControlC2SPayload.CODEC, (payload, ctx) -> {
-            PlayerEntity player = ctx.getPlayer();
+            Player player = ctx.getPlayer();
             if (player != null) {
-                Entity entity = player.getWorld().getEntityById(payload.dragonId());
+                Entity entity = player.level().getEntity(payload.dragonId());
                 if (ServerEvents.isRidingOrBeingRiddenBy(entity, player)) {
                     BlockPos pos = payload.pos();
                         /*
@@ -38,15 +38,15 @@ public class ServerNetworkHelper {
                         */
                     switch (entity) {
                         case DragonBaseEntity dragon -> {
-                            if (dragon.isOwner(player))
+                            if (dragon.isOwnedBy(player))
                                 dragon.setControlState(payload.controlState());
                         }
                         case HippogryphEntity hippogryph -> {
-                            if (hippogryph.isOwner(player))
+                            if (hippogryph.isOwnedBy(player))
                                 hippogryph.setControlState(payload.controlState());
                         }
                         case HippocampusEntity hippo -> {
-                            if (hippo.isOwner(player))
+                            if (hippo.isOwnedBy(player))
                                 hippo.setControlState(payload.controlState());
                             hippo.setPos(pos.getX(), pos.getY(), pos.getZ());
                         }
@@ -55,7 +55,7 @@ public class ServerNetworkHelper {
                             deathWorm.setPos(pos.getX(), pos.getY(), pos.getZ());
                         }
                         case AmphithereEntity amphithere -> {
-                            if (amphithere.isOwner(player))
+                            if (amphithere.isOwnedBy(player))
                                 amphithere.setControlState(payload.controlState());
                             // TODO :: Is this handled by Entity#move due to recent changes?
                             amphithere.setPos(pos.getX(), pos.getY(), pos.getZ());
@@ -67,25 +67,25 @@ public class ServerNetworkHelper {
             }
         });
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, MultipartInteractC2SPayload.ID, MultipartInteractC2SPayload.CODEC, (payload, ctx) -> {
-            PlayerEntity player = ctx.getPlayer();
+            Player player = ctx.getPlayer();
             ctx.queue(() -> {
-                if (player != null && player.getWorld() instanceof ServerWorld serverWorld) {
+                if (player != null && player.level() instanceof ServerLevel serverWorld) {
                     Entity entity = serverWorld.getEntity(payload.creatureID());
                     if (entity instanceof LivingEntity livingEntity) {
                         double dist = player.distanceTo(livingEntity);
                         if (dist < 100) {
                             float dmg = payload.dmg();
-                            if (dmg > 0F) livingEntity.damage(player.getWorld().damageSources.mobAttack(player), dmg);
-                            else livingEntity.interact(player, Hand.MAIN_HAND);
+                            if (dmg > 0F) livingEntity.hurtOrSimulate(player.level().damageSources().mobAttack(player), dmg);
+                            else livingEntity.interact(player, InteractionHand.MAIN_HAND);
                         }
                     }
                 }
             });
         });
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, PlayerHitMultipartC2SPayload.ID, PlayerHitMultipartC2SPayload.CODEC, (payload, ctx) -> {
-            PlayerEntity player = ctx.getPlayer();
+            Player player = ctx.getPlayer();
             if (player != null) {
-                Entity entity = player.getWorld().getEntityById(payload.entityId());
+                Entity entity = player.level().getEntity(payload.entityId());
                 if (entity instanceof LivingEntity livingEntity) {
                     double dist = player.distanceTo(livingEntity);
                     if (dist < 100) {
@@ -97,11 +97,11 @@ public class ServerNetworkHelper {
             }
         });
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, StartRidingMobC2SPayload.ID, StartRidingMobC2SPayload.CODEC, (payload, ctx) -> {
-            PlayerEntity player = ctx.getPlayer();
+            Player player = ctx.getPlayer();
             if (player != null) {
-                Entity entity = player.getWorld().getEntityById(payload.dragonId());
-                if (entity instanceof ISyncMount && entity instanceof TameableEntity tamable)
-                    if (tamable.isOwner(player) && tamable.distanceTo(player) < 14)
+                Entity entity = player.level().getEntity(payload.dragonId());
+                if (entity instanceof ISyncMount && entity instanceof TamableAnimal tamable)
+                    if (tamable.isOwnedBy(player) && tamable.distanceTo(player) < 14)
                         if (payload.ride()) {
                             if (payload.baby()) tamable.startRiding(player, true);
                             else player.startRiding(tamable, true);

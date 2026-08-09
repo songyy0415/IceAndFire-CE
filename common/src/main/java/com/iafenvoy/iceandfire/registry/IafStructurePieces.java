@@ -4,13 +4,12 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.world.structure.*;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.structure.StructurePieceType;
-
 import java.util.function.Supplier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 
 public final class IafStructurePieces {
-    public static final DeferredRegister<StructurePieceType> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.STRUCTURE_PIECE);
+    public static final DeferredRegister<StructurePieceType> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.STRUCTURE_PIECE);
 
     public static final RegistrySupplier<StructurePieceType> FIRE_DRAGON_ROOST = register("fire_dragon_roost", () -> FireDragonRoostStructure.FireDragonRoostPiece::new);
     public static final RegistrySupplier<StructurePieceType> ICE_DRAGON_ROOST = register("ice_dragon_roost", () -> IceDragonRoostStructure.IceDragonRoostPiece::new);

@@ -116,7 +116,8 @@ public class DreadMobEntity extends Monster implements IDreadMob {
 
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
     }
 

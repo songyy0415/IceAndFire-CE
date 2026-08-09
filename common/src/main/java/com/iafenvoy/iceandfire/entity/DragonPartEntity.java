@@ -1,13 +1,13 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.entity.EntityType;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 public class DragonPartEntity extends MultipartPartEntity {
     private final float baseRadius, baseOffsetY, baseSizeX, baseSizeY;
 
-    public DragonPartEntity(EntityType<?> t, World world) {
+    public DragonPartEntity(EntityType<?> t, Level world) {
         super(t, world);
         this.baseRadius = 0;
         this.baseOffsetY = 0;

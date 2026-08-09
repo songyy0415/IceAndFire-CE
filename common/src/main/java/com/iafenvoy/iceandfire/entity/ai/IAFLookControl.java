@@ -1,20 +1,20 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.control.LookControl;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.control.LookControl;
 
 public class IAFLookControl extends LookControl {
 
-    public IAFLookControl(MobEntity LivingEntityIn) {
+    public IAFLookControl(Mob LivingEntityIn) {
         super(LivingEntityIn);
     }
 
     @Override
-    public void lookAt(Entity entityIn, float deltaYaw, float deltaPitch) {
+    public void setLookAt(Entity entityIn, float deltaYaw, float deltaPitch) {
         try {
-            super.lookAt(entityIn, deltaYaw, deltaPitch);//rarely causes crash with vanilla
+            super.setLookAt(entityIn, deltaYaw, deltaPitch);//rarely causes crash with vanilla
         } catch (Exception e) {
             IceAndFire.LOGGER.warn("Stopped a crash from happening relating to faulty looking AI.");
         }

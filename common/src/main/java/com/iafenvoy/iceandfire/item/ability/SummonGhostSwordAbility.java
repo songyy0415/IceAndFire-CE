@@ -39,7 +39,7 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
             shot.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, 1, 0.5f);
             playerEntity.level().addFreshEntity(shot);
             stack.hurtAndBreak(1, playerEntity, EquipmentSlot.MAINHAND);
-            playerEntity.getCooldowns().addCooldown(stack.getItem(), 10);
+            playerEntity.getCooldowns().addCooldown(stack, 10);
         }
     }
 

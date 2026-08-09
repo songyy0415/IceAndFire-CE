@@ -29,7 +29,7 @@ public class DeathwormEggItem extends Item implements ProjectileItem {
 
         if (!playerIn.isCreative()) itemstack.shrink(1);
 
-        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (worldIn.random.nextFloat() * 0.4F + 0.8F));
+        worldIn.playSound(null, playerIn.getX(), playerIn.getY(), playerIn.getZ(), SoundEvents.EGG_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (worldIn.getRandom().nextFloat() * 0.4F + 0.8F));
 
         if (!worldIn.isClientSide()) {
             DeathWormEggEntity entityegg = new DeathWormEggEntity(IafEntities.DEATH_WORM_EGG.get(), playerIn, worldIn, this.gigantic);

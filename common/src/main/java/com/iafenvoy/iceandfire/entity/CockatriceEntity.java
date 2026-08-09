@@ -151,7 +151,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(3, new CockatriceAIFollowOwnerGoal(this, 1.0D, 7.0F, 2.0F));
         this.goalSelector.addGoal(3, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 14.0F, 1.0D, 1.0D, (Predicate<LivingEntity>) entity -> {
+        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 14.0F, 1.0D, 1.0D, (entity, level) -> {
             if (entity instanceof Player player) return !player.isCreative() && !entity.isSpectator();
             else
                 return BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SCARES_COCKATRICES) && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS);
@@ -164,7 +164,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         this.targetSelector.addGoal(2, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(5, new CockatriceAITargetGoal<>(this, LivingEntity.class, true, entity -> {
+        this.targetSelector.addGoal(5, new CockatriceAITargetGoal<>(this, LivingEntity.class, true, (entity, level) -> {
             if (entity instanceof Player player) return !player.isCreative() && !entity.isSpectator();
             else
                 return (entity instanceof Enemy) && CockatriceEntity.this.isTame() && !(entity instanceof Creeper) && !(entity instanceof ZombifiedPiglin) && !(entity instanceof EnderMan) || BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.COCKATRICE_TARGETS) && (!BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS));
@@ -199,7 +199,8 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    public boolean isAlliedTo(Entity entityIn) {
+    @Override
+    public boolean considersEntityAsAlly(Entity entityIn) {
         if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityIn.getType()).is(IafEntityTags.CHICKENS))
             return true;
         if (this.isTame()) {
@@ -212,7 +213,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
                 return livingentity.isAlliedTo(entityIn);
         }
 
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     @Override

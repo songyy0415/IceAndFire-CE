@@ -5,14 +5,13 @@ import com.iafenvoy.iceandfire.particle.DragonFlameParticleType;
 import com.iafenvoy.iceandfire.particle.DragonFrostParticleType;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.registry.RegistryKeys;
-
 import java.util.function.Supplier;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
 
 public final class IafParticles {
-    public static final DeferredRegister<ParticleType<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.PARTICLE_TYPE);
+    public static final DeferredRegister<ParticleType<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.PARTICLE_TYPE);
 
     public static final RegistrySupplier<SimpleParticleType> BLOOD = register("blood", () -> new SimpleParticleType(true));
     public static final RegistrySupplier<DragonFlameParticleType> DRAGON_FLAME = register("dragon_flame", DragonFlameParticleType::new);

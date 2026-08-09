@@ -2,33 +2,32 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import com.iafenvoy.iceandfire.entity.util.IafEntityUtil;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.function.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.player.Player;
 
-public class CockatriceAIAggroLookGoal extends ActiveTargetGoal<PlayerEntity> {
+public class CockatriceAIAggroLookGoal extends NearestAttackableTargetGoal<Player> {
     private final CockatriceEntity cockatrice;
-    private final TargetPredicate predicate;
-    private PlayerEntity player;
+    private final TargetingConditions predicate;
+    private Player player;
 
     public CockatriceAIAggroLookGoal(CockatriceEntity cockatriceIn) {
-        super(cockatriceIn, PlayerEntity.class, false);
+        super(cockatriceIn, Player.class, false);
         this.cockatrice = cockatriceIn;
         Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (target) -> IafEntityUtil.isEntityLookingAt(target, this.cockatrice,
-                CockatriceEntity.VIEW_RADIUS) && this.cockatrice.distanceTo(target) < this.getFollowRange();
-        this.predicate = TargetPredicate.createAttackable().setBaseMaxDistance(25.0D).setPredicate(LIVING_ENTITY_SELECTOR);
+                CockatriceEntity.VIEW_RADIUS) && this.cockatrice.distanceTo(target) < this.getFollowDistance();
+        this.predicate = TargetingConditions.forCombat().range(25.0D).selector(LIVING_ENTITY_SELECTOR);
     }
 
     /**
      * Returns whether the Goal should begin execution.
      */
     @Override
-    public boolean canStart() {
-        if (this.cockatrice.isTamed()) return false;
-        this.player = this.cockatrice.getWorld().getClosestPlayer(this.predicate, this.cockatrice.getX(), this.cockatrice.getY(), this.cockatrice.getZ());
+    public boolean canUse() {
+        if (this.cockatrice.isTame()) return false;
+        this.player = this.cockatrice.level().getNearestPlayer(this.predicate, this.cockatrice.getX(), this.cockatrice.getY(), this.cockatrice.getZ());
         return this.player != null;
     }
 
@@ -46,18 +45,18 @@ public class CockatriceAIAggroLookGoal extends ActiveTargetGoal<PlayerEntity> {
      * Returns whether an in-progress Goal should continue executing
      */
     @Override
-    public boolean shouldContinue() {
+    public boolean canContinueToUse() {
         if (this.player != null && !this.player.isCreative() && !this.player.isSpectator()) {
             if (!IafEntityUtil.isEntityLookingAt(this.player, this.cockatrice, 0.4F))
                 return false;
             else {
-                this.cockatrice.lookAtEntity(this.player, 10.0F, 10.0F);
-                if (!this.cockatrice.isTamed()) {
+                this.cockatrice.lookAt(this.player, 10.0F, 10.0F);
+                if (!this.cockatrice.isTame()) {
                     this.cockatrice.setTargetedEntity(this.player.getId());
                     this.cockatrice.setTarget(this.player);
                 }
                 return true;
             }
-        } else return this.target != null && this.target.isAlive() || super.shouldContinue();
+        } else return this.targetMob != null && this.targetMob.isAlive() || super.canContinueToUse();
     }
 }

@@ -6,25 +6,24 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafLoots;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.function.ConditionalLootFunction;
-import net.minecraft.loot.function.LootFunctionType;
-
 import java.util.List;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-public class SeaSerpentLootFunction extends ConditionalLootFunction {
-    public static final MapCodec<SeaSerpentLootFunction> CODEC = RecordCodecBuilder.mapCodec((instance) -> addConditionsField(instance).apply(instance, SeaSerpentLootFunction::new));
+public class SeaSerpentLootFunction extends LootItemConditionalFunction {
+    public static final MapCodec<SeaSerpentLootFunction> CODEC = RecordCodecBuilder.mapCodec((instance) -> commonFields(instance).apply(instance, SeaSerpentLootFunction::new));
 
-    public SeaSerpentLootFunction(List<LootCondition> conditionsIn) {
+    public SeaSerpentLootFunction(List<LootItemCondition> conditionsIn) {
         super(conditionsIn);
     }
 
     @Override
-    public ItemStack process(ItemStack stack, LootContext context) {
-        if (!stack.isEmpty() && context.get(LootContextParameters.THIS_ENTITY) instanceof SeaSerpentEntity seaSerpent) {
+    public ItemStack run(ItemStack stack, LootContext context) {
+        if (!stack.isEmpty() && context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof SeaSerpentEntity seaSerpent) {
             final int ancientModifier = seaSerpent.isAncient() ? 2 : 1;
             if (stack.getItem() instanceof SeaSerpentScaleItem) {
                 stack.setCount(1 + seaSerpent.getRandom().nextInt(1 + (int) Math.ceil(seaSerpent.getSeaSerpentScale() * 3 * ancientModifier)));
@@ -39,7 +38,7 @@ public class SeaSerpentLootFunction extends ConditionalLootFunction {
     }
 
     @Override
-    public LootFunctionType<? extends ConditionalLootFunction> getType() {
+    public LootItemFunctionType<? extends LootItemConditionalFunction> getType() {
         return IafLoots.SEA_SERPENT_LOOT.get();
     }
 }

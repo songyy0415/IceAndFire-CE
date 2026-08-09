@@ -3,18 +3,18 @@ package com.iafenvoy.iceandfire.item.armor;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import java.util.List;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.equipment.ArmorType;
 
-public class DragonSteelArmorItem extends ArmorItem {
-    public DragonSteelArmorItem(Holder<ArmorMaterial> material, Type slot) {
-        super(material, slot, new Properties().durability(switch (slot) {
+public class DragonSteelArmorItem extends Item {
+    public DragonSteelArmorItem(ArmorMaterial material, ArmorType slot) {
+        super(new Item.Properties().humanoidArmor(material, slot).durability(switch (slot) {
             case HELMET -> IafCommonConfig.INSTANCE.armors.dragonsteelHelmetDurability.getValue();
             case CHESTPLATE -> IafCommonConfig.INSTANCE.armors.dragonsteelChestplateDurability.getValue();
             case LEGGINGS -> IafCommonConfig.INSTANCE.armors.dragonsteelLeggingsDurability.getValue();

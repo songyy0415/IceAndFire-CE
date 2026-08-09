@@ -30,14 +30,6 @@ public class DragonArmorItem extends Item {
     }
 
     @Override
-    public String getDescriptionId() {
-        String fullName = BuiltInRegistries.ITEM.getKey(this).getPath();
-        Matcher matcher = this.baseName.matcher(fullName);
-        this.name = matcher.find() ? matcher.group() : fullName;
-        return "item." + IceAndFire.MOD_ID + "." + this.name;
-    }
-
-    @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
         String words = "dragon.armor_" + this.dragonSlot.name().toLowerCase(Locale.ROOT);

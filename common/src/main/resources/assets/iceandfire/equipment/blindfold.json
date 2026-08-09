@@ -1,0 +1,10 @@
+{
+  "layers": {
+    "humanoid": [
+      { "texture": "iceandfire:textures/models/armor/blindfold_layer_1.png" }
+    ],
+    "humanoid_leggings": [
+      { "texture": "iceandfire:textures/models/armor/blindfold_layer_1.png" }
+    ]
+  }
+}

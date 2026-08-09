@@ -137,7 +137,7 @@ public class PixieEntity extends TamableAnimal {
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(ServerLevel level) {
         return 3;
     }
 

@@ -128,7 +128,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(ServerLevel level) {
         return 8;
     }
 

@@ -168,7 +168,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(ServerLevel level) {
         return 10;
     }
 

@@ -626,7 +626,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(ServerLevel level) {
         return switch (this.getDragonStage()) {
             case 2 -> 20;
             case 3 -> 150;

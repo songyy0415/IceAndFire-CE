@@ -4,67 +4,74 @@ import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Arm;
-import net.minecraft.world.World;
+import net.minecraft.core.registries.BuiltInRegistries;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class StoneStatueEntity extends LivingEntity implements BlacklistedFromStatues {
-    private static final TrackedData<String> TRAPPED_ENTITY_TYPE = DataTracker.registerData(StoneStatueEntity.class, TrackedDataHandlerRegistry.STRING);
-    private static final TrackedData<NbtCompound> TRAPPED_ENTITY_DATA = DataTracker.registerData(StoneStatueEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-    private static final TrackedData<Float> TRAPPED_ENTITY_WIDTH = DataTracker.registerData(StoneStatueEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Float> TRAPPED_ENTITY_HEIGHT = DataTracker.registerData(StoneStatueEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Float> TRAPPED_ENTITY_SCALE = DataTracker.registerData(StoneStatueEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Integer> CRACK_AMOUNT = DataTracker.registerData(StoneStatueEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final EntityDataAccessor<String> TRAPPED_ENTITY_TYPE = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<CompoundTag> TRAPPED_ENTITY_DATA = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.COMPOUND_TAG);
+    private static final EntityDataAccessor<Float> TRAPPED_ENTITY_WIDTH = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> TRAPPED_ENTITY_HEIGHT = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> TRAPPED_ENTITY_SCALE = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> CRACK_AMOUNT = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.INT);
     private EntityDimensions stoneStatueSize = EntityDimensions.fixed(0.5F, 0.5F);
 
-    public StoneStatueEntity(EntityType<? extends LivingEntity> t, World worldIn) {
+    public StoneStatueEntity(EntityType<? extends LivingEntity> t, Level worldIn) {
         super(t, worldIn);
     }
 
-    public static DefaultAttributeContainer.Builder bakeAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder bakeAttributes() {
+        return Mob.createMobAttributes()
                 //HEALTH
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20)
+                .add(Attributes.MAX_HEALTH, 20)
                 //SPEED
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.0D)
                 //ATTACK
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0D);
+                .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
 
     public static StoneStatueEntity buildStatueEntity(LivingEntity parent) {
-        StoneStatueEntity statue = IafEntities.STONE_STATUE.get().create(parent.getWorld());
-        NbtCompound entityTag = new NbtCompound();
+        StoneStatueEntity statue = IafEntities.STONE_STATUE.get().create(parent.level());
+        CompoundTag entityTag = new CompoundTag();
         try {
-            if (!(parent instanceof PlayerEntity)) {
-                parent.writeNbt(entityTag);
+            if (!(parent instanceof Player)) {
+                parent.saveWithoutId(entityTag);
             }
         } catch (Exception e) {
             IceAndFire.LOGGER.debug("Encountered issue creating stone statue from {}", parent);
         }
         assert statue != null;
         statue.setTrappedTag(entityTag);
-        statue.setTrappedEntityTypeString(Registries.ENTITY_TYPE.getId(parent.getType()).toString());
-        statue.setTrappedEntityWidth(parent.getWidth());
-        statue.setTrappedHeight(parent.getHeight());
-        statue.setTrappedScale(parent.getScaleFactor());
+        statue.setTrappedEntityTypeString(BuiltInRegistries.ENTITY_TYPE.getKey(parent.getType()).toString());
+        statue.setTrappedEntityWidth(parent.getBbWidth());
+        statue.setTrappedHeight(parent.getBbHeight());
+        statue.setTrappedScale(parent.getAgeScale());
         return statue;
     }
 
     @Override
-    public void pushAwayFrom(Entity entityIn) {
+    public void push(Entity entityIn) {
     }
 
     @Override
@@ -72,63 +79,63 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(TRAPPED_ENTITY_TYPE, "minecraft:pig");
-        builder.add(TRAPPED_ENTITY_DATA, new NbtCompound());
-        builder.add(TRAPPED_ENTITY_WIDTH, 0.5F);
-        builder.add(TRAPPED_ENTITY_HEIGHT, 0.5F);
-        builder.add(TRAPPED_ENTITY_SCALE, 1F);
-        builder.add(CRACK_AMOUNT, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(TRAPPED_ENTITY_TYPE, "minecraft:pig");
+        builder.define(TRAPPED_ENTITY_DATA, new CompoundTag());
+        builder.define(TRAPPED_ENTITY_WIDTH, 0.5F);
+        builder.define(TRAPPED_ENTITY_HEIGHT, 0.5F);
+        builder.define(TRAPPED_ENTITY_SCALE, 1F);
+        builder.define(CRACK_AMOUNT, 0);
     }
 
     public EntityType<?> getTrappedEntityType() {
-        return EntityType.get(this.getTrappedEntityTypeString()).orElse(EntityType.PIG);
+        return EntityType.byString(this.getTrappedEntityTypeString()).orElse(EntityType.PIG);
     }
 
     public String getTrappedEntityTypeString() {
-        return this.dataTracker.get(TRAPPED_ENTITY_TYPE);
+        return this.entityData.get(TRAPPED_ENTITY_TYPE);
     }
 
     public void setTrappedEntityTypeString(String string) {
-        this.dataTracker.set(TRAPPED_ENTITY_TYPE, string);
+        this.entityData.set(TRAPPED_ENTITY_TYPE, string);
     }
 
-    public NbtCompound getTrappedTag() {
-        return this.dataTracker.get(TRAPPED_ENTITY_DATA);
+    public CompoundTag getTrappedTag() {
+        return this.entityData.get(TRAPPED_ENTITY_DATA);
     }
 
-    public void setTrappedTag(NbtCompound tag) {
-        this.dataTracker.set(TRAPPED_ENTITY_DATA, tag);
+    public void setTrappedTag(CompoundTag tag) {
+        this.entityData.set(TRAPPED_ENTITY_DATA, tag);
     }
 
     public float getTrappedWidth() {
-        return this.dataTracker.get(TRAPPED_ENTITY_WIDTH);
+        return this.entityData.get(TRAPPED_ENTITY_WIDTH);
     }
 
     public void setTrappedEntityWidth(float size) {
-        this.dataTracker.set(TRAPPED_ENTITY_WIDTH, size);
+        this.entityData.set(TRAPPED_ENTITY_WIDTH, size);
     }
 
     public float getTrappedHeight() {
-        return this.dataTracker.get(TRAPPED_ENTITY_HEIGHT);
+        return this.entityData.get(TRAPPED_ENTITY_HEIGHT);
     }
 
     public void setTrappedHeight(float size) {
-        this.dataTracker.set(TRAPPED_ENTITY_HEIGHT, size);
+        this.entityData.set(TRAPPED_ENTITY_HEIGHT, size);
     }
 
     public float getTrappedScale() {
-        return this.dataTracker.get(TRAPPED_ENTITY_SCALE);
+        return this.entityData.get(TRAPPED_ENTITY_SCALE);
     }
 
     public void setTrappedScale(float size) {
-        this.dataTracker.set(TRAPPED_ENTITY_SCALE, size);
+        this.entityData.set(TRAPPED_ENTITY_SCALE, size);
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound tag) {
-        super.writeCustomDataToNbt(tag);
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
         tag.putInt("CrackAmount", this.getCrackAmount());
         tag.putFloat("StatueWidth", this.getTrappedWidth());
         tag.putFloat("StatueHeight", this.getTrappedHeight());
@@ -138,13 +145,13 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    public float getScaleFactor() {
+    public float getAgeScale() {
         return this.getTrappedScale();
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound tag) {
-        super.readCustomDataFromNbt(tag);
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
         this.setCrackAmount(tag.getByte("CrackAmount"));
         this.setTrappedEntityWidth(tag.getFloat("StatueWidth"));
         this.setTrappedHeight(tag.getFloat("StatueHeight"));
@@ -162,33 +169,33 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    public EntityDimensions getDimensions(EntityPose poseIn) {
+    protected EntityDimensions getDefaultDimensions(Pose poseIn) {
         return this.stoneStatueSize;
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.setYaw(this.bodyYaw);
-        this.headYaw = this.getYaw();
-        if (Math.abs(this.getWidth() - this.getTrappedWidth()) > 0.01 || Math.abs(this.getHeight() - this.getTrappedHeight()) > 0.01) {
+        this.setYRot(this.yBodyRot);
+        this.yHeadRot = this.getYRot();
+        if (Math.abs(this.getBbWidth() - this.getTrappedWidth()) > 0.01 || Math.abs(this.getBbHeight() - this.getTrappedHeight()) > 0.01) {
             double prevX = this.getX();
             double prevZ = this.getZ();
-            this.stoneStatueSize = EntityDimensions.changing(this.getTrappedWidth(), this.getTrappedHeight());
-            this.calculateDimensions();
-            this.setPosition(prevX, this.getY(), prevZ);
+            this.stoneStatueSize = EntityDimensions.scalable(this.getTrappedWidth(), this.getTrappedHeight());
+            this.refreshDimensions();
+            this.setPos(prevX, this.getY(), prevZ);
         }
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && amount > 0) {
-            if (this.getWorld() instanceof ServerWorld serverWorld && this.getTrappedEntityType().create(serverWorld) instanceof LivingEntity livingEntity)
-                ExperienceOrbEntity.spawn(serverWorld, this.getPos(), livingEntity.getXpToDrop());
+    public boolean hurt(DamageSource source, float amount) {
+        if (source.is(DamageTypeTags.IS_PROJECTILE) && amount > 0) {
+            if (this.level() instanceof ServerLevel serverWorld && this.getTrappedEntityType().create(serverWorld) instanceof LivingEntity livingEntity)
+                ExperienceOrb.award(serverWorld, this.position(), livingEntity.getBaseExperienceReward(serverWorld));
             this.remove(RemovalReason.KILLED);
             return true;
         }
-        return super.damage(source, amount);
+        return super.hurt(source, amount);
     }
 
     @Override
@@ -197,31 +204,31 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    public Iterable<ItemStack> getArmorItems() {
+    public Iterable<ItemStack> getArmorSlots() {
         return ImmutableList.of();
     }
 
     @Override
-    public ItemStack getEquippedStack(EquipmentSlot slotIn) {
+    public ItemStack getItemBySlot(EquipmentSlot slotIn) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void equipStack(EquipmentSlot slotIn, ItemStack stack) {
+    public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {
 
     }
 
     @Override
-    public Arm getMainArm() {
-        return Arm.RIGHT;
+    public HumanoidArm getMainArm() {
+        return HumanoidArm.RIGHT;
     }
 
     public int getCrackAmount() {
-        return this.dataTracker.get(CRACK_AMOUNT);
+        return this.entityData.get(CRACK_AMOUNT);
     }
 
     public void setCrackAmount(int crackAmount) {
-        this.dataTracker.set(CRACK_AMOUNT, crackAmount);
+        this.entityData.set(CRACK_AMOUNT, crackAmount);
     }
 
     @Override

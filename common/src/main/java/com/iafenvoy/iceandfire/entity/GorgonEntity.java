@@ -16,6 +16,7 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -154,7 +155,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(ServerLevel level) {
         return 30;
     }
 
@@ -172,7 +173,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         }
         if (this.deathTime >= 200) {
             if (!this.level().isClientSide() && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS))) {
-                int i = this.getBaseExperienceReward();
+                int i = this.getBaseExperienceReward((ServerLevel) this.level());
                 while (i > 0) {
                     int j = ExperienceOrb.getExperienceValue(i);
                     i -= j;

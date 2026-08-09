@@ -212,7 +212,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(ServerLevel level) {
         return this.getAgeScale() > 3 ? 20 : 10;
     }
 

@@ -1,27 +1,30 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
-import com.iafenvoy.iceandfire.entity.GorgonEntity;
-import com.iafenvoy.iceandfire.entity.TrollEntity;
 import com.iafenvoy.iceandfire.render.entity.TrollEntityRenderer;
+import com.iafenvoy.iceandfire.render.entity.state.TrollRenderState;
 import com.iafenvoy.iceandfire.render.model.TrollModel;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class TrollEyesFeatureRenderer extends FeatureRenderer<TrollEntity, TrollModel> {
+public class TrollEyesFeatureRenderer extends RenderLayer<TrollRenderState, TrollModel> {
     public TrollEyesFeatureRenderer(TrollEntityRenderer renderer) {
         super(renderer);
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, TrollEntity troll, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (!GorgonEntity.isStoneMob(troll)) {
-            RenderLayer tex = RenderLayer.getEyes(troll.getTrollType().getEyesTexture());
-            VertexConsumer vertexConsumer = bufferIn.getBuffer(tex);
-            this.getContextModel().render(matrixStackIn, vertexConsumer, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int lightCoords, TrollRenderState state, float yRot, float xRot) {
+        if (!state.isStone) {
+            RenderType tex = RenderTypes.eyes(state.trollType.getEyesTexture());
+            submitNodeCollector.submitCustomGeometry(matrixStackIn, tex, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+            });
         }
     }
 }

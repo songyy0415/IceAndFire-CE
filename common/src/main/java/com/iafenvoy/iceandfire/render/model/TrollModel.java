@@ -1,8 +1,8 @@
 package com.iafenvoy.iceandfire.render.model;
 
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.TrollEntity;
+import com.iafenvoy.iceandfire.render.entity.state.TrollRenderState;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class TrollModel extends DragonBaseModel<LivingEntityRenderState> {
+public class TrollModel extends DragonBaseModel<TrollRenderState> {
     public final AdvancedModelBox body;
     public final AdvancedModelBox upperBody;
     public final AdvancedModelBox loin;
@@ -347,18 +347,24 @@ public class TrollModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(TrollEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(TrollRenderState state) {
         this.resetToDefaultPose();
         this.log1.showModel = true;
 
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
 
-        this.progressRotation(this.head, entity.stoneProgress, (float) Math.toRadians(-31), 0.0F, 0.0F);
-        this.progressRotation(this.jaw, entity.stoneProgress, (float) Math.toRadians(54), 0.0F, 0.0F);
-        this.progressRotation(this.leftarm, entity.stoneProgress, (float) Math.toRadians(10), (float) Math.toRadians(-73), (float) Math.toRadians(-60));
-        this.progressRotation(this.leftarm2, entity.stoneProgress, (float) Math.toRadians(-80), 0.0F, 0.0F);
-        this.progressRotation(this.rightarm, entity.stoneProgress, (float) Math.toRadians(-101), (float) Math.toRadians(70), 0);
-        this.progressRotation(this.rightarm2, entity.stoneProgress, (float) Math.toRadians(-40), 0.0F, 0.0F);
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+
+        this.progressRotation(this.head, state.stoneProgress, (float) Math.toRadians(-31), 0.0F, 0.0F);
+        this.progressRotation(this.jaw, state.stoneProgress, (float) Math.toRadians(54), 0.0F, 0.0F);
+        this.progressRotation(this.leftarm, state.stoneProgress, (float) Math.toRadians(10), (float) Math.toRadians(-73), (float) Math.toRadians(-60));
+        this.progressRotation(this.leftarm2, state.stoneProgress, (float) Math.toRadians(-80), 0.0F, 0.0F);
+        this.progressRotation(this.rightarm, state.stoneProgress, (float) Math.toRadians(-101), (float) Math.toRadians(70), 0);
+        this.progressRotation(this.rightarm2, state.stoneProgress, (float) Math.toRadians(-40), 0.0F, 0.0F);
 
         float speed_walk = 0.2F;
         float speed_idle = 0.05F;

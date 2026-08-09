@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import com.iafenvoy.iceandfire.render.entity.state.HippocampusRenderState;
+
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.HippocampusEntity;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class HippocampusModel extends DragonBaseModel<LivingEntityRenderState> {
+public class HippocampusModel extends DragonBaseModel<HippocampusRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox FrontThighR;
     public final AdvancedModelBox FrontThighL;
@@ -243,9 +245,14 @@ public class HippocampusModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(HippocampusEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
-        if (this.young) {
+    public void setupAnim(HippocampusRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+        if (state.isBaby) {
             this.Body.setShouldScaleChildren(true);
             this.Body.setScale(0.5F, 0.5F, 0.5F);
             this.Head.setScale(1.5F, 1.5F, 1.5F);
@@ -263,25 +270,25 @@ public class HippocampusModel extends DragonBaseModel<LivingEntityRenderState> {
         float degree_walk = 1.5F;
         float degree_idle = 0.5F;
         float degree_swim = 0.75F;
-        this.progressRotation(this.Body, entity.onLandProgress, (float) Math.toRadians(-5F), 0.0F, 0.0F);
-        this.progressRotation(this.FrontThighL, Math.max(0, entity.onLandProgress), 0.0F, 0.0F, (float) Math.toRadians(-65F));
-        this.progressRotation(this.FrontThighR, Math.max(0, entity.onLandProgress), 0.0F, 0.0F, (float) Math.toRadians(65F));
-        this.progressPosition(this.Body, entity.onLandProgress, 0.0F, 20.0F, 0.0F);
+        this.progressRotation(this.Body, state.onLandProgress, (float) Math.toRadians(-5F), 0.0F, 0.0F);
+        this.progressRotation(this.FrontThighL, Math.max(0, state.onLandProgress), 0.0F, 0.0F, (float) Math.toRadians(-65F));
+        this.progressRotation(this.FrontThighR, Math.max(0, state.onLandProgress), 0.0F, 0.0F, (float) Math.toRadians(65F));
+        this.progressPosition(this.Body, state.onLandProgress, 0.0F, 20.0F, 0.0F);
 
-        this.progressRotation(this.Body, entity.sitProgress, (float) Math.toRadians(-5F), 0.0F, 0.0F);
-        this.progressRotation(this.Tail_1, entity.sitProgress, (float) Math.toRadians(55F), 0.0F, 0.0F);
-        this.progressRotation(this.Tail_2, entity.sitProgress, (float) Math.toRadians(-26F), 0.0F, 0.0F);
-        this.progressRotation(this.Tail_3, entity.sitProgress, (float) Math.toRadians(-33F), 0.0F, 0.0F);
-        this.progressRotation(this.FlukeR, Math.max(0, entity.sitProgress), (float) Math.toRadians(-50F), (float) Math.toRadians(5F), (float) Math.toRadians(30F));
-        this.progressRotation(this.FlukeL, Math.max(0, entity.sitProgress), (float) Math.toRadians(-50F), (float) Math.toRadians(-5F), (float) Math.toRadians(-30F));
-        this.progressRotation(this.Body, entity.sitProgress * entity.onLandProgress * 0.05F, (float) Math.toRadians(-5F), (float) Math.toRadians(-5F), (float) Math.toRadians(85F));
-        this.progressPosition(this.Body, entity.sitProgress * entity.onLandProgress * 0.05F, 0.0F, 10, 0.0F);
-        if (entity.onGround() && !entity.isInWater()) {
-            this.progressRotation(this.FrontThighL, Math.max(0, entity.sitProgress), 0.0F, 0.0F, (float) Math.toRadians(60F));
-            this.progressRotation(this.FrontThighR, Math.max(0, entity.sitProgress), 0.0F, 0.0F, (float) Math.toRadians(-60F));
+        this.progressRotation(this.Body, state.sitProgress, (float) Math.toRadians(-5F), 0.0F, 0.0F);
+        this.progressRotation(this.Tail_1, state.sitProgress, (float) Math.toRadians(55F), 0.0F, 0.0F);
+        this.progressRotation(this.Tail_2, state.sitProgress, (float) Math.toRadians(-26F), 0.0F, 0.0F);
+        this.progressRotation(this.Tail_3, state.sitProgress, (float) Math.toRadians(-33F), 0.0F, 0.0F);
+        this.progressRotation(this.FlukeR, Math.max(0, state.sitProgress), (float) Math.toRadians(-50F), (float) Math.toRadians(5F), (float) Math.toRadians(30F));
+        this.progressRotation(this.FlukeL, Math.max(0, state.sitProgress), (float) Math.toRadians(-50F), (float) Math.toRadians(-5F), (float) Math.toRadians(-30F));
+        this.progressRotation(this.Body, state.sitProgress * state.onLandProgress * 0.05F, (float) Math.toRadians(-5F), (float) Math.toRadians(-5F), (float) Math.toRadians(85F));
+        this.progressPosition(this.Body, state.sitProgress * state.onLandProgress * 0.05F, 0.0F, 10, 0.0F);
+        if (state.onGround && !state.isInWater) {
+            this.progressRotation(this.FrontThighL, Math.max(0, state.sitProgress), 0.0F, 0.0F, (float) Math.toRadians(60F));
+            this.progressRotation(this.FrontThighR, Math.max(0, state.sitProgress), 0.0F, 0.0F, (float) Math.toRadians(-60F));
         }
-        this.progressRotation(this.Tail_2, entity.sitProgress * entity.onLandProgress * 0.05F, (float) Math.toRadians(-7F), (float) Math.toRadians(-25F), (float) Math.toRadians(1));
-        this.progressRotation(this.Tail_3, entity.sitProgress * entity.onLandProgress * 0.05F, (float) Math.toRadians(20), (float) Math.toRadians(-36), (float) Math.toRadians(36));
+        this.progressRotation(this.Tail_2, state.sitProgress * state.onLandProgress * 0.05F, (float) Math.toRadians(-7F), (float) Math.toRadians(-25F), (float) Math.toRadians(1));
+        this.progressRotation(this.Tail_3, state.sitProgress * state.onLandProgress * 0.05F, (float) Math.toRadians(20), (float) Math.toRadians(-36), (float) Math.toRadians(36));
 
 
         AdvancedModelBox[] TAIL = {this.Tail_1, this.Tail_2, this.Tail_3};
@@ -289,7 +296,7 @@ public class HippocampusModel extends DragonBaseModel<LivingEntityRenderState> {
         AdvancedModelBox[] LEG_L = {this.FrontThighL, this.FrontLegL};
         AdvancedModelBox[] LEG_R = {this.FrontThighR, this.FrontLegR};
         AdvancedModelBox[] NECK = new AdvancedModelBox[]{this.Neck, this.Head};
-        if (entity.isInWater()) {
+        if (state.isInWater) {
             this.chainWave(NECK, speed_swim, degree_swim * 0.15F, -2, limbAngle, limbDistance);
             this.chainWave(TAIL_W_BODY, speed_swim, degree_swim * 0.15F, -3, limbAngle, limbDistance);
             this.walk(this.Tail_3, speed_swim, degree_swim * -0.5F, false, 0, 0, limbAngle, limbDistance);
@@ -312,8 +319,8 @@ public class HippocampusModel extends DragonBaseModel<LivingEntityRenderState> {
             this.swing(this.FinRBack, speed_idle, degree_idle * 0.25F, true, 0, -0.1F, animationProgress, 1);
         }
         this.chainWave(NECK, speed_idle, degree_idle * 0.15F, -2, animationProgress, 1);
-        if (entity.tail_buffer != null) {
-            entity.tail_buffer.applyChainSwingBuffer(TAIL);
+        if (state.tail_buffer != null) {
+            state.tail_buffer.applyChainSwingBuffer(TAIL);
         }
     }
 

@@ -1,31 +1,23 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
-import com.iafenvoy.iceandfire.data.DragonColor;
-import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
+import com.iafenvoy.iceandfire.render.entity.state.DragonRenderState;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
 
-public class DragonEyesFeatureRenderer<T extends DragonBaseEntity> extends RenderLayer<T, TabulaModel<T>> {
-    public DragonEyesFeatureRenderer(MobRenderer<T, TabulaModel<T>> renderIn) {
+public class DragonEyesFeatureRenderer extends RenderLayer<DragonRenderState, TabulaModel<DragonRenderState>> {
+    public DragonEyesFeatureRenderer(RenderLayerParent<DragonRenderState, TabulaModel<DragonRenderState>> renderIn) {
         super(renderIn);
     }
 
     @Override
-    public void render(PoseStack matrices, MultiBufferSource vertexConsumers, int light, DragonBaseEntity entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headpitch) {
-        if (!entity.shouldRenderEyes()) return;
-        Identifier eyeTexture = DragonColor.getById(entity.getVariant()).getTextureProvider().getEyesTexture(entity.getDragonStage());
-        if (eyeTexture == null) return;
-        this.getParentModel().renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.eyes(eyeTexture)), light, OverlayTexture.NO_OVERLAY, -1);
-    }
-
-    @Override
-    protected Identifier getTextureLocation(DragonBaseEntity entityIn) {
-        return null;
+    public void submit(PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, DragonRenderState state, float yRot, float xRot) {
+        if (!state.shouldRenderEyes || state.eyesTexture == null) return;
+        submitNodeCollector.order(1)
+            .submitModel(this.getParentModel(), state, matrices, RenderTypes.eyes(state.eyesTexture), light, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
     }
 }

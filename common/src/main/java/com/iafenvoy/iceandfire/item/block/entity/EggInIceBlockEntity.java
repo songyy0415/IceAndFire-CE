@@ -19,6 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class EggInIceBlockEntity extends BlockEntity {
     public DragonColor type;
@@ -53,8 +55,8 @@ public class EggInIceBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         if (this.type != null) nbt.putString("Color", this.type.getName());
         else nbt.putByte("Color", (byte) 0);
         nbt.putInt("Age", this.age);
@@ -63,8 +65,8 @@ public class EggInIceBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.type = DragonColor.getById(nbt.getString("Color").orElse(""));
         this.age = nbt.getInt("Age").orElse(0);
         UUID s = null;
@@ -82,15 +84,11 @@ public class EggInIceBlockEntity extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
-        CompoundTag nbtTagCompound = new CompoundTag();
-        this.saveAdditional(nbtTagCompound,registryLookup);
-        return nbtTagCompound;
+        return this.saveCustomOnly(registryLookup);
     }
 
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        CompoundTag nbtTagCompound = new CompoundTag();
-        this.saveAdditional(nbtTagCompound,null);
         return ClientboundBlockEntityDataPacket.create(this);
     }
 

@@ -63,7 +63,7 @@ public class SummoningCrystalItem extends Item {
         if (nbt != null)
             for (String tagInfo : nbt.getAllKeys())
                 if (tagInfo.contains("Dragon")) {
-                    CompoundTag dragonTag = nbt.getCompound(tagInfo);
+                    CompoundTag dragonTag = nbt.getCompound(tagInfo).orElse(new CompoundTag());
                     String dragonName = I18n.get(desc);
                     if (!dragonTag.getString("CustomName").orElse("").isEmpty())
                         dragonName = dragonTag.getString("CustomName").orElse("");
@@ -88,7 +88,7 @@ public class SummoningCrystalItem extends Item {
         if (nbt != null && stack.getItem() == this && hasDragon(stack)) {
             for (String tagInfo : nbt.getAllKeys()) {
                 if (tagInfo.contains("Dragon")) {
-                    CompoundTag dragonTag = nbt.getCompound(tagInfo);
+                    CompoundTag dragonTag = nbt.getCompound(tagInfo).orElse(new CompoundTag());
                     UUID id = dragonTag.read("DragonUUID", UUIDUtil.CODEC).orElse(null);
                     if (id != null && !context.getLevel().isClientSide()) {
                         try {

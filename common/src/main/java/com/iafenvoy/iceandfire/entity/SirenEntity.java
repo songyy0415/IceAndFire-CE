@@ -374,7 +374,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         ListTag list = new ListTag();
         for (Object2IntMap.Entry<LivingEntity> entry : this.charmingEntities.object2IntEntrySet()) {
             CompoundTag nbt = new CompoundTag();
-            nbt.putIntArray("Uuid", UUIDUtil.uuidToIntArray(entry.getKey()).getUUID());
+            nbt.putIntArray("Uuid", UUIDUtil.uuidToIntArray(entry.getKey().getUUID()));
             nbt.putInt("CharmTime", entry.getIntValue());
             list.add(nbt);
         }

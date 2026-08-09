@@ -98,7 +98,7 @@ public class ChainTieEntity extends HangingEntity {
 
     @Override
     public void dropItem(Entity brokenEntity) {
-        this.playSound(SoundEvents.ARMOR_EQUIP_CHAIN, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ARMOR_EQUIP_CHAIN.value(), 1.0F, 1.0F);
     }
 
     @Override
@@ -158,6 +158,6 @@ public class ChainTieEntity extends HangingEntity {
 
     @Override
     public void playPlacementSound() {
-        this.playSound(SoundEvents.ARMOR_EQUIP_CHAIN, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ARMOR_EQUIP_CHAIN.value(), 1.0F, 1.0F);
     }
 }

@@ -18,6 +18,7 @@ import com.iafenvoy.iceandfire.item.component.StoneStatusComponent;
 import com.iafenvoy.iceandfire.network.payload.PlayerHitMultipartC2SPayload;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
+import com.iafenvoy.iceandfire.util.TagValueUtil;
 import com.iafenvoy.uranus.object.RegistryHelper;
 import com.iafenvoy.uranus.util.RandomHelper;
 import dev.architectury.event.EventResult;
@@ -29,6 +30,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
@@ -171,8 +173,9 @@ public final class ServerEvents {
                     statue.setCrackAmount(statue.getCrackAmount() + 1);
 
                     if (statue.getCrackAmount() > 9) {
-                        CompoundTag writtenTag = new CompoundTag();
-                        entity.saveWithoutId(writtenTag);
+                        TagValueOutput writtenTagOutput = TagValueUtil.output();
+                        entity.saveWithoutId(writtenTagOutput);
+                        CompoundTag writtenTag = writtenTagOutput.buildResult();
                         entity.playSound(SoundEvents.STONE_BREAK, 2F, (float) (RandomHelper.nextDouble(-1, 1) * 0.2 + 0.5));
                         entity.remove(Entity.RemovalReason.KILLED);
 

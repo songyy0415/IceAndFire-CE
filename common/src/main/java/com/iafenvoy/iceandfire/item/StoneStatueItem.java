@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.entity.StoneStatueEntity;
 import com.iafenvoy.iceandfire.item.component.StoneStatusComponent;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafEntities;
+import com.iafenvoy.iceandfire.util.TagValueUtil;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -50,7 +51,7 @@ public class StoneStatueItem extends Item {
             if (stack.has(IafDataComponents.STONE_STATUS.get())) {
                 StoneStatusComponent component = stack.get(IafDataComponents.STONE_STATUS.get());
                 StoneStatueEntity statue = new StoneStatueEntity(IafEntities.STONE_STATUE.get(), context.getLevel());
-                statue.readAdditionalSaveData(component.nbt());
+                statue.readAdditionalSaveData(TagValueUtil.asInput(component.nbt(), context.getLevel().registryAccess()));
                 statue.setTrappedEntityTypeString(component.entityType());
                 double d1 = context.getPlayer().getX() - (context.getClickedPos().getX() + 0.5);
                 double d2 = context.getPlayer().getZ() - (context.getClickedPos().getZ() + 0.5);

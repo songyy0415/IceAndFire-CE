@@ -2,8 +2,9 @@ package com.iafenvoy.iceandfire.entity.util;
 
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class HomePosition {
     int x;
@@ -12,11 +13,11 @@ public class HomePosition {
     BlockPos pos;
     String dimension;
 
-    public HomePosition(CompoundTag compound) {
+    public HomePosition(ValueInput compound) {
         this.read(compound);
     }
 
-    public HomePosition(CompoundTag compound, Level world) {
+    public HomePosition(ValueInput compound, Level world) {
         this.read(compound, world);
     }
 
@@ -40,7 +41,7 @@ public class HomePosition {
         return this.dimension == null ? "" : this.dimension;
     }
 
-    public void write(CompoundTag compound) {
+    public void write(ValueOutput compound) {
         compound.putInt("HomeAreaX", this.x);
         compound.putInt("HomeAreaY", this.y);
         compound.putInt("HomeAreaZ", this.z);
@@ -48,22 +49,21 @@ public class HomePosition {
             compound.putString("HomeDimension", this.dimension);
     }
 
-    public void read(CompoundTag compound, Level world) {
+    public void read(ValueInput compound, Level world) {
         this.read(compound);
         if (this.dimension == null)
             this.dimension = DragonUtils.getDimensionName(world);
     }
 
-    public void read(CompoundTag compound) {
-        if (compound.contains("HomeAreaX"))
+    public void read(ValueInput compound) {
+        if (compound.getInt("HomeAreaX").isPresent())
             this.x = compound.getInt("HomeAreaX").orElse(0);
-        if (compound.contains("HomeAreaY"))
+        if (compound.getInt("HomeAreaY").isPresent())
             this.y = compound.getInt("HomeAreaY").orElse(0);
-        if (compound.contains("HomeAreaZ"))
+        if (compound.getInt("HomeAreaZ").isPresent())
             this.z = compound.getInt("HomeAreaZ").orElse(0);
         this.pos = new BlockPos(this.x, this.y, this.z);
-        if (compound.contains("HomeDimension"))
+        if (compound.getString("HomeDimension").isPresent())
             this.dimension = compound.getString("HomeDimension").orElse("");
     }
 }
-

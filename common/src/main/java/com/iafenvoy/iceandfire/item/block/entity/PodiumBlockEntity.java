@@ -21,6 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class PodiumBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     private static final int[] slotsTop = new int[]{0};
@@ -83,15 +85,15 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.stacks, registryLookup);
+        ContainerHelper.loadAllItems(nbt, this.stacks);
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        ContainerHelper.saveAllItems(nbt, this.stacks, registryLookup);
+    public void saveAdditional(ValueOutput nbt) {
+        ContainerHelper.saveAllItems(nbt, this.stacks);
     }
 
     @Override

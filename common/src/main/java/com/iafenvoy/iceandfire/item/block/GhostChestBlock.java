@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
@@ -22,7 +23,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 
 public class GhostChestBlock extends ChestBlock {
     public GhostChestBlock() {
-        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2.5F).sound(SoundType.WOOD), IafBlockEntities.GHOST_CHEST::get);
+        super(IafBlockEntities.GHOST_CHEST::get, SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2.5F).sound(SoundType.WOOD));
     }
 
     @Override

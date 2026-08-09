@@ -16,6 +16,8 @@ import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
     private final DreadSpawnerBaseLogic spawner = new DreadSpawnerBaseLogic() {
@@ -39,15 +41,14 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.spawner.load(this.level, this.worldPosition, nbt);
     }
 
-    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    public void save(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         this.spawner.save(nbt);
-        return nbt;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
-        CompoundTag compoundtag = this.save(new CompoundTag(), registryLookup);
+        CompoundTag compoundtag = this.saveCustomOnly(registryLookup);
         compoundtag.remove("SpawnPotentials");
         return compoundtag;
     }

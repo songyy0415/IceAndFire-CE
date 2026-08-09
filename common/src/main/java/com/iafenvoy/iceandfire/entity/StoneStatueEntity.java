@@ -7,8 +7,6 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -29,7 +27,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class StoneStatueEntity extends LivingEntity implements BlacklistedFromStatues {
     private static final EntityDataAccessor<String> TRAPPED_ENTITY_TYPE = SynchedEntityData.defineId(StoneStatueEntity.class, EntityDataSerializers.STRING);
@@ -56,14 +58,15 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
 
     public static StoneStatueEntity buildStatueEntity(LivingEntity parent) {
         StoneStatueEntity statue = IafEntities.STONE_STATUE.get().create(parent.level(), EntitySpawnReason.LOAD);
-        CompoundTag entityTag = new CompoundTag();
+        TagValueOutput output = TagValueOutput.createWithoutContext(ProblemReporter.DISCARDING);
         try {
             if (!(parent instanceof Player)) {
-                parent.saveWithoutId(entityTag);
+                parent.saveWithoutId(output);
             }
         } catch (Exception e) {
             IceAndFire.LOGGER.debug("Encountered issue creating stone statue from {}", parent);
         }
+        CompoundTag entityTag = output.buildResult();
         assert statue != null;
         statue.setTrappedTag(entityTag);
         statue.setTrappedEntityTypeString(BuiltInRegistries.ENTITY_TYPE.getKey(parent.getType()).toString());

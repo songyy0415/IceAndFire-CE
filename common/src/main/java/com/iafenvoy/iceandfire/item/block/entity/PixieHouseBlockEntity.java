@@ -23,6 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class PixieHouseBlockEntity extends BlockEntity {
     private static final float PARTICLE_WIDTH = 0.3F;
@@ -66,15 +68,15 @@ public class PixieHouseBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    public void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("HouseType", this.houseType);
         nbt.putBoolean("HasPixie", this.hasPixie);
         nbt.putInt("PixieType", this.pixieType);
         nbt.putBoolean("TamedPixie", this.tamedPixie);
         if (this.pixieOwnerUUID != null)
             nbt.putIntArray("PixieOwnerUUID", UUIDUtil.uuidToIntArray(this.pixieOwnerUUID));
-        ContainerHelper.saveAllItems(nbt, this.pixieItems, registryLookup);
+        ContainerHelper.saveAllItems(nbt, this.pixieItems);
     }
 
     @Override
@@ -88,8 +90,8 @@ public class PixieHouseBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.houseType = nbt.getInt("HouseType").orElse(0);
         this.hasPixie = nbt.getBooleanOr("HasPixie", false);
         this.pixieType = nbt.getInt("PixieType").orElse(0);
@@ -97,7 +99,7 @@ public class PixieHouseBlockEntity extends BlockEntity {
         if (nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).isPresent())
             this.pixieOwnerUUID = nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).orElse(null);
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.pixieItems, registryLookup);
+        ContainerHelper.loadAllItems(nbt, this.pixieItems);
     }
 
     public void releasePixie() {

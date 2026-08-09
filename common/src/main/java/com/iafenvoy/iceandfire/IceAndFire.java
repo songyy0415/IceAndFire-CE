@@ -62,7 +62,6 @@ public class IceAndFire {
         IafEntities.REGISTRY.register();
         IafItemGroups.REGISTRY.register();
         IafItems.REGISTRY.register();
-        IafLoots.REGISTRY.register();
         IafRecipes.REGISTRY.register();
         IafRecipeSerializers.REGISTRY.register();
         IafParticles.REGISTRY.register();

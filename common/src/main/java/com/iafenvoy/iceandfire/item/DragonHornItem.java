@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.item.component.DragonHornComponent;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
+import com.iafenvoy.iceandfire.util.TagValueUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
@@ -53,8 +55,9 @@ public class DragonHornItem extends Item {
         stack = player.getItemInHand(hand);
         if (stack.is(IafItems.DRAGON_HORN.get()) && !stack.has(IafDataComponents.DRAGON_HORN.get())) {
             if (!player.level().isClientSide() && (Entity) target instanceof DragonBaseEntity dragon && dragon.isOwnedBy(player)) {
-                CompoundTag entityTag = new CompoundTag();
-                target.save(entityTag);
+                TagValueOutput output = TagValueUtil.output();
+                target.save(output);
+                CompoundTag entityTag = output.buildResult();
                 stack.set(IafDataComponents.DRAGON_HORN.get(), new DragonHornComponent(BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()), target.getUUID(), entityTag));
                 player.swing(hand);
                 player.level().playSound(player, player.blockPosition(), SoundEvents.ZOMBIE_VILLAGER_CONVERTED, SoundSource.NEUTRAL, 3.0F, 0.75F);
@@ -77,7 +80,7 @@ public class DragonHornItem extends Item {
             if (type != null) {
                 Entity entity = type.create(world, EntitySpawnReason.LOAD);
                 if (entity instanceof DragonBaseEntity dragon)
-                    dragon.load(component.entityData());
+                    dragon.load(TagValueUtil.asInput(component.entityData(), world.registryAccess()));
                 //Still needed to allow for intercompatibility
                 UUID uuid = component.entityUuid();
                 if (uuid != null) {

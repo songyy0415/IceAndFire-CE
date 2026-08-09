@@ -23,6 +23,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class JarBlockEntity extends BlockEntity {
     private static final float PARTICLE_WIDTH = 0.3F;
@@ -79,8 +81,8 @@ public class JarBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         nbt.putBoolean("HasPixie", this.hasPixie);
         nbt.putInt("PixieType", this.pixieType);
         nbt.putBoolean("HasProduced", this.hasProduced);
@@ -88,7 +90,7 @@ public class JarBlockEntity extends BlockEntity {
         if (this.pixieOwnerUUID != null)
             nbt.putIntArray("PixieOwnerUUID", UUIDUtil.uuidToIntArray(this.pixieOwnerUUID));
         nbt.putInt("TicksExisted", this.ticksExisted);
-        ContainerHelper.saveAllItems(nbt, this.pixieItems, registryLookup);
+        ContainerHelper.saveAllItems(nbt, this.pixieItems);
     }
 
     @Override
@@ -97,8 +99,8 @@ public class JarBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.hasPixie = nbt.getBooleanOr("HasPixie", false);
         this.pixieType = nbt.getInt("PixieType").orElse(0);
         this.hasProduced = nbt.getBooleanOr("HasProduced", false);
@@ -107,7 +109,7 @@ public class JarBlockEntity extends BlockEntity {
         if (nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).isPresent())
             this.pixieOwnerUUID = nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).orElse(null);
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.pixieItems, registryLookup);
+        ContainerHelper.loadAllItems(nbt, this.pixieItems);
     }
 
     public void releasePixie() {

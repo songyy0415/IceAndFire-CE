@@ -1262,7 +1262,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (stack.getItem() == IafItems.DRAGON_BONE.get())
             this.playSound(SoundEvents.SKELETON_AMBIENT, 1, 1);
         else
-            this.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 1, 1);
+            this.playSound(SoundEvents.ARMOR_EQUIP_LEATHER.value(), 1, 1);
         return stack;
     }
 
@@ -2738,7 +2738,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public boolean save(CompoundTag compound) {
+    public boolean save(ValueOutput compound) {
         return this.saveAsPassenger(compound);
     }
 

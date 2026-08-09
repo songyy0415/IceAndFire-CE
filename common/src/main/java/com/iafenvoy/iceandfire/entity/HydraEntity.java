@@ -321,7 +321,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         this.setHeadCount(compound.getInt("HeadCount").orElse(0));
         this.setSeveredHead(compound.getInt("SeveredHead").orElse(0));
         for (int i = 0; i < HEADS; i++)
-            this.headDamageTracker[i] = compound.getFloat("HeadDamage" + i);
+            this.headDamageTracker[i] = compound.getFloatOr("HeadDamage" + i, 0.0F);
         this.setConfigurableAttributes();
     }
 

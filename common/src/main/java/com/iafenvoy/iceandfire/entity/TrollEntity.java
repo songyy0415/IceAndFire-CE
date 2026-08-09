@@ -375,7 +375,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                     explosion.explode();
                     explosion.finalizeExplosion(true);
                 }
-                this.playSound(SoundEvents.GENERIC_EXPLODE, 1, 1);
+                this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1, 1);
             }
         }
         if (this.getAnimation() == ANIMATION_STRIKE_VERTICAL && this.getAnimationTick() == 10)

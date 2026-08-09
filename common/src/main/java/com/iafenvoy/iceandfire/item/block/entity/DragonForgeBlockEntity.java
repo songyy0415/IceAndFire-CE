@@ -35,6 +35,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer, ExtendedMenuProvider {
     private static final int[] SLOTS_TOP = new int[]{0};
@@ -164,18 +166,18 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
     }
 
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.forgeItemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.forgeItemStacks, registryLookup);
+        ContainerHelper.loadAllItems(nbt, this.forgeItemStacks);
         this.cookTime = nbt.getInt("CookTime").orElse(0);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        nbt.putInt("CookTime", (short) this.cookTime);
-        ContainerHelper.saveAllItems(nbt, this.forgeItemStacks, registryLookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
+        nbt.putInt("CookTime", (int) this.cookTime);
+        ContainerHelper.saveAllItems(nbt, this.forgeItemStacks);
     }
 
     @Override

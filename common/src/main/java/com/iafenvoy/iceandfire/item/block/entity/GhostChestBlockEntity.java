@@ -9,11 +9,14 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GhostChestBlockEntity extends ChestBlockEntity {
@@ -24,20 +27,21 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.generatedGhost = nbt.getBooleanOr("generatedGhost", false);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         nbt.putBoolean("generatedGhost", this.generatedGhost);
     }
 
     @Override
-    public void startOpen(Player player) {
-        super.startOpen(player);
+    public void startOpen(ContainerUser user) {
+        super.startOpen(user);
+        if (!(user instanceof Player player)) return;
         assert this.level != null;
         if ((!this.generatedGhost || IafCommonConfig.INSTANCE.ghost.alwaysSpawnFromChest.getValue()) && this.level.getDifficulty() != Difficulty.PEACEFUL) {
             this.generatedGhost = true;

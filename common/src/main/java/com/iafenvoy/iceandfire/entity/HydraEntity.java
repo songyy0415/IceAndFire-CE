@@ -10,6 +10,8 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -21,6 +23,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -126,7 +129,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         super.aiStep();
         LivingEntity attackTarget = this.getTarget();
         if (attackTarget != null && this.hasLineOfSight(attackTarget)) {
-            int index = this.random.nextInt(this.getHeadCount());
+            int index = this.getRandom().nextInt(this.getHeadCount());
             if (!this.isBreathing[index] && !this.isStriking[index]) {
                 if (this.distanceTo(attackTarget) < 6) {
                     if (this.strikeCooldown == 0 && this.strikingProgress[index] == 0) {
@@ -135,7 +138,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
                         this.level().broadcastEntityEvent(this, (byte) (40 + index));
                         this.strikeCooldown = 3;
                     }
-                } else if (this.random.nextBoolean() && this.breathCooldown == 0) {
+                } else if (this.getRandom().nextBoolean() && this.breathCooldown == 0) {
                     this.isBreathing[index] = true;
                     this.isStriking[index] = false;
                     this.level().broadcastEntityEvent(this, (byte) (50 + index));
@@ -158,14 +161,14 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
             if (breathing) {
                 if (this.tickCount % 7 == 0 && attackTarget != null && i < this.getHeadCount()) {
                     Vec3 Vector3d = this.getViewVector(1.0F);
-                    if (this.random.nextFloat() < 0.2F)
+                    if (this.getRandom().nextFloat() < 0.2F)
                         this.playSound(IafSounds.HYDRA_SPIT.get(), this.getSoundVolume(), this.getVoicePitch());
                     double headPosX = this.headBoxes[i].getX() + Vector3d.x;
                     double headPosY = this.headBoxes[i].getY() + 1.3F;
                     double headPosZ = this.headBoxes[i].getZ() + Vector3d.z;
-                    double d2 = attackTarget.getX() - headPosX + this.random.nextGaussian() * 0.4D;
-                    double d3 = attackTarget.getY() + attackTarget.getEyeHeight() - headPosY + this.random.nextGaussian() * 0.4D;
-                    double d4 = attackTarget.getZ() - headPosZ + this.random.nextGaussian() * 0.4D;
+                    double d2 = attackTarget.getX() - headPosX + this.getRandom().nextGaussian() * 0.4D;
+                    double d3 = attackTarget.getY() + attackTarget.getEyeHeight() - headPosY + this.getRandom().nextGaussian() * 0.4D;
+                    double d4 = attackTarget.getZ() - headPosZ + this.getRandom().nextGaussian() * 0.4D;
                     HydraBreathEntity entitylargefireball = new HydraBreathEntity(IafEntities.HYDRA_BREATH.get(), this.level(), this, d2, d3, d4);
                     entitylargefireball.setPos(headPosX, headPosY, headPosZ);
                     if (!this.level().isClientSide())
@@ -285,13 +288,13 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
 
     @Override
     protected void playHurtSound(DamageSource source) {
-        this.speakingProgress[this.random.nextInt(this.getHeadCount())] = 1F;
+        this.speakingProgress[this.getRandom().nextInt(this.getHeadCount())] = 1F;
         super.playHurtSound(source);
     }
 
     @Override
     public void playAmbientSound() {
-        this.speakingProgress[this.random.nextInt(this.getHeadCount())] = 1F;
+        this.speakingProgress[this.getRandom().nextInt(this.getHeadCount())] = 1F;
         super.playAmbientSound();
     }
 
@@ -301,7 +304,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Variant", this.getVariant());
         compound.putInt("HeadCount", this.getHeadCount());
@@ -312,7 +315,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setVariant(compound.getInt("Variant").orElse(0));
         this.setHeadCount(compound.getInt("HeadCount").orElse(0));
@@ -331,7 +334,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (this.lastHitHead > this.getHeadCount())
             this.lastHitHead = this.getHeadCount() - 1;
         int headIndex = this.lastHitHead;
@@ -345,13 +348,13 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         }
         if (this.getHealth() <= amount + 5 && this.getHeadCount() > 1 && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
             amount = 0;
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
-        this.setVariant(this.random.nextInt(3));
+        this.setVariant(this.getRandom().nextInt(3));
         return data;
     }
 

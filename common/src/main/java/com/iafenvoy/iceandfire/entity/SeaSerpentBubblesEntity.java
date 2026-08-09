@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
@@ -59,7 +60,7 @@ public class SeaSerpentBubblesEntity extends Fireball implements IDragonProjecti
             float f = this.getInertia();
             if (this.level().isClientSide())
                 for (int i = 0; i < 3; ++i)
-                    this.level().addParticle(IafParticles.SERPENT_BUBBLE.get(), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth()) - (double) this.getBbWidth() * 0.5F, this.getY() - 0.5D, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth()) - (double) this.getBbWidth() * 0.5F, 0, 0, 0);
+                    this.level().addParticle(IafParticles.SERPENT_BUBBLE.get(), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth()) - (double) this.getBbWidth() * 0.5F, this.getY() - 0.5D, this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth()) - (double) this.getBbWidth() * 0.5F, 0, 0, 0);
 
             this.setDeltaMovement(vec3d.add(vec3d.normalize().multiply(this.stuckSpeedMultiplier)).scale(f));
             this.setPos(d0, d1, d2);
@@ -91,7 +92,7 @@ public class SeaSerpentBubblesEntity extends Fireball implements IDragonProjecti
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
     }
 

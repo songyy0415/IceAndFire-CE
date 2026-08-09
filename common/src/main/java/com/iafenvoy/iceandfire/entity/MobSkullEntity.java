@@ -4,6 +4,8 @@ import com.iafenvoy.iceandfire.data.IafSkullType;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.entity.util.IDeadMob;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -95,9 +97,9 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
     }
 
     @Override
-    public boolean hurt(DamageSource var1, float var2) {
+    public boolean hurtServer(ServerLevel level, DamageSource var1, float var2) {
         this.turnIntoItem();
-        return super.hurt(var1, var2);
+        return super.hurtServer(level, var1, var2);
     }
 
     public void turnIntoItem() {
@@ -123,14 +125,14 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        this.setYRot(compound.getFloat("SkullYaw").orElse(0.0F));
+    public void readAdditionalSaveData(ValueInput compound) {
+        this.setYRot(compound.getFloatOr("SkullYaw", 0.0F));
         this.setEnumOrdinal(compound.getInt("SkullType").orElse(0));
         super.readAdditionalSaveData(compound);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         compound.putFloat("SkullYaw", this.getYRot());
         compound.putInt("SkullType", this.getEnumOrdinal());
         super.addAdditionalSaveData(compound);

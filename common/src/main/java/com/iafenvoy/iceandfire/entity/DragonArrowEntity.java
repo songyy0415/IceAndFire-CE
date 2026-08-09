@@ -2,6 +2,8 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -26,15 +28,15 @@ public class DragonArrowEntity extends AbstractArrow {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tagCompound) {
+    public void addAdditionalSaveData(ValueOutput tagCompound) {
         super.addAdditionalSaveData(tagCompound);
         tagCompound.putDouble("damage", 10);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tagCompund) {
+    public void readAdditionalSaveData(ValueInput tagCompund) {
         super.readAdditionalSaveData(tagCompund);
-        this.setBaseDamage(tagCompund.getDouble("damage").orElse(0.0));
+        this.setBaseDamage(tagCompund.getDoubleOr("damage", 0.0));
     }
 
     @Override

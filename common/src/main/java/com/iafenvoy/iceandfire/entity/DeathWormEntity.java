@@ -22,6 +22,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -287,7 +289,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Variant", this.getVariant());
         compound.putInt("GrowthCounter", this.growthCounter);
@@ -299,14 +301,14 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setVariant(compound.getInt("Variant").orElse(0));
         this.growthCounter = compound.getInt("GrowthCounter").orElse(0);
-        this.setDeathWormScale(compound.getFloat("Scale").orElse(0.0F));
+        this.setDeathWormScale(compound.getFloatOr("Scale", 0.0F));
         this.setWormAge(compound.getInt("WormAge").orElse(0));
         this.setWormHome(BlockPos.of(compound.getLong("WormHome").orElse(0L)));
-        this.willExplode = compound.getBoolean("WillExplode").orElse(false);
+        this.willExplode = compound.getBooleanOr("WillExplode", false);
         this.setConfigurableAttributes();
     }
 
@@ -435,11 +437,11 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.FALLING_BLOCK)) return false;
         if (this.isVehicle() && source.getEntity() != null && this.getControllingPassenger() != null && source.getEntity() == this.getControllingPassenger())
             return false;
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     @Override
@@ -474,7 +476,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             }
         }
 
-        float f = this.random.nextFloat() * 0.2F + 0.1F;
+        float f = this.getRandom().nextFloat() * 0.2F + 0.1F;
         float f1 = (float) direction.getAxisDirection().getStep();
         Vec3 vector3d1 = this.getDeltaMovement().scale(0.75D);
         if (direction.getAxis() == Direction.Axis.X) {
@@ -543,7 +545,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             this.setDeathWormScale(this.getDeathwormScale());
             if (this.level().isClientSide())
                 for (int i = 0; i < 10 * this.getAgeScale(); i++)
-                    this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
+                    this.level().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D);
         }
         if (this.getWormAge() < 5) this.growthCounter++;
         if (this.getControllingPassenger() != null && this.getTarget() != null) {
@@ -632,7 +634,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             BlockPos pos = new BlockPos(this.getBlockX(), this.getSurface(this.getBlockX(), this.getBlockY(), this.getBlockZ()), this.getBlockZ()).below();
             BlockState state = this.level().getBlockState(pos);
             if (state.isSolidRender(this.level(), pos) && this.level().isClientSide())
-                this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
+                this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D);
             if (this.tickCount % 10 == 0) this.playSound(SoundEvents.SAND_BREAK, 1, 0.5F);
         }
         if (this.up() && this.onGround()) this.jumpFromGround();

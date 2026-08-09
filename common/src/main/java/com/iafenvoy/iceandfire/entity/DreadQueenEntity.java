@@ -12,6 +12,7 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -75,7 +76,7 @@ public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
 
         if (this.hasCustomName()) {

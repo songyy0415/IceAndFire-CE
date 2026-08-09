@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +24,7 @@ public class DragonPosWorldData extends SavedData {
         ListTag list = nbt.getListOrEmpty("DragonMap");
         for (int i = 0; i < list.size(); ++i) {
             CompoundTag obj = list.getCompound(i);
-            UUID uuid = obj.getUUID("DragonUUID");
+            UUID uuid = obj.read("DragonUUID", UUIDUtil.CODEC).orElse(null);
             BlockPos pos = new BlockPos(obj.getInt("DragonPosX").orElse(0), obj.getInt("DragonPosY").orElse(0), obj.getInt("DragonPosZ").orElse(0));
             data.lastDragonPositions.put(uuid, pos);
         }
@@ -59,7 +60,7 @@ public class DragonPosWorldData extends SavedData {
         ListTag list = new ListTag();
         for (Map.Entry<UUID, BlockPos> pair : this.lastDragonPositions.entrySet()) {
             CompoundTag obj = new CompoundTag();
-            obj.putUUID("DragonUUID", pair.getKey());
+            obj.putIntArray("DragonUUID", UUIDUtil.uuidToIntArray(pair.getKey()));
             obj.putInt("DragonPosX", pair.getValue().getX());
             obj.putInt("DragonPosY", pair.getValue().getY());
             obj.putInt("DragonPosZ", pair.getValue().getZ());

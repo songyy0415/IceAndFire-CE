@@ -13,6 +13,7 @@ import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
@@ -85,7 +86,7 @@ public class JarBlockEntity extends BlockEntity {
         nbt.putBoolean("HasProduced", this.hasProduced);
         nbt.putBoolean("TamedPixie", this.tamedPixie);
         if (this.pixieOwnerUUID != null)
-            nbt.putUUID("PixieOwnerUUID", this.pixieOwnerUUID);
+            nbt.putIntArray("PixieOwnerUUID", UUIDUtil.uuidToIntArray(this.pixieOwnerUUID));
         nbt.putInt("TicksExisted", this.ticksExisted);
         ContainerHelper.saveAllItems(nbt, this.pixieItems, registryLookup);
     }
@@ -98,13 +99,13 @@ public class JarBlockEntity extends BlockEntity {
     @Override
     protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         super.loadAdditional(nbt, registryLookup);
-        this.hasPixie = nbt.getBoolean("HasPixie").orElse(false);
+        this.hasPixie = nbt.getBooleanOr("HasPixie", false);
         this.pixieType = nbt.getInt("PixieType").orElse(0);
-        this.hasProduced = nbt.getBoolean("HasProduced").orElse(false);
+        this.hasProduced = nbt.getBooleanOr("HasProduced", false);
         this.ticksExisted = nbt.getInt("TicksExisted").orElse(0);
-        this.tamedPixie = nbt.getBoolean("TamedPixie").orElse(false);
-        if (nbt.hasUUID("PixieOwnerUUID"))
-            this.pixieOwnerUUID = nbt.getUUID("PixieOwnerUUID");
+        this.tamedPixie = nbt.getBooleanOr("TamedPixie", false);
+        if (nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).isPresent())
+            this.pixieOwnerUUID = nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).orElse(null);
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, this.pixieItems, registryLookup);
     }

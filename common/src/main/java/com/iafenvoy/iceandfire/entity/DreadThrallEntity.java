@@ -17,6 +17,8 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -107,7 +109,7 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
             BlockState belowBlock = this.level().getBlockState(this.blockPosition().below());
             if (belowBlock.getBlock() != Blocks.AIR) {
                 for (int i = 0; i < 5; i++) {
-                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, belowBlock), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getBoundingBox().minY, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
+                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, belowBlock), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getBoundingBox().minY, this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D);
                 }
             }
             this.setDeltaMovement(0, this.getDeltaMovement().y, 0);
@@ -121,8 +123,8 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource randomSource, DifficultyInstance difficulty) {
         super.populateDefaultEquipmentSlots(randomSource, difficulty);
-        if (this.random.nextFloat() < 0.75F) {
-            double chance = this.random.nextFloat();
+        if (this.getRandom().nextFloat() < 0.75F) {
+            double chance = this.getRandom().nextFloat();
             if (chance < 0.0025F) {
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DRAGONSTEEL_ICE_SWORD.get()));
             }
@@ -136,23 +138,23 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
                 this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(IafItems.DREAD_SWORD.get()));
             }
         }
-        if (this.random.nextFloat() < 0.75F) {
+        if (this.getRandom().nextFloat() < 0.75F) {
             this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CHAINMAIL_HELMET));
-            this.setCustomArmorHead(this.random.nextInt(8) != 0);
+            this.setCustomArmorHead(this.getRandom().nextInt(8) != 0);
         }
-        if (this.random.nextFloat() < 0.75F) {
+        if (this.getRandom().nextFloat() < 0.75F) {
             this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
-            this.setCustomArmorChest(this.random.nextInt(8) != 0);
+            this.setCustomArmorChest(this.getRandom().nextInt(8) != 0);
         }
-        if (this.random.nextFloat() < 0.75F) {
+        if (this.getRandom().nextFloat() < 0.75F) {
             this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.CHAINMAIL_LEGGINGS));
-            this.setCustomArmorLegs(this.random.nextInt(8) != 0);
+            this.setCustomArmorLegs(this.getRandom().nextInt(8) != 0);
         }
-        if (this.random.nextFloat() < 0.75F) {
+        if (this.getRandom().nextFloat() < 0.75F) {
             this.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.CHAINMAIL_BOOTS));
-            this.setCustomArmorFeet(this.random.nextInt(8) != 0);
+            this.setCustomArmorFeet(this.getRandom().nextInt(8) != 0);
         }
-        this.setBodyArmorVariant(this.random.nextInt(8));
+        this.setBodyArmorVariant(this.getRandom().nextInt(8));
     }
 
     @Override
@@ -174,7 +176,7 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("ArmorVariant", this.getBodyArmorVariant());
         compound.putBoolean("HasCustomHelmet", this.hasCustomArmorHead());
@@ -184,13 +186,13 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setBodyArmorVariant(compound.getInt("ArmorVariant").orElse(0));
-        this.setCustomArmorHead(compound.getBoolean("HasCustomHelmet").orElse(false));
-        this.setCustomArmorChest(compound.getBoolean("HasCustomChestplate").orElse(false));
-        this.setCustomArmorLegs(compound.getBoolean("HasCustomLeggings").orElse(false));
-        this.setCustomArmorFeet(compound.getBoolean("HasCustomBoots").orElse(false));
+        this.setCustomArmorHead(compound.getBooleanOr("HasCustomHelmet", false));
+        this.setCustomArmorChest(compound.getBooleanOr("HasCustomChestplate", false));
+        this.setCustomArmorLegs(compound.getBooleanOr("HasCustomLeggings", false));
+        this.setCustomArmorFeet(compound.getBooleanOr("HasCustomBoots", false));
     }
 
     @Override

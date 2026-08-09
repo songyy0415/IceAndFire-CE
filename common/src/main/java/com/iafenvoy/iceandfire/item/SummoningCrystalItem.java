@@ -11,6 +11,7 @@ import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -88,7 +89,7 @@ public class SummoningCrystalItem extends Item {
             for (String tagInfo : nbt.getAllKeys()) {
                 if (tagInfo.contains("Dragon")) {
                     CompoundTag dragonTag = nbt.getCompound(tagInfo);
-                    UUID id = dragonTag.getUUID("DragonUUID");
+                    UUID id = dragonTag.read("DragonUUID", UUIDUtil.CODEC).orElse(null);
                     if (id != null && !context.getLevel().isClientSide()) {
                         try {
                             Entity entity = context.getLevel().getServer().getLevel(context.getPlayer().level().dimension()).getEntity(id);

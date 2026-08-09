@@ -15,7 +15,10 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
 
 
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -130,21 +133,21 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         if (this.getVictorId() != null) {
-            tag.putUUID("VictorUUID", this.getVictorId());
+            tag.putIntArray("VictorUUID", UUIDUtil.uuidToIntArray(this.getVictorId()));
         }
         tag.putBoolean("Flying", this.isFlying());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
         UUID s;
 
-        if (tag.hasUUID("VictorUUID")) {
-            s = tag.getUUID("VictorUUID");
+        if (tag.read("VictorUUID", UUIDUtil.CODEC).isPresent()) {
+            s = tag.read("VictorUUID", UUIDUtil.CODEC).orElse(null);
         } else {
             String s1 = tag.getString("VictorUUID").orElse("");
             s = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
@@ -156,7 +159,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
             } catch (Throwable ignored) {
             }
         }
-        this.setFlying(tag.getBoolean("Flying").orElse(false));
+        this.setFlying(tag.getBooleanOr("Flying", false));
     }
 
     public boolean isFlying() {

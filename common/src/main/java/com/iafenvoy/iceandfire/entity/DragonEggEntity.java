@@ -17,6 +17,8 @@ import com.iafenvoy.uranus.object.BlockUtil;
 import net.minecraft.core.BlockPos;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -25,6 +27,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -65,7 +68,7 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         tag.putString("Color", this.getEggType().getName());
         tag.putInt("DragonAge", this.getDragonAge());
@@ -78,7 +81,7 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
         this.setEggType(DragonColor.getById(tag.getString("Color").orElse("")));
         this.setDragonAge(tag.getInt("DragonAge").orElse(0));
@@ -192,7 +195,7 @@ public class DragonEggEntity extends LivingEntity implements BlacklistedFromStat
     }
 
     @Override
-    public boolean hurt(DamageSource var1, float var2) {
+    public boolean hurtServer(ServerLevel level, DamageSource var1, float var2) {
         if (var1.is(DamageTypeTags.IS_FIRE) && this.getEggType().getType() == IafDragonTypes.FIRE)
             return false;
         if (!this.level().isClientSide() && !var1.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !this.isRemoved()) {

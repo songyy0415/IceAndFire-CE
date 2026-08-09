@@ -1,15 +1,16 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.world.World;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public class CyclopsEyeEntity extends MultipartPartEntity {
-    public CyclopsEyeEntity(EntityType<?> t, World world) {
+    public CyclopsEyeEntity(EntityType<?> t, Level world) {
         super(t, world);
     }
 
@@ -19,13 +20,13 @@ public class CyclopsEyeEntity extends MultipartPartEntity {
     }
 
     @Override
-    public boolean damage(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         Entity parent = this.getParent();
-        if (parent instanceof CyclopsEntity && source.isOf(DamageTypes.ARROW)) {
+        if (parent instanceof CyclopsEntity && source.is(DamageTypes.ARROW)) {
             ((CyclopsEntity) parent).onHitEye(source, damage);
             return true;
         } else {
-            return parent != null && parent.damage(source, damage);
+            return parent != null && parent.hurtOrSimulate(source, damage);
         }
     }
 }

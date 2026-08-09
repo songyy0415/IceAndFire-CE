@@ -15,6 +15,8 @@ import net.minecraft.core.BlockPos;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -225,7 +227,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 this.setDaytimeCounter(0);
             }
         } else {
-            if (this.getAnimation() == ANIMATION_SCARE && this.getAnimationTick() == 3 && !this.isHauntedShoppingList() && this.random.nextInt(3) == 0) {
+            if (this.getAnimation() == ANIMATION_SCARE && this.getAnimationTick() == 3 && !this.isHauntedShoppingList() && this.getRandom().nextInt(3) == 0) {
                 this.playSound(IafSounds.GHOST_JUMPSCARE.get(), this.getSoundVolume(), this.getVoicePitch());
                 if (this.level().isClientSide()) {
                     this.level().addParticle(IafParticles.GHOST_APPEARANCE.get(), this.getX(), this.getY(), this.getZ(), this.getId(), 0, 0);
@@ -293,8 +295,8 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
-        this.setColor(this.random.nextInt(3));
-        if (this.random.nextInt(200) == 0)
+        this.setColor(this.getRandom().nextInt(3));
+        if (this.getRandom().nextInt(200) == 0)
             this.setColor(-1);
         return spawnDataIn;
     }
@@ -327,18 +329,18 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setColor(compound.getInt("Color").orElse(0));
-        this.setDaytimeMode(compound.getBoolean("DaytimeMode").orElse(false));
+        this.setDaytimeMode(compound.getBooleanOr("DaytimeMode", false));
         this.setDaytimeCounter(compound.getInt("DaytimeCounter").orElse(0));
-        this.setFromChest(compound.getBoolean("FromChest").orElse(false));
+        this.setFromChest(compound.getBooleanOr("FromChest", false));
 
         this.setConfigurableAttributes();
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Color", this.getColor());
         compound.putBoolean("DaytimeMode", this.isDaytimeMode());

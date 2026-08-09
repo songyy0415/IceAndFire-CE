@@ -16,6 +16,8 @@ import java.util.Random;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -87,16 +89,16 @@ public class IceDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Swimming", this.isSwimming());
         compound.putInt("SwimmingTicks", this.ticksSwiming);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
-        this.setSwimming(compound.getBoolean("Swimming").orElse(false));
+        this.setSwimming(compound.getBooleanOr("Swimming", false));
         this.ticksSwiming = compound.getInt("SwimmingTicks").orElse(0);
     }
 
@@ -212,9 +214,9 @@ public class IceDragonEntity extends DragonBaseEntity {
                 double d3 = controller.getLookAngle().y;
                 double d4 = controller.getLookAngle().z;
                 float inaccuracy = 1.0F;
-                d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                 IceDragonChargeEntity entitylargefireball = new IceDragonChargeEntity(
                         IafEntities.ICE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
                 float size;
@@ -387,9 +389,9 @@ public class IceDragonEntity extends DragonBaseEntity {
                     double d3 = entity.getY() - headVec.y;
                     double d4 = entity.getZ() - headVec.z;
                     float inaccuracy = 1.0F;
-                    d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                     this.playSound(IafSounds.ICEDRAGON_BREATH.get(), 4, 1);
                     IceDragonChargeEntity entitylargefireball = new IceDragonChargeEntity(
                             IafEntities.ICE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);

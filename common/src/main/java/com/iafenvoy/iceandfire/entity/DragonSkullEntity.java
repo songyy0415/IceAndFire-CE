@@ -8,6 +8,8 @@ import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -126,9 +128,9 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     @Override
-    public boolean hurt(DamageSource var1, float var2) {
+    public boolean hurtServer(ServerLevel level, DamageSource var1, float var2) {
         this.turnIntoItem();
-        return super.hurt(var1, var2);
+        return super.hurtServer(level, var1, var2);
     }
 
     public void turnIntoItem() {
@@ -159,16 +161,16 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         this.setDragonType(compound.getString("Type").orElse(""));
         this.setStage(compound.getInt("Stage").orElse(0));
         this.setDragonAge(compound.getInt("DragonAge").orElse(0));
-        this.setYRot(compound.getFloat("DragonYaw").orElse(0.0F));
+        this.setYRot(compound.getFloatOr("DragonYaw", 0.0F));
         super.readAdditionalSaveData(compound);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         compound.putString("Type", this.getDragonType());
         compound.putInt("Stage", this.getStage());
         compound.putInt("DragonAge", this.getDragonAge());

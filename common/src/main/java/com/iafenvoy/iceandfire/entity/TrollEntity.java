@@ -21,6 +21,8 @@ import net.minecraft.core.registries.Registries;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -201,7 +203,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("Variant", this.getVariant());
         compound.putString("Weapon", this.getWeapon());
@@ -209,11 +211,11 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setVariant(compound.getString("Variant").orElse(""));
         this.setWeapon(compound.getString("Weapon").orElse(""));
-        this.stoneProgress = compound.getFloat("StoneProgress").orElse(0.0F);
+        this.stoneProgress = compound.getFloatOr("StoneProgress", 0.0F);
         this.setConfigurableAttributes();
     }
 
@@ -226,11 +228,11 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (source.getMsgId().contains("arrow")) {
             return false;
         }
-        return super.hurt(source, damage);
+        return super.hurtServer(level, source, damage);
     }
 
     @Override
@@ -361,7 +363,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
         }
         if (this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             this.lookAt(this.getTarget(), 30, 30);
-            if (this.getAnimation() == NO_ANIMATION && this.random.nextInt(15) == 0)
+            if (this.getAnimation() == NO_ANIMATION && this.getRandom().nextInt(15) == 0)
                 this.setAnimation(ANIMATION_STRIKE_VERTICAL);
             if (this.getAnimation() == ANIMATION_STRIKE_VERTICAL && this.getAnimationTick() == 10) {
                 float weaponX = (float) (this.getX() + 1.9F * Mth.cos((float) ((this.yBodyRot + 90) * Math.PI / 180)));

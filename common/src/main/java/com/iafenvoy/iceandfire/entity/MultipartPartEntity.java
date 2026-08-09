@@ -225,11 +225,11 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         Entity parent = this.getParent();
         if (this.level().isClientSide() && this.getParentId() != null && source.getEntity() instanceof Player)
             NetworkManager.sendToServer(new MultipartInteractC2SPayload(this.getParentId(), damage * this.damageMultiplier));
-        return parent != null && parent.hurt(source, damage * this.damageMultiplier);
+        return parent != null && parent.hurtOrSimulate(source, damage * this.damageMultiplier);
     }
 
     @Override

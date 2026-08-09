@@ -3,7 +3,10 @@ package com.iafenvoy.iceandfire.entity;
 import com.iafenvoy.iceandfire.entity.util.IDreadMob;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -43,19 +46,19 @@ public class DreadHorseEntity extends SkeletonHorse implements IDreadMob {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         if (this.getCommanderId() != null) {
-            compound.putUUID("CommanderUUID", this.getCommanderId());
+            compound.putIntArray("CommanderUUID", UUIDUtil.uuidToIntArray(this.getCommanderId()));
         }
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         UUID uuid;
-        if (compound.hasUUID("CommanderUUID")) {
-            uuid = compound.getUUID("CommanderUUID");
+        if (compound.read("CommanderUUID", UUIDUtil.CODEC).isPresent()) {
+            uuid = compound.read("CommanderUUID", UUIDUtil.CODEC).orElse(null);
         } else {
             String s = compound.getString("CommanderUUID").orElse("");
             uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);

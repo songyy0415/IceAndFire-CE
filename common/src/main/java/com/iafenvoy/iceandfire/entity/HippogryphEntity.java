@@ -30,6 +30,8 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -267,7 +269,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                     itemstack.shrink(1);
                 this.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
                 for (int i = 0; i < 20; i++)
-                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
                 return InteractionResult.SUCCESS;
             }
             if (itemstack.getItem() == Items.LIGHT_GRAY_DYE && this.getEnumVariant() != IafHippogryphTypes.RAPTOR && isDev) {
@@ -276,7 +278,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                     itemstack.shrink(1);
                 this.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
                 for (int i = 0; i < 20; i++)
-                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
                 return InteractionResult.SUCCESS;
             }
             if (itemstack.is(IafItemTags.BREED_HIPPOGRYPH) && this.getAge() == 0 && !this.isInLove()) {
@@ -311,14 +313,14 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                     itemstack.shrink(1);
                 this.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
                 for (int i = 0; i < 20; i++)
-                    this.level().addParticle(ParticleTypes.ENCHANT, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(ParticleTypes.ENCHANT, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
                 return InteractionResult.SUCCESS;
             }
             if (itemstack.has(DataComponents.FOOD) && itemstack.is(ItemTags.MEAT) && this.getHealth() < this.getMaxHealth()) {
                 this.heal(5);
                 this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
                 for (int i = 0; i < 3; i++)
-                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
                 if (!player.isCreative())
                     itemstack.shrink(1);
                 return InteractionResult.SUCCESS;
@@ -404,7 +406,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("Variant", this.getVariant());
         compound.putBoolean("Chested", this.isChested());
@@ -425,13 +427,13 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setVariant(compound.getString("Variant").orElse(""));
-        this.setChested(compound.getBoolean("Chested").orElse(false));
-        this.setSaddled(compound.getBoolean("Saddled").orElse(false));
-        this.setHovering(compound.getBoolean("Hovering").orElse(false));
-        this.setFlying(compound.getBoolean("Flying").orElse(false));
+        this.setChested(compound.getBooleanOr("Chested", false));
+        this.setSaddled(compound.getBooleanOr("Saddled", false));
+        this.setHovering(compound.getBooleanOr("Hovering", false));
+        this.setFlying(compound.getBooleanOr("Flying", false));
         this.setArmor(compound.getInt("Armor").orElse(0));
         this.feedings = compound.getInt("Feedings").orElse(0);
 
@@ -440,7 +442,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         for (int i = 0; i < inv.size() && i < this.hippogryphInventory.getContainerSize(); i++)
             this.hippogryphInventory.setItem(i, inv.get(i));
 
-        this.hasHomePosition = compound.getBoolean("HasHomePosition").orElse(false);
+        this.hasHomePosition = compound.getBooleanOr("HasHomePosition", false);
         if (this.hasHomePosition && compound.getInt("HomeAreaX").orElse(0) != 0 && compound.getInt("HomeAreaY").orElse(0) != 0 && compound.getInt("HomeAreaZ").orElse(0) != 0) {
             this.homePos = new BlockPos(compound.getInt("HomeAreaX").orElse(0), compound.getInt("HomeAreaY").orElse(0), compound.getInt("HomeAreaZ").orElse(0));
         }
@@ -580,11 +582,11 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     @Override
-    public boolean hurt(DamageSource dmg, float i) {
+    public boolean hurtServer(ServerLevel level, DamageSource dmg, float i) {
         if (this.isVehicle() && dmg.getEntity() != null && this.getControllingPassenger() != null && dmg.getEntity() == this.getControllingPassenger()) {
             return false;
         }
-        return super.hurt(dmg, i);
+        return super.hurtServer(level, dmg, i);
     }
 
     @Override
@@ -730,7 +732,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             if (!this.isOrderedToSit() && this.getCommand() == 1 && this.getControllingPassenger() == null)
                 this.setOrderedToSit(true);
             if (this.isOrderedToSit()) this.getNavigation().stop();
-            if (this.random.nextInt(900) == 0 && this.deathTime == 0) this.heal(1.0F);
+            if (this.getRandom().nextInt(900) == 0 && this.deathTime == 0) this.heal(1.0F);
         }
         if (this.getAnimation() == ANIMATION_BITE && this.getTarget() != null && this.getAnimationTick() == 6) {
             double dist = this.distanceToSqr(this.getTarget());
@@ -815,7 +817,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             this.setDeltaMovement(this.getDeltaMovement().add(0, up, 0));
         }
         if ((flying || hovering) && this.tickCount % 20 == 0 && this.isOverAir()) {
-            this.playSound(SoundEvents.ENDER_DRAGON_FLAP, this.getSoundVolume() * ((float) IafCommonConfig.INSTANCE.dragon.flapNoiseDistance.getValue() / 2), 0.6F + this.random.nextFloat() * 0.6F * this.getVoicePitch());
+            this.playSound(SoundEvents.ENDER_DRAGON_FLAP, this.getSoundVolume() * ((float) IafCommonConfig.INSTANCE.dragon.flapNoiseDistance.getValue() / 2), 0.6F + this.getRandom().nextFloat() * 0.6F * this.getVoicePitch());
         }
         if (this.onGround() && this.doesWantToLand() && (this.isFlying() || this.isHovering())) {
             this.setFlying(false);

@@ -20,6 +20,8 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -189,7 +191,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Blind", this.isBlinded());
         compound.putInt("Variant", this.getVariant());
@@ -198,9 +200,9 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
-        this.setBlinded(compound.getBoolean("Blind").orElse(false));
+        this.setBlinded(compound.getBooleanOr("Blind", false));
         this.setVariant(compound.getInt("Variant").orElse(0));
         this.setConfigurableAttributes();
     }

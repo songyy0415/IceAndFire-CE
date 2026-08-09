@@ -23,6 +23,8 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -280,7 +282,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     public void aiStep() {
         super.aiStep();
         if (!this.level().isClientSide())
-            if (this.random.nextInt(900) == 0 && this.deathTime == 0)
+            if (this.getRandom().nextInt(900) == 0 && this.deathTime == 0)
                 this.heal(1.0F);
         AnimationHandler.INSTANCE.updateAnimations(this);
         if (this.getControllingPassenger() != null && this.tickCount % 20 == 0)
@@ -355,7 +357,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Variant", this.getVariant());
         compound.putBoolean("Chested", this.isChested());
@@ -365,11 +367,11 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setVariant(compound.getInt("Variant").orElse(0));
-        this.setChested(compound.getBoolean("Chested").orElse(false));
-        this.setSaddled(compound.getBoolean("Saddled").orElse(false));
+        this.setChested(compound.getBooleanOr("Chested", false));
+        this.setSaddled(compound.getBooleanOr("Saddled", false));
         this.setArmor(compound.getInt("Armor").orElse(0));
 
         this.createInventory();
@@ -556,14 +558,14 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
                 this.heal(5);
                 this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
                 for (int i = 0; i < 3; i++)
-                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
                 if (!player.isCreative())
                     itemstack.shrink(1);
             }
             if (!this.isTame() && this.getRandom().nextInt(3) == 0) {
                 this.tame(player);
                 for (int i = 0; i < 6; i++)
-                    this.level().addParticle(ParticleTypes.HEART, this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(ParticleTypes.HEART, this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
             }
             return InteractionResult.SUCCESS;
 
@@ -675,8 +677,8 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     @Nullable
     private Vec3 findWaterTarget(int preferredDepth, int range) {
         for (int i = 0; i < 12; i++) {
-            int x = this.getBlockX() + this.random.nextInt(range * 2 + 1) - range;
-            int z = this.getBlockZ() + this.random.nextInt(range * 2 + 1) - range;
+            int x = this.getBlockX() + this.getRandom().nextInt(range * 2 + 1) - range;
+            int z = this.getBlockZ() + this.getRandom().nextInt(range * 2 + 1) - range;
             int surfaceY = this.findWaterSurface(x, z);
             if (surfaceY == Integer.MIN_VALUE)
                 continue;
@@ -817,7 +819,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     private class HippocampusSurfaceGoal extends net.minecraft.world.entity.ai.goal.Goal {
         @Nullable
         private Vec3 target;
-        private int nextSurfaceTime = 1200 + HippocampusEntity.this.random.nextInt(1201);
+        private int nextSurfaceTime = 1200 + HippocampusEntity.this.getRandom().nextInt(1201);
         private int breathingTicks;
 
         HippocampusSurfaceGoal() {
@@ -858,7 +860,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         @Override
         public void stop() {
             this.target = null;
-            this.nextSurfaceTime = 1200 + HippocampusEntity.this.random.nextInt(1201);
+            this.nextSurfaceTime = 1200 + HippocampusEntity.this.getRandom().nextInt(1201);
         }
     }
 
@@ -873,9 +875,9 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
 
         @Override
         public boolean canUse() {
-            if (!HippocampusEntity.this.canAutonomouslySwim() || !HippocampusEntity.this.getNavigation().isDone() || HippocampusEntity.this.random.nextInt(120) != 0)
+            if (!HippocampusEntity.this.canAutonomouslySwim() || !HippocampusEntity.this.getNavigation().isDone() || HippocampusEntity.this.getRandom().nextInt(120) != 0)
                 return false;
-            this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.random.nextInt(3), 16);
+            this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.getRandom().nextInt(3), 16);
             return this.target != null;
         }
 
@@ -886,14 +888,14 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
 
         @Override
         public void start() {
-            this.explorationTicks = 200 + HippocampusEntity.this.random.nextInt(400);
+            this.explorationTicks = 200 + HippocampusEntity.this.getRandom().nextInt(400);
         }
 
         @Override
         public void tick() {
             this.explorationTicks--;
             if (HippocampusEntity.this.distanceToSqr(this.target) < 8.0D || HippocampusEntity.this.getNavigation().isDone())
-                this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.random.nextInt(3), 16);
+                this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.getRandom().nextInt(3), 16);
             if (this.target != null)
                 HippocampusEntity.this.getNavigation().moveTo(this.target.x, this.target.y, this.target.z, 0.8D);
         }

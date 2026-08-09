@@ -22,6 +22,8 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -121,7 +123,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             BlockState belowBlock = this.level().getBlockState(this.blockPosition().below());
             if (belowBlock.getBlock() != Blocks.AIR) {
                 for (int i = 0; i < 5; i++) {
-                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, belowBlock), this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getBoundingBox().minY, this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
+                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, belowBlock), this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getBoundingBox().minY, this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D);
                 }
             }
             this.setDeltaMovement(0, this.getDeltaMovement().y, this.getDeltaMovement().z);
@@ -157,7 +159,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
-        this.setVariant(this.random.nextInt(5));
+        this.setVariant(this.getRandom().nextInt(5));
         this.setCombatTask();
         return data;
     }
@@ -173,14 +175,14 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Variant", this.getVariant());
         compound.putInt("MinionCount", this.getMinionCount());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setVariant(compound.getInt("Variant").orElse(0));
         this.setMinionCount(compound.getInt("MinionCount").orElse(0));
@@ -259,8 +261,8 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             this.setAnimation(ANIMATION_SUMMON);
             this.playSound(IafSounds.DREAD_LICH_SUMMON.get(), this.getSoundVolume(), this.getVoicePitch());
             Mob minion = this.getRandomNewMinion();
-            int x = (int) (this.getX()) - 5 + this.random.nextInt(10);
-            int z = (int) (this.getZ()) - 5 + this.random.nextInt(10);
+            int x = (int) (this.getX()) - 5 + this.getRandom().nextInt(10);
+            int z = (int) (this.getZ()) - 5 + this.getRandom().nextInt(10);
             double y = this.getHeightFromXZ(x, z);
             minion.moveTo(x + 0.5D, y, z + 0.5D, this.getYRot(), this.getXRot());
             minion.setTarget(target);
@@ -290,7 +292,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     private Mob getRandomNewMinion() {
-        float chance = this.random.nextFloat();
+        float chance = this.getRandom().nextFloat();
         if (chance > 0.5F) {
             return new DreadThrallEntity(IafEntities.DREAD_THRALL.get(), this.level());
         } else if (chance > 0.35F) {

@@ -7,6 +7,8 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -134,7 +136,7 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("CrackAmount", this.getCrackAmount());
         tag.putFloat("StatueWidth", this.getTrappedWidth());
@@ -150,12 +152,12 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        this.setCrackAmount(tag.getByte("CrackAmount").orElse((byte) 0));
-        this.setTrappedEntityWidth(tag.getFloat("StatueWidth").orElse(0.0F));
-        this.setTrappedHeight(tag.getFloat("StatueHeight").orElse(0.0F));
-        this.setTrappedScale(tag.getFloat("StatueScale").orElse(0.0F));
+        this.setCrackAmount(tag.getByteOr("CrackAmount", (byte) 0));
+        this.setTrappedEntityWidth(tag.getFloatOr("StatueWidth", 0.0F));
+        this.setTrappedHeight(tag.getFloatOr("StatueHeight", 0.0F));
+        this.setTrappedScale(tag.getFloatOr("StatueScale", 0.0F));
         this.setTrappedEntityTypeString(tag.getString("StatueEntityType").orElse(""));
         if (tag.contains("StatueEntityTag")) {
             this.setTrappedTag(tag.getCompoundOrEmpty("StatueEntityTag"));
@@ -188,14 +190,14 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.is(DamageTypeTags.IS_PROJECTILE) && amount > 0) {
             if (this.level() instanceof ServerLevel serverWorld && this.getTrappedEntityType().create(serverWorld) instanceof LivingEntity livingEntity)
                 ExperienceOrb.award(serverWorld, this.position(), livingEntity.getBaseExperienceReward(serverWorld));
             this.remove(RemovalReason.KILLED);
             return true;
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     @Override

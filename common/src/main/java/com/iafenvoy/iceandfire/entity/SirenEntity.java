@@ -23,7 +23,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -287,7 +290,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
                     double extraX = radius * Mth.sin((float) (Math.PI + angle));
                     double extraY = 1.2F;
                     double extraZ = radius * Mth.cos(angle);
-                    this.level().addParticle(IafParticles.SIREN_MUSIC.get(), this.getX() + extraX + this.random.nextFloat() - 0.5, this.getY() + extraY + this.random.nextFloat() - 0.5, this.getZ() + extraZ + this.random.nextFloat() - 0.5, 0, 0, 0);
+                    this.level().addParticle(IafParticles.SIREN_MUSIC.get(), this.getX() + extraX + this.getRandom().nextFloat() - 0.5, this.getY() + extraY + this.getRandom().nextFloat() - 0.5, this.getZ() + extraZ + this.getRandom().nextFloat() - 0.5, 0, 0, 0);
                 }
             }
         }
@@ -348,10 +351,10 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.getEntity() != null && source.getEntity() instanceof LivingEntity)
             this.triggerOtherSirens((LivingEntity) source.getEntity());
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     public void triggerOtherSirens(LivingEntity aggressor) {
@@ -366,12 +369,12 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         ListTag list = new ListTag();
         for (Object2IntMap.Entry<LivingEntity> entry : this.charmingEntities.object2IntEntrySet()) {
             CompoundTag nbt = new CompoundTag();
-            nbt.putUUID("Uuid", entry.getKey().getUUID());
+            nbt.putIntArray("Uuid", UUIDUtil.uuidToIntArray(entry.getKey()).getUUID());
             nbt.putInt("CharmTime", entry.getIntValue());
             list.add(nbt);
         }
@@ -385,24 +388,24 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
         this.charmingEntities.clear();
         if (tag.contains("CharmingEntities", Tag.TAG_LIST) && this.level() instanceof ServerLevel world) {
             ListTag list = tag.getListOrEmpty("CharmingEntities");
             for (Tag element : list)
                 if (element instanceof CompoundTag nbt) {
-                    Entity entity = world.getEntity(nbt.getUUID("Uuid"));
+                    Entity entity = world.getEntity(nbt.read("Uuid", UUIDUtil.CODEC).orElse(null));
                     if (entity instanceof LivingEntity living)
                         this.charmingEntities.put(living, nbt.getInt("CharmTime").orElse(0));
                 }
         }
         this.setHairColor(tag.getInt("HairColor").orElse(0));
-        this.setAggressive(tag.getBoolean("Aggressive").orElse(false));
+        this.setAggressive(tag.getBooleanOr("Aggressive", false));
         this.setSingingPose(tag.getInt("SingingPose").orElse(0));
-        this.setSinging(tag.getBoolean("Singing").orElse(false));
-        this.setSwimming(tag.getBoolean("Swimming").orElse(false));
-        this.setCharmed(tag.getBoolean("Passive").orElse(false));
+        this.setSinging(tag.getBooleanOr("Singing", false));
+        this.setSwimming(tag.getBooleanOr("Swimming", false));
+        this.setCharmed(tag.getBooleanOr("Passive", false));
         this.setConfigurableAttributes();
     }
 

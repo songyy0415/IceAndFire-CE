@@ -20,6 +20,8 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -213,7 +215,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (source.getEntity() != null) {
             Entity entity = source.getEntity();
             if (entity.getType().is(IafEntityTags.SCARES_COCKATRICES))
@@ -221,7 +223,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         }
         if (source == this.level().damageSources().inWall())
             return false;
-        return super.hurt(source, damage);
+        return super.hurtServer(level, source, damage);
     }
 
     private boolean canUseStareOn(Entity entity) {
@@ -328,7 +330,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Hen", this.isHen());
         tag.putBoolean("Staring", this.isStaring());
@@ -342,14 +344,14 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        this.setHen(tag.getBoolean("Hen").orElse(false));
-        this.setStaring(tag.getBoolean("Staring").orElse(false));
+        this.setHen(tag.getBooleanOr("Hen", false));
+        this.setStaring(tag.getBooleanOr("Staring", false));
         this.setTamingLevel(tag.getInt("TamingLevel").orElse(0));
         this.setTamingPlayer(tag.getInt("TamingPlayer").orElse(0));
         this.setCommand(tag.getInt("Command").orElse(0));
-        this.hasHomePosition = tag.getBoolean("HasHomePosition").orElse(false);
+        this.hasHomePosition = tag.getBooleanOr("HasHomePosition", false);
         if (this.hasHomePosition && tag.getInt("HomeAreaX").orElse(0) != 0 && tag.getInt("HomeAreaY").orElse(0) != 0 && tag.getInt("HomeAreaZ").orElse(0) != 0)
             this.homePos = new HomePosition(tag, this.level());
         this.setConfigurableAttributes();
@@ -578,10 +580,10 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
                     d0 = d0 / d3;
                     d1 = d1 / d3;
                     d2 = d2 / d3;
-                    double d4 = this.random.nextDouble();
+                    double d4 = this.getRandom().nextDouble();
 
                     while (d4 < d3) {
-                        d4 += 1.8D - d5 + this.random.nextDouble() * (1.7D - d5);
+                        d4 += 1.8D - d5 + this.getRandom().nextDouble() * (1.7D - d5);
                         this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0xFF000000), this.getX() + d0 * d4, this.getY() + d1 * d4 + (double) this.getEyeHeight(), this.getZ() + d2 * d4, 0.0D, 0.0D, 0.0D);
                     }
                 }
@@ -715,10 +717,10 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         if (!play) enumparticletypes = ParticleTypes.DAMAGE_INDICATOR;
 
         for (int i = 0; i < 7; ++i) {
-            double d0 = this.random.nextGaussian() * 0.02D;
-            double d1 = this.random.nextGaussian() * 0.02D;
-            double d2 = this.random.nextGaussian() * 0.02D;
-            this.level().addParticle(enumparticletypes, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + 0.5D + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), d0, d1, d2);
+            double d0 = this.getRandom().nextGaussian() * 0.02D;
+            double d1 = this.getRandom().nextGaussian() * 0.02D;
+            double d2 = this.getRandom().nextGaussian() * 0.02D;
+            this.level().addParticle(enumparticletypes, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + 0.5D + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), d0, d1, d2);
         }
     }
 

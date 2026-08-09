@@ -16,6 +16,7 @@ import net.minecraft.core.particles.ParticleTypes;
 
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -168,7 +169,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
                 double d2 = 0.4;
                 double d0 = 0.1;
                 double d1 = 0.1;
-                this.level().addParticle(IafParticles.BLOOD.get(), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY(), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), d2, d0, d1);
+                this.level().addParticle(IafParticles.BLOOD.get(), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY(), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), d2, d0, d1);
             }
         }
         if (this.deathTime >= 200) {
@@ -183,10 +184,10 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
             this.remove(RemovalReason.KILLED);
 
             for (int k = 0; k < 20; ++k) {
-                double d2 = this.random.nextGaussian() * 0.02D;
-                double d0 = this.random.nextGaussian() * 0.02D;
-                double d1 = this.random.nextGaussian() * 0.02D;
-                this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), d2, d0, d1);
+                double d2 = this.getRandom().nextGaussian() * 0.02D;
+                double d0 = this.getRandom().nextGaussian() * 0.02D;
+                double d1 = this.getRandom().nextGaussian() * 0.02D;
+                this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), d2, d0, d1);
             }
         }
     }
@@ -259,7 +260,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound) {
+    public void readAdditionalSaveData(ValueInput pCompound) {
         super.readAdditionalSaveData(pCompound);
         this.setConfigurableAttributes();
     }

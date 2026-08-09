@@ -49,7 +49,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 
 
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -602,11 +605,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (this.getDeathStage() >= this.getAgeInDays() / 5) {
             this.remove(RemovalReason.KILLED);
             for (int k = 0; k < 40; ++k) {
-                double d2 = this.random.nextGaussian() * 0.02D;
-                double d0 = this.random.nextGaussian() * 0.02D;
-                double d1 = this.random.nextGaussian() * 0.02D;
+                double d2 = this.getRandom().nextGaussian() * 0.02D;
+                double d0 = this.getRandom().nextGaussian() * 0.02D;
+                double d1 = this.getRandom().nextGaussian() * 0.02D;
                 if (this.level().isClientSide()) {
-                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
+                    this.level().addParticle(ParticleTypes.CLOUD, this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
                 }
             }
             this.spawnDeathParticles();
@@ -756,7 +759,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Hunger", this.getHunger());
         compound.putInt("AgeTicks", this.getAgeInTicks());
@@ -786,27 +789,27 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setHunger(compound.getInt("Hunger").orElse(0));
         this.setAgeInTicks(compound.getInt("AgeTicks").orElse(0));
-        this.setGender(compound.getBoolean("Gender").orElse(false));
+        this.setGender(compound.getBooleanOr("Gender", false));
         this.setVariant(compound.getString("Variant").orElse(""));
-        this.setInSittingPose(compound.getBoolean("Sleeping").orElse(false));
-        this.setTame(compound.getBoolean("TamedDragon").orElse(false), true);
-        this.setBreathingFire(compound.getBoolean("FireBreathing").orElse(false));
-        this.usingGroundAttack = compound.getBoolean("AttackDecision").orElse(false);
-        this.setHovering(compound.getBoolean("Hovering").orElse(false));
-        this.setFlying(compound.getBoolean("Flying").orElse(false));
+        this.setInSittingPose(compound.getBooleanOr("Sleeping", false));
+        this.setTame(compound.getBooleanOr("TamedDragon", false), true);
+        this.setBreathingFire(compound.getBooleanOr("FireBreathing", false));
+        this.usingGroundAttack = compound.getBooleanOr("AttackDecision", false);
+        this.setHovering(compound.getBooleanOr("Hovering", false));
+        this.setFlying(compound.getBooleanOr("Flying", false));
         this.setDeathStage(compound.getInt("DeathStage").orElse(0));
-        this.setModelDead(compound.getBoolean("ModelDead").orElse(false));
-        this.modelDeadProgress = compound.getFloat("DeadProg").orElse(0.0F);
+        this.setModelDead(compound.getBooleanOr("ModelDead", false));
+        this.modelDeadProgress = compound.getFloatOr("DeadProg", 0.0F);
         this.setCustomPose(compound.getString("CustomPose").orElse(""));
-        this.hasHomePosition = compound.getBoolean("HasHomePosition").orElse(false);
+        this.hasHomePosition = compound.getBooleanOr("HasHomePosition", false);
         if (this.hasHomePosition && compound.getInt("HomeAreaX").orElse(0) != 0 && compound.getInt("HomeAreaY").orElse(0) != 0 && compound.getInt("HomeAreaZ").orElse(0) != 0)
             this.homePos = new HomePosition(compound, this.level());
-        this.setTackling(compound.getBoolean("Tackle").orElse(false));
-        this.setAgingDisabled(compound.getBoolean("AgingDisabled").orElse(false));
+        this.setTackling(compound.getBooleanOr("Tackle", false));
+        this.setAgingDisabled(compound.getBooleanOr("AgingDisabled", false));
         this.setCommand(compound.getInt("Command").orElse(0));
 
         this.createInventory();
@@ -814,7 +817,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         for (int i = 0; i < stacks.size() && i < this.dragonInventory.getContainerSize(); i++)
             this.dragonInventory.setItem(i, stacks.get(i));
 
-        this.setCrystalBound(compound.getBoolean("CrystalBound").orElse(false));
+        this.setCrystalBound(compound.getBooleanOr("CrystalBound", false));
         this.setConfigurableAttributes();
         this.refreshDirtyAttributes();
         this.brushedTime = compound.getInt("BrushedTime").orElse(0);
@@ -1111,7 +1114,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 if (stack.getItem() == this.dragonType.getCrystalItem() && !SummoningCrystalItem.hasDragon(stack)) {
                     this.setCrystalBound(true);
                     CompoundTag compound = new CompoundTag(), dragonTag = new CompoundTag();
-                    dragonTag.putUUID("DragonUUID", this.getUUID());
+                    dragonTag.putIntArray("DragonUUID", UUIDUtil.uuidToIntArray(this.getUUID()));
                     if (this.getCustomName() != null)
                         dragonTag.putString("CustomName", this.getCustomName().getString());
                     compound.put("Dragon", dragonTag);
@@ -1392,7 +1395,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (this.isBreakable(position, state, hardness, this)) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6F, 1, 0.6F));
             if (!this.level().isClientSide()) {
-                this.level().destroyBlock(position, !state.is(IafBlockTags.DRAGON_BLOCK_BREAK_NO_DROPS) && this.random.nextFloat() <= IafCommonConfig.INSTANCE.dragon.blockBreakingDropChance.getValue());
+                this.level().destroyBlock(position, !state.is(IafBlockTags.DRAGON_BLOCK_BREAK_NO_DROPS) && this.getRandom().nextFloat() <= IafCommonConfig.INSTANCE.dragon.blockBreakingDropChance.getValue());
             }
         }
     }
@@ -1512,7 +1515,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (this.getAnimation() == ANIMATION_SHAKEPREY && this.getAnimationTick() > 55 && prey != null) {
             float baseDamage = (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
             float damage = baseDamage * 2;
-            boolean didDamage = prey.hurt(this.level().damageSources().mobAttack(this), damage);
+            boolean didDamage = prey.hurtOrSimulate(this.level().damageSources().mobAttack(this), damage);
 
             if (didDamage) {
                 if (IafCommonConfig.INSTANCE.dragon.canHealFromBiting.getValue()) {
@@ -1583,7 +1586,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public boolean hurt(DamageSource dmg, float i) {
+    public boolean hurtServer(ServerLevel level, DamageSource dmg, float i) {
         if (this.isModelDead() && dmg != this.level().damageSources().fellOutOfWorld()) {
             return false;
         }
@@ -1611,7 +1614,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 }
             }
         }
-        return super.hurt(dmg, i);
+        return super.hurtServer(level, dmg, i);
 
     }
 
@@ -1744,7 +1747,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     public boolean doHurtTarget(Entity entityIn) {
         this.getLookControl().setLookAt(entityIn, 30.0F, 30.0F);
         if (this.isTackling() || this.isModelDead()) return false;
-        return entityIn.hurt(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
+        return entityIn.hurtOrSimulate(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
     }
 
     @Override
@@ -2355,7 +2358,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         if (GorgonEntity.isStoneMob(this) || this.isModelDead()) {
             return;
         }
-        if (this.random.nextBoolean()) {
+        if (this.getRandom().nextBoolean()) {
             if (this.getAnimation() != ANIMATION_EPIC_ROAR) {
                 this.setAnimation(ANIMATION_EPIC_ROAR);
                 this.playSound(this.getRoarSound(), this.getSoundVolume() + 3 + Math.max(0, this.getDragonStage() - 2), this.getVoicePitch() * 0.7F);
@@ -2610,7 +2613,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             double progressY = headPos.y + d3 * i / distance;
             double progressZ = headPos.z + d4 * i / distance;
             if (this.canPositionBeSeen(progressX, progressY, progressZ)) {
-                if (this.random.nextInt(particleCount) == 0) {
+                if (this.getRandom().nextInt(particleCount) == 0) {
                     Vec3 velocity = new Vec3(progressX, progressY, progressZ).subtract(headPos);
                     if (this.level() instanceof ServerLevel serverWorld)
                         serverWorld.sendParticles(this.createBreathParticle(), headPos.x, headPos.y, headPos.z, 0, velocity.x, velocity.y, velocity.z, 1);
@@ -2623,9 +2626,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             }
         }
         if (this.burnProgress >= 40D && this.canPositionBeSeen(burnX, burnY, burnZ)) {
-            double spawnX = burnX + (this.random.nextFloat() * 3.0) - 1.5;
-            double spawnY = burnY + (this.random.nextFloat() * 3.0) - 1.5;
-            double spawnZ = burnZ + (this.random.nextFloat() * 3.0) - 1.5;
+            double spawnX = burnX + (this.getRandom().nextFloat() * 3.0) - 1.5;
+            double spawnY = burnY + (this.getRandom().nextFloat() * 3.0) - 1.5;
+            double spawnZ = burnZ + (this.getRandom().nextFloat() * 3.0) - 1.5;
             if (!this.level().isClientSide())
                 IafDragonDestructionManager.destroyAreaBreath(this.level(), BlockPos.containing(spawnX, spawnY, spawnZ), this);
         }
@@ -2641,9 +2644,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             double d3 = burnY - headVec.y;
             double d4 = burnZ - headVec.z;
             float inaccuracy = 1.0F;
-            d2 = d2 + this.random.nextGaussian() * 0.0075 * inaccuracy;
-            d3 = d3 + this.random.nextGaussian() * 0.0075 * inaccuracy;
-            d4 = d4 + this.random.nextGaussian() * 0.0075 * inaccuracy;
+            d2 = d2 + this.getRandom().nextGaussian() * 0.0075 * inaccuracy;
+            d3 = d3 + this.getRandom().nextGaussian() * 0.0075 * inaccuracy;
+            d4 = d4 + this.getRandom().nextGaussian() * 0.0075 * inaccuracy;
             this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
             Entity charge = this.createCharge(d2, d3, d4);
             charge.setPos(headVec.x, headVec.y, headVec.z);

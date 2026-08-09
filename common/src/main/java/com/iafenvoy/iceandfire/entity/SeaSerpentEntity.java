@@ -19,6 +19,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -304,9 +306,9 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
 
     private void spawnParticlesAroundEntity(Entity entity, int count) {
         for (int i = 0; i < count; i++) {
-            int x = (int) Math.round(entity.getX() + this.random.nextFloat() * entity.getBbWidth() * 2.0F - entity.getBbWidth());
-            int y = (int) Math.round(entity.getY() + 0.5D + this.random.nextFloat() * entity.getBbHeight());
-            int z = (int) Math.round(entity.getZ() + this.random.nextFloat() * entity.getBbWidth() * 2.0F - entity.getBbWidth());
+            int x = (int) Math.round(entity.getX() + this.getRandom().nextFloat() * entity.getBbWidth() * 2.0F - entity.getBbWidth());
+            int y = (int) Math.round(entity.getY() + 0.5D + this.getRandom().nextFloat() * entity.getBbHeight());
+            int z = (int) Math.round(entity.getZ() + this.getRandom().nextFloat() * entity.getBbWidth() * 2.0F - entity.getBbWidth());
             if (this.level().getBlockState(new BlockPos(x, y, z)).is(Blocks.WATER)) {
                 this.level().addParticle(ParticleTypes.BUBBLE, x, y, z, 0, 0, 0);
             }
@@ -342,7 +344,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putString("Variant", this.getVariant());
         compound.putInt("TicksSinceRoar", this.ticksSinceRoar);
@@ -357,7 +359,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Variant") && compound.get("Variant").getId() == Tag.TAG_STRING)
             this.setVariant(compound.getString("Variant").orElse(""));
@@ -365,11 +367,11 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
             this.setVariant(SeaSerpentType.values().get(compound.getInt("Variant").orElse(0)).getName());
         this.ticksSinceRoar = compound.getInt("TicksSinceRoar").orElse(0);
         this.jumpCooldown = compound.getInt("JumpCooldown").orElse(0);
-        this.setSeaSerpentScale(compound.getFloat("Scale").orElse(0.0F));
-        this.setJumpingOutOfWater(compound.getBoolean("JumpingOutOfWater").orElse(false));
-        this.attackDecision = compound.getBoolean("AttackDecision").orElse(false);
-        this.setBreathing(compound.getBoolean("Breathing").orElse(false));
-        this.setAncient(compound.getBoolean("Ancient").orElse(false));
+        this.setSeaSerpentScale(compound.getFloatOr("Scale", 0.0F));
+        this.setJumpingOutOfWater(compound.getBooleanOr("JumpingOutOfWater", false));
+        this.attackDecision = compound.getBooleanOr("AttackDecision", false);
+        this.setBreathing(compound.getBooleanOr("Breathing", false));
+        this.setAncient(compound.getBooleanOr("Ancient", false));
         this.setConfigurableAttributes();
     }
 
@@ -749,9 +751,9 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
                     double d3 = entity.getY() - headPosY;
                     double d4 = entity.getZ() - headPosZ;
                     float inaccuracy = 1.0F;
-                    d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                    d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d2 = d2 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d3 = d3 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
+                    d4 = d4 + this.getRandom().nextGaussian() * 0.007499999832361937D * inaccuracy;
                     SeaSerpentBubblesEntity entitylargefireball = new SeaSerpentBubblesEntity(IafEntities.SEA_SERPENT_BUBBLES.get(), this.level(), this, d2, d3, d4);
                     entitylargefireball.setPos(headPosX, headPosY, headPosZ);
                     if (!this.level().isClientSide()) {

@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.players.OldUsersConverter;
@@ -57,7 +58,7 @@ public class EggInIceBlockEntity extends BlockEntity {
         else nbt.putByte("Color", (byte) 0);
         nbt.putInt("Age", this.age);
         if (this.ownerUUID == null) nbt.putString("OwnerUUID", "");
-        else nbt.putUUID("OwnerUUID", this.ownerUUID);
+        else nbt.putIntArray("OwnerUUID", UUIDUtil.uuidToIntArray(this.ownerUUID));
     }
 
     @Override
@@ -66,8 +67,8 @@ public class EggInIceBlockEntity extends BlockEntity {
         this.type = DragonColor.getById(nbt.getString("Color").orElse(""));
         this.age = nbt.getInt("Age").orElse(0);
         UUID s = null;
-        if (nbt.hasUUID("OwnerUUID"))
-            s = nbt.getUUID("OwnerUUID");
+        if (nbt.read("OwnerUUID", UUIDUtil.CODEC).isPresent())
+            s = nbt.read("OwnerUUID", UUIDUtil.CODEC).orElse(null);
         else
             try {
                 String s1 = nbt.getString("OwnerUUID").orElse("");

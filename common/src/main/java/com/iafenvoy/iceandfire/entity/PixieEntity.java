@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -147,7 +149,7 @@ public class PixieEntity extends TamableAnimal {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (!this.level().isClientSide() && this.getRandom().nextInt(3) == 0 && !this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
             this.spawnAtLocation(this.getItemInHand(InteractionHand.MAIN_HAND), 0);
             this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
@@ -157,7 +159,7 @@ public class PixieEntity extends TamableAnimal {
         if (this.isOwnerClose() && ((source.getEntity() != null && source == this.level().damageSources().fallingBlock(source.getEntity())) || source == this.level().damageSources().inWall() || this.getOwner() != null && source.getEntity() == this.getOwner())) {
             return false;
         }
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     @Override
@@ -252,7 +254,7 @@ public class PixieEntity extends TamableAnimal {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
-        this.setColor(this.random.nextInt(5));
+        this.setColor(this.getRandom().nextInt(5));
         this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         return spawnDataIn;
     }
@@ -295,7 +297,7 @@ public class PixieEntity extends TamableAnimal {
         if (!this.isPixieSitting() && !this.isBeyondHeight())
             this.setDeltaMovement(this.getDeltaMovement().add(0, 0.08, 0));
         if (this.level().isClientSide())
-            this.level().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2F) - (double) this.getBbWidth(), this.getY() + (double) (this.random.nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2F) - (double) this.getBbWidth(), PARTICLE_RGB[this.getColor()][0], PARTICLE_RGB[this.getColor()][1], PARTICLE_RGB[this.getColor()][2]);
+            this.level().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2F) - (double) this.getBbWidth(), PARTICLE_RGB[this.getColor()][0], PARTICLE_RGB[this.getColor()][1], PARTICLE_RGB[this.getColor()][2]);
         if (this.ticksUntilHouseAI > 0)
             this.ticksUntilHouseAI--;
         if (!this.level().isClientSide()) {
@@ -326,20 +328,20 @@ public class PixieEntity extends TamableAnimal {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(ValueInput compound) {
         this.setColor(compound.getInt("Color").orElse(0));
 
         this.stealCooldown = compound.getInt("StealCooldown").orElse(0);
         this.ticksHeldItemFor = compound.getInt("HoldingTicks").orElse(0);
 
-        this.setPixieSitting(compound.getBoolean("PixieSitting").orElse(false));
+        this.setPixieSitting(compound.getBooleanOr("PixieSitting", false));
         this.setCommand(compound.getInt("Command").orElse(0));
 
         super.readAdditionalSaveData(compound);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(ValueOutput compound) {
         compound.putInt("Color", this.getColor());
         compound.putInt("Command", this.getCommand());
         compound.putInt("StealCooldown", this.stealCooldown);
@@ -407,7 +409,7 @@ public class PixieEntity extends TamableAnimal {
                 if (PixieEntity.this.horizontalCollision) {
                     PixieEntity.this.setYRot(this.mob.getYRot() + 180.0F);
                     speedMod = 0.1F;
-                    BlockPos target = PixieEntity.getPositionRelativetoGround(PixieEntity.this, PixieEntity.this.level(), PixieEntity.this.getX() + PixieEntity.this.random.nextInt(15) - 7, PixieEntity.this.getZ() + PixieEntity.this.random.nextInt(15) - 7, PixieEntity.this.random);
+                    BlockPos target = PixieEntity.getPositionRelativetoGround(PixieEntity.this, PixieEntity.this.level(), PixieEntity.this.getX() + PixieEntity.this.getRandom().nextInt(15) - 7, PixieEntity.this.getZ() + PixieEntity.this.getRandom().nextInt(15) - 7, PixieEntity.this.getRandom());
                     this.wantedX = target.getX();
                     this.wantedY = target.getY();
                     this.wantedZ = target.getZ();

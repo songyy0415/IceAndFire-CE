@@ -9,8 +9,8 @@ import org.joml.Matrix4f;
 
 import java.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
 /*
     Lightning bolt effect code used with permission from aidancbrady
@@ -23,9 +23,7 @@ public class LightningRenderer {
     private final Map<Object, BoltOwnerData> boltOwners = new Object2ObjectOpenHashMap<>();
     private Timestamp refreshTimestamp = new Timestamp();
 
-    public void render(float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn) {
-        VertexConsumer buffer = bufferIn.getBuffer(RenderType.lightning());
-        Matrix4f matrix = matrixStackIn.last().pose();
+    public void render(float partialTicks, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         assert this.client.level != null;
         Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
         boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
@@ -38,11 +36,17 @@ public class LightningRenderer {
                 data.bolts.removeIf(bolt -> bolt.tick(timestamp));
             if (data.bolts.isEmpty() && data.lastBolt != null && data.lastBolt.getSpawnFunction().isConsecutive())
                 data.addBolt(new BoltInstance(data.lastBolt, timestamp), timestamp);
-            data.bolts.forEach(bolt -> bolt.render(matrix, buffer, timestamp));
-
             if (data.bolts.isEmpty() && timestamp.isPassed(data.lastUpdateTimestamp, MAX_OWNER_TRACK_TIME))
                 iter.remove();
         }
+        java.util.List<BoltInstance> boltsToRender = new java.util.ArrayList<>();
+        for (Map.Entry<Object, BoltOwnerData> entry : this.boltOwners.entrySet())
+            boltsToRender.addAll(entry.getValue().bolts);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, buffer) -> {
+            org.joml.Matrix4f matrix = pose.pose();
+            for (BoltInstance bolt : boltsToRender)
+                bolt.render(matrix, buffer, timestamp);
+        });
     }
 
     public void update(Object owner, LightningBoltData newBoltData, float partialTicks) {

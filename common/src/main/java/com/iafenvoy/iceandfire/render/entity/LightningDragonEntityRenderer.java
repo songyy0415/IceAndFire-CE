@@ -1,14 +1,16 @@
 package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.entity.LightningDragonEntity;
-import com.iafenvoy.iceandfire.render.entity.state.DragonRenderState;import com.iafenvoy.iceandfire.render.misc.LightningBoltData;
+import com.iafenvoy.iceandfire.render.entity.state.DragonRenderState;
+import com.iafenvoy.iceandfire.render.misc.LightningBoltData;
 import com.iafenvoy.iceandfire.render.misc.LightningRenderer;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -37,26 +39,33 @@ public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<Ligh
     }
 
     @Override
-    public void render(LightningDragonEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-        matrixStackIn.pushPose();
-        if (entityIn.hasLightningTarget()) {
+    public void extractRenderState(LightningDragonEntity entity, DragonRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.hasLightningTarget = entity.hasLightningTarget();
+        if (state.hasLightningTarget) {
             Minecraft client = Minecraft.getInstance();
             assert client.player != null;
-            double dist = client.player.distanceTo(entityIn);
-            if (dist <= Math.max(256, client.options.renderDistance().get() * 16F)) {
-                Vec3 Vector3d1 = entityIn.getHeadPosition();
-                Vec3 Vector3d = new Vec3(entityIn.getLightningTargetX(), entityIn.getLightningTargetY(), entityIn.getLightningTargetZ());
-                float energyScale = 0.4F * entityIn.getAgeScale();
-                LightningBoltData bolt = new LightningBoltData(LightningBoltData.BoltRenderInfo.ELECTRICITY, Vector3d1, Vector3d, 15)
-                        .size(0.05F * getBoundedScale(energyScale))
-                        .lifespan(4)
-                        .spawn(LightningBoltData.SpawnFunction.NO_DELAY);
-                this.lightningRenderer.update(null, bolt, partialTicks);
-                matrixStackIn.translate(-entityIn.getX(), -entityIn.getY(), -entityIn.getZ());
-                this.lightningRenderer.render(partialTicks, matrixStackIn, bufferIn);
-            }
+            state.lightningDist = client.player.distanceTo(entity);
+            Vec3 head = entity.getHeadPosition();
+            Vec3 target = new Vec3(entity.getLightningTargetX(), entity.getLightningTargetY(), entity.getLightningTargetZ());
+            float energyScale = 0.4F * entity.getAgeScale();
+            state.lightningBolt = new LightningBoltData(LightningBoltData.BoltRenderInfo.ELECTRICITY, head, target, 15)
+                .size(0.05F * getBoundedScale(energyScale))
+                .lifespan(4)
+                .spawn(LightningBoltData.SpawnFunction.NO_DELAY);
         }
-        matrixStackIn.popPose();
+    }
+
+    @Override
+    public void submit(DragonRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        super.submit(state, poseStack, submitNodeCollector, camera);
+        if (state.hasLightningTarget && state.lightningBolt != null
+            && state.lightningDist <= Math.max(256, Minecraft.getInstance().options.renderDistance().get() * 16F)) {
+            poseStack.pushPose();
+            this.lightningRenderer.update(null, state.lightningBolt, state.partialTicks);
+            poseStack.translate(-state.x, -state.y, -state.z);
+            this.lightningRenderer.render(state.partialTicks, poseStack, submitNodeCollector);
+            poseStack.popPose();
+        }
     }
 }

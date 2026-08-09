@@ -98,3 +98,21 @@
 
 ### 未处理
 - **LightningDragonEntityRenderer**（6 错误）：闪电渲染 `render/misc/LightningRenderer` + `LightningBoltData` 用旧 `MultiBufferSource`，需 render/misc 闪电渲染 26.2 submit 管线专项（独立子任务）。
+
+---
+
+## P6-G Misc Render Pipeline：Lightning 迁移 ✅
+
+### 修改文件
+- `render/misc/LightningRenderer.java`：`render(float, PoseStack, MultiBufferSource)` → `render(float, PoseStack, SubmitNodeCollector)`；`RenderType.lightning()`→`RenderTypes.lightning()`；bolt 渲染改 `submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, buffer) -> …)`（回调内接收 VertexConsumer，与 26.2 官方 `LightningBoltRenderer` 一致）；`getRandom()`→`random`
+- `render/misc/LightningBoltData.java`：`this.getRandom()`→`this.random`（字段名）
+- `render/entity/LightningDragonEntityRenderer.java`：`render(...)`→`submit(DragonRenderState, PoseStack, SubmitNodeCollector, CameraRenderState)`；`extractRenderState` 捕获 `hasLightningTarget/lightningBolt/lightningDist`；`super.submit` + 闪电 `lightningRenderer.render(state.partialTicks, poseStack, collector)`
+- `render/entity/state/DragonRenderState.java`：+`hasLightningTarget/lightningBolt/lightningDist`
+
+### API 映射
+- 旧：`bufferIn.getBuffer(RenderType.lightning())` + `VertexConsumer.addVertex(matrix,...)`
+- 新：`submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lightning(), (pose, buffer) -> …)`（26.2 `OrderedSubmitNodeCollector.submitCustomGeometry`，回调 `CustomGeometryRenderer.render(PoseStack.Pose, VertexConsumer)`——buffer 为 VertexConsumer）
+- 保留：闪电颜色（`setColor(r,g,b,a)`）、随机分叉（`random`）、动画（Timestamp/lifeScale）、透明（LIGHTNING RenderPipeline→WEATHER_TARGET）
+
+### 错误变化
+- javac：1,889 → **1,876**（-13）；unique：1,676 → **1,640**（-36）；LightningRenderer/BoltData/LightningDragonEntityRenderer：**0 错误**；新增：0

@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.render.entity.state;
 
 import com.iafenvoy.iceandfire.entity.util.ChainBuffer;
+import com.iafenvoy.iceandfire.render.misc.LightningBoltData;
 import com.iafenvoy.iceandfire.entity.util.ReversedBuffer;
 import com.iafenvoy.iceandfire.render.model.IFChainBuffer;
 import com.iafenvoy.iceandfire.render.model.util.LegSolverQuadruped;
@@ -69,6 +70,9 @@ public class DragonRenderState extends LivingEntityRenderState implements IAnima
     public float partialTicks;
     public float dragonScale = 1.0F;
     public boolean shakingPrey;
+    public boolean hasLightningTarget;
+    public LightningBoltData lightningBolt;
+    public double lightningDist;
     public Animation animation = IAnimatedEntity.NO_ANIMATION;
     public int animationTick;
     public Animation[] animations = new Animation[0];

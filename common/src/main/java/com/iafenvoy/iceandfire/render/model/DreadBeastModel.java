@@ -1,4 +1,6 @@
 package com.iafenvoy.iceandfire.render.model;
+import com.iafenvoy.iceandfire.render.entity.state.DreadBeastRenderState;
+
 
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class DreadBeastModel extends DragonBaseModel<LivingEntityRenderState> {
+public class DreadBeastModel extends DragonBaseModel<DreadBeastRenderState> {
     public final AdvancedModelBox Body;
     public final AdvancedModelBox LegL1;
     public final AdvancedModelBox LowerBody;
@@ -205,8 +207,14 @@ public class DreadBeastModel extends DragonBaseModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(DreadBeastEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
+    public void setupAnim(DreadBeastRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
         float speed_walk = 0.45F;
         float speed_idle = 0.05F;
         float degree_walk = 1F;

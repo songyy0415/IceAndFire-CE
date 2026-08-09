@@ -1,4 +1,6 @@
 package com.iafenvoy.iceandfire.render.model;
+import com.iafenvoy.iceandfire.render.entity.state.DreadScuttlerRenderState;
+
 
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
@@ -12,7 +14,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
 
-public class DreadScuttlerModel extends DragonBaseModel<LivingEntityRenderState> {
+public class DreadScuttlerModel extends DragonBaseModel<DreadScuttlerRenderState> {
     public final AdvancedModelBox Body2;
     public final AdvancedModelBox Body3;
     public final AdvancedModelBox Body1;
@@ -260,8 +262,14 @@ public class DreadScuttlerModel extends DragonBaseModel<LivingEntityRenderState>
     }
 
     @Override
-    public void setupAnim(DreadScuttlerEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
+    public void setupAnim(DreadScuttlerRenderState state) {
+        float limbAngle = state.walkAnimationPos;
+        float limbDistance = state.walkAnimationSpeed;
+        float animationProgress = state.ageInTicks;
+        float headYaw = state.yRot;
+        float headPitch = state.xRot;
+
+        this.animate(state, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_idle = 0.05F;
         float degree_idle = 0.5F;
         float speed_walk = 0.9F;
@@ -285,8 +293,8 @@ public class DreadScuttlerModel extends DragonBaseModel<LivingEntityRenderState>
         this.walk(this.palpMidR1, speed_idle * 2F, degree_idle * -0.5F, true, 1, 0.2F, animationProgress, 1);
         this.walk(this.palpMidL1, speed_idle * 2F, degree_idle * -0.5F, true, 1, 0.2F, animationProgress, 1);
 
-        if (entity.getAnimation() == DreadScuttlerEntity.ANIMATION_SPAWN)
-            if (entity.getAnimationTick() < 39) {
+        if (state.getAnimation() == DreadScuttlerEntity.ANIMATION_SPAWN)
+            if (state.getAnimationTick() < 39) {
                 limbAngle = animationProgress;
                 limbDistance = 1;
             }

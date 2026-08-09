@@ -6,64 +6,65 @@ import com.iafenvoy.iceandfire.item.component.BestiaryPageComponent;
 import com.iafenvoy.iceandfire.registry.IafBestiaryPages;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.screen.handler.BestiaryScreenHandler;
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.registry.menu.MenuRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
-public class BestiaryItem extends Item implements NamedScreenHandlerFactory {
+public class BestiaryItem extends Item implements MenuProvider {
     public BestiaryItem() {
-        super(new Settings().maxCount(1).component(IafDataComponents.BESTIARY_PAGES.get(), new BestiaryPageComponent(List.of(IafBestiaryPages.INTRODUCTION))));
+        super(new Properties().stacksTo(1).component(IafDataComponents.BESTIARY_PAGES.get(), new BestiaryPageComponent(List.of(IafBestiaryPages.INTRODUCTION))));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (playerIn instanceof ServerPlayerEntity serverPlayer)
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        if (playerIn instanceof ServerPlayer serverPlayer)
             MenuRegistry.openExtendedMenu(serverPlayer, this, buf -> {
-                NbtCompound compound = new NbtCompound();
-                compound.put("data", ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, playerIn.getStackInHand(handIn)).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtCompound()));
+                CompoundTag compound = new CompoundTag();
+                compound.put("data", ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, playerIn.getItemInHand(handIn)).resultOrPartial(IceAndFire.LOGGER::error).orElse(new CompoundTag()));
                 buf.writeNbt(compound);
             });
-        return new TypedActionResult<>(ActionResult.PASS, playerIn.getStackInHand(handIn));
+        return new InteractionResultHolder<>(InteractionResult.PASS, playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344)) {
-            tooltip.add(Text.translatable("bestiary.contains").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 340) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 344)) {
+            tooltip.accept(Component.translatable("bestiary.contains").withStyle(ChatFormatting.GRAY));
             BestiaryPageComponent component = stack.get(IafDataComponents.BESTIARY_PAGES.get());
             if (component != null)
                 for (BestiaryPage page : component.pages())
-                    tooltip.add(Text.literal(Formatting.WHITE + "-").append(Text.translatable("bestiary." + page.name().toLowerCase(Locale.ROOT))).formatted(Formatting.GRAY));
-        } else tooltip.add(Text.translatable("bestiary.hold_shift").formatted(Formatting.GRAY));
+                    tooltip.accept(Component.literal(ChatFormatting.WHITE + "-").append(Component.translatable("bestiary." + page.name().toLowerCase(Locale.ROOT))).withStyle(ChatFormatting.GRAY));
+        } else tooltip.accept(Component.translatable("bestiary.hold_shift").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
-    public Text getDisplayName() {
-        return Text.translatable("bestiary_gui");
+    public Component getDisplayName() {
+        return Component.translatable("bestiary_gui");
     }
 
     @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
         return new BestiaryScreenHandler(syncId, playerInventory);
     }
 }

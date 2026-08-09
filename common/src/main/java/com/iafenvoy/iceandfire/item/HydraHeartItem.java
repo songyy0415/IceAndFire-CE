@@ -1,26 +1,27 @@
 package com.iafenvoy.iceandfire.item;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class HydraHeartItem extends Item {
     public HydraHeartItem() {
-        super(new Settings().maxCount(1));
+        super(new Properties().stacksTo(1));
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (entity instanceof PlayerEntity player && itemSlot >= 0 && itemSlot <= 8) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+        if (entity instanceof Player player && itemSlot >= 0 && itemSlot <= 8) {
             double healthPercentage = player.getHealth() / Math.max(1, player.getMaxHealth());
             if (healthPercentage < 1.0D) {
                 int level = 0;
@@ -28,18 +29,18 @@ public class HydraHeartItem extends Item {
                 else if (healthPercentage < 0.5D) level = 2;
                 else if (healthPercentage < 0.75D) level = 1;
                 //Consider using EffectInstance.combine
-                if (!player.hasStatusEffect(StatusEffects.REGENERATION) || player.getStatusEffect(StatusEffects.REGENERATION).getAmplifier() < level)
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, level, true, false));
+                if (!player.hasEffect(MobEffects.REGENERATION) || player.getEffect(MobEffects.REGENERATION).getAmplifier() < level)
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, level, true, false));
             }
             //In hotbar
         }
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.hydra_heart.desc_0").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.hydra_heart.desc_1").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.hydra_heart.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.hydra_heart.desc_1").withStyle(ChatFormatting.GRAY));
     }
 }

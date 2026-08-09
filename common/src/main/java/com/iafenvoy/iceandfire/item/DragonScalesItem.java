@@ -1,30 +1,31 @@
 package com.iafenvoy.iceandfire.item;
 
 import com.iafenvoy.iceandfire.data.DragonColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-
 import java.util.List;
 import java.util.Locale;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DragonScalesItem extends Item {
     final DragonColor type;
 
     public DragonScalesItem(DragonColor type) {
-        super(new Settings());
+        super(new Properties());
         this.type = type;
     }
 
     @Override
-    public String getTranslationKey() {
+    public String getDescriptionId() {
         return "item.iceandfire.dragonscales";
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("dragon." + this.type.getName().toLowerCase(Locale.ROOT)).formatted(this.type.getColorFormatting()));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("dragon." + this.type.getName().toLowerCase(Locale.ROOT)).withStyle(this.type.getColorFormatting()));
     }
 }

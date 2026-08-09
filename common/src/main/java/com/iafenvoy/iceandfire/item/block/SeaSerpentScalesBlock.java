@@ -1,29 +1,30 @@
 package com.iafenvoy.iceandfire.item.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.MapColor;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class SeaSerpentScalesBlock extends Block {
-    final Formatting color;
+    final ChatFormatting color;
     final String name;
 
-    public SeaSerpentScalesBlock(String name, Formatting color) {
-        super(Settings.create().mapColor(MapColor.STONE_GRAY).strength(30F, 500F).sounds(BlockSoundGroup.STONE).requiresTool());
+    public SeaSerpentScalesBlock(String name, ChatFormatting color) {
+        super(Properties.of().mapColor(MapColor.STONE).strength(30F, 500F).sound(SoundType.STONE).requiresCorrectToolForDrops());
         this.color = color;
         this.name = name;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType options) {
-        super.appendTooltip(stack, context, tooltip, options);
-        tooltip.add(Text.translatable("sea_serpent." + this.name).formatted(this.color));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag options) {
+        super.appendHoverText(stack, context, display, tooltip, options);
+        tooltip.accept(Component.translatable("sea_serpent." + this.name).withStyle(this.color));
     }
 }

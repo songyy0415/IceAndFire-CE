@@ -26,6 +26,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DragonHornItem extends Item {
     public DragonHornItem() {
@@ -92,8 +94,8 @@ public class DragonHornItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         if (stack.has(IafDataComponents.DRAGON_HORN.get())) {
             DragonHornComponent component = stack.get(IafDataComponents.DRAGON_HORN.get());
             CompoundTag entityTag = component.entityData();
@@ -101,14 +103,14 @@ public class DragonHornItem extends Item {
                 Optional<EntityType<?>> optional = BuiltInRegistries.ENTITY_TYPE.getOptional(component.entityType());
                 if (optional.isPresent()) {
                     EntityType<?> entityType = optional.get();
-                    tooltip.add((Component.translatable(entityType.getDescriptionId())).withStyle(this.getTextColorForEntityType(entityType)));
+                    tooltip.accept((Component.translatable(entityType.getDescriptionId())).withStyle(this.getTextColorForEntityType(entityType)));
                     String name = Component.translatable("dragon.unnamed").getString();
                     if (!entityTag.getString("CustomName").isEmpty())
                         name = entityTag.getString("CustomName");
 
-                    tooltip.add((Component.literal(name)).withStyle(ChatFormatting.GRAY));
+                    tooltip.accept((Component.literal(name)).withStyle(ChatFormatting.GRAY));
                     String gender = (Component.translatable("dragon.gender")).getString() + " " + (Component.translatable(entityTag.getBoolean("Gender") ? "dragon.gender.male" : "dragon.gender.female")).getString();
-                    tooltip.add((Component.literal(gender)).withStyle(ChatFormatting.GRAY));
+                    tooltip.accept((Component.literal(gender)).withStyle(ChatFormatting.GRAY));
                     int stagenumber = entityTag.getInt("AgeTicks") / 24000;
                     int stage1;
                     if (stagenumber >= 100) stage1 = 5;
@@ -116,7 +118,7 @@ public class DragonHornItem extends Item {
                     else if (stagenumber >= 50) stage1 = 3;
                     else if (stagenumber >= 25) stage1 = 2;
                     else stage1 = 1;
-                    tooltip.add(Component.translatable("dragon.stage").append(Component.literal(" " + stage1 + " ")).append(Component.translatable("dragon.days.front")).append(Component.literal(stagenumber + " ")).append(Component.translatable("dragon.days.back")).withStyle(ChatFormatting.GRAY));
+                    tooltip.accept(Component.translatable("dragon.stage").append(Component.literal(" " + stage1 + " ")).append(Component.translatable("dragon.days.front")).append(Component.literal(stagenumber + " ")).append(Component.translatable("dragon.days.back")).withStyle(ChatFormatting.GRAY));
                 }
             }
         }

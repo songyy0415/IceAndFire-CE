@@ -1,17 +1,17 @@
 package com.iafenvoy.iceandfire.item.ability;
 
 import com.iafenvoy.iceandfire.registry.IafStatusEffects;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 public record FrozenTargetAbility(int duration) implements PostHitAbility {
     @Override
     public void active(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, this.duration, 2));
-        target.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, this.duration, 2));
-        target.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(IafStatusEffects.FROZEN.get()), this.duration));
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, this.duration, 2));
+        target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, this.duration, 2));
+        target.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.FROZEN.get()), this.duration));
     }
 }

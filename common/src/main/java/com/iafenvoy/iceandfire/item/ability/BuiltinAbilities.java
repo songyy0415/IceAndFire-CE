@@ -1,14 +1,14 @@
 package com.iafenvoy.iceandfire.item.ability;
 
-import net.minecraft.registry.tag.EntityTypeTags;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.EntityTypeTags;
 
 public final class BuiltinAbilities {
     public static final PostHitAbility TAKE_KNOCKBACK = new TakeKnockbackAbility();
     public static final PostHitAbility SUMMON_LIGHTNING = new SummonLightningAbility();
     public static final SwingHandAbility SUMMON_GHOST_SWORD = new SummonGhostSwordAbility();
-    public static final PostHitAbility UNDEAD_DAMAGE_BONUS = new DamageBonusAbility(2.0F, EntityTypeTags.UNDEAD, Text.translatable("silvertools.hurt").formatted(Formatting.GREEN));
+    public static final PostHitAbility UNDEAD_DAMAGE_BONUS = new DamageBonusAbility(2.0F, EntityTypeTags.UNDEAD, Component.translatable("silvertools.hurt").withStyle(ChatFormatting.GREEN));
 
     public static final PostHitAbility ICE_DRAGON_BLOOD_TOOL = new IceDragonBloodToolAbility();
     public static final PostHitAbility FIRE_DRAGON_BLOOD_TOOL = new FireDragonBloodToolAbility();

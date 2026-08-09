@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.item.block.util;
 
-import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public interface DreadBlock {
-    BooleanProperty UNBREAKABLE = BooleanProperty.of("unbreakable");
+    BooleanProperty UNBREAKABLE = BooleanProperty.create("unbreakable");
 }

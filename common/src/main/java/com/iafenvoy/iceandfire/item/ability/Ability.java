@@ -1,14 +1,13 @@
 package com.iafenvoy.iceandfire.item.ability;
 
-import net.minecraft.text.Text;
-
 import java.util.List;
+import net.minecraft.network.chat.Component;
 
 public interface Ability {
     default boolean isEnable() {
         return true;
     }
 
-    default void addDescription(List<Text> tooltip) {
+    default void addDescription(List<Component> tooltip) {
     }
 }

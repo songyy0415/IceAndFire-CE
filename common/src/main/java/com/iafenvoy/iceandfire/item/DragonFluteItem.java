@@ -3,33 +3,32 @@ package com.iafenvoy.iceandfire.item;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.util.dragon.IDragonFlute;
 import com.iafenvoy.iceandfire.registry.IafSounds;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 public class DragonFluteItem extends Item {
     public DragonFluteItem() {
-        super(new Settings().maxCount(1));
+        super(new Properties().stacksTo(1));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity player, Hand hand) {
-        ItemStack itemStackIn = player.getStackInHand(hand);
-        player.getItemCooldownManager().set(this, 60);
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player player, InteractionHand hand) {
+        ItemStack itemStackIn = player.getItemInHand(hand);
+        player.getCooldowns().addCooldown(this, 60);
 
         float range = 16 * IafCommonConfig.INSTANCE.dragon.fluteDistance.getValue();
-        List<Entity> list = worldIn.getOtherEntities(player, (new Box(player.getX(), player.getY(), player.getZ(), player.getX() + 1.0D, player.getY() + 1.0D, player.getZ() + 1.0D)).expand(range, 256, range));
+        List<Entity> list = worldIn.getEntities(player, (new AABB(player.getX(), player.getY(), player.getZ(), player.getX() + 1.0D, player.getY() + 1.0D, player.getZ() + 1.0D)).inflate(range, 256, range));
         list.sort(new Sorter(player));
         List<IDragonFlute> dragons = new ArrayList<>();
         for (Entity entity : list)
@@ -37,8 +36,8 @@ public class DragonFluteItem extends Item {
                 dragons.add(flute);
         for (IDragonFlute dragon : dragons)
             dragon.onHearFlute(player);
-        worldIn.playSound(player, player.getBlockPos(), IafSounds.DRAGONFLUTE.get(), SoundCategory.NEUTRAL, 1, 1.75F);
-        return new TypedActionResult<>(ActionResult.SUCCESS, itemStackIn);
+        worldIn.playSound(player, player.blockPosition(), IafSounds.DRAGONFLUTE.get(), SoundSource.NEUTRAL, 1, 1.75F);
+        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
     }
 
     public static class Sorter implements Comparator<Entity> {
@@ -50,8 +49,8 @@ public class DragonFluteItem extends Item {
 
         @Override
         public int compare(Entity entity1, Entity entity2) {
-            double d0 = this.entity.squaredDistanceTo(entity1);
-            double d1 = this.entity.squaredDistanceTo(entity2);
+            double d0 = this.entity.distanceToSqr(entity1);
+            double d1 = this.entity.distanceToSqr(entity2);
             return Double.compare(d0, d1);
         }
     }

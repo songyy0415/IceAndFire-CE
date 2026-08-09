@@ -2,20 +2,21 @@ package com.iafenvoy.iceandfire.item.armor;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.IafArmorMaterials;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class EarPlugsArmorItem extends ArmorItem {
     public EarPlugsArmorItem() {
-        super(IafArmorMaterials.EARPLUGS, ArmorItem.Type.HELMET, new Settings().maxDamage(55));
+        super(IafArmorMaterials.EARPLUGS, ArmorItem.Type.HELMET, new Properties().durability(55));
     }
 
     private static boolean isAprilFool() {
@@ -25,13 +26,13 @@ public class EarPlugsArmorItem extends ArmorItem {
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
-        return isAprilFool() ? String.format(Locale.ROOT, "item.%s.air_pods", IceAndFire.MOD_ID) : super.getTranslationKey(stack);
+    public String getDescriptionId(ItemStack stack) {
+        return isAprilFool() ? String.format(Locale.ROOT, "item.%s.air_pods", IceAndFire.MOD_ID) : super.getDescriptionId(stack);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        if (isAprilFool()) tooltip.add(Text.translatable("item.iceandfire.air_pods.desc").formatted(Formatting.GREEN));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        if (isAprilFool()) tooltip.accept(Component.translatable("item.iceandfire.air_pods.desc").withStyle(ChatFormatting.GREEN));
     }
 }

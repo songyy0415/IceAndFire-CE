@@ -16,6 +16,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DragonSkullItem extends Item {
     private final DragonType dragonType;
@@ -26,12 +28,12 @@ public class DragonSkullItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         String s = "dragon." + this.dragonType.name();
-        tooltip.add(Component.translatable(s).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable(s).withStyle(ChatFormatting.GRAY));
         if (stack.has(IafDataComponents.DRAGON_SKULL.get()))
-            tooltip.add(Component.translatable("dragon.stage").withStyle(ChatFormatting.GRAY).append(Component.literal(" " + stack.get(IafDataComponents.DRAGON_SKULL.get()).stage())));
+            tooltip.accept(Component.translatable("dragon.stage").withStyle(ChatFormatting.GRAY).append(Component.literal(" " + stack.get(IafDataComponents.DRAGON_SKULL.get()).stage())));
     }
 
     @Override

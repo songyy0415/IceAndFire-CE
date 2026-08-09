@@ -3,44 +3,44 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.item.block.util.DreadBlock;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 
-public class DreadStoneFaceBlock extends HorizontalFacingBlock implements DreadBlock, DragonProof {
-    private static final MapCodec<? extends HorizontalFacingBlock> CODEC = createCodec(s -> new DreadStoneFaceBlock());
+public class DreadStoneFaceBlock extends HorizontalDirectionalBlock implements DreadBlock, DragonProof {
+    private static final MapCodec<? extends HorizontalDirectionalBlock> CODEC = simpleCodec(s -> new DreadStoneFaceBlock());
 
     public DreadStoneFaceBlock() {
-        super(Settings.copy(Blocks.STONE));
-        this.setDefaultState(this.getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(UNBREAKABLE, false));
+        super(Properties.ofFullCopy(Blocks.STONE));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(UNBREAKABLE, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(FACING);
         builder.add(UNBREAKABLE);
     }
 
     @Override
-    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        return state.get(UNBREAKABLE) ? 0 : super.calcBlockBreakingDelta(state, player, world, pos);
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter world, BlockPos pos) {
+        return state.getValue(UNBREAKABLE) ? 0 : super.getDestroyProgress(state, player, world, pos);
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext context) {
-        return this.getDefaultState().with(FACING, context.getHorizontalPlayerFacing().getOpposite());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;
     }
 }

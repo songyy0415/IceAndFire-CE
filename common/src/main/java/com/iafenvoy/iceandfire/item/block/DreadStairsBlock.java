@@ -2,28 +2,28 @@ package com.iafenvoy.iceandfire.item.block;
 
 import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.item.block.util.DreadBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.StateManager;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 
-public class DreadStairsBlock extends StairsBlock implements DragonProof, DreadBlock {
-    public DreadStairsBlock(BlockState baseBlockState, Settings settings) {
+public class DreadStairsBlock extends StairBlock implements DragonProof, DreadBlock {
+    public DreadStairsBlock(BlockState baseBlockState, Properties settings) {
         super(baseBlockState, settings);
-        this.setDefaultState(this.getDefaultState().with(UNBREAKABLE, false));
+        this.registerDefaultState(this.defaultBlockState().setValue(UNBREAKABLE, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(UNBREAKABLE);
     }
 
     @Override
-    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        return state.get(UNBREAKABLE) ? 0 : super.calcBlockBreakingDelta(state, player, world, pos);
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter world, BlockPos pos) {
+        return state.getValue(UNBREAKABLE) ? 0 : super.getDestroyProgress(state, player, world, pos);
     }
 }

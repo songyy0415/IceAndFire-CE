@@ -2,12 +2,11 @@ package com.iafenvoy.iceandfire.item.ability;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 public class IceDragonBloodToolAbility implements PostHitAbility {
     private final DamageBonusAbility damageBonus = new DamageBonusAbility(8.0F, IafEntityTags.FIRE_DRAGON, null);
@@ -27,11 +26,11 @@ public class IceDragonBloodToolAbility implements PostHitAbility {
     }
 
     @Override
-    public void addDescription(List<Text> tooltip) {
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("dragon_sword_ice.hurt1").formatted(Formatting.GREEN));
+    public void addDescription(List<Component> tooltip) {
+        tooltip.add(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("dragon_sword_ice.hurt1").withStyle(ChatFormatting.GREEN));
         if (this.isEnable()) {
-            tooltip.add(Text.translatable("dragon_sword_ice.hurt2").formatted(Formatting.AQUA));
+            tooltip.add(Component.translatable("dragon_sword_ice.hurt2").withStyle(ChatFormatting.AQUA));
         }
     }
 }

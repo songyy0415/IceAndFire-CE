@@ -3,82 +3,88 @@ package com.iafenvoy.iceandfire.item;
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafSounds;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.*;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DeathwormGauntletItem extends Item {
     public DeathwormGauntletItem() {
-        super(new Settings().maxDamage(500).component(IafDataComponents.USER_ID.get(), -1));
+        super(new Properties().durability(500).component(IafDataComponents.USER_ID.get(), -1));
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return 10;
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
-        ItemStack itemStackIn = playerIn.getStackInHand(hand);
-        playerIn.setCurrentHand(hand);
-        return new TypedActionResult<>(ActionResult.PASS, itemStackIn);
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand hand) {
+        ItemStack itemStackIn = playerIn.getItemInHand(hand);
+        playerIn.startUsingItem(hand);
+        return new InteractionResultHolder<>(InteractionResult.PASS, itemStackIn);
     }
 
     @Override
-    public void usageTick(World level, LivingEntity entity, ItemStack stack, int remainingUseTicks) {
+    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remainingUseTicks) {
         if (stack.getOrDefault(IafDataComponents.USER_ID.get(), -1) != entity.getId())
             stack.set(IafDataComponents.USER_ID.get(), entity.getId());
-        MiscData.get(entity).setLungeTicks(this.getMaxUseTime(stack, entity) - remainingUseTicks);
+        MiscData.get(entity).setLungeTicks(this.getUseDuration(stack, entity) - remainingUseTicks);
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World worldIn, LivingEntity user, int timeLeft) {
+    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity user, int timeLeft) {
         stack.set(IafDataComponents.USER_ID.get(), -1);
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        if (user instanceof PlayerEntity player) {
-            Vec3d Vector3d = player.getRotationVec(1.0F).normalize();
+    public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
+        if (user instanceof Player player) {
+            Vec3 Vector3d = player.getViewVector(1.0F).normalize();
             double range = 5;
-            for (LivingEntity livingEntity : world.getEntitiesByClass(LivingEntity.class, new Box(player.getX() - range, player.getY() - range, player.getZ() - range, player.getX() + range, player.getY() + range, player.getZ() + range), livingEntity -> livingEntity != player)) {
-                Vec3d delta = new Vec3d(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ());
+            for (LivingEntity livingEntity : world.getEntitiesOfClass(LivingEntity.class, new AABB(player.getX() - range, player.getY() - range, player.getZ() - range, player.getX() + range, player.getY() + range, player.getZ() + range), livingEntity -> livingEntity != player)) {
+                Vec3 delta = new Vec3(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ());
                 double d0 = delta.length();
                 delta = delta.normalize();
-                double d1 = Vector3d.dotProduct(delta);
-                boolean canSee = d1 > 1.0D - 0.5D / d0 && player.canSee(livingEntity);
+                double d1 = Vector3d.dot(delta);
+                boolean canSee = d1 > 1.0D - 0.5D / d0 && player.hasLineOfSight(livingEntity);
                 if (canSee) {
-                    livingEntity.damage(world.damageSources.playerAttack(player), 3F);
-                    livingEntity.takeKnockback(0.5F, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
+                    livingEntity.hurt(world.damageSources().playerAttack(player), 3F);
+                    livingEntity.knockback(0.5F, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
                 }
             }
-            player.getItemCooldownManager().set(this, 20);
+            player.getCooldowns().addCooldown(this, 20);
         }
         user.playSound(IafSounds.DEATHWORM_ATTACK.get(), 1F, 1F);
         stack.set(IafDataComponents.USER_ID.get(), -1);
 
-        return super.finishUsing(stack, world, user);
+        return super.finishUsingItem(stack, world, user);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.deathworm_gauntlet.desc_0").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.deathworm_gauntlet.desc_1").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.deathworm_gauntlet.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.deathworm_gauntlet.desc_1").withStyle(ChatFormatting.GRAY));
     }
 }

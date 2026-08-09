@@ -20,6 +20,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DragonSeekerItem extends Item {
     private final SeekerType type;
@@ -56,11 +58,11 @@ public class DragonSeekerItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         String name = BuiltInRegistries.ITEM.getKey(this).getPath();
-        tooltip.add(Component.translatable("item.iceandfire." + name + ".tooltip"));
-        tooltip.add(Component.translatable("item.iceandfire.dragon_seeker.credit").setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
+        tooltip.accept(Component.translatable("item.iceandfire." + name + ".tooltip"));
+        tooltip.accept(Component.translatable("item.iceandfire.dragon_seeker.credit").setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withItalic(true)));
     }
 
     public enum SeekerType {

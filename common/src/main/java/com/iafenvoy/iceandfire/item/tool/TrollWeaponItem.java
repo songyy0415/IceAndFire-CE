@@ -2,53 +2,54 @@ package com.iafenvoy.iceandfire.item.tool;
 
 import com.iafenvoy.iceandfire.data.TrollType;
 import com.iafenvoy.iceandfire.registry.IafToolMaterials;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class TrollWeaponItem extends SwordItem {
     public final TrollType.ITrollWeapon weapon;
 
     public TrollWeaponItem(TrollType.ITrollWeapon weapon) {
-        super(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, new Settings().component(DataComponentTypes.ATTRIBUTE_MODIFIERS, createAttributeModifiers(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, 15, -3.5F)));
+        super(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, 15, -3.5F)));
         this.weapon = weapon;
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker instanceof PlayerEntity player)
-            return player.getAttackCooldownProgress(0) < 0.95 || player.handSwingProgress != 0;
-        else return super.postHit(stack, target, attacker);
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker instanceof Player player)
+            return player.getAttackStrengthScale(0) < 0.95 || player.attackAnim != 0;
+        else return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (entity instanceof PlayerEntity player && selected)
-            if (player.getAttackCooldownProgress(0) < 0.95 && player.handSwingProgress > 0)
-                player.handSwingTicks--;
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
+        if (entity instanceof Player player && selected)
+            if (player.getAttackStrengthScale(0) < 0.95 && player.attackAnim > 0)
+                player.swingTime--;
     }
 
     public boolean onEntitySwing(LivingEntity LivingEntity, ItemStack stack) {
-        if (LivingEntity instanceof PlayerEntity player)
-            if (player.getAttackCooldownProgress(0) < 1 && player.handSwingProgress > 0)
+        if (LivingEntity instanceof Player player)
+            if (player.getAttackStrengthScale(0) < 1 && player.attackAnim > 0)
                 return true;
             else
-                player.handSwingTicks = -1;
+                player.swingTime = -1;
         return false;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
     }
 }

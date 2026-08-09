@@ -2,34 +2,34 @@ package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.entity.util.DreadSpawnerBaseLogic;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.Spawner;
-import net.minecraft.block.spawner.MobSpawnerEntry;
-import net.minecraft.block.spawner.MobSpawnerLogic;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SpawnData;
+import net.minecraft.world.level.Spawner;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
     private final DreadSpawnerBaseLogic spawner = new DreadSpawnerBaseLogic() {
         @Override
-        public void sendStatus(World world, BlockPos pos, int status) {
-            world.addSyncedBlockEvent(pos, Blocks.SPAWNER, status, 0);
+        public void broadcastEvent(Level world, BlockPos pos, int status) {
+            world.blockEvent(pos, Blocks.SPAWNER, status, 0);
         }
 
         @Override
-        public void setSpawnEntry(World world, BlockPos pos, MobSpawnerEntry spawnEntry) {
-            super.setSpawnEntry(world, pos, spawnEntry);
+        public void setNextSpawnData(Level world, BlockPos pos, SpawnData spawnEntry) {
+            super.setNextSpawnData(world, pos, spawnEntry);
             if (world != null) {
                 BlockState blockstate = world.getBlockState(pos);
-                world.updateListeners(pos, blockstate, blockstate, 4);
+                world.sendBlockUpdated(pos, blockstate, blockstate, 4);
             }
         }
     };
@@ -39,54 +39,54 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        this.spawner.readNbt(this.world, this.pos, nbt);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
+        this.spawner.load(this.level, this.worldPosition, nbt);
     }
 
-    public NbtCompound save(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        this.spawner.writeNbt(nbt);
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
+        this.spawner.save(nbt);
         return nbt;
     }
 
     @Override
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound compoundtag = this.save(new NbtCompound(), registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        CompoundTag compoundtag = this.save(new CompoundTag(), registryLookup);
         compoundtag.remove("SpawnPotentials");
         return compoundtag;
     }
 
     @Override
-    public boolean onSyncedBlockEvent(int p_59797_, int p_59798_) {
-        return this.spawner.handleStatus(this.world, p_59797_) || super.onSyncedBlockEvent(p_59797_, p_59798_);
+    public boolean triggerEvent(int p_59797_, int p_59798_) {
+        return this.spawner.onEventTriggered(this.level, p_59797_) || super.triggerEvent(p_59797_, p_59798_);
     }
 
     @Override
-    public boolean copyItemDataRequiresOperator() {
+    public boolean onlyOpCanSetNbt() {
         return true;
     }
 
-    public MobSpawnerLogic getLogic() {
+    public BaseSpawner getLogic() {
         return this.spawner;
     }
 
-    public static void clientTick(World world, BlockPos pos, BlockState state, DreadSpawnerBlockEntity blockEntity) {
+    public static void clientTick(Level world, BlockPos pos, BlockState state, DreadSpawnerBlockEntity blockEntity) {
         blockEntity.spawner.clientTick(world, pos);
     }
 
-    public static void serverTick(World world, BlockPos pos, BlockState state, DreadSpawnerBlockEntity blockEntity) {
-        blockEntity.spawner.serverTick((ServerWorld) world, pos);
+    public static void serverTick(Level world, BlockPos pos, BlockState state, DreadSpawnerBlockEntity blockEntity) {
+        blockEntity.spawner.serverTick((ServerLevel) world, pos);
     }
 
     @Override
-    public void setEntityType(EntityType<?> type, Random random) {
-        this.spawner.setEntityId(type, this.world, random, this.pos);
-        this.markDirty();
+    public void setEntityId(EntityType<?> type, RandomSource random) {
+        this.spawner.setEntityId(type, this.level, random, this.worldPosition);
+        this.setChanged();
     }
 }

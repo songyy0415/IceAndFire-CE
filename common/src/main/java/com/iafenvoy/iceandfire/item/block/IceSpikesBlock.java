@@ -1,66 +1,71 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.iafenvoy.iceandfire.entity.IceDragonEntity;
-import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldView;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class IceSpikesBlock extends Block {
-    protected static final VoxelShape VOXEL_SHAPE = Block.createCuboidShape(1, 0, 1, 15, 8, 15);
+    protected static final VoxelShape VOXEL_SHAPE = Block.box(1, 0, 1, 15, 8, 15);
 
     public IceSpikesBlock() {
-        super(Settings.create().mapColor(MapColor.PALE_PURPLE).nonOpaque().dynamicBounds().ticksRandomly().sounds(BlockSoundGroup.GLASS).strength(2.5F).requiresTool());
+        super(Properties.of().mapColor(MapColor.ICE).noOcclusion().dynamicShape().randomTicks().sound(SoundType.GLASS).strength(2.5F).requiresCorrectToolForDrops());
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState stateIn, Direction facing, BlockState facingState, WorldAccess worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return !stateIn.canPlaceAt(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return !stateIn.canSurvive(worldIn, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView worldIn, BlockPos pos) {
-        BlockPos blockpos = pos.down();
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
+        BlockPos blockpos = pos.below();
         return this.isValidGround(worldIn.getBlockState(blockpos), worldIn, blockpos);
     }
 
     @Override
-    public boolean isTransparent(BlockState state, BlockView reader, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
         return true;
     }
 
-    private boolean isValidGround(BlockState blockState, WorldView worldIn, BlockPos blockpos) {
-        return blockState.isOpaque();
+    private boolean isValidGround(BlockState blockState, LevelReader worldIn, BlockPos blockpos) {
+        return blockState.canOcclude();
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView worldIn, BlockPos pos, ShapeContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return VOXEL_SHAPE;
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView worldIn, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return VOXEL_SHAPE;
     }
 
     @Override
-    public void onSteppedOn(World worldIn, BlockPos pos, BlockState pState, Entity entityIn) {
+    public void stepOn(Level worldIn, BlockPos pos, BlockState pState, Entity entityIn) {
         if (!(entityIn instanceof IceDragonEntity)) {
-            entityIn.damage(worldIn.getDamageSources().cactus(), 1);
-            if (entityIn instanceof LivingEntity livingEntity && entityIn.getVelocity().x != 0 && entityIn.getVelocity().z != 0)
-                livingEntity.takeKnockback(0.5F, entityIn.getVelocity().x, entityIn.getVelocity().z);
+            entityIn.hurt(worldIn.damageSources().cactus(), 1);
+            if (entityIn instanceof LivingEntity livingEntity && entityIn.getDeltaMovement().x != 0 && entityIn.getDeltaMovement().z != 0)
+                livingEntity.knockback(0.5F, entityIn.getDeltaMovement().x, entityIn.getDeltaMovement().z);
         }
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState state) {
+    public boolean useShapeForLightOcclusion(BlockState state) {
         return true;
     }
 

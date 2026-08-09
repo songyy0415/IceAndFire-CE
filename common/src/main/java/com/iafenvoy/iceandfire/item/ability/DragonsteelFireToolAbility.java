@@ -1,12 +1,11 @@
 package com.iafenvoy.iceandfire.item.ability;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 public class DragonsteelFireToolAbility implements PostHitAbility {
     private final PostHitAbility ignite = new IgniteTargetAbility(IafCommonConfig.INSTANCE.tools.dragonsteelFireDuration.getValue());
@@ -25,9 +24,9 @@ public class DragonsteelFireToolAbility implements PostHitAbility {
     }
 
     @Override
-    public void addDescription(List<Text> tooltip) {
+    public void addDescription(List<Component> tooltip) {
         if (this.isEnable()) {
-            tooltip.add(Text.translatable("dragon_sword_fire.hurt2").formatted(Formatting.DARK_RED));
+            tooltip.add(Component.translatable("dragon_sword_fire.hurt2").withStyle(ChatFormatting.DARK_RED));
         }
     }
 }

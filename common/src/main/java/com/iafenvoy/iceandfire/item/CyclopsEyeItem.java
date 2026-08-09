@@ -1,44 +1,45 @@
 package com.iafenvoy.iceandfire.item;
 
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.Monster;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class CyclopsEyeItem extends Item {
     public CyclopsEyeItem() {
-        super(new Settings().maxDamage(500).component(IafDataComponents.TICK_COUNTER.get(), 0));
+        super(new Properties().durability(500).component(IafDataComponents.TICK_COUNTER.get(), 0));
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof LivingEntity living) {
             int tick = stack.getOrDefault(IafDataComponents.TICK_COUNTER.get(), 0);
-            if (living.getMainHandStack() == stack || living.getOffHandStack() == stack) {
+            if (living.getMainHandItem() == stack || living.getOffhandItem() == stack) {
                 double range = 15;
                 boolean inflictedDamage = false;
-                for (MobEntity LivingEntity : world.getNonSpectatingEntities(MobEntity.class, new Box(living.getX() - range, living.getY() - range, living.getZ() - range, living.getX() + range, living.getY() + range, living.getZ() + range)))
-                    if (!LivingEntity.isPartOf(living) && !LivingEntity.isTeammate(living) && (LivingEntity.getTarget() == living || LivingEntity.getAttacker() == living || LivingEntity instanceof Monster)) {
-                        LivingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 10, 1));
+                for (Mob LivingEntity : world.getEntitiesOfClass(Mob.class, new AABB(living.getX() - range, living.getY() - range, living.getZ() - range, living.getX() + range, living.getY() + range, living.getZ() + range)))
+                    if (!LivingEntity.is(living) && !LivingEntity.isAlliedTo(living) && (LivingEntity.getTarget() == living || LivingEntity.getLastHurtByMob() == living || LivingEntity instanceof Enemy)) {
+                        LivingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
                         inflictedDamage = true;
                     }
                 if (inflictedDamage)
                     tick++;
             }
             if (tick > 120) {
-                stack.damage(1, living, LivingEntity.getSlotForHand(living.getActiveHand()));
+                stack.hurtAndBreak(1, living, LivingEntity.getSlotForHand(living.getUsedItemHand()));
                 tick = 0;
             }
             stack.set(IafDataComponents.TICK_COUNTER.get(), tick);
@@ -46,10 +47,10 @@ public class CyclopsEyeItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.iceandfire.legendary_weapon.desc").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.cyclops_eye.desc_0").formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.iceandfire.cyclops_eye.desc_1").formatted(Formatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.cyclops_eye.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.cyclops_eye.desc_1").withStyle(ChatFormatting.GRAY));
     }
 }

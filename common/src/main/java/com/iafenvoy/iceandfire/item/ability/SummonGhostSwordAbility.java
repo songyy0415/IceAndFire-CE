@@ -3,19 +3,18 @@ package com.iafenvoy.iceandfire.item.ability;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.GhostSwordEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 public class SummonGhostSwordAbility implements SwingHandAbility {
     @Override
@@ -25,27 +24,27 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
 
     @Override
     public void active(LivingEntity attacker) {
-        if (attacker instanceof PlayerEntity playerEntity) {
-            ItemStack stack = playerEntity.getStackInHand(Hand.MAIN_HAND);
-            if (playerEntity.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+        if (attacker instanceof Player playerEntity) {
+            ItemStack stack = playerEntity.getItemInHand(InteractionHand.MAIN_HAND);
+            if (playerEntity.getCooldowns().isOnCooldown(stack.getItem())) {
                 return;
             }
-            final AttributeModifiersComponent dmg = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+            final ItemAttributeModifiers dmg = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
             double totalDmg = 0D;
-            for (AttributeModifiersComponent.Entry modifier : dmg.modifiers())
-                if (modifier.attribute().equals(EntityAttributes.GENERIC_ATTACK_DAMAGE))
-                    totalDmg += modifier.modifier().value();
-            playerEntity.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1, 1);
-            GhostSwordEntity shot = new GhostSwordEntity(IafEntities.GHOST_SWORD.get(), playerEntity.getWorld(), playerEntity, totalDmg * 0.5F, stack);
-            shot.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 1, 0.5f);
-            playerEntity.getWorld().spawnEntity(shot);
-            stack.damage(1, playerEntity, EquipmentSlot.MAINHAND);
-            playerEntity.getItemCooldownManager().set(stack.getItem(), 10);
+            for (ItemAttributeModifiers.Entry modifier : dmg.modifiers())
+                if (modifier.attribute().equals(Attributes.ATTACK_DAMAGE))
+                    totalDmg += modifier.modifier().amount();
+            playerEntity.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
+            GhostSwordEntity shot = new GhostSwordEntity(IafEntities.GHOST_SWORD.get(), playerEntity.level(), playerEntity, totalDmg * 0.5F, stack);
+            shot.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, 1, 0.5f);
+            playerEntity.level().addFreshEntity(shot);
+            stack.hurtAndBreak(1, playerEntity, EquipmentSlot.MAINHAND);
+            playerEntity.getCooldowns().addCooldown(stack.getItem(), 10);
         }
     }
 
     @Override
-    public void addDescription(List<Text> tooltip) {
-        tooltip.add(Text.translatable("item.iceandfire.ghost_sword.desc_0").formatted(Formatting.GRAY));
+    public void addDescription(List<Component> tooltip) {
+        tooltip.add(Component.translatable("item.iceandfire.ghost_sword.desc_0").withStyle(ChatFormatting.GRAY));
     }
 }

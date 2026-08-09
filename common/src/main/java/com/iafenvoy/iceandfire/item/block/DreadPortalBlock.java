@@ -4,25 +4,30 @@ import com.iafenvoy.iceandfire.item.block.entity.DreadPortalBlockEntity;
 import com.iafenvoy.iceandfire.item.block.util.DreadBlock;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
-public class DreadPortalBlock extends BlockWithEntity implements DreadBlock {
-    private static final MapCodec<? extends BlockWithEntity> CODEC = createCodec(s -> new DreadPortalBlock());
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+public class DreadPortalBlock extends BaseEntityBlock implements DreadBlock {
+    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new DreadPortalBlock());
 
     public DreadPortalBlock() {
-        super(Settings.create().mapColor(MapColor.CLEAR).pistonBehavior(PistonBehavior.BLOCK).nonOpaque().dynamicBounds().strength(-1, 100000).luminance((state) -> 1).ticksRandomly());
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.BLOCK).noOcclusion().dynamicShape().strength(-1, 100000).lightLevel((state) -> 1).randomTicks());
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random rand) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource rand) {
         BlockEntity tileentity = world.getBlockEntity(pos);
 
         if (tileentity instanceof DreadPortalBlockEntity) {
@@ -41,22 +46,22 @@ public class DreadPortalBlock extends BlockWithEntity implements DreadBlock {
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.cuboid(0, 0, 0, 0, 0, 0);
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return Shapes.box(0, 0, 0, 0, 0, 0);
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DreadPortalBlockEntity(pos, state);
     }
 }

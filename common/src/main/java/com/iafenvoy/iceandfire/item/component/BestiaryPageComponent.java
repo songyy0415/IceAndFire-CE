@@ -9,6 +9,6 @@ import java.util.List;
 
 public record BestiaryPageComponent(List<BestiaryPage> pages) {
     public static final Codec<BestiaryPageComponent> CODEC = RecordCodecBuilder.create(i -> i.group(
-            IafRegistries.BESTIARY_PAGE.getCodec().listOf().optionalFieldOf("pages", List.of()).forGetter(BestiaryPageComponent::pages)
+            IafRegistries.BESTIARY_PAGE.byNameCodec().listOf().optionalFieldOf("pages", List.of()).forGetter(BestiaryPageComponent::pages)
     ).apply(i, BestiaryPageComponent::new));
 }

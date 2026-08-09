@@ -1,25 +1,25 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.FallingBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.enums.NoteBlockInstrument;
-import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 
 public class FallingGenericBlock extends FallingBlock {
-    private static final MapCodec<? extends FallingBlock> CODEC = createCodec(FallingGenericBlock::new);
+    private static final MapCodec<? extends FallingBlock> CODEC = simpleCodec(FallingGenericBlock::new);
 
-    public FallingGenericBlock(Settings props) {
+    public FallingGenericBlock(Properties props) {
         super(props);
     }
 
     @Override
-    protected MapCodec<? extends FallingBlock> getCodec() {
+    protected MapCodec<? extends FallingBlock> codec() {
         return CODEC;
     }
 
-    public static FallingGenericBlock builder(float hardness, float resistance, BlockSoundGroup sound, MapColor color, NoteBlockInstrument instrument) {
-        Settings props = Settings.create().mapColor(color).instrument(instrument).sounds(sound).strength(hardness, resistance);
+    public static FallingGenericBlock builder(float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument) {
+        Properties props = Properties.of().mapColor(color).instrument(instrument).sound(sound).strength(hardness, resistance);
         return new FallingGenericBlock(props);
     }
 }

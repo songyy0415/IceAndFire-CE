@@ -7,20 +7,19 @@ import com.iafenvoy.iceandfire.registry.IafAttributes;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class DragonForgeInputBlockEntity extends BlockEntity {
     private static final int LURE_DISTANCE = 50;
@@ -31,7 +30,7 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
         super(IafBlockEntities.DRAGONFORGE_INPUT.get(), pos, state);
     }
 
-    public static void tick(final World level, final BlockPos position, final BlockState state, final DragonForgeInputBlockEntity forgeInput) {
+    public static void tick(final Level level, final BlockPos position, final BlockState state, final DragonForgeInputBlockEntity forgeInput) {
         if (forgeInput.core == null)
             forgeInput.core = forgeInput.getConnectedTileEntity(position);
 
@@ -40,10 +39,10 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
 
         if ((forgeInput.ticksSinceDragonFire == 0 || forgeInput.core == null) && forgeInput.isActive()) {
             BlockEntity tileentity = level.getBlockEntity(position);
-            level.setBlockState(position, forgeInput.getDeactivatedState());
+            level.setBlockAndUpdate(position, forgeInput.getDeactivatedState());
             if (tileentity != null) {
-                tileentity.cancelRemoval();
-                level.addBlockEntity(tileentity);
+                tileentity.clearRemoved();
+                level.setBlockEntity(tileentity);
             }
         }
 
@@ -61,39 +60,39 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
     }
 
     @Override
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbtWithIdentifyingData(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        return this.saveWithFullMetadata(registryLookup);
     }
 
     protected void lureDragons() {
-        Vec3d targetPosition = new Vec3d(
-                this.getPos().getX() + 0.5F,
-                this.getPos().getY() + 0.5F,
-                this.getPos().getZ() + 0.5F
+        Vec3 targetPosition = new Vec3(
+                this.getBlockPos().getX() + 0.5F,
+                this.getBlockPos().getY() + 0.5F,
+                this.getBlockPos().getZ() + 0.5F
         );
 
-        Box searchArea = new Box(
-                (double) this.pos.getX() - LURE_DISTANCE,
-                (double) this.pos.getY() - LURE_DISTANCE,
-                (double) this.pos.getZ() - LURE_DISTANCE,
-                (double) this.pos.getX() + LURE_DISTANCE,
-                (double) this.pos.getY() + LURE_DISTANCE,
-                (double) this.pos.getZ() + LURE_DISTANCE
+        AABB searchArea = new AABB(
+                (double) this.worldPosition.getX() - LURE_DISTANCE,
+                (double) this.worldPosition.getY() - LURE_DISTANCE,
+                (double) this.worldPosition.getZ() - LURE_DISTANCE,
+                (double) this.worldPosition.getX() + LURE_DISTANCE,
+                (double) this.worldPosition.getY() + LURE_DISTANCE,
+                (double) this.worldPosition.getZ() + LURE_DISTANCE
         );
 
         boolean dragonSelected = false;
 
-        assert this.world != null;
-        for (DragonBaseEntity dragon : this.world.getNonSpectatingEntities(DragonBaseEntity.class, searchArea)) {
-            if (!dragonSelected && /* Dragon Checks */ this.getDragonType() == dragon.dragonType && (dragon.isChained() || dragon.isTamed()) && this.canSeeInput(dragon, targetPosition)) {
-                dragon.burningTarget = this.pos;
+        assert this.level != null;
+        for (DragonBaseEntity dragon : this.level.getEntitiesOfClass(DragonBaseEntity.class, searchArea)) {
+            if (!dragonSelected && /* Dragon Checks */ this.getDragonType() == dragon.dragonType && (dragon.isChained() || dragon.isTame()) && this.canSeeInput(dragon, targetPosition)) {
+                dragon.burningTarget = this.worldPosition;
                 dragonSelected = true;
-            } else if (dragon.burningTarget == this.pos) {
+            } else if (dragon.burningTarget == this.worldPosition) {
                 dragon.burningTarget = null;
                 dragon.setBreathingFire(false);
             }
@@ -104,35 +103,35 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
         return (this.core != null && this.core.assembled() && this.core.canSmelt());
     }
 
-    private boolean canSeeInput(DragonBaseEntity dragon, Vec3d target) {
+    private boolean canSeeInput(DragonBaseEntity dragon, Vec3 target) {
         if (target != null) {
-            assert this.world != null;
-            HitResult rayTrace = this.world.raycast(new RaycastContext(dragon.getHeadPosition(), target, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, dragon));
-            double distance = dragon.getHeadPosition().distanceTo(rayTrace.getPos());
-            return distance < 10 + dragon.getWidth() * 2;
+            assert this.level != null;
+            HitResult rayTrace = this.level.clip(new ClipContext(dragon.getHeadPosition(), target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, dragon));
+            double distance = dragon.getHeadPosition().distanceTo(rayTrace.getLocation());
+            return distance < 10 + dragon.getBbWidth() * 2;
         }
 
         return false;
     }
 
     private BlockState getDeactivatedState() {
-        return DragonForgeInputBlock.getBlockByType(this.getDragonType()).getDefaultState().with(DragonForgeInputBlock.ACTIVE, false);
+        return DragonForgeInputBlock.getBlockByType(this.getDragonType()).defaultBlockState().setValue(DragonForgeInputBlock.ACTIVE, false);
     }
 
     private DragonType getDragonType() {
-        return this.getCachedState().getBlock() instanceof DragonTypeProvider provider ? provider.getDragonType() : IafDragonTypes.FIRE;
+        return this.getBlockState().getBlock() instanceof DragonTypeProvider provider ? provider.getDragonType() : IafDragonTypes.FIRE;
     }
 
     private boolean isActive() {
-        assert this.world != null;
-        BlockState state = this.world.getBlockState(this.pos);
-        return state.getBlock() instanceof DragonForgeInputBlock && state.get(DragonForgeInputBlock.ACTIVE);
+        assert this.level != null;
+        BlockState state = this.level.getBlockState(this.worldPosition);
+        return state.getBlock() instanceof DragonForgeInputBlock && state.getValue(DragonForgeInputBlock.ACTIVE);
     }
 
     private DragonForgeBlockEntity getConnectedTileEntity(final BlockPos position) {
-        assert this.world != null;
-        for (Direction facing : Direction.Type.HORIZONTAL)
-            if (this.world.getBlockEntity(position.offset(facing)) instanceof DragonForgeBlockEntity forge)
+        assert this.level != null;
+        for (Direction facing : Direction.Plane.HORIZONTAL)
+            if (this.level.getBlockEntity(position.relative(facing)) instanceof DragonForgeBlockEntity forge)
                 return forge;
         return null;
     }

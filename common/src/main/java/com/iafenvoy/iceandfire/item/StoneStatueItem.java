@@ -18,6 +18,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class StoneStatueItem extends Item {
     public StoneStatueItem() {
@@ -25,8 +27,8 @@ public class StoneStatueItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         if (stack.has(IafDataComponents.STONE_STATUS.get())) {
             StoneStatusComponent component = stack.get(IafDataComponents.STONE_STATUS.get());
             Optional<EntityType<?>> optional = EntityType.byString(component.entityType());
@@ -34,7 +36,7 @@ public class StoneStatueItem extends Item {
                 MutableComponent untranslated;
                 if (component.isPlayer()) untranslated = Component.translatable("entity.minecraft.player");
                 else untranslated = Component.translatable(optional.get().getDescriptionId());
-                tooltip.add(untranslated.withStyle(ChatFormatting.GRAY));
+                tooltip.accept(untranslated.withStyle(ChatFormatting.GRAY));
             }
         }
     }

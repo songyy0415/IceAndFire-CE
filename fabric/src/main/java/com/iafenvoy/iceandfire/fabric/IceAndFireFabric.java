@@ -8,7 +8,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.potion.Potions;
+import net.minecraft.world.item.alchemy.Potions;
 
 public final class IceAndFireFabric implements ModInitializer {
     @Override
@@ -16,7 +16,7 @@ public final class IceAndFireFabric implements ModInitializer {
         IceAndFire.init();
         IceAndFire.process();
         IafAttachments.init();
-        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> builder.registerPotionRecipe(Potions.WATER, IafItems.SHINY_SCALES.get(), Potions.WATER_BREATHING));
-        IntegrationExecutor.runWhenLoad("trinkets", () -> TrinketsRegistry::registerItems);
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(builder -> builder.addMix(Potions.WATER, IafItems.SHINY_SCALES.get(), Potions.WATER_BREATHING));
+        IntegrationExecutor.runWhenLoad("trinkets_updated", () -> TrinketsRegistry::registerItems);
     }
 }

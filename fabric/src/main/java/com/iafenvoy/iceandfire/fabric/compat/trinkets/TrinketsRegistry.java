@@ -1,8 +1,8 @@
 package com.iafenvoy.iceandfire.fabric.compat.trinkets;
 
 import com.iafenvoy.iceandfire.registry.IafItems;
-import dev.emi.trinkets.api.TrinketsApi;
-import net.minecraft.item.Item;
+import eu.pb4.trinkets.api.callback.TrinketCallback;
+import net.minecraft.world.item.Item;
 
 public class TrinketsRegistry {
     public static void registerItems() {
@@ -10,6 +10,6 @@ public class TrinketsRegistry {
     }
 
     private static void registerSingle(Item item) {
-        TrinketsApi.registerTrinket(item, new SimpleTickItemWrapper(item));
+        TrinketCallback.setCallback(item, new SimpleTickItemWrapper(item));
     }
 }

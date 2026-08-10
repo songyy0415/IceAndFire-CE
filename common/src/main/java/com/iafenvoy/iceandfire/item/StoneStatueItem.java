@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,7 @@ public class StoneStatueItem extends Item {
         super.appendHoverText(stack, context, display, tooltip, type);
         if (stack.has(IafDataComponents.STONE_STATUS.get())) {
             StoneStatusComponent component = stack.get(IafDataComponents.STONE_STATUS.get());
-            Optional<EntityType<?>> optional = EntityType.byString(component.entityType());
+            Optional<EntityType<?>> optional = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(component.entityType()));
             if (optional.isPresent()) {
                 MutableComponent untranslated;
                 if (component.isPlayer()) untranslated = Component.translatable("entity.minecraft.player");

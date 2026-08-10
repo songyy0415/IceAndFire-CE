@@ -19,9 +19,9 @@ public class SummonLightningAbility implements PostHitAbility {
             if (!attacker.level().isClientSide()) {
                 LightningBolt lightningEntity = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("lightning_bolt")).create(target.level(), EntitySpawnReason.LOAD);
                 assert lightningEntity != null;
-                lightningEntity.keySet().add(ServerEvents.BOLT_DONT_DESTROY_LOOT);
-                lightningEntity.keySet().add(attacker.getStringUUID());
-                lightningEntity.moveTo(target.position());
+                lightningEntity.addTag(ServerEvents.BOLT_DONT_DESTROY_LOOT);
+                lightningEntity.addTag(attacker.getStringUUID());
+                lightningEntity.setPos(target.position());
                 if (!target.level().isClientSide()) {
                     target.level().addFreshEntity(lightningEntity);
                 }

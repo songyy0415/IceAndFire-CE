@@ -52,7 +52,9 @@ public class DragonSkullItem extends Item {
             skull.setStage(component.stage());
             skull.setDragonAge(component.dragonAge());
             BlockPos offset = context.getClickedPos().relative(context.getClickedFace(), 1);
-            skull.moveTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
+            skull.setPos(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5);
+            skull.setYRot(0);
+            skull.setXRot(0);
             float yaw = context.getPlayer().getYRot();
             if (context.getClickedFace() != Direction.UP)
                 yaw = context.getPlayer().getDirection().toYRot();

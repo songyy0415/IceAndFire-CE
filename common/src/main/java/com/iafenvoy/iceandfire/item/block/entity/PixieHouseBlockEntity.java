@@ -109,7 +109,7 @@ public class PixieHouseBlockEntity extends BlockEntity {
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;
         pixie.setTame(this.tamedPixie, true);
-        pixie.setOwnerUUID(this.pixieOwnerUUID);
+        pixie.setOwner(this.pixieOwnerUUID != null ? this.level.getPlayerByUUID(this.pixieOwnerUUID) : null);
         assert this.level != null;
         if (!this.level.isClientSide())
             this.level.addFreshEntity(pixie);

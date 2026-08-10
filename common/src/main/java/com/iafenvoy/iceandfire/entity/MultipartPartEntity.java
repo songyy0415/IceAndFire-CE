@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import com.iafenvoy.iceandfire.util.IafEntityDataSerializers;
 
 import com.iafenvoy.iceandfire.network.payload.MultipartInteractC2SPayload;
 import dev.architectury.networking.NetworkManager;
@@ -35,7 +36,7 @@ import java.util.UUID;
 
 /// FIXME::Use client only entity for multi-hitbox
 public abstract class MultipartPartEntity extends Entity implements OwnableEntity {
-    private static final EntityDataAccessor<Optional<UUID>> PARENT_UUID = SynchedEntityData.defineId(MultipartPartEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> PARENT_UUID = SynchedEntityData.defineId(MultipartPartEntity.class, IafEntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Float> SCALE_WIDTH = SynchedEntityData.defineId(MultipartPartEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> SCALE_HEIGHT = SynchedEntityData.defineId(MultipartPartEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> PART_YAW = SynchedEntityData.defineId(MultipartPartEntity.class, EntityDataSerializers.FLOAT);

@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import com.iafenvoy.iceandfire.util.IafEntityDataSerializers;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.ai.StymphalianBirdAIAirTargetGoal;
@@ -64,7 +65,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     public static final Animation ANIMATION_SHOOT_ARROWS = Animation.create(30);
     public static final Animation ANIMATION_SPEAK = Animation.create(10);
     private static final int FLIGHT_CHANCE_PER_TICK = 100;
-    private static final EntityDataAccessor<Optional<UUID>> VICTOR_ENTITY = SynchedEntityData.defineId(StymphalianBirdEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> VICTOR_ENTITY = SynchedEntityData.defineId(StymphalianBirdEntity.class, IafEntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(StymphalianBirdEntity.class, EntityDataSerializers.BOOLEAN);
     public float flyProgress;
     public BlockPos airTarget;

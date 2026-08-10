@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import com.iafenvoy.iceandfire.util.IafEntityDataSerializers;
 import net.minecraft.server.level.ServerLevel;
 
 import com.iafenvoy.iceandfire.entity.util.IDreadMob;
@@ -32,7 +33,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class DreadMobEntity extends Monster implements IDreadMob {
-    protected static final EntityDataAccessor<Optional<UUID>> COMMANDER_UNIQUE_ID = SynchedEntityData.defineId(DreadMobEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<Optional<UUID>> COMMANDER_UNIQUE_ID = SynchedEntityData.defineId(DreadMobEntity.class, IafEntityDataSerializers.OPTIONAL_UUID);
 
     public DreadMobEntity(EntityType<? extends Monster> t, Level worldIn) {
         super(t, worldIn);

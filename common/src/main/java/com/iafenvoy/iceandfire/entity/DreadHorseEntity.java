@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import com.iafenvoy.iceandfire.util.IafEntityDataSerializers;
 
 import com.iafenvoy.iceandfire.entity.util.IDreadMob;
 import java.util.Optional;
@@ -23,7 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
 public class DreadHorseEntity extends SkeletonHorse implements IDreadMob {
-    protected static final EntityDataAccessor<Optional<UUID>> COMMANDER_UNIQUE_ID = SynchedEntityData.defineId(DreadHorseEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<Optional<UUID>> COMMANDER_UNIQUE_ID = SynchedEntityData.defineId(DreadHorseEntity.class, IafEntityDataSerializers.OPTIONAL_UUID);
 
     public DreadHorseEntity(EntityType<? extends DreadHorseEntity> type, Level worldIn) {
         super(type, worldIn);

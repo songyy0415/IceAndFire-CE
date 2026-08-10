@@ -119,7 +119,7 @@ public class JarBlockEntity extends BlockEntity {
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;
         pixie.setTame(this.tamedPixie, false);
-        pixie.setOwnerUUID(this.pixieOwnerUUID);
+        pixie.setOwner(this.pixieOwnerUUID != null ? this.level.getPlayerByUUID(this.pixieOwnerUUID) : null);
         assert this.level != null;
         this.level.addFreshEntity(pixie);
         this.hasPixie = false;

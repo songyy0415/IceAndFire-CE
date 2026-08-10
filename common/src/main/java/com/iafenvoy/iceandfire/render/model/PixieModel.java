@@ -3,14 +3,11 @@ package com.iafenvoy.iceandfire.render.model;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.PixieEntity;
-import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
 import com.iafenvoy.iceandfire.render.entity.state.PixieRenderState;
-import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -194,7 +191,7 @@ public class PixieModel extends DragonBaseModel<PixieRenderState> {
         this.Right_Wing2.rotateAngleZ = (float) Math.toRadians(8);
     }
 
-    public void animateInJar(boolean sitting, JarBlockEntity jar, float headRot) {
+    public void animateInJar(boolean sitting, float animationProgress) {
         this.resetToDefaultPose();
         float speed_fly = 1.1F;
         float speed_idle = 0.05F;
@@ -218,10 +215,9 @@ public class PixieModel extends DragonBaseModel<PixieRenderState> {
             this.Right_Wing.rotateAngleZ = (float) Math.toRadians(28);
             this.Left_Wing2.rotateAngleZ = (float) Math.toRadians(-8);
             this.Right_Wing2.rotateAngleZ = (float) Math.toRadians(8);
-        } else if (jar != null) {
-            float partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
-            this.chainWave(LEFT_WINGS, speed_fly, degree_fly * 0.75F, 1, jar.ticksExisted + partialTicks, 1);
-            this.chainWave(RIGHT_WINGS, speed_fly, degree_fly * 0.75F, 1, jar.ticksExisted + partialTicks, 1);
+        } else {
+            this.chainWave(LEFT_WINGS, speed_fly, degree_fly * 0.75F, 1, animationProgress, 1);
+            this.chainWave(RIGHT_WINGS, speed_fly, degree_fly * 0.75F, 1, animationProgress, 1);
         }
     }
 

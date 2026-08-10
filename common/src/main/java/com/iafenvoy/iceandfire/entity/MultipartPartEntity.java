@@ -234,9 +234,8 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
         return parent != null && parent.hurtOrSimulate(source, damage * this.damageMultiplier);
     }
 
-    @Override
     public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
-        return source.is(DamageTypes.FALL) || source.is(DamageTypes.DROWN) || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.LAVA) || source.is(DamageTypeTags.IS_FIRE) || super.isInvulnerableTo(level, source);
+        return source.is(DamageTypes.FALL) || source.is(DamageTypes.DROWN) || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.LAVA) || source.is(DamageTypeTags.IS_FIRE);
     }
 
     public boolean shouldContinuePersisting() {
@@ -255,11 +254,11 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
     }
 
     @Override
-    public InteractionResult interactAt(Player player, Vec3 hitPos, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitPos) {
         Entity parent = this.getParent();
         if (this.level().isClientSide() && this.getParentId() != null) {
             NetworkManager.sendToServer(new MultipartInteractC2SPayload(this.getParentId(), 0));
             return InteractionResult.SUCCESS;
-        } else return parent != null ? parent.interactAt(player, hitPos, hand) : InteractionResult.PASS;
+        } else return parent != null ? parent.interact(player, hand, hitPos) : InteractionResult.PASS;
     }
 }

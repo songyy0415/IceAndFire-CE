@@ -60,7 +60,7 @@ public class IceAndFireJeiPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         RecipeManager recipeManager = Minecraft.getInstance().getConnection().getRecipeManager();
 
-        List<RecipeHolder<DragonForgeRecipe>> recipeList = recipeManager.getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get());
+        List<RecipeHolder<DragonForgeRecipe>> recipeList = recipeManager.getRecipes().stream().filter(r -> r.value().getType() == IafRecipes.DRAGON_FORGE_TYPE.get()).collect(java.util.stream.Collectors.toList());
 
         List<DragonForgeRecipe> FIRE_RECIPES = new ArrayList<>();
         List<DragonForgeRecipe> ICE_RECIPES = new ArrayList<>();

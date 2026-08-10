@@ -80,6 +80,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -263,7 +264,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         assert s != null;
         boolean isDev = s.equals("Alexthe666") || s.equals("Raptorfarian") || s.equals("tweakbsd");
         if (this.isTame() && this.isOwnedBy(player)) {
-            if (itemstack.getItem() == Items.RED_DYE && this.getEnumVariant() != IafHippogryphTypes.ALEX && isDev) {
+            if (itemstack.getItem() == Items.DYE.pick(DyeColor.RED) && this.getEnumVariant() != IafHippogryphTypes.ALEX && isDev) {
                 this.setVariant(IafHippogryphTypes.ALEX);
                 if (!player.isCreative())
                     itemstack.shrink(1);
@@ -272,7 +273,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                     this.level().addParticle(ParticleTypes.CLOUD, this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getY() + (double) (this.getRandom().nextFloat() * this.getBbHeight()), this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), 0, 0, 0);
                 return InteractionResult.SUCCESS;
             }
-            if (itemstack.getItem() == Items.LIGHT_GRAY_DYE && this.getEnumVariant() != IafHippogryphTypes.RAPTOR && isDev) {
+            if (itemstack.getItem() == Items.DYE.pick(DyeColor.LIGHT_GRAY) && this.getEnumVariant() != IafHippogryphTypes.RAPTOR && isDev) {
                 this.setVariant(IafHippogryphTypes.RAPTOR);
                 if (!player.isCreative())
                     itemstack.shrink(1);

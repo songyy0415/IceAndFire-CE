@@ -11,7 +11,7 @@ public record FrozenTargetAbility(int duration) implements PostHitAbility {
     @Override
     public void active(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, this.duration, 2));
-        target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, this.duration, 2));
+        target.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, this.duration, 2));
         target.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.FROZEN.get()), this.duration));
     }
 }

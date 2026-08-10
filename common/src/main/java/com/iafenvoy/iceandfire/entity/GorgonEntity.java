@@ -174,7 +174,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
             }
         }
         if (this.deathTime >= 200) {
-            if (!this.level().isClientSide() && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && ((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS))) {
+            if (!this.level().isClientSide() && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerMemoryTime > 0 && this.shouldDropExperience() && ((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS))) {
                 int i = this.getBaseExperienceReward((ServerLevel) this.level());
                 while (i > 0) {
                     int j = ExperienceOrb.getExperienceValue(i);

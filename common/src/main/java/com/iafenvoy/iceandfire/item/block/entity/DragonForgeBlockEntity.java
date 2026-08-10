@@ -225,7 +225,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public List<DragonForgeRecipe> getRecipes() {
         assert this.level != null;
-        return ((ServerLevel) this.level).recipeAccess().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        return ((ServerLevel) this.level).recipeAccess().getRecipes().stream().filter(r -> r.value().getType() == IafRecipes.DRAGON_FORGE_TYPE.get()).collect(java.util.stream.Collectors.toList()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {

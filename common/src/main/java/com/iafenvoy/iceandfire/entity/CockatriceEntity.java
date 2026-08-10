@@ -171,12 +171,10 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         }));
     }
 
-    @Override
     public boolean hasRestriction() {
         return this.hasHomePosition &&
                 this.getCommand() == 3 &&
-                this.getHomeDimensionName().equals(DragonUtils.getDimensionName(this.level()))
-                || super.hasRestriction();
+                this.getHomeDimensionName().equals(DragonUtils.getDimensionName(this.level()));
     }
 
     @Override
@@ -184,9 +182,8 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         return SoundSource.HOSTILE;
     }
 
-    @Override
     public BlockPos getRestrictCenter() {
-        return this.hasHomePosition && this.getCommand() == 3 && this.homePos != null ? this.homePos.getPosition() : super.getRestrictCenter();
+        return this.hasHomePosition && this.getCommand() == 3 && this.homePos != null ? this.homePos.getPosition() : this.blockPosition();
     }
 
     @Override

@@ -14,7 +14,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 public class CannoliItem extends Item {
     public CannoliItem() {
-        super(new Properties().food(new FoodProperties.Builder().nutrition(20).saturationModifier(2).alwaysEdible().effect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 3600, 2), 1).build()));
+        super(new Properties().food(new FoodProperties.Builder().nutrition(20).saturationModifier(2).alwaysEdible().effect(new MobEffectInstance(MobEffects.STRENGTH, 3600, 2), 1).build()));
     }
 
     @Override

@@ -1,38 +1,47 @@
 package com.iafenvoy.iceandfire.render.block;
 
 import com.iafenvoy.iceandfire.item.block.entity.DreadSpawnerBlockEntity;
-import net.minecraft.block.spawner.MobSpawnerLogic;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import com.iafenvoy.iceandfire.render.block.state.DreadSpawnerRenderState;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.SpawnerRenderer;
+import net.minecraft.client.renderer.blockentity.TrialSpawnerRenderer;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.phys.Vec3;
 
-public class DreadSpawnerBlockEntityRenderer<T extends DreadSpawnerBlockEntity> implements BlockEntityRenderer<T> {
-    public DreadSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+public class DreadSpawnerBlockEntityRenderer implements BlockEntityRenderer<DreadSpawnerBlockEntity, DreadSpawnerRenderState> {
+    private final EntityRenderDispatcher entityRenderer;
+
+    public DreadSpawnerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+        this.entityRenderer = context.entityRenderer();
     }
 
     @Override
-    public void render(DreadSpawnerBlockEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        matrixStackIn.push();
-        matrixStackIn.translate(0.5D, 0.0D, 0.5D);
-        MobSpawnerLogic spawnerLogic = tileEntityIn.getLogic();
-        Entity entity = spawnerLogic.getRenderedEntity(tileEntityIn.getWorld(), tileEntityIn.getPos());
-        if (entity != null) {
-            float f = 0.53125F;
-            float f1 = Math.max(entity.getWidth(), entity.getHeight());
-            if (f1 > 1) f /= f1;
+    public DreadSpawnerRenderState createRenderState() {
+        return new DreadSpawnerRenderState();
+    }
 
-            matrixStackIn.translate(0.0D, 0.4F, 0.0D);
-            matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) MathHelper.lerp(partialTicks, spawnerLogic.getLastRotation(), spawnerLogic.getRotation()) * 10.0F));
-            matrixStackIn.translate(0.0D, -0.2F, 0.0D);
-            matrixStackIn.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-30.0F));
-            matrixStackIn.scale(f, f, f);
-            MinecraftClient.getInstance().getEntityRenderDispatcher().render(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, matrixStackIn, bufferIn, combinedLightIn);
+    @Override
+    public void extractRenderState(DreadSpawnerBlockEntity entity, DreadSpawnerRenderState state, float partialTicks, Vec3 pos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(entity, state, crumblingOverlay);
+        BaseSpawner spawnerLogic = entity.getLogic();
+        Entity displayEntity = spawnerLogic.getOrCreateDisplayEntity(entity.getLevel(), entity.getBlockPos());
+        if (displayEntity != null) {
+            TrialSpawnerRenderer.extractSpawnerData(state, partialTicks, displayEntity, this.entityRenderer, spawnerLogic.getOSpin(), spawnerLogic.getSpin());
         }
-        matrixStackIn.pop();
+    }
+
+    @Override
+    public void submit(DreadSpawnerRenderState state, PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.displayEntity != null) {
+            SpawnerRenderer.submitEntityInSpawner(matrixStackIn, submitNodeCollector, state.displayEntity, this.entityRenderer, state.scale, state.spin, camera);
+        }
     }
 }

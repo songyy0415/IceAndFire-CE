@@ -1,10 +1,19 @@
 {
   "layers": {
     "humanoid": [
-      { "texture": "iceandfire:textures/models/armor/blindfold_layer_1.png" }
+      {
+        "texture": "iceandfire:blindfold_layer_1"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "iceandfire:blindfold_layer_1"
+      }
     ],
     "humanoid_leggings": [
-      { "texture": "iceandfire:textures/models/armor/blindfold_layer_1.png" }
+      {
+        "texture": "iceandfire:blindfold_layer_1"
+      }
     ]
   }
 }

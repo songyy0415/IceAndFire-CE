@@ -1,10 +1,19 @@
 {
   "layers": {
     "humanoid": [
-      { "texture": "iceandfire:textures/models/armor/sea_serpent_scales_teal_layer_1.png" }
+      {
+        "texture": "iceandfire:sea_serpent_scales_teal_layer_1"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "iceandfire:sea_serpent_scales_teal_layer_1"
+      }
     ],
     "humanoid_leggings": [
-      { "texture": "iceandfire:textures/models/armor/sea_serpent_scales_teal_layer_2.png" }
+      {
+        "texture": "iceandfire:sea_serpent_scales_teal_layer_2"
+      }
     ]
   }
 }

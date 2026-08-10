@@ -1,10 +1,19 @@
 {
   "layers": {
     "humanoid": [
-      { "texture": "iceandfire:textures/models/armor/dragon_scales_white_layer_1.png" }
+      {
+        "texture": "iceandfire:dragon_scales_white_layer_1"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "iceandfire:dragon_scales_white_layer_1"
+      }
     ],
     "humanoid_leggings": [
-      { "texture": "iceandfire:textures/models/armor/dragon_scales_white_layer_2.png" }
+      {
+        "texture": "iceandfire:dragon_scales_white_layer_2"
+      }
     ]
   }
 }

@@ -1,12 +1,20 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import java.util.Map;
+
+import java.util.List;
+
+import net.minecraft.client.model.geom.ModelPart;
+
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
-public class GorgonHeadModel extends AdvancedEntityModel<Entity> {
+public class GorgonHeadModel extends AdvancedEntityModel<EntityRenderState> {
     public final AdvancedModelBox Head;
     public final AdvancedModelBox Head_Details;
     public final AdvancedModelBox SnakeBaseR2;
@@ -95,6 +103,7 @@ public class GorgonHeadModel extends AdvancedEntityModel<Entity> {
     public final AdvancedModelBox SnakeFang2L5;
 
     public GorgonHeadModel() {
+        super(new ModelPart(List.of(), Map.of()));
         this.texWidth = 128;
         this.texHeight = 128;
         this.SnakeFang1R2 = new AdvancedModelBox(this, 31, 37);
@@ -486,7 +495,7 @@ public class GorgonHeadModel extends AdvancedEntityModel<Entity> {
     }
 
     @Override
-    public void setAngles(Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(EntityRenderState state) {
     }
 
     @Override

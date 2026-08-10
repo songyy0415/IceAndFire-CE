@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.mixin;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.render.item.DeathwormGauntletSpecialModelRenderer;
+import com.iafenvoy.iceandfire.render.item.GorgonHeadSpecialModelRenderer;
 import com.iafenvoy.iceandfire.render.item.TideTridentSpecialModelRenderer;
 import com.iafenvoy.iceandfire.render.item.TrollWeaponSpecialModelRenderer;
 import com.mojang.serialization.MapCodec;
@@ -27,5 +28,6 @@ public class SpecialModelRenderersMixin {
         ID_MAPPER.put(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "tide_trident"), TideTridentSpecialModelRenderer.Unbaked.MAP_CODEC);
         ID_MAPPER.put(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "troll_weapon"), TrollWeaponSpecialModelRenderer.Unbaked.MAP_CODEC);
         ID_MAPPER.put(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "deathworm_gauntlet"), DeathwormGauntletSpecialModelRenderer.Unbaked.MAP_CODEC);
+        ID_MAPPER.put(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "gorgon_head"), GorgonHeadSpecialModelRenderer.Unbaked.MAP_CODEC);
     }
 }

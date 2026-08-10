@@ -30,11 +30,19 @@ public abstract class AdvancedSpecialModelRenderer<T> implements SpecialModelRen
      * a fresh {@code PoseStack} from the pose captured at submit time.
      */
     protected void renderModel(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, RenderType renderType, int light, int overlay, int color) {
+        this.renderModel(this.model, poseStack, submitNodeCollector, renderType, light, overlay, color);
+    }
+
+    /**
+     * Variant of {@link #renderModel(PoseStack, SubmitNodeCollector, RenderType, int, int, int)} that
+     * draws an explicit model (for renderers that swap between model classes, e.g. GorgonHead).
+     */
+    protected void renderModel(AdvancedEntityModel<?> model, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, RenderType renderType, int light, int overlay, int color) {
         submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
             PoseStack fresh = new PoseStack();
             fresh.last().pose().set(pose.pose());
             fresh.last().normal().set(pose.normal());
-            this.model.renderPartsToBuffer(fresh, buffer, light, overlay, color);
+            model.renderPartsToBuffer(fresh, buffer, light, overlay, color);
         });
     }
 

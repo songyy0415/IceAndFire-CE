@@ -11,10 +11,9 @@ import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-public class SeaSerpentEntityRenderer extends MobRenderer<SeaSerpentEntity, SeaSerpentRenderState, TabulaModel<SeaSerpentRenderState>> {
+public class SeaSerpentEntityRenderer extends AdvancedEntityRendererBase<SeaSerpentEntity, SeaSerpentRenderState, TabulaModel<SeaSerpentRenderState>> {
     public SeaSerpentEntityRenderer(EntityRendererProvider.Context context) {
         super(context, TabulaModelHandlerHelper.getModel(IafRenderers.SEA_SERPENT, SeaSerpentTabulaModelAnimator::new), 1.6F);
         this.layers.add(new SeaSerpentAncientFeatureRenderer(this));

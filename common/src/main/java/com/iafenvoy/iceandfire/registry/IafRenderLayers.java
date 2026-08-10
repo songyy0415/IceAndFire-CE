@@ -17,10 +17,10 @@ import net.minecraft.resources.Identifier;
  *   <li>{@code getGhost} — was ENTITY_CUTOUT_NO_CULL shader + additive-ish ghost blend + NO_CULL →
  *       {@code entityCutout} (same cutout pipeline, no cull, standard blend).</li>
  *   <li>{@code getGhostDaytime} — was ENTITY_CUTOUT_NO_CULL + translucent blend → {@code entityTranslucent}.</li>
- *   <li>{@code getDreadlandsPortal} — was a custom shader (RenderVariables.DREAD_PORTAL_PROGRAM) with
- *       two textures (POSITION_COLOR). Custom shader pipelines are not creatable in 26.2; falls back to
- *       the portal texture with {@code entityCutout}. The block renderer migration (Batch3-C) will
- *       re-evaluate the portal with 26.2 block-pipeline APIs.</li>
+ *   <li>{@code getDreadlandsPortal} — was a custom shader (RenderVariables.DREAD_PORTAL_PROGRAM, removed in P7-H2)
+ *       with two textures (POSITION_COLOR). Custom shader pipelines are not creatable in 26.2; uses
+ *       {@code entityCutout} with the portal texture. Legacy {@code rendertype_dread_portal} shader
+ *       resources removed in P7-H2 (no consumers).</li>
  *   <li>{@code getStoneMobRenderType} — was ENTITY_CUTOUT with the stone texture → {@code entitySolid}.</li>
  *   <li>{@code getIce} — was BEACON_BEAM shader + translucent + cull → {@code beaconBeam}.</li>
  *   <li>{@code getStoneCrackRenderType} — was ENTITY_CUTOUT + EQUAL_DEPTH_TEST + NO_CULL + translucent.

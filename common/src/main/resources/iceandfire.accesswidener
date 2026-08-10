@@ -16,3 +16,4 @@ accessible method net/minecraft/client/Camera move (FFF)V
 accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
 accessible field net/minecraft/world/entity/ai/village/poi/PoiTypes TYPE_BY_STATE Ljava/util/Map;
 accessible method net/minecraft/core/particles/SimpleParticleType <init> (Z)V
+accessible method net/minecraft/client/renderer/GameRenderer setPostEffect (Lnet/minecraft/resources/Identifier;)V

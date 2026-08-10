@@ -3,10 +3,11 @@ package com.iafenvoy.iceandfire.render.entity;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.HydraArrowEntity;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.Identifier;
 
-public class HydraArrowEntityRenderer extends ArrowRenderer<HydraArrowEntity> {
+public class HydraArrowEntityRenderer extends ArrowRenderer<HydraArrowEntity, ArrowRenderState> {
     private static final Identifier TEXTURES = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/misc/hydra_arrow.png");
 
     public HydraArrowEntityRenderer(EntityRendererProvider.Context context) {
@@ -14,7 +15,12 @@ public class HydraArrowEntityRenderer extends ArrowRenderer<HydraArrowEntity> {
     }
 
     @Override
-    public Identifier getTextureLocation(HydraArrowEntity entity) {
+    public ArrowRenderState createRenderState() {
+        return new ArrowRenderState();
+    }
+
+    @Override
+    public Identifier getTextureLocation(ArrowRenderState state) {
         return TEXTURES;
     }
 }

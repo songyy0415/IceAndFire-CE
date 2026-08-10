@@ -22,11 +22,9 @@ import com.iafenvoy.uranus.client.render.armor.IArmorRendererBase;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
-import dev.architectury.registry.client.rendering.RenderTypeRegistry;
 import dev.architectury.registry.item.ItemPropertiesRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.Identifier;
@@ -141,19 +139,8 @@ public final class IafRenderers {
     }
 
     public static void registerRenderLayers() {
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.GOLD_PILE.get(), IafBlocks.SILVER_PILE.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.LECTERN.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.PODIUM_OAK.get(), IafBlocks.PODIUM_BIRCH.get(), IafBlocks.PODIUM_SPRUCE.get(), IafBlocks.PODIUM_JUNGLE.get(), IafBlocks.PODIUM_ACACIA.get(), IafBlocks.PODIUM_DARK_OAK.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.FIRE_LILY.get(), IafBlocks.FROST_LILY.get(), IafBlocks.LIGHTNING_LILY.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DRAGON_ICE_SPIKES.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_STONE_FACE.get());
-        RenderTypeRegistry.register(RenderType.translucent(), IafBlocks.EGG_IN_ICE.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.JAR_EMPTY.get(), IafBlocks.JAR_PIXIE_0.get(), IafBlocks.JAR_PIXIE_1.get(), IafBlocks.JAR_PIXIE_2.get(), IafBlocks.JAR_PIXIE_3.get(), IafBlocks.JAR_PIXIE_4.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get(), IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get(), IafBlocks.PIXIE_HOUSE_OAK.get(), IafBlocks.PIXIE_HOUSE_BIRCH.get(), IafBlocks.PIXIE_HOUSE_SPRUCE.get(), IafBlocks.PIXIE_HOUSE_DARK_OAK.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_SPAWNER.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_TORCH.get(), IafBlocks.BURNT_TORCH.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREAD_TORCH_WALL.get(), IafBlocks.BURNT_TORCH_WALL.get());
-        RenderTypeRegistry.register(RenderType.cutout(), IafBlocks.DREADWOOD_LEAVES.get(), IafBlocks.DREADWOOD_SAPLING.get());
+        // mc26.2 removed the block render-type registration API; block render types are now data-driven
+        // via block model JSONs (cutout/translucent blocks must specify their render type in the model).
     }
 
     public static void registerModelPredicates() {

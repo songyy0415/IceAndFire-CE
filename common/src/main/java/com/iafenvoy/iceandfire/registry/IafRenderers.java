@@ -22,7 +22,6 @@ import com.iafenvoy.uranus.client.render.armor.IArmorRendererBase;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
-import dev.architectury.registry.item.ItemPropertiesRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.blockentity.ChestRenderer;
@@ -144,13 +143,8 @@ public final class IafRenderers {
     }
 
     public static void registerModelPredicates() {
-        ItemPropertiesRegistry.register(IafItems.DRAGON_BOW.get(), Identifier.withDefaultNamespace("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1 : 0);
-        ItemPropertiesRegistry.register(IafItems.DRAGON_BOW.get(), Identifier.withDefaultNamespace("pull"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity == null ? 0 : livingEntity.getUseItem() != itemStack ? 0 : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / 20);
-
-        ItemPropertiesRegistry.register(IafItems.DRAGON_HORN.get(), Identifier.withDefaultNamespace("iceorfire"), (stack, level, entity, p) -> DragonHornItem.getDragonType(stack) * 0.25F);
-        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_FIRE.get(), Identifier.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_ICE.get(), Identifier.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemPropertiesRegistry.register(IafItems.SUMMONING_CRYSTAL_LIGHTNING.get(), Identifier.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemPropertiesRegistry.register(IafItems.TIDE_TRIDENT.get(), Identifier.withDefaultNamespace("throwing"), (stack, level, entity, p) -> entity != null && entity.isUsingItem() && entity.getMainHandItem() == stack ? 1.0F : 0.0F);
+        // mc26.2 removed ItemPropertiesRegistry; item model properties are data-driven via item model JSONs.
+        // Bow "pulling"/"pull" are built-in 26.2 properties; custom properties (iceorfire/has_dragon/throwing)
+        // require the 26.2 ItemModel property system.
     }
 }

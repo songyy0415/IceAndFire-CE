@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -28,10 +29,12 @@ public class HippocampusSpawnFeature extends Feature<NoneFeatureConfiguration> {
             for (int i = 0; i < random.nextInt(5); i++) {
                 BlockPos spawnPos = oceanPos.offset(random.nextInt(10) - 5, random.nextInt(30), random.nextInt(10) - 5);
                 if (world.getFluidState(spawnPos).getType() == Fluids.WATER) {
-                    HippocampusEntity campus = IafEntities.HIPPOCAMPUS.get().create(world.getLevel());
+                    HippocampusEntity campus = IafEntities.HIPPOCAMPUS.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
                     assert campus != null;
                     campus.setVariant(random.nextInt(6));
-                    campus.moveTo(spawnPos.getX() + 0.5F, spawnPos.getY() + 0.5F, spawnPos.getZ() + 0.5F, 0, 0);
+                    campus.setPos(spawnPos.getX() + 0.5F, spawnPos.getY() + 0.5F, spawnPos.getZ() + 0.5F);
+                    campus.setYRot(0);
+                    campus.setXRot(0);
                     world.addFreshEntity(campus);
                 }
             }

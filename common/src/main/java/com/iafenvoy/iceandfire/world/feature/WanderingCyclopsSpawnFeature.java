@@ -6,6 +6,8 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -27,16 +29,16 @@ public class WanderingCyclopsSpawnFeature extends Feature<NoneFeatureConfigurati
         RandomSource random = context.random();
         BlockPos pos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, context.origin().offset(8, 0, 8));
         if (this.isFarEnoughFromSpawn(world, pos) && random.nextDouble() < IafCommonConfig.INSTANCE.cyclops.spawnWanderingChance.getValue() && random.nextInt(12) == 0) {
-            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel());
+            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
             assert cyclops != null;
             cyclops.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
             cyclops.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWNER, null);
             world.addFreshEntity(cyclops);
             for (int i = 0; i < 3 + random.nextInt(3); i++) {
-                Sheep sheep = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("sheep")).create(world.getLevel(), EntitySpawnReason.STRUCTURE);
+                Sheep sheep = ((EntityType<? extends Sheep>) BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("sheep"))).create(world.getLevel(), EntitySpawnReason.STRUCTURE);
                 assert sheep != null;
                 sheep.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-                sheep.setColor(Sheep.getRandomSheepColor(random));
+                sheep.setColor(Sheep.getRandomSheepColor(world, pos));
                 world.addFreshEntity(sheep);
             }
         }

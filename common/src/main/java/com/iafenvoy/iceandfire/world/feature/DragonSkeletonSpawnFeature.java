@@ -6,6 +6,7 @@ import com.iafenvoy.uranus.util.RandomHelper;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -27,7 +28,7 @@ public class DragonSkeletonSpawnFeature extends Feature<NoneFeatureConfiguration
         RandomSource random = context.random();
         BlockPos pos = world.getHeightmapPos(Heightmap.Types.OCEAN_FLOOR_WG, context.origin().offset(8, 0, 8));
         if (IafCommonConfig.INSTANCE.dragon.generateSkeletons.getValue() && random.nextDouble() < IafCommonConfig.INSTANCE.dragon.generateSkeletonChance.getValue()) {
-            DragonBaseEntity dragon = this.dragonType.create(world.getLevel());
+            DragonBaseEntity dragon = this.dragonType.create(world.getLevel(), EntitySpawnReason.STRUCTURE);
             assert dragon != null;
             dragon.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
             int age = 10 + random.nextInt(100);

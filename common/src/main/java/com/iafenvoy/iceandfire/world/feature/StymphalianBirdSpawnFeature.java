@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -27,9 +28,11 @@ public class StymphalianBirdSpawnFeature extends Feature<NoneFeatureConfiguratio
             for (int i = 0; i < 4 + random.nextInt(4); i++) {
                 BlockPos spawnPos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, pos.offset(random.nextInt(10) - 5, 0, random.nextInt(10) - 5));
                 if (world.getBlockState(spawnPos.below()).canOcclude()) {
-                    StymphalianBirdEntity bird = IafEntities.STYMPHALIAN_BIRD.get().create(world.getLevel());
+                    StymphalianBirdEntity bird = IafEntities.STYMPHALIAN_BIRD.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
                     assert bird != null;
-                    bird.moveTo(spawnPos.getX() + 0.5F, spawnPos.getY() + 1.5F, spawnPos.getZ() + 0.5F, 0, 0);
+                    bird.setPos(spawnPos.getX() + 0.5F, spawnPos.getY() + 1.5F, spawnPos.getZ() + 0.5F);
+                    bird.setYRot(0);
+                    bird.setXRot(0);
                     world.addFreshEntity(bird);
                 }
             }

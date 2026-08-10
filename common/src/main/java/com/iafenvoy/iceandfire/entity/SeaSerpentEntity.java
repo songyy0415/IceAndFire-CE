@@ -21,7 +21,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -159,7 +158,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, MultipartPartEntity.class).setAlertOthers());
-        this.targetSelector.addGoal(2, new FlyingAITargetGoal<>(this, LivingEntity.class, 150, false, false, (entity1, level) -> !(entity1 instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity1) && entity1.isInWaterOrBubble()));
+        this.targetSelector.addGoal(2, new FlyingAITargetGoal<>(this, LivingEntity.class, 150, false, false, (entity1, level) -> !(entity1 instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity1) && (entity1.isInWater() || entity1.level().getBlockState(entity1.blockPosition()).is(Blocks.BUBBLE_COLUMN))));
         this.targetSelector.addGoal(3, new FlyingAITargetGoal<>(this, Player.class, 0, false, false, (entity, level) -> !(entity instanceof SeaSerpentEntity) && DragonUtils.isAlive(entity)));
     }
 
@@ -175,7 +174,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
 
     @Override
     public void pushEntities() {
-        List<Entity> entities = this.level().getEntities(this, this.getBoundingBox().expandTowards(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+        List<Entity> entities = this.level().getEntities(this, this.getBoundingBox().expandTowards(0.20000000298023224D, 0.0D, 0.20000000298023224D), entity -> true);
         entities.stream().filter(entity -> !(entity instanceof MultipartPartEntity) && entity.isPushable()).forEach(entity -> entity.push(this));
     }
 
@@ -259,7 +258,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getAnimation() != ANIMATION_BITE) {
             this.setAnimation(ANIMATION_BITE);
             return true;
@@ -360,10 +359,11 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     @Override
     public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Variant") && compound.get("Variant").getId() == Tag.TAG_STRING)
-            this.setVariant(compound.getString("Variant").orElse(""));
+        String variant = compound.getStringOr("Variant", "");
+        if (!variant.isEmpty())
+            this.setVariant(variant);
         else
-            this.setVariant(SeaSerpentType.values().get(compound.getInt("Variant").orElse(0)).getName());
+            this.setVariant(SeaSerpentType.values().get(compound.getIntOr("Variant", 0)).getName());
         this.ticksSinceRoar = compound.getInt("TicksSinceRoar").orElse(0);
         this.jumpCooldown = compound.getInt("JumpCooldown").orElse(0);
         this.setSeaSerpentScale(compound.getFloatOr("Scale", 0.0F));
@@ -569,10 +569,10 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
             boat.remove(RemovalReason.KILLED);
             if (((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
                 for (int i = 0; i < 3; ++i) {
-                    boat.spawnAtLocation(new ItemStack(boat.getVariant().getPlanks().asItem()), 0.0F);
+                    boat.spawnAtLocation((ServerLevel) this.level(), boat.getPickResult(), 0.0F);
                 }
                 for (int j = 0; j < 2; ++j) {
-                    boat.spawnAtLocation(new ItemStack(Items.STICK));
+                    boat.spawnAtLocation((ServerLevel) this.level(), new ItemStack(Items.STICK));
                 }
             }
         }
@@ -771,7 +771,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     public SeaSerpentType getEnum() {
-        return IafRegistries.SEA_SERPENT_TYPE.get(IceAndFire.id(this.getVariant()));
+        return IafRegistries.SEA_SERPENT_TYPE.getValue(IceAndFire.id(this.getVariant()));
     }
 
     @Override
@@ -789,7 +789,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     @Override
-    public boolean killedEntity(ServerLevel world, LivingEntity entity) {
+    public boolean killedEntity(ServerLevel world, LivingEntity entity, DamageSource source) {
         this.attackDecision = this.getRandom().nextBoolean();
         return this.attackDecision;
     }

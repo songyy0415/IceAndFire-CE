@@ -11,6 +11,7 @@ import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 
 
+import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 
 public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
-    private final ServerBossEvent bossInfo = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
+    private final ServerBossEvent bossInfo = new ServerBossEvent(UUID.randomUUID(), this.getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
     private int animationTick;
     private Animation currentAnimation;
 

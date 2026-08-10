@@ -21,7 +21,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -57,8 +56,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 
 public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHumanoid, BlacklistedFromStatues, IHasCustomizableAttributes {
@@ -92,11 +89,6 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 .add(Attributes.ATTACK_DAMAGE, IafCommonConfig.INSTANCE.ghost.attackDamage.getValue())
                 //ARMOR
                 .add(Attributes.ARMOR, 1D);
-    }
-
-    @Override
-    protected ResourceKey<LootTable> getDefaultLootTable() {
-        return this.wasFromChest() ? BuiltInLootTables.EMPTY : this.getType().getDefaultLootTable();
     }
 
     @Override
@@ -198,7 +190,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         });
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (entity, level) -> Entity.isAlive(entity)));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (entity, level) -> entity.isAlive()));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, (entity, level) -> DragonUtils.isAlive(entity) && DragonUtils.isVillager(entity)));
     }
 
@@ -238,7 +230,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         if (this.getAnimation() == ANIMATION_HIT && this.getTarget() != null) {
             if (this.distanceTo(this.getTarget()) < 1.4D && this.getAnimationTick() >= 4 && this.getAnimationTick() < 6) {
                 this.playSound(IafSounds.GHOST_ATTACK.get(), this.getSoundVolume(), this.getVoicePitch());
-                this.doHurtTarget(this.getTarget());
+                this.doHurtTarget((ServerLevel) this.level(), this.getTarget());
             }
         }
         AnimationHandler.INSTANCE.updateAnimations(this);
@@ -254,7 +246,6 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         return this.isDaytimeMode() || super.isSilent();
     }
 
-    @Override
     protected boolean isSunBurnTick() {
         if (this.level().getSkyDarken() < 4 && !this.level().isClientSide()) {
             float f = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition());

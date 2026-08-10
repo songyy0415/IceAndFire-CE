@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -87,7 +89,7 @@ public class BlockLaunchExplosion implements Explosion {
                     this.world.setBlock(blockpos, Blocks.AIR.defaultBlockState(), 3);
                     if (this.world instanceof ServerLevel serverWorld)
                         blockstate.getBlock().wasExploded(serverWorld, blockpos, this);
-                    FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(EntityType.FALLING_BLOCK, this.world);
+                    FallingBlockEntity fallingBlockEntity = new FallingBlockEntity((EntityType<? extends FallingBlockEntity>) BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("falling_block")), this.world);
                     fallingBlockEntity.setStartPos(blockpos1);
                     fallingBlockEntity.setPos(blockpos1.getX() + 0.5D, blockpos1.getY() + 0.5D, blockpos1.getZ() + 0.5D);
                     double d5 = fallingBlockEntity.getX() - this.x;

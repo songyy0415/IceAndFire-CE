@@ -136,7 +136,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();
-                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.getRandom().nextFloat() * 0.4F);
             }
         }
     }

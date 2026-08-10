@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
@@ -44,7 +45,7 @@ public class FireDragonEntity extends DragonBaseEntity {
 
     public FireDragonEntity(EntityType<? extends FireDragonEntity> t, Level worldIn) {
         super(t, worldIn, IafDragonTypes.FIRE, 1, 1 + IafCommonConfig.INSTANCE.dragon.attackDamage.getValue(), IafCommonConfig.INSTANCE.dragon.maxHealth.getValue() * 0.04, IafCommonConfig.INSTANCE.dragon.maxHealth.getValue(), 0.15F, 0.4F);
-        this.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
+        this.setPathfindingMalus(PathType.FIRE, 0.0F);
         this.setPathfindingMalus(PathType.LAVA, 8.0F);
         ANIMATION_SPEAK = Animation.create(20);
         ANIMATION_BITE = Animation.create(35);
@@ -81,7 +82,7 @@ public class FireDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         this.getLookControl().setLookAt(entityIn, 30.0F, 30.0F);
         if (!this.isPlayingAttackAnimation()) {
             switch (this.groundAttack) {
@@ -112,7 +113,7 @@ public class FireDragonEntity extends DragonBaseEntity {
         LivingEntity attackTarget = this.getTarget();
         if (!this.level().isClientSide() && attackTarget != null) {
             if (this.getBoundingBox().inflate(2.5F + this.getRenderSize() * 0.33F, 2.5F + this.getRenderSize() * 0.33F, 2.5F + this.getRenderSize() * 0.33F).intersects(attackTarget.getBoundingBox())) {
-                this.doHurtTarget(attackTarget);
+                this.doHurtTarget((ServerLevel) this.level(), attackTarget);
             }
             if (this.groundAttack == IafDragonAttacks.Ground.FIRE && (this.usingGroundAttack || this.onGround())) {
                 this.shootFireAtMob(attackTarget);
@@ -123,7 +124,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                 double difZ = attackTarget.getZ() - this.getZ();
                 this.setDeltaMovement(this.getDeltaMovement().add(difX * 0.1D, difY * 0.1D, difZ * 0.1D));
                 if (this.getBoundingBox().inflate(1 + this.getRenderSize() * 0.5F, 1 + this.getRenderSize() * 0.5F, 1 + this.getRenderSize() * 0.5F).intersects(attackTarget.getBoundingBox())) {
-                    this.doHurtTarget(attackTarget);
+                    this.doHurtTarget((ServerLevel) this.level(), attackTarget);
                     this.usingGroundAttack = true;
                     this.randomizeAttacks();
                     this.setFlying(false);

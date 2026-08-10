@@ -143,7 +143,7 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     public Item getDragonSkullItem() {
-        return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(this.getDragonType())).getSkullItem();
+        return IafRegistries.DRAGON_TYPE.getValue(IceAndFire.id(this.getDragonType())).getSkullItem();
     }
 
     @Override

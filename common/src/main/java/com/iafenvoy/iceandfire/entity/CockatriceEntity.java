@@ -186,7 +186,6 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         return this.hasHomePosition && this.getCommand() == 3 && this.homePos != null ? this.homePos.getPosition() : this.blockPosition();
     }
 
-    @Override
     public float getRestrictRadius() {
         return 30.0F;
     }
@@ -243,7 +242,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.isStaring())
             return false;
         if (this.getRandom().nextBoolean()) {

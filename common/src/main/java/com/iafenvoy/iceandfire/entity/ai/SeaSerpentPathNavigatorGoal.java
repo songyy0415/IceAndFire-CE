@@ -30,6 +30,11 @@ public class SeaSerpentPathNavigatorGoal extends PathNavigation {
     }
 
     @Override
+    public boolean canNavigateGround() {
+        return false;
+    }
+
+    @Override
     protected Vec3 getTempMobPos() {
         return new Vec3(this.mob.getX(), this.mob.getY(0.5D), this.mob.getZ());
     }

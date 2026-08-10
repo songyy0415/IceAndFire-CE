@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
 
-import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.entity.ai.DreadAITargetNonDreadGoal;
 import com.iafenvoy.iceandfire.entity.util.IAnimalFear;
 import com.iafenvoy.iceandfire.entity.util.IDreadMob;
@@ -19,6 +18,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
@@ -83,7 +83,7 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, IDreadMob.class));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (entity, level) -> DragonUtils.canHostilesTarget(entity)));
-        this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
+        this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (entity, level) -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_BITE);
         }
@@ -219,17 +219,17 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.WOLF_GROWL;
+        return SoundEvents.WOLF_GROWL_BABY.value();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.WOLF_HURT;
+        return SoundEvents.WOLF_HURT_BABY.value();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.WOLF_DEATH;
+        return SoundEvents.WOLF_DEATH_BABY.value();
     }
 
     @Override

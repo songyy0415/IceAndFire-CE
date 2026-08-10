@@ -22,6 +22,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
@@ -103,7 +104,7 @@ public class IceDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         this.getLookControl().setLookAt(entityIn, 30.0F, 30.0F);
         if (!this.isPlayingAttackAnimation()) {
             switch (this.groundAttack) {
@@ -141,7 +142,7 @@ public class IceDragonEntity extends DragonBaseEntity {
         }
         if (!this.level().isClientSide() && attackTarget != null) {
             if (this.getBoundingBox().inflate(0 + this.getRenderSize() * 0.33F, 0 + this.getRenderSize() * 0.33F, 0 + this.getRenderSize() * 0.33F).intersects(attackTarget.getBoundingBox())) {
-                this.doHurtTarget(attackTarget);
+                this.doHurtTarget((ServerLevel) this.level(), attackTarget);
             }
             if (this.groundAttack == IafDragonAttacks.Ground.FIRE && (this.usingGroundAttack || this.onGround())) {
                 this.shootIceAtMob(attackTarget);
@@ -153,7 +154,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                 this.setDeltaMovement(this.getDeltaMovement().add(difX * 0.1D, difY * 0.1D, difZ * 0.1D));
 
                 if (this.getBoundingBox().inflate(1 + this.getRenderSize() * 0.5F, 1 + this.getRenderSize() * 0.5F, 1 + this.getRenderSize() * 0.5F).intersects(attackTarget.getBoundingBox())) {
-                    this.doHurtTarget(attackTarget);
+                    this.doHurtTarget((ServerLevel) this.level(), attackTarget);
                     this.usingGroundAttack = true;
                     this.randomizeAttacks();
                     this.setFlying(false);
@@ -261,10 +262,10 @@ public class IceDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public void onAboveBubbleCol(boolean pDownwards) {
+    public void onAboveBubbleColumn(boolean pDownwards, BlockPos pos) {
         // Disable bubble column drag for elder dragons
         if (this.getDragonStage() < 2) {
-            super.onAboveBubbleCol(pDownwards);
+            super.onAboveBubbleColumn(pDownwards, pos);
         }
     }
 

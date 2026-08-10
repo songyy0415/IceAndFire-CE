@@ -26,7 +26,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class ChainTieEntity extends HangingEntity {
     public ChainTieEntity(EntityType<? extends HangingEntity> type, Level worldIn) {
@@ -50,7 +52,7 @@ public class ChainTieEntity extends HangingEntity {
         int j = pos.getY();
         int k = pos.getZ();
 
-        for (ChainTieEntity entityleashknot : worldIn.getEntitiesOfClass(ChainTieEntity.class, new AABB(i - 1.0D, j - 1.0D, k - 1.0D, i + 1.0D, j + 1.0D, k + 1.0D)))
+        for (ChainTieEntity entityleashknot : worldIn.getEntities(EntityTypeTest.forClass(ChainTieEntity.class), new AABB(i - 1.0D, j - 1.0D, k - 1.0D, i + 1.0D, j + 1.0D, k + 1.0D), entity -> true))
             if (entityleashknot != null && entityleashknot.pos != null && entityleashknot.pos.equals(pos))
                 return entityleashknot;
         return null;
@@ -97,7 +99,7 @@ public class ChainTieEntity extends HangingEntity {
     }
 
     @Override
-    public void dropItem(Entity brokenEntity) {
+    public void dropItem(ServerLevel level, Entity brokenEntity) {
         this.playSound(SoundEvents.ARMOR_EQUIP_CHAIN.value(), 1.0F, 1.0F);
     }
 
@@ -111,7 +113,7 @@ public class ChainTieEntity extends HangingEntity {
         super.remove(removalReason);
         double d0 = 30D;
 
-        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, new AABB(this.getX() - d0, this.getY() - d0, this.getZ() - d0, this.getX() + d0, this.getY() + d0, this.getZ() + d0));
+        List<LivingEntity> list = this.level().getEntities(EntityTypeTest.forClass(LivingEntity.class), new AABB(this.getX() - d0, this.getY() - d0, this.getZ() - d0, this.getX() + d0, this.getY() + d0, this.getZ() + d0), entity -> true);
 
         for (LivingEntity livingEntity : list) {
             ChainData chainData = ChainData.get(livingEntity);
@@ -125,13 +127,13 @@ public class ChainTieEntity extends HangingEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitPos) {
         if (this.level().isClientSide())
             return InteractionResult.SUCCESS;
         else {
             AtomicBoolean flag = new AtomicBoolean(false);
             double radius = 30D;
-            List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, new AABB(this.getX() - radius, this.getY() - radius, this.getZ() - radius, this.getX() + radius, this.getY() + radius, this.getZ() + radius));
+            List<LivingEntity> list = this.level().getEntities(EntityTypeTest.forClass(LivingEntity.class), new AABB(this.getX() - radius, this.getY() - radius, this.getZ() - radius, this.getX() + radius, this.getY() + radius, this.getZ() + radius), entity -> true);
 
             for (LivingEntity livingEntity : list) {
                 ChainData chainData = ChainData.get(livingEntity);

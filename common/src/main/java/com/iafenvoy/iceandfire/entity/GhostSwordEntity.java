@@ -176,7 +176,7 @@ public class GhostSwordEntity extends AbstractArrow {
 
                 this.doPostHurtEffects(livingentity);
                 if (livingentity != entity1 && livingentity instanceof Player && entity1 instanceof ServerPlayer player)
-                    player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F), null);
+                    player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.PLAY_ARROW_HIT_SOUND, 0.0F));
 
                 if (!entity.isAlive() && this.hitEntities != null)
                     this.hitEntities.add(livingentity);

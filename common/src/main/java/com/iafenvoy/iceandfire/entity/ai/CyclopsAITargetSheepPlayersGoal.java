@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 
 public class CyclopsAITargetSheepPlayersGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     public CyclopsAITargetSheepPlayersGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
-        super(goalOwnerIn, targetClassIn, 0, checkSight, true, livingEntity -> {
+        super(goalOwnerIn, targetClassIn, 0, checkSight, true, (livingEntity, level) -> {
             return false; //TODO Sheep hunt cyclops
         });
         this.setFlags(EnumSet.of(Flag.TARGET));

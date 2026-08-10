@@ -218,7 +218,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_PECK);
         }

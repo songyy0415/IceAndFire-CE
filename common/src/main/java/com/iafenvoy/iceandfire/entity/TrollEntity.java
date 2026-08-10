@@ -17,16 +17,12 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
-
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -59,7 +55,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -69,7 +64,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 
@@ -153,7 +147,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getRandom().nextBoolean()) {
             this.setAnimation(ANIMATION_STRIKE_VERTICAL);
 
@@ -233,11 +227,6 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
             return false;
         }
         return super.hurtServer(level, source, damage);
-    }
-
-    @Override
-    protected ResourceKey<LootTable> getDefaultLootTable() {
-        return ResourceKey.create(Registries.LOOT_TABLE, this.getTrollType().getLootTable());
     }
 
     @Override
@@ -370,10 +359,8 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 float weaponZ = (float) (this.getZ() + 1.9F * Mth.sin((float) ((this.yBodyRot + 90) * Math.PI / 180)));
                 float weaponY = (float) (this.getY() + (this.getEyeHeight() / 2));
                 //TODO: Recheck Explosion
-                Explosion explosion = new Explosion(this.level(), this, weaponX, weaponY, weaponZ, 1F + this.getRandom().nextFloat(), false, Explosion.BlockInteraction.KEEP);
                 if (!IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, weaponX, weaponY, weaponZ)) {
-                    explosion.explode();
-                    explosion.finalizeExplosion(true);
+                    this.level().explode(this, weaponX, weaponY, weaponZ, 1F + this.getRandom().nextFloat(), false, Level.ExplosionInteraction.NONE);
                 }
                 this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1, 1);
             }

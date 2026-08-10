@@ -657,7 +657,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getAnimation() != ANIMATION_BITE && this.getAnimation() != ANIMATION_TAIL_WHIP && this.getAnimation() != ANIMATION_WING_BLAST && this.getControllingPassenger() == null) {
             if (this.getRandom().nextBoolean()) this.setAnimation(ANIMATION_BITE);
             else
@@ -863,7 +863,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         Vec2 vec2 = this.getRiddenRotation(player);
         this.setRot(vec2.y, vec2.x);
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
-        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
+        if (this.getControllingPassenger() instanceof Player player2 ? player2.isLocalPlayer() : !this.level().isClientSide()) {
             Vec3 vec3 = this.getDeltaMovement();
             float vertical = this.isGoingUp() ? 0.2F : this.isGoingDown() ? -0.2F : 0F;
             if (!this.isFlying() && !this.isHovering())

@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.DeathWormEntity;
 import java.util.EnumSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -93,7 +94,7 @@ public class DeathWormAIAttackGoal extends Goal {
         LivingEntity target = this.worm.getTarget();
         if (target != null && this.worm.hasLineOfSight(target))
             if (this.worm.distanceTo(target) < 3F)
-                this.worm.doHurtTarget(target);
+                this.worm.doHurtTarget((ServerLevel) this.worm.level(), target);
 
         Vec3 vector3d = this.worm.getDeltaMovement();
         if (vector3d.y * vector3d.y < 0.1F && this.worm.getXRot() != 0.0F)

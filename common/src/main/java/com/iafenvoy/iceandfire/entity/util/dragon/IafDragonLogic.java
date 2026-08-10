@@ -230,7 +230,7 @@ public class IafDragonLogic {
         }
         if (this.dragon.isFlying()) {
             if (this.dragon.getTarget() != null && this.dragon.getBoundingBox().expandTowards(3.0F, 3.0F, 3.0F).intersects(this.dragon.getTarget().getBoundingBox()))
-                this.dragon.doHurtTarget(this.dragon.getTarget());
+                this.dragon.doHurtTarget((ServerLevel) this.dragon.level(), this.dragon.getTarget());
             if (this.dragon.airAttack == IafDragonAttacks.Air.TACKLE && (this.dragon.horizontalCollision || this.dragon.onGround())) {
                 this.dragon.usingGroundAttack = true;
                 if (this.dragon.getControllingPassenger() == null) {

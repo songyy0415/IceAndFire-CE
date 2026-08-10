@@ -33,14 +33,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -418,8 +415,11 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         compound.putBoolean("Flying", this.isFlying());
         compound.putInt("Armor", this.getArmorValue());
         compound.putInt("Feedings", this.feedings);
-        if (this.hippogryphInventory != null)
-            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), this.hippogryphInventory.getItems()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new ListTag()));
+        if (this.hippogryphInventory != null) {
+            ValueOutput.TypedOutputList<ItemStack> items = compound.list("Items", ItemStack.OPTIONAL_CODEC);
+            for (ItemStack stack : this.hippogryphInventory.getItems())
+                items.add(stack);
+        }
         compound.putBoolean("HasHomePosition", this.hasHomePosition);
         if (this.homePos != null && this.hasHomePosition) {
             compound.putInt("HomeAreaX", this.homePos.getX());
@@ -466,7 +466,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     public HippogryphType getEnumVariant() {
-        return IafRegistries.HIPPOGRYPH_TYPE.get(IceAndFire.id(this.getVariant()));
+        return IafRegistries.HIPPOGRYPH_TYPE.getValue(IceAndFire.id(this.getVariant()));
     }
 
     public void setVariant(HippogryphType variant) {
@@ -687,7 +687,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         Vec2 vec2 = this.getRiddenRotation(player);
         this.setRot(vec2.y, vec2.x);
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
-        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
+        if (this.getControllingPassenger() instanceof Player localPlayer ? localPlayer.isLocalPlayer() : !this.level().isClientSide()) {
             Vec3 vec3 = this.getDeltaMovement();
             float vertical = this.isGoingUp() ? 0.2F : this.isGoingDown() ? -0.2F : 0F;
             if (!this.isFlying() && !this.isHovering()) {
@@ -714,7 +714,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getAnimation() != ANIMATION_SCRATCH && this.getAnimation() != ANIMATION_BITE) {
             this.setAnimation(this.getRandom().nextBoolean() ? ANIMATION_SCRATCH : ANIMATION_BITE);
         } else {

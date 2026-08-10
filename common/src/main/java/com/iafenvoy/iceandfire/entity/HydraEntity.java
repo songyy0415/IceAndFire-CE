@@ -120,7 +120,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         return false;
     }
 

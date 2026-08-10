@@ -249,7 +249,7 @@ public class DragonUtils {
     }
 
     public static String getDimensionName(Level world) {
-        return world.dimension().location().toString();
+        return world.dimension().identifier().toString();
     }
 
     public static boolean isInHomeDimension(DragonBaseEntity dragonBase) {
@@ -265,7 +265,7 @@ public class DragonUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean hasSameOwner(TamableAnimal cockatrice, Entity entity) {
         if (entity instanceof TamableAnimal tameable)
-            return tameable.getOwner() != null ? tameable.getOwner().getUUID() : null != null && cockatrice.getOwner() != null ? cockatrice.getOwner().getUUID() : null != null && tameable.getOwner() != null ? tameable.getOwner().getUUID() : null.equals(cockatrice.getOwner() != null ? cockatrice.getOwner().getUUID() : null);
+            return tameable.getOwner() != null && cockatrice.getOwner() != null && tameable.getOwner().getUUID().equals(cockatrice.getOwner().getUUID());
         return false;
     }
 

@@ -122,13 +122,13 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         });
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (entity, level) -> LivingEntity.isAlive(entity)));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (entity, level) -> entity.isAlive()));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> entity instanceof LivingEntity && DragonUtils.isAlive(entity) || (entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone())));
         this.goalSelector.removeGoal(this.aiMelee);
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         boolean blindness = this.hasEffect(MobEffects.BLINDNESS) || this.getTarget() != null && this.getTarget().hasEffect(MobEffects.BLINDNESS) || this.getTarget() != null && this.getTarget() instanceof BlacklistedFromStatues blacklisted && !blacklisted.canBeTurnedToStone();
         if (blindness && this.deathTime == 0) {
             if (this.getAnimation() != ANIMATION_HIT)
@@ -136,7 +136,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
             if (entityIn instanceof LivingEntity living)
                 living.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 2, false, true));
         }
-        return super.doHurtTarget(entityIn);
+        return super.doHurtTarget(level, entityIn);
     }
 
     @Override

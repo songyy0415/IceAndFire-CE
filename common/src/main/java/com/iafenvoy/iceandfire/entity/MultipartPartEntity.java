@@ -16,6 +16,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -219,7 +220,7 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
     }
 
     public void collideWithNearbyEntities() {
-        List<Entity> entities = this.level().getEntities(this, this.getBoundingBox().expandTowards(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+        List<Entity> entities = this.level().getEntities(this, this.getBoundingBox().expandTowards(0.20000000298023224D, 0.0D, 0.20000000298023224D), entity -> true);
         Entity parent = this.getParent();
         if (parent != null) {
             entities.stream().filter(entity -> entity != parent && !sharesRider(parent, entity) && !(entity instanceof MultipartPartEntity) && entity.isPushable()).forEach(entity -> entity.push(parent));
@@ -248,9 +249,15 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
         this.setDeltaMovement(entity.getDeltaMovement());
     }
 
-    @Override
     public @Nullable UUID getOwnerUUID() {
         return this.getParent() instanceof OwnableEntity tameable ? tameable.getOwner() != null ? tameable.getOwner().getUUID() : null : null;
+    }
+
+    @Override
+    public EntityReference<LivingEntity> getOwnerReference() {
+        return this.getParent() instanceof OwnableEntity tameable && tameable.getOwner() != null
+                ? EntityReference.of(tameable.getOwner())
+                : EntityReference.of((LivingEntity) null);
     }
 
     @Override

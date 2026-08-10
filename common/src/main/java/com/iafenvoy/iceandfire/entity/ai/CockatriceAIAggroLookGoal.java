@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import com.iafenvoy.iceandfire.entity.util.IafEntityUtil;
-import java.util.function.Predicate;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -16,7 +16,7 @@ public class CockatriceAIAggroLookGoal extends NearestAttackableTargetGoal<Playe
     public CockatriceAIAggroLookGoal(CockatriceEntity cockatriceIn) {
         super(cockatriceIn, Player.class, false);
         this.cockatrice = cockatriceIn;
-        Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (target) -> IafEntityUtil.isEntityLookingAt(target, this.cockatrice,
+        TargetingConditions.Selector LIVING_ENTITY_SELECTOR = (target, level) -> IafEntityUtil.isEntityLookingAt(target, this.cockatrice,
                 CockatriceEntity.VIEW_RADIUS) && this.cockatrice.distanceTo(target) < this.getFollowDistance();
         this.predicate = TargetingConditions.forCombat().range(25.0D).selector(LIVING_ENTITY_SELECTOR);
     }
@@ -27,7 +27,7 @@ public class CockatriceAIAggroLookGoal extends NearestAttackableTargetGoal<Playe
     @Override
     public boolean canUse() {
         if (this.cockatrice.isTame()) return false;
-        this.player = this.cockatrice.level().getNearestPlayer(this.predicate, this.cockatrice.getX(), this.cockatrice.getY(), this.cockatrice.getZ());
+        this.player = ((ServerLevel) this.cockatrice.level()).getNearestPlayer(this.predicate, this.cockatrice, this.cockatrice.getX(), this.cockatrice.getY(), this.cockatrice.getZ());
         return this.player != null;
     }
 

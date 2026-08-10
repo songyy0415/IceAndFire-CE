@@ -24,11 +24,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -141,7 +138,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getRandom().nextInt(2) == 0) {
             if (this.getAnimation() != ANIMATION_PULL) {
                 this.setAnimation(ANIMATION_PULL);
@@ -371,14 +368,12 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     @Override
     public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
-        ListTag list = new ListTag();
+        ValueOutput.ValueOutputList list = tag.childrenList("CharmingEntities");
         for (Object2IntMap.Entry<LivingEntity> entry : this.charmingEntities.object2IntEntrySet()) {
-            CompoundTag nbt = new CompoundTag();
-            nbt.putIntArray("Uuid", UUIDUtil.uuidToIntArray(entry.getKey().getUUID()));
-            nbt.putInt("CharmTime", entry.getIntValue());
-            list.add(nbt);
+            ValueOutput child = list.addChild();
+            child.putIntArray("Uuid", UUIDUtil.uuidToIntArray(entry.getKey().getUUID()));
+            child.putInt("CharmTime", entry.getIntValue());
         }
-        tag.put("CharmingEntities", list);
         tag.putInt("HairColor", this.getHairColor());
         tag.putBoolean("Aggressive", this.isAgressive());
         tag.putInt("SingingPose", this.getSingingPose());
@@ -391,14 +386,14 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
         this.charmingEntities.clear();
-        if (tag.contains("CharmingEntities", Tag.TAG_LIST) && this.level() instanceof ServerLevel world) {
-            ListTag list = tag.getListOrEmpty("CharmingEntities");
-            for (Tag element : list)
-                if (element instanceof CompoundTag nbt) {
-                    Entity entity = world.getEntity(nbt.read("Uuid", UUIDUtil.CODEC).orElse(null));
+        if (this.level() instanceof ServerLevel world) {
+            for (ValueInput child : tag.childrenListOrEmpty("CharmingEntities")) {
+                child.read("Uuid", UUIDUtil.CODEC).ifPresent(uuid -> {
+                    Entity entity = world.getEntity(uuid);
                     if (entity instanceof LivingEntity living)
-                        this.charmingEntities.put(living, nbt.getInt("CharmTime").orElse(0));
-                }
+                        this.charmingEntities.put(living, child.getIntOr("CharmTime", 0));
+                });
+            }
         }
         this.setHairColor(tag.getInt("HairColor").orElse(0));
         this.setAggressive(tag.getBooleanOr("Aggressive", false));

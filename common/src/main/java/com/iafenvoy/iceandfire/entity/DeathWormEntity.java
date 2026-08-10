@@ -235,7 +235,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         if (this.getAnimation() != ANIMATION_BITE) {
             this.setAnimation(ANIMATION_BITE);
             this.playSound(this.getAgeScale() > 3 ? IafSounds.DEATHWORM_GIANT_ATTACK.get() : IafSounds.DEATHWORM_ATTACK.get(), 1, 1);
@@ -260,7 +260,6 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
     }
 
-    @Override
     protected ResourceKey<LootTable> getDefaultLootTable() {
         return switch (this.getVariant()) {
             case 0 -> ResourceKey.create(Registries.LOOT_TABLE, this.getAgeScale() > 3 ? TAN_GIANT_LOOT : TAN_LOOT);
@@ -493,7 +492,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    public boolean killedEntity(ServerLevel world, LivingEntity entity) {
+    public boolean killedEntity(ServerLevel world, LivingEntity entity, DamageSource source) {
         if (this.isTame()) {
             this.heal(14);
             return false;

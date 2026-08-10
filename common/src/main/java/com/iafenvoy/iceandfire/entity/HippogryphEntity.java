@@ -153,6 +153,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                 .add(Attributes.FLYING_SPEED, IafCommonConfig.INSTANCE.hippogryphs.fightSpeedMod.getValue())
                 .add(Attributes.ATTACK_DAMAGE, 5.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.TEMPT_RANGE, 10.0D)
                 .add(Attributes.STEP_HEIGHT, 1);
     }
 

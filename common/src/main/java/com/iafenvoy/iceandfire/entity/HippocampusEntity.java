@@ -130,6 +130,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
                 //ATTACK
                 .add(Attributes.ATTACK_DAMAGE, 1.0D)
+                .add(Attributes.TEMPT_RANGE, 10.0D)
                 .add(Attributes.STEP_HEIGHT, 1);
     }
 

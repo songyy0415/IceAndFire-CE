@@ -85,8 +85,6 @@ public class SeaSerpentAIAttackMeleeGoal extends Goal {
             return false;
         else if (!this.longMemory)
             return !this.attacker.getNavigation().isDone();
-        else if (!this.attacker.isWithinRestriction(LivingEntity.blockPosition()))
-            return false;
         else
             return !(LivingEntity instanceof Player) || !LivingEntity.isSpectator() && !((Player) LivingEntity).isCreative();
     }

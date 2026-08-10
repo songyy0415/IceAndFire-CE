@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import net.minecraft.server.level.ServerLevel;
 
 import com.iafenvoy.iceandfire.entity.util.IDreadMob;
 import com.iafenvoy.iceandfire.entity.util.IHumanoid;
@@ -21,9 +22,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
-import net.minecraft.world.entity.monster.AbstractSkeleton;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -42,7 +43,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             DreadScuttlerEntity lichSummoned = new DreadScuttlerEntity(IafEntities.DREAD_SCUTTLER.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 1.5F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, ((ServerLevel) entity.level()).getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }
@@ -50,14 +51,14 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             DreadGhoulEntity lichSummoned = new DreadGhoulEntity(IafEntities.DREAD_GHOUL.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 0.6F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, ((ServerLevel) entity.level()).getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }
         if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(EntityTypeTags.UNDEAD) || entity instanceof AbstractSkeleton || entity instanceof Player) {
             DreadThrallEntity lichSummoned = new DreadThrallEntity(IafEntities.DREAD_THRALL.get(), entity.level());
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess) {
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, ((ServerLevel) entity.level()).getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             }
             lichSummoned.setCustomArmorHead(false);
             lichSummoned.setCustomArmorChest(false);
@@ -73,7 +74,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             DreadBeastEntity lichSummoned = new DreadBeastEntity(IafEntities.DREAD_BEAST.get(), entity.level());
             float readInScale = (entity.getBbWidth() / 1.2F);
             if (entity.level() instanceof ServerLevelAccessor serverWorldAccess)
-                lichSummoned.finalizeSpawn(serverWorldAccess, entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
+                lichSummoned.finalizeSpawn(serverWorldAccess, ((ServerLevel) entity.level()).getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             lichSummoned.setSize(readInScale);
             return lichSummoned;
         }
@@ -102,7 +103,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
             uuid = compound.read("CommanderUUID", UUIDUtil.CODEC).orElse(null);
         } else {
             String s = compound.getString("CommanderUUID").orElse("");
-            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.level().getServer(), s);
         }
 
         if (uuid != null) {

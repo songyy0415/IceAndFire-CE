@@ -28,7 +28,7 @@ public class SeaSerpentArrowEntity extends AbstractArrow {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide() && !this.inGround) {
+        if (this.level().isClientSide() && !this.isInGround()) {
             double d0 = this.getRandom().nextGaussian() * 0.02D;
             double d1 = this.getRandom().nextGaussian() * 0.02D;
             double d2 = this.getRandom().nextGaussian() * 0.02D;

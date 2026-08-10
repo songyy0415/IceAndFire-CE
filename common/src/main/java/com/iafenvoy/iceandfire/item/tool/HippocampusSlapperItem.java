@@ -22,8 +22,8 @@ public class HippocampusSlapperItem extends Item {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity targetEntity, LivingEntity attacker) {
-        targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
-        targetEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 2));
+        targetEntity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 2));
+        targetEntity.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100, 2));
         targetEntity.playSound(SoundEvents.GUARDIAN_FLOP, 3, 1);
 
         super.hurtEnemy(stack, targetEntity, attacker);

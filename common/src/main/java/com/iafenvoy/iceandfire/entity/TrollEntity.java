@@ -54,9 +54,9 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Explosion;
@@ -318,8 +318,8 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
             this.playSound(IafSounds.TROLL_ROAR.get(), 1, 1);
         if (!stone && this.getHealth() < this.getMaxHealth() && this.tickCount % 30 == 0)
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 30, 1, false, false));
-        this.setAvoidSun(this.level().isDay());
-        if (this.level().isDay() && !this.level().isClientSide()) {
+        this.setAvoidSun(this.level().getSkyDarken() < 4);
+        if (this.level().getSkyDarken() < 4 && !this.level().isClientSide()) {
             float f = this.level().getBrightness(LightLayer.SKY, this.blockPosition());
             BlockPos blockpos = this.getVehicle() instanceof Boat ? (new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ())).above() : new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ());
             if (f > 0.5F && this.level().canSeeSky(blockpos)) {

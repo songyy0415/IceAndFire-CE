@@ -52,7 +52,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -256,7 +256,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
 
     @Override
     protected boolean isSunBurnTick() {
-        if (this.level().isDay() && !this.level().isClientSide()) {
+        if (this.level().getSkyDarken() < 4 && !this.level().isClientSide()) {
             float f = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition());
             BlockPos blockpos = this.getVehicle() instanceof Boat ? (new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ())).above() : new BlockPos(this.getBlockX(), this.getBlockY() + 4, this.getBlockZ());
             return f > 0.5F && this.level().canSeeSky(blockpos);

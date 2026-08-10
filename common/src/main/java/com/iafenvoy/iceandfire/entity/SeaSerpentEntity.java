@@ -54,7 +54,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
@@ -111,7 +111,6 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     public SeaSerpentEntity(EntityType<SeaSerpentEntity> t, Level worldIn) {
         super(t, worldIn);
         this.switchNavigator(false);
-        this.noCulling = true;
         this.lastScale = 0;
         this.setPathfindingMalus(PathType.WATER, 0.0F);
     }

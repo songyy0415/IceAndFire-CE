@@ -74,7 +74,6 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
         if (living == null) return false;
         else if (!living.isAlive()) return false;
         else if (!this.longMemory) return !this.attacker.getNavigation().isDone();
-        else if (!this.attacker.isWithinRestriction(living.blockPosition())) return false;
         else return !(living instanceof Player) || !living.isSpectator() && !((Player) living).isCreative();
     }
 

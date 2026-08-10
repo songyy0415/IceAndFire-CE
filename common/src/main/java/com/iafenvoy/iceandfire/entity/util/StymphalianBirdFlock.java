@@ -27,7 +27,7 @@ public class StymphalianBirdFlock {
         flock.members = new ArrayList<>();
         flock.members.add(bird);
         flock.leaderTarget = bird.airTarget;
-        flock.getRandom() = bird.getRandom();
+        flock.random = bird.getRandom();
         return flock;
     }
 
@@ -52,7 +52,7 @@ public class StymphalianBirdFlock {
 
     public void update() {
         if (!this.members.isEmpty() && (this.leader == null || !this.leader.isAlive()))
-            this.leader = this.members.get(this.getRandom().nextInt(this.members.size()));
+            this.leader = this.members.get(this.random.nextInt(this.members.size()));
         if (this.leader != null && this.leader.isAlive()) {
             BlockPos prevLeaderTarget = this.leaderTarget;
             this.leaderTarget = this.leader.airTarget;

@@ -22,6 +22,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 
 public class DreadLichSkullEntity extends AbstractArrow {
+    private float baseDamage = 6F;
     public DreadLichSkullEntity(EntityType<? extends AbstractArrow> type, Level worldIn) {
         super(type, worldIn);
         this.setBaseDamage(6F);
@@ -31,6 +32,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
         super(type, worldIn);
         this.setOwner(shooter);
         this.setBaseDamage(dmg);
+        this.baseDamage = (float) dmg;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
     @Override
     public void tick() {
         float sqrt = Mth.sqrt((float) (this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z));
-        if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.inGround) && this.tickCount > 5)
+        if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.isInGround()) && this.tickCount > 5)
             this.remove(RemovalReason.DISCARDED);
         Entity shootingEntity = this.getOwner();
         if (shootingEntity instanceof Mob mob && mob.getTarget() != null) {
@@ -119,7 +121,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
         Entity shootingEntity = this.getOwner();
         if (living != null && (shootingEntity == null || !living.is(shootingEntity)))
             if (living instanceof Player player)
-                this.damageShield(player, (float) this.getBaseDamage());
+                this.damageShield(player, (float) this.baseDamage);
     }
 
     @Override

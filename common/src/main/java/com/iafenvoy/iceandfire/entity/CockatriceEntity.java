@@ -59,7 +59,7 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -533,8 +533,8 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
                     if (this.level().getDifficulty() == Difficulty.HARD)
                         attackStrength++;
                     attackTarget.addEffect(new MobEffectInstance(MobEffects.WITHER, 10, 2 + Math.min(1, attackStrength)));
-                    attackTarget.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, Math.min(4, attackStrength)));
-                    attackTarget.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
+                    attackTarget.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10, Math.min(4, attackStrength)));
+                    attackTarget.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
                     if (attackStrength >= 2 && attackTarget.tickCount % 40 == 0)
                         attackTarget.hurt(this.level().damageSources().wither(), attackStrength - 1);
                     attackTarget.setLastHurtByMob(this);

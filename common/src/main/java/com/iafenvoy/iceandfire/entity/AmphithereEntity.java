@@ -504,7 +504,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     public LivingEntity getControllingPassenger() {
         for (Entity passenger : this.getPassengers())
             if (passenger instanceof Player player && this.getTarget() != passenger)
-                if (this.isTame() && this.getOwnerUUID() != null && this.getOwnerUUID().equals(player.getUUID()))
+                if (this.isTame() && this.getOwner() != null && player.getUUID().equals(this.getOwner().getUUID()))
                     return player;
         return null;
     }
@@ -606,9 +606,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             double dist = this.distanceToSqr(target);
             if (dist < 25) {
                 target.hurt(this.level().damageSources().mobAttack(this), ((float) (int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue() / 2));
-                target.hasImpulse = true;
                 if (!(this.getRandom().nextDouble() < this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getValue())) {
-                    this.hasImpulse = true;
                     double d1 = target.getX() - this.getX();
 
                     double d0;
@@ -624,7 +622,6 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             double dist = this.distanceToSqr(target);
             if (dist < 10) {
                 target.hurt(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
-                target.hasImpulse = true;
                 float f = Mth.sqrt((float) (0.5 * 0.5 + 0.5 * 0.5));
                 double d0;
                 double d1 = target.getX() - this.getX();

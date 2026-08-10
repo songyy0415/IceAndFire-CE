@@ -27,7 +27,7 @@ public class DragonFleshItem extends Item {
             if (this.type == IafDragonTypes.FIRE)
                 living.igniteForSeconds(5);
             else if (this.type == IafDragonTypes.ICE)
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
+                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 2));
             else {
                 LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level(), EntitySpawnReason.LOAD);
                 assert lightning != null;

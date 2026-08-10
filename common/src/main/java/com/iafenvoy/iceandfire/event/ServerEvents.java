@@ -252,7 +252,7 @@ public final class ServerEvents {
                         assert ghost != null;
                         ghost.copyPosition(entity);
                         if (world instanceof ServerLevelAccessor serverWorldAccess) {
-                            ghost.finalizeSpawn(serverWorldAccess, world.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null);
+                            ghost.finalizeSpawn(serverWorldAccess, ((ServerLevel) world).getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null);
                             world.addFreshEntity(ghost);
                         }
                         ghost.setDaytimeMode(true);

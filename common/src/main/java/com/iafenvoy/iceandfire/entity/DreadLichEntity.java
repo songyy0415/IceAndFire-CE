@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import net.minecraft.server.level.ServerLevel;
 
 import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
@@ -268,7 +269,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             minion.setTarget(target);
             Level currentLevel = this.level();
             if (currentLevel instanceof ServerLevelAccessor serverWorldAccess)
-                minion.finalizeSpawn(serverWorldAccess, currentLevel.getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
+                minion.finalizeSpawn(serverWorldAccess, ((ServerLevel) currentLevel).getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             if (minion instanceof DreadMobEntity mob)
                 mob.setCommanderId(this.getUUID());
             if (!currentLevel.isClientSide())

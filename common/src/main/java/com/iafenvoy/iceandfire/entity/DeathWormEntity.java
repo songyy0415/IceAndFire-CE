@@ -111,7 +111,6 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
         this.setPathfindingMalus(PathType.WATER, 4.0f);
         this.setPathfindingMalus(PathType.WATER_BORDER, 4.0f);
         this.lookHelper = new IAFLookControl(this);
-        this.noCulling = true;
         if (worldIn.isClientSide()) {
             this.tail_buffer = new ChainBuffer();
         }

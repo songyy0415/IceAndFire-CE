@@ -16,14 +16,14 @@ public class PixieAIMoveRandomGoal extends Goal {
 
     public PixieAIMoveRandomGoal(PixieEntity pixieEntityIn) {
         this.pixie = pixieEntityIn;
-        this.getRandom() = pixieEntityIn.getRandom();
+        this.random = pixieEntityIn.getRandom();
         this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
     public boolean canUse() {
-        this.target = PixieEntity.getPositionRelativetoGround(this.pixie, this.pixie.level(), this.pixie.getX() + this.getRandom().nextInt(15) - 7, this.pixie.getZ() + this.getRandom().nextInt(15) - 7, this.getRandom());
-        return !this.pixie.isOwnerClose() && !this.pixie.isPixieSitting() && this.isDirectPathBetweenPoints(this.pixie.blockPosition(), this.target) && !this.pixie.getMoveControl().hasWanted() && this.getRandom().nextInt(4) == 0 && this.pixie.getHousePos() == null;
+        this.target = PixieEntity.getPositionRelativetoGround(this.pixie, this.pixie.level(), this.pixie.getX() + this.random.nextInt(15) - 7, this.pixie.getZ() + this.random.nextInt(15) - 7, this.random);
+        return !this.pixie.isOwnerClose() && !this.pixie.isPixieSitting() && this.isDirectPathBetweenPoints(this.pixie.blockPosition(), this.target) && !this.pixie.getMoveControl().hasWanted() && this.random.nextInt(4) == 0 && this.pixie.getHousePos() == null;
     }
 
     protected boolean isDirectPathBetweenPoints(BlockPos posVec31, BlockPos posVec32) {
@@ -41,7 +41,7 @@ public class PixieAIMoveRandomGoal extends Goal {
     @Override
     public void tick() {
         if (!this.isDirectPathBetweenPoints(this.pixie.blockPosition(), this.target))
-            this.target = PixieEntity.getPositionRelativetoGround(this.pixie, this.pixie.level(), this.pixie.getX() + this.getRandom().nextInt(15) - 7, this.pixie.getZ() + this.getRandom().nextInt(15) - 7, this.getRandom());
+            this.target = PixieEntity.getPositionRelativetoGround(this.pixie, this.pixie.level(), this.pixie.getX() + this.random.nextInt(15) - 7, this.pixie.getZ() + this.random.nextInt(15) - 7, this.random);
         if (this.pixie.level().isEmptyBlock(this.target)) {
             this.pixie.getMoveControl().setWantedPosition(this.target.getX() + 0.5D, this.target.getY() + 0.5D, this.target.getZ() + 0.5D, 0.25D);
             if (this.pixie.getTarget() == null)

@@ -25,6 +25,7 @@ import net.minecraft.world.phys.Vec3;
 
 @SuppressWarnings("ALL")
 public class GhostSwordEntity extends AbstractArrow {
+    private float baseDamage = 9F;
     private IntOpenHashSet piercedEntities;
     private List<Entity> hitEntities;
     private int knockbackStrength;
@@ -96,7 +97,6 @@ public class GhostSwordEntity extends AbstractArrow {
             if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS) {
                 if (raytraceresult.getType() != HitResult.Type.BLOCK)
                     this.onHit(raytraceresult);
-                this.hasImpulse = true;
             }
             if (entityraytraceresult == null || this.getPierceLevel() <= 0)
                 break;
@@ -130,7 +130,7 @@ public class GhostSwordEntity extends AbstractArrow {
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
         float f = (float) this.getDeltaMovement().length();
-        int i = Mth.ceil(Math.max(f * this.getBaseDamage(), 0.0D));
+        int i = Mth.ceil(Math.max(f * this.baseDamage, 0.0D));
         if (this.getPierceLevel() > 0) {
             if (this.piercedEntities == null)
                 this.piercedEntities = new IntOpenHashSet(5);

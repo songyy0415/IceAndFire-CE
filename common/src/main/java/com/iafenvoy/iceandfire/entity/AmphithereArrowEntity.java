@@ -25,9 +25,9 @@ public class AmphithereArrowEntity extends AbstractArrow {
     @Override
     public void tick() {
         super.tick();
-        if ((this.tickCount == 1 || this.tickCount % 70 == 0) && !this.inGround && !this.onGround())
+        if ((this.tickCount == 1 || this.tickCount % 70 == 0) && !this.isInGround() && !this.onGround())
             this.playSound(IafSounds.AMPHITHERE_GUST.get(), 1, 1);
-        if (this.level().isClientSide() && !this.inGround) {
+        if (this.level().isClientSide() && !this.isInGround()) {
             double d0 = this.getRandom().nextGaussian() * 0.02D;
             double d1 = this.getRandom().nextGaussian() * 0.02D;
             double d2 = this.getRandom().nextGaussian() * 0.02D;
@@ -40,7 +40,6 @@ public class AmphithereArrowEntity extends AbstractArrow {
 
     @Override
     protected void doPostHurtEffects(LivingEntity living) {
-        living.hasImpulse = true;
         double xRatio = this.getDeltaMovement().x;
         double zRatio = this.getDeltaMovement().z;
         float strength = -1.4F;

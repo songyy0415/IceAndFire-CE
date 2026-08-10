@@ -18,9 +18,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.animal.AbstractGolem;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.animal.golem.AbstractGolem;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
@@ -264,7 +264,7 @@ public class DragonUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean hasSameOwner(TamableAnimal cockatrice, Entity entity) {
         if (entity instanceof TamableAnimal tameable)
-            return tameable.getOwnerUUID() != null && cockatrice.getOwnerUUID() != null && tameable.getOwnerUUID().equals(cockatrice.getOwnerUUID());
+            return tameable.getOwner() != null ? tameable.getOwner().getUUID() : null != null && cockatrice.getOwner() != null ? cockatrice.getOwner().getUUID() : null != null && tameable.getOwner() != null ? tameable.getOwner().getUUID() : null.equals(cockatrice.getOwner() != null ? cockatrice.getOwner().getUUID() : null);
         return false;
     }
 

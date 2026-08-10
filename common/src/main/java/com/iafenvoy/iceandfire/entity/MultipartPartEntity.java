@@ -250,7 +250,7 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
 
     @Override
     public @Nullable UUID getOwnerUUID() {
-        return this.getParent() instanceof OwnableEntity tameable ? tameable.getOwnerUUID() : null;
+        return this.getParent() instanceof OwnableEntity tameable ? tameable.getOwner() != null ? tameable.getOwner().getUUID() : null : null;
     }
 
     @Override

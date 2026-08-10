@@ -243,7 +243,6 @@ public class FireDragonEntity extends DragonBaseEntity {
                     this.calculateEntityAnimation(false);
                 } else
                     this.setDeltaMovement(Vec3.ZERO);
-                this.tryCheckInsideBlocks();
             } else {
                 super.travel(pTravelVector);
             }
@@ -284,7 +283,6 @@ public class FireDragonEntity extends DragonBaseEntity {
             } else {
                 this.setDeltaMovement(Vec3.ZERO);
             }
-            this.tryCheckInsideBlocks();
 //            this.updatePitch(this.yOld - this.getY());
         } else {
             super.travel(pTravelVector);

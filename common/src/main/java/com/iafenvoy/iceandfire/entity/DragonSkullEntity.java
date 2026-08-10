@@ -41,7 +41,6 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
 
     public DragonSkullEntity(EntityType<DragonSkullEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.noCulling = true;
         // setScale(this.getDragonAge());
     }
 

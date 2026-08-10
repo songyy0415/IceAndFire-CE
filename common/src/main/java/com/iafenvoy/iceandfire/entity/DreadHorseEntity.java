@@ -61,7 +61,7 @@ public class DreadHorseEntity extends SkeletonHorse implements IDreadMob {
             uuid = compound.read("CommanderUUID", UUIDUtil.CODEC).orElse(null);
         } else {
             String s = compound.getString("CommanderUUID").orElse("");
-            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+            uuid = OldUsersConverter.convertMobOwnerIfNecessary(this.level().getServer(), s);
         }
 
         if (uuid != null) {

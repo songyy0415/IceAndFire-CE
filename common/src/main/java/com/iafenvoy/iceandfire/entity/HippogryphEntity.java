@@ -247,7 +247,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     public LivingEntity getControllingPassenger() {
         for (Entity passenger : this.getPassengers())
             if (passenger instanceof Player player && this.getTarget() != passenger)
-                if (this.isTame() && this.getOwnerUUID() != null && this.getOwnerUUID().equals(player.getUUID()))
+                if (this.isTame() && this.getOwner() != null && player.getUUID().equals(this.getOwner().getUUID()))
                     return player;
         return null;
     }
@@ -745,7 +745,6 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
 
             if (dist < 8) {
                 attackTarget.hurt(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
-                attackTarget.hasImpulse = true;
                 float f = Mth.sqrt((float) (0.5 * 0.5 + 0.5 * 0.5));
                 attackTarget.setDeltaMovement(attackTarget.getDeltaMovement().add(-0.5 / (double) f, 1, -0.5 / (double) f));
                 attackTarget.setDeltaMovement(attackTarget.getDeltaMovement().multiply(0.5D, 1, 0.5D));

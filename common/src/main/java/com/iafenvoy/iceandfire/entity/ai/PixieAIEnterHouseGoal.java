@@ -12,13 +12,13 @@ public class PixieAIEnterHouseGoal extends Goal {
 
     public PixieAIEnterHouseGoal(PixieEntity pixieEntityIn) {
         this.pixie = pixieEntityIn;
-        this.getRandom() = pixieEntityIn.getRandom();
+        this.random = pixieEntityIn.getRandom();
         this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
     public boolean canUse() {
-        if (this.pixie.isOwnerClose() || this.pixie.getMoveControl().hasWanted() || this.pixie.isPixieSitting() || this.getRandom().nextInt(20) != 0 || this.pixie.ticksUntilHouseAI != 0)
+        if (this.pixie.isOwnerClose() || this.pixie.getMoveControl().hasWanted() || this.pixie.isPixieSitting() || this.random.nextInt(20) != 0 || this.pixie.ticksUntilHouseAI != 0)
             return false;
 
         BlockPos blockpos1 = PixieEntity.findAHouse(this.pixie, this.pixie.level());

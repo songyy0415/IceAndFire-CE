@@ -150,7 +150,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
             s = tag.read("VictorUUID", UUIDUtil.CODEC).orElse(null);
         } else {
             String s1 = tag.getString("VictorUUID").orElse("");
-            s = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
+            s = OldUsersConverter.convertMobOwnerIfNecessary(this.level().getServer(), s1);
         }
 
         if (s != null) {

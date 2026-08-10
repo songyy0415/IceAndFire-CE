@@ -4,8 +4,8 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import dev.architectury.event.events.client.ClientTickEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 @Environment(EnvType.CLIENT)
 public class PortalRenderHelper {
@@ -17,10 +17,10 @@ public class PortalRenderHelper {
 
     public static void init() {
         ClientTickEvent.CLIENT_POST.register(client -> {
-            World world = client.world;
-            PlayerEntity player = client.player;
+            Level world = client.level;
+            Player player = client.player;
             if (world == null || player == null) return;
-            if (world.getBlockState(player.getBlockPos()).isOf(IafBlocks.DREAD_PORTAL.get())) TICK++;
+            if (world.getBlockState(player.blockPosition()).is(IafBlocks.DREAD_PORTAL.get())) TICK++;
             else if (TICK > 0) TICK--;
         });
     }

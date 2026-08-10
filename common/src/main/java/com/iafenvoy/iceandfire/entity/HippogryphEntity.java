@@ -438,7 +438,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         this.feedings = compound.getInt("Feedings").orElse(0);
 
         this.initHippogryphInv();
-        List<ItemStack> inv = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> inv = compound.read("Items", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         for (int i = 0; i < inv.size() && i < this.hippogryphInventory.getContainerSize(); i++)
             this.hippogryphInventory.setItem(i, inv.get(i));
 

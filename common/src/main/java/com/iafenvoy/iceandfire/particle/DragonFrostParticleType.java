@@ -4,10 +4,10 @@ import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.particle.ParticleType;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 public class DragonFrostParticleType extends DragonParticleType<DragonFrostParticleType> {
     private static final MapCodec<DragonFrostParticleType> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -28,12 +28,12 @@ public class DragonFrostParticleType extends DragonParticleType<DragonFrostParti
     }
 
     @Override
-    public MapCodec<DragonFrostParticleType> getCodec() {
+    public MapCodec<DragonFrostParticleType> codec() {
         return CODEC;
     }
 
     @Override
-    public PacketCodec<? super RegistryByteBuf, DragonFrostParticleType> getPacketCodec() {
-        return PacketCodec.tuple(PacketCodecs.FLOAT, DragonFrostParticleType::getScale, DragonFrostParticleType::new);
+    public StreamCodec<? super RegistryFriendlyByteBuf, DragonFrostParticleType> streamCodec() {
+        return StreamCodec.composite(ByteBufCodecs.FLOAT, DragonFrostParticleType::getScale, DragonFrostParticleType::new);
     }
 }

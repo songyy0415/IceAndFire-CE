@@ -1,12 +1,12 @@
 package com.iafenvoy.iceandfire.render.model.util;
 
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /*
        Code from JurassiCraft, used with permission
@@ -20,16 +20,16 @@ public class LegSolver {
     }
 
     public final void update(DragonBaseEntity entity, float scale) {
-        this.update(entity, entity.bodyYaw, scale);
+        this.update(entity, entity.yBodyRot, scale);
     }
 
     public final void update(DragonBaseEntity entity, float yaw, float scale) {
         double sideTheta = yaw / (180 / Math.PI);
-        double sideX = MathHelper.cos((float) sideTheta) * scale;
-        double sideZ = MathHelper.sin((float) sideTheta) * scale;
+        double sideX = Mth.cos((float) sideTheta) * scale;
+        double sideZ = Mth.sin((float) sideTheta) * scale;
         double forwardTheta = sideTheta + Math.PI / 2;
-        double forwardX = MathHelper.cos((float) forwardTheta) * scale;
-        double forwardZ = MathHelper.sin((float) forwardTheta) * scale;
+        double forwardX = Mth.cos((float) forwardTheta) * scale;
+        double forwardZ = Mth.sin((float) forwardTheta) * scale;
         for (Leg leg : this.legs)
             leg.update(entity, sideX, sideZ, forwardX, forwardZ, scale);
     }
@@ -55,25 +55,25 @@ public class LegSolver {
             this.prevHeight = this.height;
             double posY = entity.getY();
             float settledHeight = this.settle(entity, entity.getX() + sideX * this.side + forwardX * this.forward, posY, entity.getZ() + sideZ * this.side + forwardZ * this.forward, this.height);
-            this.height = MathHelper.clamp(settledHeight, -this.range * scale, this.range * scale);
+            this.height = Mth.clamp(settledHeight, -this.range * scale, this.range * scale);
         }
 
 
         private float settle(DragonBaseEntity entity, double x, double y, double z, float height) {
-            BlockPos pos = BlockPos.ofFloored(x, y + 1e-3, z);
-            float dist = this.getDistance(entity.getWorld(), pos);
-            if (1 - dist < 1e-3) dist = this.getDistance(entity.getWorld(), pos.down()) + (float) y % 1;
+            BlockPos pos = BlockPos.containing(x, y + 1e-3, z);
+            float dist = this.getDistance(entity.level(), pos);
+            if (1 - dist < 1e-3) dist = this.getDistance(entity.level(), pos.below()) + (float) y % 1;
             else dist -= (float) (1 - (y % 1));
-            if (entity.isOnGround() && height <= dist)
+            if (entity.onGround() && height <= dist)
                 return height == dist ? height : Math.min(height + this.getFallSpeed(), dist);
             else if (height > 0) return Math.max(height - this.getRiseSpeed(), dist);
             return height;
         }
 
-        private float getDistance(World world, BlockPos pos) {
+        private float getDistance(Level world, BlockPos pos) {
             BlockState state = world.getBlockState(pos);
             VoxelShape aabb = state.getCollisionShape(world, pos);
-            return aabb.isEmpty() ? 1 : 1 - Math.min((float) aabb.getEndingCoord(Direction.Axis.Y, 0.5D, 0.5D), 1);
+            return aabb.isEmpty() ? 1 : 1 - Math.min((float) aabb.max(Direction.Axis.Y, 0.5D, 0.5D), 1);
         }
 
         private float getFallSpeed() {

@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.particle;
 
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 
-public abstract class DragonParticleType<T extends DragonParticleType<T>> extends ParticleType<T> implements ParticleEffect {
+public abstract class DragonParticleType<T extends DragonParticleType<T>> extends ParticleType<T> implements ParticleOptions {
     protected final float scale;
 
     public DragonParticleType(float scale) {

@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.entity.ai;
 import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -50,7 +49,6 @@ public class SeaSerpentPathNavigatorGoal extends PathNavigation {
                     this.path.advance();
             }
 
-            DebugPackets.sendPathFindingPacket(this.level, this.mob, this.path, this.maxDistanceToWaypoint);
             if (!this.isDone()) {
                 assert this.path != null;
                 Vec3 vec3d = this.path.getNextEntityPos(this.mob);

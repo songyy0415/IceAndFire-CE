@@ -55,7 +55,7 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
                 this.level.addFreshEntity(ghost);
             }
             ghost.setAnimation(GhostEntity.ANIMATION_SCARE);
-            ghost.restrictTo(this.worldPosition, 4);
+            
             ghost.setFromChest(true);
         }
     }

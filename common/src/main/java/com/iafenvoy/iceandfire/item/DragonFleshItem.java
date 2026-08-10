@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item;
+import net.minecraft.resources.Identifier;
 
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
@@ -29,9 +30,9 @@ public class DragonFleshItem extends Item {
             else if (this.type == IafDragonTypes.ICE)
                 living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 2));
             else {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level(), EntitySpawnReason.LOAD);
+                LightningBolt lightning = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("lightning_bolt")).create(living.level(), EntitySpawnReason.LOAD);
                 assert lightning != null;
-                lightning.moveTo(living.position());
+                lightning.setPos(living.position());
                 living.level().addFreshEntity(lightning);
             }
         }

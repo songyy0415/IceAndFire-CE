@@ -22,9 +22,4 @@ public class DragonScalesBlock extends Block implements DragonProof {
         this.type = type;
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag options) {
-        super.appendHoverText(stack, context, display, tooltip, options);
-        tooltip.accept(Component.translatable("dragon." + this.type.getName()).withStyle(this.type.getColorFormatting()));
-    }
 }

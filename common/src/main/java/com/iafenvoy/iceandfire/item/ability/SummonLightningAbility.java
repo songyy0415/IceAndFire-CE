@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item.ability;
+import net.minecraft.resources.Identifier;
 
 import com.iafenvoy.iceandfire.event.ServerEvents;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -16,10 +17,10 @@ public class SummonLightningAbility implements PostHitAbility {
                 return;
             }
             if (!attacker.level().isClientSide()) {
-                LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(target.level(), EntitySpawnReason.LOAD);
+                LightningBolt lightningEntity = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("lightning_bolt")).create(target.level(), EntitySpawnReason.LOAD);
                 assert lightningEntity != null;
-                lightningEntity.getTags().add(ServerEvents.BOLT_DONT_DESTROY_LOOT);
-                lightningEntity.getTags().add(attacker.getStringUUID());
+                lightningEntity.keySet().add(ServerEvents.BOLT_DONT_DESTROY_LOOT);
+                lightningEntity.keySet().add(attacker.getStringUUID());
                 lightningEntity.moveTo(target.position());
                 if (!target.level().isClientSide()) {
                     target.level().addFreshEntity(lightningEntity);

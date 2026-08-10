@@ -73,7 +73,7 @@ public class TideTridentEntity extends ThrownTrident {
         if (this.level() instanceof ServerLevel && this.level().isThundering() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(this.level().registryAccess(), Enchantments.CHANNELING), this.getPickupItemStackOrigin()) > 0) {
             BlockPos blockpos = entity.blockPosition();
             if (this.level().canSeeSky(blockpos)) {
-                LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.level(), EntitySpawnReason.LOAD);
+                LightningBolt lightningboltentity = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("lightning_bolt")).create(this.level(), EntitySpawnReason.LOAD);
                 assert lightningboltentity != null;
                 lightningboltentity.moveTo(Vec3.atCenterOf(blockpos));
                 lightningboltentity.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer) entity1 : null);

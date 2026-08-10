@@ -34,7 +34,7 @@ public class GraveyardSoilBlock extends Block {
                     ghost.finalizeSpawn(worldIn, ((ServerLevel) worldIn).getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWNER, null);
                     worldIn.addFreshEntity(ghost);
                     ghost.setAnimation(GhostEntity.ANIMATION_SCARE);
-                    ghost.restrictTo(pos, 16);
+                    
                 }
             }
         }

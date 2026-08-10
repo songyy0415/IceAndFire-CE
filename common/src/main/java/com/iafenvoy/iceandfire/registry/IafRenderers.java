@@ -18,7 +18,6 @@ import com.iafenvoy.iceandfire.render.model.animator.IceDragonTabulaModelAnimato
 import com.iafenvoy.iceandfire.render.model.animator.LightningTabulaDragonAnimator;
 import com.iafenvoy.iceandfire.render.model.armor.*;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
-import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
 import com.iafenvoy.uranus.client.render.armor.IArmorRendererBase;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
@@ -137,14 +136,8 @@ public final class IafRenderers {
     }
 
     public static void registerItemRenderers() {
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_BIRCH.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_OAK.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_DARK_OAK.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_SPRUCE.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.DREAD_PORTAL.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.GHOST_CHEST.get().asItem(), new MiscItemRenderer());
+        // Block item rendering migrated to the 26.2 SpecialModelRenderer pipeline:
+        // pixie houses / dread portal / ghost chest use iceandfire:block_entity special models (see items/*.json + SpecialModelRenderersMixin).
     }
 
     public static void registerRenderLayers() {

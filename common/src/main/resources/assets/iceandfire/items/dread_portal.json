@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire:item/dread_portal",
+    "model": {
+      "type": "iceandfire:block_entity"
+    }
+  }
+}

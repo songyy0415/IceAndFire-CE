@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire:item/ghost_chest",
+    "model": {
+      "type": "iceandfire:block_entity"
+    }
+  }
+}

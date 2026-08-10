@@ -1,50 +1,47 @@
 package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.entity.HydraEntity;
 import com.iafenvoy.iceandfire.entity.StoneStatueEntity;
-import com.iafenvoy.iceandfire.entity.TrollEntity;
 import com.iafenvoy.iceandfire.registry.IafRenderLayers;
-import com.iafenvoy.iceandfire.render.entity.feature.HydraHeadFeatureRenderer;
+import com.iafenvoy.iceandfire.render.entity.state.StoneStatueRenderState;
 import com.iafenvoy.iceandfire.render.model.ICustomStatueModel;
-import com.iafenvoy.iceandfire.render.model.HydraBodyModel;
 import com.iafenvoy.iceandfire.render.model.StonePlayerModel;
-import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.PigModel;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.animal.pig.PigModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 
-public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity> {
+public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity, StoneStatueRenderState> {
     protected static final Identifier[] DESTROY_STAGES = new Identifier[]{
             Identifier.withDefaultNamespace("textures/block/destroy_stage_0.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_1.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_2.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_3.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_4.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_5.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_6.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_7.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_8.png"),
-            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_9.png")};
-    private final Map<String, EntityModel> modelMap = new HashMap<>();
-    private final Map<String, Entity> hollowEntityMap = new HashMap<>();
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_1.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_2.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_3.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_4.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_5.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_6.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_7.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_8.png"),
+            Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_9.png")};
+    private final Map<String, Model<?>> modelMap = new HashMap<>();
     private final EntityRendererProvider.Context context;
 
     public StoneStatueEntityRenderer(EntityRendererProvider.Context context) {
@@ -52,93 +49,74 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
         this.context = context;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public Identifier getTextureLocation(StoneStatueEntity entity) {
-        return TextureAtlas.LOCATION_BLOCKS;
-    }
-
-    protected void preRenderCallback(StoneStatueEntity entity, PoseStack matrixStackIn, float partialTickTime) {
-        float scale = entity.getAgeScale() < 0.01F ? 1F : entity.getAgeScale();
-        matrixStackIn.scale(scale, scale, scale);
+    public StoneStatueRenderState createRenderState() {
+        return new StoneStatueRenderState();
     }
 
     @Override
-    public void render(StoneStatueEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        EntityModel model = new PigModel<>(this.context.bakeLayer(ModelLayers.PIG));
+    public void extractRenderState(StoneStatueEntity entity, StoneStatueRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.trappedEntityTypeString = entity.getTrappedEntityTypeString();
+        state.ageScale = entity.getAgeScale() < 0.01F ? 1F : entity.getAgeScale();
+        state.crackAmount = entity.getCrackAmount();
+        state.yaw = entity.yRotO + (entity.getYRot() - entity.yRotO) * partialTicks;
+    }
 
-        // Get the correct model
-        if (this.modelMap.get(entityIn.getTrappedEntityTypeString()) != null)
-            model = this.modelMap.get(entityIn.getTrappedEntityTypeString());
-        else {
-            EntityRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().renderers.get(entityIn.getTrappedEntityType());
-
-            if (renderer instanceof RenderLayerParent)
-                model = ((RenderLayerParent<?, ?>) renderer).getModel();
-            else if (entityIn.getTrappedEntityType() == EntityType.PLAYER)
-                model = new StonePlayerModel(this.context.bakeLayer(ModelLayers.PLAYER));
-            this.modelMap.put(entityIn.getTrappedEntityTypeString(), model);
-        }
-        if (model == null) return;
-
-        Entity fakeEntity;
-        if (this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString()) == null) {
-            fakeEntity = entityIn.getTrappedEntityType().create(Minecraft.getInstance().level);
-            if (fakeEntity != null) {
-                try {
-                    fakeEntity.load(entityIn.getTrappedTag());
-                } catch (Exception e) {
-                    IceAndFire.LOGGER.warn("Mob {} could not build statue NBT", entityIn.getTrappedEntityTypeString());
-                }
-                this.hollowEntityMap.putIfAbsent(entityIn.getTrappedEntityTypeString(), fakeEntity);
-            }
-        } else
-            fakeEntity = this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString());
-        RenderType tex = IafRenderLayers.getStoneMobRenderType(200, 200);
-        if (fakeEntity instanceof TrollEntity troll)
-            tex = RenderType.entityCutout(troll.getTrollType().getStatueTexture());
-
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(tex);
-
-        matrixStackIn.pushPose();
-        float yaw = entityIn.yRotO + (entityIn.getYRot() - entityIn.yRotO) * partialTicks;
-        model.young = entityIn.isBaby();
-        model.riding = false;
-        model.attackTime = entityIn.getAttackAnim(partialTicks);
-        if (model instanceof AdvancedEntityModel advancedEntityModel)
-            advancedEntityModel.resetToDefaultPose();
-        else if (fakeEntity != null)
-            model.setupAnim(fakeEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F);
-        this.preRenderCallback(entityIn, matrixStackIn, partialTicks);
-        matrixStackIn.translate(0, 1.5F, 0);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(yaw));
-        if (model instanceof ICustomStatueModel statueModel && fakeEntity != null) {
-            statueModel.renderStatue(matrixStackIn, ivertexbuilder, packedLightIn, fakeEntity);
-            if (model instanceof HydraBodyModel hydraBody && fakeEntity instanceof HydraEntity hydra)
-                HydraHeadFeatureRenderer.renderHydraHeads(hydraBody, true, matrixStackIn, bufferIn, packedLightIn, hydra, 0, 0, partialTicks, 0, 0, 0);
-        } else
-            model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
-
-        matrixStackIn.popPose();
-
-        if (entityIn.getCrackAmount() >= 1) {
-            int i = Mth.clamp(entityIn.getCrackAmount() - 1, 0, DESTROY_STAGES.length - 1);
-            RenderType crackTex = IafRenderLayers.getStoneCrackRenderType(DESTROY_STAGES[i]);
-            VertexConsumer ivertexbuilder2 = bufferIn.getBuffer(crackTex);
+    @Override
+    public void submit(StoneStatueRenderState state, PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        Model<?> model = this.getStatueModel(state);
+        if (model != null) {
             matrixStackIn.pushPose();
-            matrixStackIn.pushPose();
-            this.preRenderCallback(entityIn, matrixStackIn, partialTicks);
+            matrixStackIn.scale(state.ageScale, state.ageScale, state.ageScale);
             matrixStackIn.translate(0, 1.5F, 0);
             matrixStackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
-            matrixStackIn.mulPose(Axis.YP.rotationDegrees(yaw));
-            if (model instanceof ICustomStatueModel statueModel)
-                statueModel.renderStatue(matrixStackIn, ivertexbuilder2, packedLightIn, fakeEntity);
-            else
-                model.renderToBuffer(matrixStackIn, ivertexbuilder2, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
-            matrixStackIn.popPose();
+            matrixStackIn.mulPose(Axis.YP.rotationDegrees(state.yaw));
+            RenderType stoneTex = IafRenderLayers.getStoneMobRenderType(200, 200);
+            submitNodeCollector.submitCustomGeometry(matrixStackIn, stoneTex, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.renderStoneModel(model, fresh, buffer, state.lightCoords);
+            });
+            if (state.crackAmount >= 1) {
+                int i = Mth.clamp(state.crackAmount - 1, 0, DESTROY_STAGES.length - 1);
+                RenderType crackTex = IafRenderLayers.getStoneCrackRenderType(DESTROY_STAGES[i]);
+                submitNodeCollector.submitCustomGeometry(matrixStackIn, crackTex, (pose, buffer) -> {
+                    PoseStack fresh = new PoseStack();
+                    fresh.last().pose().set(pose.pose());
+                    fresh.last().normal().set(pose.normal());
+                    this.renderStoneModel(model, fresh, buffer, state.lightCoords);
+                });
+            }
             matrixStackIn.popPose();
         }
-        //super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+        super.submit(state, matrixStackIn, submitNodeCollector, camera);
+    }
+
+    private void renderStoneModel(Model<?> model, PoseStack poseStack, VertexConsumer buffer, int packedLight) {
+        if (model instanceof ICustomStatueModel statueModel)
+            statueModel.renderStatue(poseStack, buffer, packedLight, null);
+        else
+            model.renderToBuffer(poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, -1);
+    }
+
+    private Model<?> getStatueModel(StoneStatueRenderState state) {
+        Model<?> cached = this.modelMap.get(state.trappedEntityTypeString);
+        if (cached != null) return cached;
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(state.trappedEntityTypeString)).orElse(BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("pig")));
+        Model<?> model = null;
+        Entity tempEntity = type.create(Minecraft.getInstance().level, EntitySpawnReason.LOAD);
+        if (tempEntity != null) {
+            EntityRenderer<?, ?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(tempEntity);
+            if (renderer instanceof RenderLayerParent<?, ?> rlp)
+                model = rlp.getModel();
+        }
+        if (model == null && type == BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("player")))
+            model = new StonePlayerModel(this.context.bakeLayer(ModelLayers.PLAYER));
+        if (model == null)
+            model = new PigModel(this.context.bakeLayer(ModelLayers.PIG));
+        this.modelMap.put(state.trappedEntityTypeString, model);
+        return model;
     }
 }

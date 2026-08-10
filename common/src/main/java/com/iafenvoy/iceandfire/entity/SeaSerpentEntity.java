@@ -326,7 +326,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
                 double extraY = 0.8F;
                 double extraZ = radius * Mth.cos(angle);
                 if (this.level().isClientSide()) {
-                    this.level().addParticle(ParticleTypes.BUBBLE, true, this.getX() + extraX, this.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
+                    this.level().addParticle(ParticleTypes.BUBBLE, true, false, this.getX() + extraX, this.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
                 }
             }
         }

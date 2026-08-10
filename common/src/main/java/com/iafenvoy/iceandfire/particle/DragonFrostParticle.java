@@ -4,13 +4,13 @@ import com.iafenvoy.uranus.object.VecUtil;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SingleQuadParticle;
-import net.minecraft.client.particle.ParticleRenderType;
 
 public class DragonFrostParticle extends SingleQuadParticle {
     protected DragonFrostParticle(DragonFrostParticleType parameters, ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteSet spriteProvider) {
@@ -41,13 +41,13 @@ public class DragonFrostParticle extends SingleQuadParticle {
     }
 
     @Override
-    public @NotNull ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.OPAQUE;
     }
 
     protected record Provider(SpriteSet spriteProvider) implements ParticleProvider<DragonFrostParticleType> {
         @Override
-        public Particle createParticle(DragonFrostParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        public Particle createParticle(DragonFrostParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double velocityX, double velocityY, double velocityZ, RandomSource random) {
             return new DragonFrostParticle(typeIn, worldIn, x, y, z, velocityX, velocityY, velocityZ, this.spriteProvider);
         }
     }

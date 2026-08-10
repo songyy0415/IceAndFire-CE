@@ -1,12 +1,11 @@
 package com.iafenvoy.iceandfire.particle;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
@@ -33,11 +32,11 @@ public class PixieDustParticle extends SingleQuadParticle {
     }
 
     @Override
-    public void render(VertexConsumer consumer, Camera camera, float tickDelta) {
+    public void extract(QuadParticleRenderState state, Camera camera, float tickDelta) {
         float scaley = ((float) this.age + tickDelta) / (float) this.lifetime * 32.0F;
         scaley = Mth.clamp(scaley, 0.0F, 1.0F);
         this.quadSize = this.newScale * scaley;
-        super.render(consumer, camera, tickDelta);
+        super.extract(state, camera, tickDelta);
     }
 
     @Override

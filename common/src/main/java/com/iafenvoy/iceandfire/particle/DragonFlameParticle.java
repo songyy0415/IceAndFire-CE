@@ -4,7 +4,6 @@ import com.iafenvoy.uranus.object.VecUtil;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,7 +38,7 @@ public class DragonFlameParticle extends SingleQuadParticle {
     }
 
     @Override
-    public @NotNull ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.OPAQUE;
     }
 }

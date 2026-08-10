@@ -1,12 +1,11 @@
 package com.iafenvoy.iceandfire.particle;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.core.particles.SimpleParticleType;
 
 public class DreadTorchParticle extends SingleQuadParticle {
@@ -22,13 +21,12 @@ public class DreadTorchParticle extends SingleQuadParticle {
     }
 
     @Override
-    public void render(VertexConsumer consumer, Camera camera, float tickDelta) {
-        this.quadSize = 0.125F * (this.lifetime - (this.age));
-        this.quadSize = this.quadSize * 0.09F;
+    public void extract(QuadParticleRenderState state, Camera camera, float tickDelta) {
+        this.quadSize = 0.125F * (this.lifetime - this.age) * 0.09F;
         this.xd *= 0.75D;
         this.yd *= 0.75D;
         this.zd *= 0.75D;
-        super.render(consumer, camera, tickDelta);
+        super.extract(state, camera, tickDelta);
     }
 
     @Override

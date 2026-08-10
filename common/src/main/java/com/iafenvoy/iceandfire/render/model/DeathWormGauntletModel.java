@@ -1,19 +1,21 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
-public class DeathWormGauntletModel extends DragonBaseModel {
+public class DeathWormGauntletModel extends DragonBaseModel<EntityRenderState> {
     public final AdvancedModelBox Head;
     public final AdvancedModelBox JawExtender;
     public final AdvancedModelBox HeadInner;
@@ -92,8 +94,7 @@ public class DeathWormGauntletModel extends DragonBaseModel {
     }
 
     @Override
-    public void setAngles(Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-
+    public void setupAnim(EntityRenderState state) {
     }
 
     @Override
@@ -106,14 +107,8 @@ public class DeathWormGauntletModel extends DragonBaseModel {
         return ImmutableList.of(this.Head, this.JawExtender, this.HeadInner, this.ToothB, this.ToothT, this.ToothL, this.ToothL_1, this.JawExtender2, this.JawExtender3, this.JawExtender4, this.TopJaw, this.BottomJaw, this.JawHook);
     }
 
-    public void animate(ItemStack stack, float partialTick) {
+    public void animate(float lungeTicks) {
         this.resetToDefaultPose();
-        assert MinecraftClient.getInstance().world != null;
-        Entity holder = MinecraftClient.getInstance().world.getEntityById(stack.getOrDefault(IafDataComponents.USER_ID.get(), -1));
-        if (!(holder instanceof LivingEntity livingEntity)) return;
-
-        MiscData miscData = MiscData.get(livingEntity);
-        float lungeTicks = miscData.lungeTicks == 0 ? 0 : miscData.lungeTicks + partialTick;
         this.progressRotation(this.TopJaw, lungeTicks, (float) Math.toRadians(-30), 0, 0);
         this.progressRotation(this.BottomJaw, lungeTicks, (float) Math.toRadians(30), 0, 0);
         this.progressPosition(this.JawExtender, lungeTicks, 0, 0, -4);
@@ -123,7 +118,7 @@ public class DeathWormGauntletModel extends DragonBaseModel {
     }
 
     @Override
-    public void renderStatue(MatrixStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.render(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV, -1);
+    public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
     }
 }

@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -102,7 +101,7 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
                             if (random.nextInt(4) == 0)
                                 world.setBlock(blockpos.above(), Blocks.SHORT_GRASS.defaultBlockState(), 2);
                             if (random.nextInt(9) == 0)
-                                world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(TreeFeatures.SWAMP_OAK).ifPresent(holder -> holder.value().place(world, chunkGenerator, random, blockpos.above()));
+                                world.registryAccess().lookupOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.withDefaultNamespace("swamp_oak"))).ifPresent(holder -> holder.value().place(world, chunkGenerator, random, blockpos.above()));
                         }
                         if (blockpos.getY() == pivot.getY())
                             world.setBlock(blockpos, Blocks.GRASS_BLOCK.defaultBlockState(), 3);
@@ -152,7 +151,7 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
             }
             HydraEntity hydra = new HydraEntity(IafEntities.HYDRA.get(), world.getLevel());
             hydra.setVariant(random.nextInt(3));
-            hydra.restrictTo(pivot, 15);
+            hydra.setHomeTo(pivot, 15);
             hydra.setPos(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5); hydra.setYRot(random.nextFloat() * 360); hydra.setXRot(0);
             world.addFreshEntity(hydra);
         }

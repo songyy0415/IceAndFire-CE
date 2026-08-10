@@ -108,7 +108,7 @@ public class PixieVillageStructure extends Structure {
                                     IafBlocks.PIXIE_HOUSE_DARK_OAK.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             default -> IafBlocks.PIXIE_HOUSE_OAK.get().defaultBlockState();
                         };
-                        PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel());
+                        PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
                         assert pixie != null;
                         pixie.finalizeSpawn(world, world.getCurrentDifficultyAt(buildPosition2.above()), EntitySpawnReason.SPAWNER, null);
                         pixie.setPos(buildPosition2.getX(), buildPosition2.getY() + 2, buildPosition2.getZ());

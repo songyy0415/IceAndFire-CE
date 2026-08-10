@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
@@ -43,6 +44,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class DragonCaveStructure extends Structure implements DangerousGeneration {
     protected DragonCaveStructure(StructureSettings config) {
@@ -195,7 +197,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
         }
 
         private List<Block> getBlockList(final TagKey<Block> tagKey) {
-            return BuiltInRegistries.BLOCK.getTag(tagKey).map(holders -> holders.stream().map(Holder::value).toList()).orElse(Collections.emptyList());
+            return StreamSupport.stream(BuiltInRegistries.BLOCK.getTagOrEmpty(tagKey).spliterator(), false).map(Holder::value).toList();
         }
 
         public void hollowOut(LevelAccessor worldIn, Set<BlockPos> positions) {
@@ -240,7 +242,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
         }
 
         private DragonBaseEntity createDragon(final WorldGenLevel worldGen, final RandomSource random, final BlockPos position, int dragonAge) {
-            DragonBaseEntity dragon = this.getDragonType().create(worldGen.getLevel());
+            DragonBaseEntity dragon = this.getDragonType().create(worldGen.getLevel(), EntitySpawnReason.STRUCTURE);
             assert dragon != null;
             dragon.setGender(this.male);
             dragon.growDragon(dragonAge);

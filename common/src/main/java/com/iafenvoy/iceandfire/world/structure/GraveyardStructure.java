@@ -17,6 +17,7 @@ import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 
 public class GraveyardStructure extends IafJigsawStructure {
@@ -53,7 +54,7 @@ public class GraveyardStructure extends IafJigsawStructure {
                 // Here, blockpos's y value is 60 which means the structure spawn 60 blocks above terrain height.
                 // Set this to false for structure to be place only at the passed in blockpos's Y value instead.
                 // Definitely keep this false when placing structures in the nether as otherwise, heightmap placing will put the structure on the Bedrock roof.
-                this.maxDistanceFromCenter,
+                new JigsawStructure.MaxDistance(this.maxDistanceFromCenter),
                 PoolAliasLookup.EMPTY,
                 DimensionPadding.ZERO,
                 LiquidSettings.IGNORE_WATERLOGGING);

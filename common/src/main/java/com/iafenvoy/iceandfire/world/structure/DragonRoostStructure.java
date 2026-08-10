@@ -16,6 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
@@ -74,7 +75,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
 
         public DragonRoostPiece(StructurePieceType type, CompoundTag nbt) {
             super(type, nbt);
-            this.treasureBlock = BuiltInRegistries.BLOCK.get(Identifier.tryParse(nbt.getString("treasureBlock").orElse("")));
+            this.treasureBlock = BuiltInRegistries.BLOCK.getValue(Identifier.tryParse(nbt.getString("treasureBlock").orElse("")));
             this.isMale = nbt.getBooleanOr("isMale", false);
         }
 
@@ -301,7 +302,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         }
 
         private void spawnDragon(WorldGenLevel world, BlockPos origin, RandomSource random, int ageOffset, boolean isMale) {
-            DragonBaseEntity dragon = this.getDragonType().create(world.getLevel());
+            DragonBaseEntity dragon = this.getDragonType().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
             assert dragon != null;
             dragon.setGender(isMale);
             dragon.growDragon(40 + ageOffset);

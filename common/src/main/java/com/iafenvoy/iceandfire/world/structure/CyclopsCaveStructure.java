@@ -143,7 +143,7 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
                 }
             }
 
-            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel());
+            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
             if (cyclops != null) {
                 cyclops.setPos(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5); cyclops.setYRot(random.nextFloat() * 360); cyclops.setXRot(0);
                 world.addFreshEntity(cyclops);
@@ -164,7 +164,7 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
                         level.setBlock(relativePosition, this.getFenceState(level, relativePosition), Block.UPDATE_ALL);
                         if (level.isEmptyBlock(relativePosition.relative(direction.getClockWise())) && sheepAmount > 0) {
                             BlockPos sheepPos = relativePosition.relative(direction.getClockWise());
-                            Sheep sheep = new Sheep(BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("sheep")), level.getLevel());
+                            Sheep sheep = new Sheep((EntityType<? extends Sheep>) BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.withDefaultNamespace("sheep")), level.getLevel());
                             sheep.setPos(sheepPos.getX() + 0.5F, sheepPos.getY() + 0.5F, sheepPos.getZ() + 0.5F);
                             sheep.setColor(random.nextInt(4) == 0 ? DyeColor.YELLOW : DyeColor.WHITE);
                             level.addFreshEntity(sheep);

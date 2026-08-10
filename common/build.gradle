@@ -27,6 +27,10 @@ dependencies {
     // EMI 26.2 (1.1.24) built from local port (D:/aiminecraftdev/emi26.2) → mavenLocal.
     compileOnly "dev.emi:emi-fabric:${emi_version}:api"
     compileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
+    // Full JEI fabric jar (impl) for mezz.jei.common.Internal.getClientSyncedRecipes() —
+    // the 26.2 client no longer syncs custom recipe types to Minecraft, so JEI keeps its
+    // own client-side RecipeMap that mods query during registerRecipes.
+    compileOnly "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
 
     implementation "maven.modrinth:jade:JB4B8a9g"
 

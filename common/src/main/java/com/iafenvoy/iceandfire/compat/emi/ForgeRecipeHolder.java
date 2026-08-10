@@ -53,7 +53,7 @@ public class ForgeRecipeHolder {
 
         @Override
         public @Nullable Identifier getId() {
-            return this.entry.id().location();
+            return this.entry.id().identifier();
         }
 
         @Override

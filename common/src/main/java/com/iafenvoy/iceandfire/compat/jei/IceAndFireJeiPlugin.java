@@ -15,14 +15,15 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.client.Minecraft;
+import mezz.jei.common.Internal;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 //By jdkdigital
@@ -58,9 +59,8 @@ public class IceAndFireJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        RecipeManager recipeManager = Minecraft.getInstance().getConnection().getRecipeManager();
-
-        List<RecipeHolder<DragonForgeRecipe>> recipeList = recipeManager.getRecipes().stream().filter(r -> r.value().getType() == IafRecipes.DRAGON_FORGE_TYPE.get()).collect(java.util.stream.Collectors.toList());
+        RecipeMap recipeMap = Internal.getClientSyncedRecipes();
+        Collection<RecipeHolder<DragonForgeRecipe>> recipeList = recipeMap.byType(IafRecipes.DRAGON_FORGE_TYPE.get());
 
         List<DragonForgeRecipe> FIRE_RECIPES = new ArrayList<>();
         List<DragonForgeRecipe> ICE_RECIPES = new ArrayList<>();

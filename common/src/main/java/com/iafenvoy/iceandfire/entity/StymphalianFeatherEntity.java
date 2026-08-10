@@ -27,7 +27,7 @@ public class StymphalianFeatherEntity extends AbstractArrow {
     public void remove(RemovalReason reason) {
         super.remove(reason);
         if (IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue() > 0)
-            if (this.level().isClientSide())
+            if (!this.level().isClientSide())
                 if (this.getRandom().nextDouble() < IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue())
                     this.spawnAtLocation((ServerLevel) this.level(), this.getPickupItem(), 0.1F);
     }

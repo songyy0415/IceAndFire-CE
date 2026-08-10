@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 public final class IafRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, Registries.RECIPE_SERIALIZER);
 
-    public static final RegistrySupplier<RecipeSerializer<?>> DRAGONFORGE_SERIALIZER = register("dragonforge", DragonForgeRecipe.Serializer::new);
+    public static final RegistrySupplier<RecipeSerializer<?>> DRAGONFORGE_SERIALIZER = register("dragonforge", () -> DragonForgeRecipe.SERIALIZER);
 
     private static RegistrySupplier<RecipeSerializer<?>> register(String name, Supplier<RecipeSerializer<?>> serializer) {
         return REGISTRY.register(name, serializer);

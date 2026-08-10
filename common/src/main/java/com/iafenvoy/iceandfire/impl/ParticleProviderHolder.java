@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.impl;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.particle.ParticleProvider;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import org.jetbrains.annotations.NotNull;
@@ -14,14 +14,14 @@ import java.util.function.BiConsumer;
 public class ParticleProviderHolder<T extends ParticleOptions> {
     private final ParticleType<T> type;
     @Nullable
-    private final ParticleProvider<T> commonFactory;
+    private final ParticleProviderRegistry.PendingParticleProvider<T> commonFactory;
 
-    public ParticleProviderHolder(ParticleType<T> type, @NotNull ParticleProvider<T> factory) {
+    public ParticleProviderHolder(ParticleType<T> type, @NotNull ParticleProviderRegistry.PendingParticleProvider<T> factory) {
         this.type = type;
         this.commonFactory = factory;
     }
 
-    public void applyRegister(BiConsumer<ParticleType<T>, ParticleProvider<T>> common) {
+    public void applyRegister(BiConsumer<ParticleType<T>, ParticleProviderRegistry.PendingParticleProvider<T>> common) {
         if (this.commonFactory != null) common.accept(this.type, this.commonFactory);
     }
 }

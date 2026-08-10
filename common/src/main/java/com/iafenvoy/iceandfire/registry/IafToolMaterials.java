@@ -3,6 +3,8 @@ package com.iafenvoy.iceandfire.registry;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.tag.CommonItemTags;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -34,7 +36,7 @@ public enum IafToolMaterials {
     private final float speed;
     private final int enchantability;
     private final TagKey<Block> inverted;
-    private TagKey<Item> repairItems = ItemTags.AIR;
+    private TagKey<Item> repairItems = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("iceandfire", "empty"));
 
     IafToolMaterials(String name, int durability, float damage, float speed, int enchantability, TagKey<Block> inverted) {
         this.name = name;

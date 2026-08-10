@@ -350,7 +350,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
             float f6 = Mth.cos(this.getYRot() * 0.017453292F);
             target.setDeltaMovement(f5, f6, 0.4F);
         }
-        if (this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && ((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
+        if (!this.level().isClientSide() && this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && ((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
             this.lookAt(this.getTarget(), 30, 30);
             if (this.getAnimation() == NO_ANIMATION && this.getRandom().nextInt(15) == 0)
                 this.setAnimation(ANIMATION_STRIKE_VERTICAL);

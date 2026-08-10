@@ -230,7 +230,8 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         if (this.getAnimation() == ANIMATION_HIT && this.getTarget() != null) {
             if (this.distanceTo(this.getTarget()) < 1.4D && this.getAnimationTick() >= 4 && this.getAnimationTick() < 6) {
                 this.playSound(IafSounds.GHOST_ATTACK.get(), this.getSoundVolume(), this.getVoicePitch());
-                this.doHurtTarget((ServerLevel) this.level(), this.getTarget());
+                if (!this.level().isClientSide())
+                    this.doHurtTarget((ServerLevel) this.level(), this.getTarget());
             }
         }
         AnimationHandler.INSTANCE.updateAnimations(this);

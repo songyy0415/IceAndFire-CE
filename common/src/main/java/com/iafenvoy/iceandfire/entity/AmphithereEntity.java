@@ -517,7 +517,6 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();

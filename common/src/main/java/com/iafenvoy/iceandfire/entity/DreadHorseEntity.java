@@ -81,7 +81,6 @@ public class DreadHorseEntity extends SkeletonHorse implements IDreadMob {
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
     }

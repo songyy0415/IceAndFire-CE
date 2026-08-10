@@ -316,7 +316,6 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
     }

@@ -502,7 +502,6 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
@@ -633,7 +632,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
         if (this.isInSand()) {
             BlockPos pos = new BlockPos(this.getBlockX(), this.getSurface(this.getBlockX(), this.getBlockY(), this.getBlockZ()), this.getBlockZ()).below();
             BlockState state = this.level().getBlockState(pos);
-            if (state.isSolidRender(this.level(), pos) && this.level().isClientSide())
+            if (state.isSolidRender() && this.level().isClientSide())
                 this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), this.getX() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.getRandom().nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D, this.getRandom().nextGaussian() * 0.02D);
             if (this.tickCount % 10 == 0) this.playSound(SoundEvents.SAND_BREAK, 1, 0.5F);
         }

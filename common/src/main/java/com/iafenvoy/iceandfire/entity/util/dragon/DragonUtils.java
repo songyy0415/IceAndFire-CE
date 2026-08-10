@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.entity.util.IDeadMob;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;

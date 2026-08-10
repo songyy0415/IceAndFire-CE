@@ -126,7 +126,7 @@ public class SeaSerpentPathNavigatorGoal extends PathNavigation {
 
     @Override
     public boolean isStableDestination(BlockPos pos) {
-        return !this.level.getBlockState(pos).isSolidRender(this.level, pos);
+        return !this.level.getBlockState(pos).isSolidRender();
     }
 
     @Override

@@ -383,7 +383,6 @@ public class PixieEntity extends TamableAnimal {
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();

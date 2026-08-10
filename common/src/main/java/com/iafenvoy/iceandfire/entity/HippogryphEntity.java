@@ -27,6 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 
 import net.minecraft.nbt.CompoundTag;
@@ -971,7 +972,6 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         return newNavigator;
     }
 
-    @Override
     @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {

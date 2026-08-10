@@ -196,7 +196,6 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entityIn.getType()).is(IafEntityTags.CHICKENS))
             return true;

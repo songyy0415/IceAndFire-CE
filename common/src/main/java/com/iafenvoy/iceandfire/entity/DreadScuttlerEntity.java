@@ -226,7 +226,6 @@ public class DreadScuttlerEntity extends DreadMobEntity implements IAnimatedEnti
     }
 
     @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
     }

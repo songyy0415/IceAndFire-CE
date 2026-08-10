@@ -51,8 +51,9 @@ public class DeathwormGauntletItem extends Item {
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity user, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity user, int timeLeft) {
         stack.set(IafDataComponents.USER_ID.get(), -1);
+            return true;
     }
 
     @Override

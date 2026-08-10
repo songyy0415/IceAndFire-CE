@@ -31,7 +31,7 @@ public class DragonBowItem extends BowItem {
 
     //Copied from parent
     @Override
-    public void releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public boolean releaseUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof Player playerEntity) {
             boolean bl = playerEntity.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.INFINITY), stack) > 0;
             ItemStack itemStack = playerEntity.getProjectile(stack);
@@ -67,5 +67,6 @@ public class DragonBowItem extends BowItem {
                 }
             }
         }
+            return true;
     }
 }

@@ -46,12 +46,13 @@ public class CockatriceScepterItem extends Item {
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity livingEntity, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity livingEntity, int timeLeft) {
         if (this.specialWeaponDmg > 0) {
             stack.hurtAndBreak(this.specialWeaponDmg, livingEntity, LivingEntity.getSlotForHand(livingEntity.getUsedItemHand()));
             this.specialWeaponDmg = 0;
         }
         MiscData.get(livingEntity).getTargetedByScepters().clear();
+            return true;
     }
 
     @Override

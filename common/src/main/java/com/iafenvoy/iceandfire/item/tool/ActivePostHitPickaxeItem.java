@@ -6,16 +6,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-public class ActivePostHitPickaxeItem extends PickaxeItem {
+public class ActivePostHitPickaxeItem extends Item {
     private final PostHitAbility ability;
-    public ActivePostHitPickaxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Properties settings, PostHitAbility ability) {
-        super(material, attackDamage, attackSpeed, settings);
+    public ActivePostHitPickaxeItem(ToolMaterial toolMaterial, float attackDamage, float attackSpeed, Properties settings, PostHitAbility ability) {
+        super(settings.pickaxe(toolMaterial, attackDamage, attackSpeed));
         this.ability = ability;
     }
 

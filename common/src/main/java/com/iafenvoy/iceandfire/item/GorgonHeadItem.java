@@ -46,7 +46,7 @@ public class GorgonHeadItem extends Item {
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entity, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity entity, int timeLeft) {
         double dist = 32;
         Vec3 Vector3d = entity.getEyePosition(1.0F);
         Vec3 Vector3d1 = entity.getViewVector(1.0F);
@@ -103,6 +103,7 @@ public class GorgonHeadItem extends Item {
             }
         }
         stack.remove(IafDataComponents.ACTIVE.get());
+            return true;
     }
 
     @Override

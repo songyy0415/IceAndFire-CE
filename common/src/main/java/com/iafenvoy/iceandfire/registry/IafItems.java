@@ -10,7 +10,6 @@ import com.iafenvoy.iceandfire.item.armor.BlindfoldItem;
 import com.iafenvoy.iceandfire.item.armor.DragonSteelArmorItem;
 import com.iafenvoy.iceandfire.item.armor.EarPlugsArmorItem;
 import com.iafenvoy.iceandfire.item.tool.*;
-import com.iafenvoy.iceandfire.registry.tag.IafBannerPatternTags;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -22,13 +21,13 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.BannerPatternItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import java.util.function.Supplier;
 
 
@@ -139,9 +138,9 @@ public final class IafItems {
     public static final RegistrySupplier<Item> HIPPOGRYPH_TALON = registerItem("hippogryph_talon", () -> new GenericItem(1));
     public static final RegistrySupplier<Item> STONE_STATUE = registerItem("stone_statue", StoneStatueItem::new);
     public static final RegistrySupplier<Item> BLINDFOLD = registerItem("blindfold", BlindfoldItem::new);
-    public static final RegistrySupplier<Item> PIXIE_DUST = registerItem("pixie_dust", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.3F).alwaysEdible().effect(new MobEffectInstance(MobEffects.LEVITATION, 100, 1), 1).effect(new MobEffectInstance(MobEffects.GLOWING, 100, 1), 1).build())));
+    public static final RegistrySupplier<Item> PIXIE_DUST = registerItem("pixie_dust", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.3F).alwaysEdible().build(), foodConsumable(new MobEffectInstance(MobEffects.LEVITATION, 100, 1), new MobEffectInstance(MobEffects.GLOWING, 100, 1)))));
     public static final RegistrySupplier<Item> PIXIE_WINGS = registerItem("pixie_wings", () -> new GenericItem(1));
-    public static final RegistrySupplier<Item> AMBROSIA = registerItem("ambrosia", () -> new Item(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(5).saturationModifier(0.6F).alwaysEdible().usingConvertsTo(Items.BOWL).effect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 3600, 2), 1).effect(new MobEffectInstance(MobEffects.ABSORPTION, 3600, 2), 1).effect(new MobEffectInstance(MobEffects.JUMP, 3600, 2), 1).effect(new MobEffectInstance(MobEffects.LUCK, 3600, 2), 1).build())));
+    public static final RegistrySupplier<Item> AMBROSIA = registerItem("ambrosia", () -> new Item(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(new FoodProperties.Builder().nutrition(5).saturationModifier(0.6F).alwaysEdible().build(), foodConsumable(new MobEffectInstance(MobEffects.STRENGTH, 3600, 2), new MobEffectInstance(MobEffects.ABSORPTION, 3600, 2), new MobEffectInstance(MobEffects.JUMP_BOOST, 3600, 2), new MobEffectInstance(MobEffects.LUCK, 3600, 2)))));
     public static final RegistrySupplier<Item> SHINY_SCALES = registerItem("shiny_scales", () -> new Item(new Item.Properties()));
     public static final RegistrySupplier<Item> SIREN_TEAR = registerItem("siren_tear", () -> new GenericItem(1));
     public static final RegistrySupplier<Item> HIPPOCAMPUS_FIN = registerItem("hippocampus_fin", () -> new GenericItem(1));
@@ -177,30 +176,30 @@ public final class IafItems {
     public static final RegistrySupplier<Item> EPIC_DRAGON_SEEKER = registerItem("epic_dragon_seeker", () -> new DragonSeekerItem(DragonSeekerItem.SeekerType.EPIC));
     public static final RegistrySupplier<Item> LEGENDARY_DRAGON_SEEKER = registerItem("legendary_dragon_seeker", () -> new DragonSeekerItem(DragonSeekerItem.SeekerType.LEGENDARY));
     public static final RegistrySupplier<Item> GODLY_DRAGON_SEEKER = registerItem("godly_dragon_seeker", () -> new DragonSeekerItem(DragonSeekerItem.SeekerType.GODLY));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_FIRE = registerItem("banner_pattern_fire", () -> new BannerPatternItem(IafBannerPatternTags.FIRE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_ICE = registerItem("banner_pattern_ice", () -> new BannerPatternItem(IafBannerPatternTags.ICE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_LIGHTNING = registerItem("banner_pattern_lightning", () -> new BannerPatternItem(IafBannerPatternTags.LIGHTNING_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_FIRE_HEAD = registerItem("banner_pattern_fire_head", () -> new BannerPatternItem(IafBannerPatternTags.FIRE_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_ICE_HEAD = registerItem("banner_pattern_ice_head", () -> new BannerPatternItem(IafBannerPatternTags.ICE_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_LIGHTNING_HEAD = registerItem("banner_pattern_lightning_head", () -> new BannerPatternItem(IafBannerPatternTags.LIGHTNING_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_AMPHITHERE = registerItem("banner_pattern_amphithere", () -> new BannerPatternItem(IafBannerPatternTags.AMPHITHERE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_BIRD = registerItem("banner_pattern_bird", () -> new BannerPatternItem(IafBannerPatternTags.BIRD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_EYE = registerItem("banner_pattern_eye", () -> new BannerPatternItem(IafBannerPatternTags.EYE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_FAE = registerItem("banner_pattern_fae", () -> new BannerPatternItem(IafBannerPatternTags.FAE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_FEATHER = registerItem("banner_pattern_feather", () -> new BannerPatternItem(IafBannerPatternTags.FEATHER_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_GORGON = registerItem("banner_pattern_gorgon", () -> new BannerPatternItem(IafBannerPatternTags.GORGON_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_HIPPOCAMPUS = registerItem("banner_pattern_hippocampus", () -> new BannerPatternItem(IafBannerPatternTags.HIPPOCAMPUS_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_HIPPOGRYPH_HEAD = registerItem("banner_pattern_hippogryph_head", () -> new BannerPatternItem(IafBannerPatternTags.HIPPOGRYPH_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_MERMAID = registerItem("banner_pattern_mermaid", () -> new BannerPatternItem(IafBannerPatternTags.MERMAID_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_SEA_SERPENT = registerItem("banner_pattern_sea_serpent", () -> new BannerPatternItem(IafBannerPatternTags.SEA_SERPENT_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_TROLL = registerItem("banner_pattern_troll", () -> new BannerPatternItem(IafBannerPatternTags.TROLL_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_WEEZER = registerItem("banner_pattern_weezer", () -> new BannerPatternItem(IafBannerPatternTags.WEEZER_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<BannerPatternItem> PATTERN_DREAD = registerItem("banner_pattern_dread", () -> new BannerPatternItem(IafBannerPatternTags.DREAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_FIRE_DRAGON_MEAT = registerItem("cooked_rice_with_fire_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.BOWL).effect(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), 1).effect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 60 * 2), 1).build())));
-    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_ICE_DRAGON_MEAT = registerItem("cooked_rice_with_ice_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.BOWL).effect(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), 1).effect(new MobEffectInstance(MobEffects.JUMP, 20 * 60 * 2, 2), 1).build())));
-    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_LIGHTNING_DRAGON_MEAT = registerItem("cooked_rice_with_lightning_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.BOWL).effect(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), 1).effect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 60 * 2, 2), 1).build())));
-    public static final RegistrySupplier<DelightFoodItem> GHOST_CREAM = registerItem("ghost_cream", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().fast().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.GLASS_BOTTLE).effect(new MobEffectInstance(MobEffects.LEVITATION, 20 * 20), 1).build())));
-    public static final RegistrySupplier<DelightFoodItem> PIXIE_DUST_MILKY_TEA = registerItem("pixie_dust_milky_tea", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().fast().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.GLASS_BOTTLE).effect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 2), 1).build())));
+    public static final RegistrySupplier<Item> PATTERN_FIRE = registerItem("banner_pattern_fire", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_ICE = registerItem("banner_pattern_ice", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_LIGHTNING = registerItem("banner_pattern_lightning", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_FIRE_HEAD = registerItem("banner_pattern_fire_head", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_ICE_HEAD = registerItem("banner_pattern_ice_head", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_LIGHTNING_HEAD = registerItem("banner_pattern_lightning_head", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_AMPHITHERE = registerItem("banner_pattern_amphithere", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_BIRD = registerItem("banner_pattern_bird", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_EYE = registerItem("banner_pattern_eye", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_FAE = registerItem("banner_pattern_fae", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_FEATHER = registerItem("banner_pattern_feather", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_GORGON = registerItem("banner_pattern_gorgon", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_HIPPOCAMPUS = registerItem("banner_pattern_hippocampus", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_HIPPOGRYPH_HEAD = registerItem("banner_pattern_hippogryph_head", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_MERMAID = registerItem("banner_pattern_mermaid", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_SEA_SERPENT = registerItem("banner_pattern_sea_serpent", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_TROLL = registerItem("banner_pattern_troll", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_WEEZER = registerItem("banner_pattern_weezer", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<Item> PATTERN_DREAD = registerItem("banner_pattern_dread", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_FIRE_DRAGON_MEAT = registerItem("cooked_rice_with_fire_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).build(), foodConsumable(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 60 * 2)))));
+    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_ICE_DRAGON_MEAT = registerItem("cooked_rice_with_ice_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).build(), foodConsumable(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), new MobEffectInstance(MobEffects.JUMP_BOOST, 20 * 60 * 2, 2)))));
+    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_LIGHTNING_DRAGON_MEAT = registerItem("cooked_rice_with_lightning_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).build(), foodConsumable(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), new MobEffectInstance(MobEffects.SPEED, 20 * 60 * 2, 2)))));
+    public static final RegistrySupplier<DelightFoodItem> GHOST_CREAM = registerItem("ghost_cream", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.GLASS_BOTTLE).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).build(), fastFoodConsumable(new MobEffectInstance(MobEffects.LEVITATION, 20 * 20)))));
+    public static final RegistrySupplier<DelightFoodItem> PIXIE_DUST_MILKY_TEA = registerItem("pixie_dust_milky_tea", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.GLASS_BOTTLE).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).build(), fastFoodConsumable(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 2)))));
 
     //spawn Eggs
     static {
@@ -332,6 +331,20 @@ public final class IafItems {
     public static final RegistrySupplier<Item> AMPHITHERE_MACUAHUITL = registerToolOrWeapon("amphithere_macuahuitl", AmphithereMacuahuitlItem::new);
     public static final RegistrySupplier<Item> TIDE_TRIDENT = registerToolOrWeapon("tide_trident", TideTridentItem::new);
     public static final RegistrySupplier<Item> GHOST_SWORD = registerToolOrWeapon("ghost_sword", GhostSwordItem::new);
+
+    private static Consumable foodConsumable(MobEffectInstance... effects) {
+        Consumable.Builder builder = Consumable.builder();
+        for (MobEffectInstance effect : effects)
+            builder.onConsume(new ApplyStatusEffectsConsumeEffect(effect, 1.0F));
+        return builder.build();
+    }
+
+    private static Consumable fastFoodConsumable(MobEffectInstance... effects) {
+        Consumable.Builder builder = Consumable.builder().consumeSeconds(0.6F);
+        for (MobEffectInstance effect : effects)
+            builder.onConsume(new ApplyStatusEffectsConsumeEffect(effect, 1.0F));
+        return builder.build();
+    }
 
     public static RegistrySupplier<DragonArmorItem> buildDragonArmor(DragonArmorPart type, DragonArmorMaterial material) {
         return registerItem(String.format("dragonarmor_%s_%s", material.name(), type.getId()), () -> new DragonArmorItem(material, type));

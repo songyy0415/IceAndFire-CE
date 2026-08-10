@@ -44,7 +44,7 @@ public class TideTridentItem extends TridentItem {
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity user, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity user, int timeLeft) {
         if (user instanceof Player player) {
             int time = this.getUseDuration(stack, user) - timeLeft;
             if (time >= 10) {
@@ -91,6 +91,7 @@ public class TideTridentItem extends TridentItem {
                 }
             }
         }
+            return true;
     }
 
     @Override

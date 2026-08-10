@@ -102,9 +102,13 @@ Items that render a fixed model with no stack data implement `NoDataSpecialModel
   `getDeltaTracker().getGameTimeDeltaPartialTick(true)`; submit via `renderPartsToBuffer`.
 - **GorgonHead**: T = boolean active; `extractArgument` reads `stack.has(IafDataComponents.ACTIVE)`;
   swap `GorgonHeadActiveModel`/`GorgonHeadModel` in submit (both already AdvancedEntityModel-based).
-- **MiscItem**: delegates to block-entity rendering (chest/portal/pixie house) — depends on the
-  Batch3-C `BlockEntityRenderer<T,S>` migration first; 26.2 `BlockEntityRenderDispatcher` API must be
-  re-audited at that point.
+- **MiscItem**: delegates to block-entity rendering (chest/portal/pixie house). **Deferred to
+  Batch3-C.** 26.2 `BlockEntityRenderDispatcher` exposes `getRenderer(E/S)` + `tryExtractRenderState(...)`
+  + `submit(S, PoseStack, SubmitNodeCollector, CameraRenderState)` — the submit path **requires a
+  `CameraRenderState`**, which `SpecialModelRenderer.submit(...)` does not receive, and the
+  `PixieHouseBlockEntityRenderer` is not yet migrated to `BlockEntityRenderer<T,S>`. So MiscItem
+  cannot be converted to a SpecialModelRenderer until Batch3-C lands; the old `MiscItemRenderer` and
+  its `DynamicItemRenderer.RENDERERS.put(...)` rows stay (erroring) until then.
 
 ## 7. Risks / behaviour deltas
 

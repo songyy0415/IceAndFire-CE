@@ -25,7 +25,7 @@ public abstract class InGameHudMixin {
     @Shadow
     protected abstract void extractTextureOverlay(GuiGraphicsExtractor graphics, Identifier texture, float alpha);
 
-    @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getPercentFrozen()F"))
+    @Inject(method = "extractCameraOverlays(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V", at = @At("HEAD"))
     private void renderDreadPortalOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         int renderTick = PortalRenderHelper.getTick();
         if (renderTick > 0)

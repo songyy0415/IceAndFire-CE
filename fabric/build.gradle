@@ -76,9 +76,15 @@ dependencies {
     implementation "maven.modrinth:jade:JB4B8a9g"
 
     // Trinkets (Patbox "Trinkets Updated", eu.pb4.trinkets) — 26.2 build.
-    api "maven.modrinth:trinkets-updated:to3SIE4i"
-    api "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
-    api "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+    // compileOnly: the 26.2 trinkets-updated build transitively pulls
+    // cardinal-components-entity, whose mixins/entrypoints are Yarn-mapped and
+    // cannot load on the Mojmap 26.2 runtime. The mod is not installed in
+    // fabric/run/mods, so IntegrationExecutor.runWhenLoad("trinkets_updated")
+    // skips the integration at runtime; keeping the dep off the runtime
+    // classpath prevents cardinal's broken entrypoint from crashing the launch.
+    compileOnly "maven.modrinth:trinkets-updated:to3SIE4i"
+    compileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+    compileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
 
     // [P1 待确认] No Ponder-Fabric-26.2 artifact exists yet — disabled until a 26.2 coordinate is available.
     // compileOnly "net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_version}"

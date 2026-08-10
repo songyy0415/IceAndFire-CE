@@ -6,9 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
@@ -52,7 +53,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  *       person (identified by {@code AvatarRenderState.id} == the local player's entity id).</li>
  * </ul>
  */
-@Mixin(AvatarRenderer.class)
+@Mixin(EntityRenderer.class)
 public class PlayerEntityRendererMixin {
     @Inject(method = "shouldRender(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/client/renderer/culling/Frustum;DDD)Z", at = @At("HEAD"), cancellable = true)
     private void iceandfire$hideStandaloneDragonRider(Entity entity, Frustum frustum, double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
@@ -60,8 +61,8 @@ public class PlayerEntityRendererMixin {
             cir.setReturnValue(false);
     }
 
-    @Inject(method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
-    private void iceandfire$hideLocalPlayerModelInFirstPerson(LivingEntityRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+    @Inject(method = "submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
+    private void iceandfire$hideLocalPlayerModelInFirstPerson(EntityRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState cameraRenderState, CallbackInfo ci) {
         if (state instanceof AvatarRenderState avatarState) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player != null && avatarState.id == player.getId() && Minecraft.getInstance().options.getCameraType().isFirstPerson())

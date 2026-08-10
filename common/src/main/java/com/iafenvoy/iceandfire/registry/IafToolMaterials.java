@@ -22,7 +22,7 @@ public enum IafToolMaterials {
     STYMHALIAN_SWORD_TOOL_MATERIAL("stymphalian_sword", 500, 2, 10.0F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     AMPHITHERE_SWORD_TOOL_MATERIAL("amphithere_sword", 500, 1F, 10F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     HIPPOCAMPUS_SWORD_TOOL_MATERIAL("hippocampus_sword", 500, -2F, 0F, 50, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
-    DREAD_SWORD_TOOL_MATERIAL("dread_sword", 100, 1F, 10F, 0, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
+    DREAD_SWORD_TOOL_MATERIAL("dread_sword", 100, 1F, 10F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     DREAD_KNIGHT_TOOL_MATERIAL("dread_knight_sword", 1200, 13F, 0F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     GHOST_SWORD_TOOL_MATERIAL("ghost_sword", 3000, 5, 10.0F, 25, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     DRAGONSTEEL_FIRE("dragon_steel_fire", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_NETHERITE_TOOL),

@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.item.armor.DragonScaleArmorItem;
 import com.iafenvoy.iceandfire.registry.IafArmorMaterials;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
+import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.render.texture.DragonTextureProvider;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import dev.architectury.registry.registries.RegistrySupplier;

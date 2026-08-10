@@ -32,7 +32,7 @@ public enum IafSkullType implements SkullBlock.Type {
     }
 
     public Item getSkullItem() {
-        return BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, this.itemResourceName));
+        return BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, this.itemResourceName));
     }
 
     @Override

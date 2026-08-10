@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.registry.IafArmorMaterials;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
+import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import dev.architectury.registry.registries.RegistrySupplier;
 import java.util.List;

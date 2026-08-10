@@ -17,6 +17,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 
 public class MiscData extends NeedUpdateData<LivingEntity> {
     public static final Codec<MiscData> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -48,7 +49,7 @@ public class MiscData extends NeedUpdateData<LivingEntity> {
                 return;
             }
             if (entity instanceof Mob mob) {
-                mob.setLastHurtByPlayer(null);
+                mob.setLastHurtByPlayer((Player) null, 0);
                 mob.setLastHurtByMob(null);
                 mob.setTarget(null);
                 mob.setAggressive(false);

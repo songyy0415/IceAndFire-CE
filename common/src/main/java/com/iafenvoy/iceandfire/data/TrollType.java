@@ -61,7 +61,7 @@ public class TrollType {
     }
 
     public static TrollType getByName(String name) {
-        return IafRegistries.TROLL_TYPE.get(IceAndFire.id(name));
+        return IafRegistries.TROLL_TYPE.getValue(IceAndFire.id(name));
     }
 
     public String getName() {

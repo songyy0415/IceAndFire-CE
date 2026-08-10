@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class IceAndFireFabricClient implements ClientModInitializer {
     @Override
@@ -19,6 +19,6 @@ public final class IceAndFireFabricClient implements ClientModInitializer {
         IceAndFireClient.process();
         IafRenderers.registerParticleRenderers(holder -> holder.applyRegister(ParticleProviderRegistry.getInstance()::register));
         if (!Platform.isDevelopmentEnvironment())
-            FabricLoader.getInstance().getModContainer(IceAndFire.MOD_ID).ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "iaf_legacy"), container, Component.translatable("resourcePack.iceandfire.legacy.name"), ResourcePackActivationType.NORMAL));
+            FabricLoader.getInstance().getModContainer(IceAndFire.MOD_ID).ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "iaf_legacy"), container, Component.translatable("resourcePack.iceandfire.legacy.name"), ResourcePackActivationType.NORMAL));
     }
 }

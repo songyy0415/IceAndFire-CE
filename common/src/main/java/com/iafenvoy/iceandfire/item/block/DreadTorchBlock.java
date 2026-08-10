@@ -17,7 +17,7 @@ import net.minecraft.world.level.material.MapColor;
 
 public class DreadTorchBlock extends TorchBlock implements DreadBlock, WallBlock {
     public DreadTorchBlock() {
-        super(ParticleTypes.DUST_PLUME, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().lightLevel((state) -> 5).sound(SoundType.STONE).noOcclusion().dynamicShape().noCollission());
+        super(ParticleTypes.DUST_PLUME, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().lightLevel((state) -> 5).sound(SoundType.STONE).noOcclusion().dynamicShape().noCollision());
     }
 
     @Override

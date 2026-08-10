@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -33,7 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class LecternBlock extends BaseEntityBlock {
     private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new LecternBlock());
-    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+    public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     protected static final VoxelShape AABB = Block.box(4, 0, 4, 12, 19, 12);
 
     public LecternBlock() {
@@ -62,14 +62,12 @@ public class LecternBlock extends BaseEntityBlock {
     }
 
 
-    @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         BlockEntity blockEntity = worldIn.getBlockEntity(pos);
         if (blockEntity instanceof LecternBlockEntity) {
             Containers.dropContents(worldIn, pos, (LecternBlockEntity) blockEntity);
             worldIn.updateNeighbourForOutputSignal(pos, this);
         }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     @Override

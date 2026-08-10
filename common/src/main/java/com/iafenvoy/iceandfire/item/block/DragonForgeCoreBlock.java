@@ -74,7 +74,6 @@ public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof
         return RenderShape.MODEL;
     }
 
-    @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof DragonForgeBlockEntity) {

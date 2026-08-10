@@ -58,10 +58,8 @@ public class JarBlock extends BaseEntityBlock {
         return AABB;
     }
 
-    @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         this.dropPixie(worldIn, pos);
-        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     public void dropPixie(Level world, BlockPos pos) {

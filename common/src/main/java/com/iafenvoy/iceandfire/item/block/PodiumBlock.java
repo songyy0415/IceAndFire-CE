@@ -40,14 +40,12 @@ public class PodiumBlock extends BaseEntityBlock {
         return AABB;
     }
 
-    @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         BlockEntity tileentity = worldIn.getBlockEntity(pos);
         if (tileentity instanceof PodiumBlockEntity) {
             Containers.dropContents(worldIn, pos, (PodiumBlockEntity) tileentity);
             worldIn.updateNeighbourForOutputSignal(pos, this);
         }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
     }
 
     @Override

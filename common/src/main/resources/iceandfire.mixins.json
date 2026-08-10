@@ -15,6 +15,7 @@
     "LivingEntityRendererMixin",
     "PlayerEntityRendererMixin",
     "RotatingCubeMapRendererMixin",
+    "SpecialModelRenderersMixin",
     "TitleScreenMixin",
     "WorldRendererMixin"
   ],

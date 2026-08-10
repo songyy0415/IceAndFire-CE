@@ -16,9 +16,9 @@ public record LightningBoltS2CPayload(List<Pair<Vec3, Vec3>> lightnings) impleme
     public static final Type<LightningBoltS2CPayload> ID = new Type<>(IDENTIFIER);
     public static final StreamCodec<ByteBuf, LightningBoltS2CPayload> CODEC = ByteBufCodecs.fromCodec(RecordCodecBuilder.create(i -> i.group(
             RecordCodecBuilder.<Pair<Vec3, Vec3>>create(i1 -> i1.group(
-                    Vec3.CODEC.fieldOf("left").forGetter(Tuple::getA),
-                    Vec3.CODEC.fieldOf("right").forGetter(Tuple::getB)
-            ).apply(i1, Tuple::new)).listOf().fieldOf("lightnings").forGetter(LightningBoltS2CPayload::lightnings)
+                    Vec3.CODEC.fieldOf("left").forGetter(Pair::getLeft),
+                    Vec3.CODEC.fieldOf("right").forGetter(Pair::getRight)
+            ).apply(i1, Pair::of)).listOf().fieldOf("lightnings").forGetter(LightningBoltS2CPayload::lightnings)
     ).apply(i, LightningBoltS2CPayload::new)));
 
     @Override

@@ -20,7 +20,7 @@ public class FrozenStatusEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         if (entity instanceof IceDragonEntity || entity.isDeadOrDying()) return false;
         else if (entity.isOnFire()) {
             entity.clearFire();

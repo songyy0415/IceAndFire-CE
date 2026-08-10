@@ -84,7 +84,7 @@ public class IceAndFire {
         IafFeatures.init();
         IafToolMaterials.init();
 
-        BlockEvent.BREAK.register(ServerEvents::onBreakBlock);
+        BlockEvent.BREAK.register((level, pos, state, player) -> ServerEvents.onBreakBlock(level, pos, state, player, null));
         InteractionEvent.INTERACT_ENTITY.register(ServerEvents::onEntityInteract);
         InteractionEvent.RIGHT_CLICK_BLOCK.register(ServerEvents::onPlayerRightClick);
         EntityEvent.LIVING_DEATH.register(ServerEvents::onEntityDie);

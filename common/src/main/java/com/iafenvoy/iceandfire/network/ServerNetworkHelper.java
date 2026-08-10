@@ -76,7 +76,7 @@ public class ServerNetworkHelper {
                         if (dist < 100) {
                             float dmg = payload.dmg();
                             if (dmg > 0F) livingEntity.hurtOrSimulate(player.level().damageSources().mobAttack(player), dmg);
-                            else livingEntity.interact(player, InteractionHand.MAIN_HAND);
+                            else livingEntity.interact(player, InteractionHand.MAIN_HAND, livingEntity.position());
                         }
                     }
                 }
@@ -103,8 +103,8 @@ public class ServerNetworkHelper {
                 if (entity instanceof ISyncMount && entity instanceof TamableAnimal tamable)
                     if (tamable.isOwnedBy(player) && tamable.distanceTo(player) < 14)
                         if (payload.ride()) {
-                            if (payload.baby()) tamable.startRiding(player, true);
-                            else player.startRiding(tamable, true);
+                            if (payload.baby()) tamable.startRiding(player, true, false);
+                            else player.startRiding(tamable, true, false);
                         } else {
                             if (payload.baby()) tamable.stopRiding();
                             else player.stopRiding();

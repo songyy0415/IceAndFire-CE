@@ -63,10 +63,10 @@ public class DragonEggModel extends AdvancedEntityModel<DragonEggRenderState> {
         this.Egg1.rotateAngleX = (float) Math.toRadians(-180);
     }
 
-    public void renderFrozen(EggInIceBlockEntity tile) {
+    public void renderFrozen(float ticksExisted) {
         this.resetToDefaultPose();
         this.Egg1.rotateAngleX = (float) Math.toRadians(-180);
-        this.walk(this.Egg1, 0.3F, 0.1F, true, 1, 0, tile.ticksExisted, 1);
-        this.flap(this.Egg1, 0.3F, 0.1F, false, 0, 0, tile.ticksExisted, 1);
+        this.walk(this.Egg1, 0.3F, 0.1F, true, 1, 0, ticksExisted, 1);
+        this.flap(this.Egg1, 0.3F, 0.1F, false, 0, 0, ticksExisted, 1);
     }
 }

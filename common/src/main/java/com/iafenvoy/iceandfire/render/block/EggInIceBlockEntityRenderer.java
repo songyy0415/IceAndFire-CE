@@ -1,27 +1,57 @@
 package com.iafenvoy.iceandfire.render.block;
 
 import com.iafenvoy.iceandfire.item.block.entity.EggInIceBlockEntity;
+import com.iafenvoy.iceandfire.render.block.state.EggInIceRenderState;
 import com.iafenvoy.iceandfire.render.model.DragonEggModel;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
-public class EggInIceBlockEntityRenderer<T extends EggInIceBlockEntity> implements BlockEntityRenderer<T> {
-    public EggInIceBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+public class EggInIceBlockEntityRenderer implements BlockEntityRenderer<EggInIceBlockEntity, EggInIceRenderState> {
+    public EggInIceBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
-    public void render(T egg, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        DragonEggModel model = new DragonEggModel();
-        if (egg.type != null) {
-            matrixStackIn.push();
+    public EggInIceRenderState createRenderState() {
+        return new EggInIceRenderState();
+    }
+
+    @Override
+    public void extractRenderState(EggInIceBlockEntity egg, EggInIceRenderState state, float partialTicks, Vec3 pos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(egg, state, crumblingOverlay);
+        state.type = egg.type;
+        state.ticksExisted = egg.ticksExisted;
+    }
+
+    @Override
+    public void submit(EggInIceRenderState state, PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.type != null) {
+            DragonEggModel model = new DragonEggModel();
+            matrixStackIn.pushPose();
             matrixStackIn.translate(0.5, -0.8F, 0.5F);
-            matrixStackIn.push();
-            model.renderFrozen(egg);
-            model.render(matrixStackIn, bufferIn.getBuffer(PodiumBlockEntityRenderer.getEggTexture(egg.type)), combinedLightIn, combinedOverlayIn, -1);
-            matrixStackIn.pop();
-            matrixStackIn.pop();
+            matrixStackIn.pushPose();
+            model.renderFrozen(state.ticksExisted);
+            Identifier eggTexture = state.type.getTextureProvider().getEggTexture();
+            RenderType renderType = RenderTypes.entityCutout(eggTexture);
+            if (renderType != null) {
+                submitNodeCollector.submitCustomGeometry(matrixStackIn, renderType, (pose, buffer) -> {
+                    PoseStack fresh = new PoseStack();
+                    fresh.last().pose().set(pose.pose());
+                    fresh.last().normal().set(pose.normal());
+                    model.renderPartsToBuffer(fresh, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+                });
+            }
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
         }
     }
 }

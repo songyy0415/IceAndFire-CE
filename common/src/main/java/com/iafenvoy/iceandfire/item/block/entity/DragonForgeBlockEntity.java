@@ -220,12 +220,12 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public Optional<DragonForgeRecipe> getCurrentRecipe() {
         assert this.level != null;
-        return ((ServerLevel) this.level).getRecipeManager().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
+        return ((ServerLevel) this.level).recipeAccess().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
     }
 
     public List<DragonForgeRecipe> getRecipes() {
         assert this.level != null;
-        return ((ServerLevel) this.level).getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        return ((ServerLevel) this.level).recipeAccess().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {

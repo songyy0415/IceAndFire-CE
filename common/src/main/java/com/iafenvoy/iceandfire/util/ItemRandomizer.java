@@ -10,7 +10,7 @@ public class ItemRandomizer {
     private static final int INTERVAL = 1000;
 
     public static Item random(TagKey<Item> tag) {
-        List<Item> items = BuiltInRegistries.ITEM.getOrCreateTag(tag).stream().map(Holder::value).toList();
+        List<Item> items = java.util.stream.StreamSupport.stream(BuiltInRegistries.ITEM.getTagOrEmpty(tag).spliterator(), false).map(Holder::value).toList();
         return items.get((int) (System.currentTimeMillis() / INTERVAL % items.size()));
     }
 }

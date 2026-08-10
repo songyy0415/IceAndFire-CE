@@ -14,6 +14,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -97,7 +98,7 @@ public class RestrictWorldAccess implements ServerLevelAccessor {
     }
 
     @Override
-    public void playSound(@Nullable Player except, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {
+    public void playSound(@Nullable Entity except, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch) {
         this.origin.playSound(except, pos, sound, category, volume, pitch);
     }
 
@@ -107,18 +108,13 @@ public class RestrictWorldAccess implements ServerLevelAccessor {
     }
 
     @Override
-    public void levelEvent(@Nullable Player player, int eventId, BlockPos pos, int data) {
-        this.origin.levelEvent(player, eventId, pos, data);
+    public void levelEvent(@Nullable Entity entity, int eventId, BlockPos pos, int data) {
+        this.origin.levelEvent(entity, eventId, pos, data);
     }
 
     @Override
     public void gameEvent(Holder<GameEvent> event, Vec3 emitterPos, GameEvent.Context emitter) {
         this.origin.gameEvent(event, emitterPos, emitter);
-    }
-
-    @Override
-    public float getShade(Direction direction, boolean shaded) {
-        return this.origin.getShade(direction, shaded);
     }
 
     @Override
@@ -246,5 +242,10 @@ public class RestrictWorldAccess implements ServerLevelAccessor {
     public boolean addFreshEntity(Entity entity) {
         if (!this.checker.test(entity.blockPosition())) return false;
         return this.origin.addFreshEntity(entity);
+    }
+
+    @Override
+    public net.minecraft.world.attribute.EnvironmentAttributeReader environmentAttributes() {
+        return this.origin.environmentAttributes();
     }
 }

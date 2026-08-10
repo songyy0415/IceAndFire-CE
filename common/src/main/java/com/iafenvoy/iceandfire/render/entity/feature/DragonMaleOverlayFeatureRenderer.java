@@ -17,8 +17,13 @@ public class DragonMaleOverlayFeatureRenderer extends RenderLayer<DragonRenderSt
     @Override
     public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int light, DragonRenderState state, float yRot, float xRot) {
         if (state.isMale && !state.isSkeletal && state.maleOverlayTexture != null) {
-            submitNodeCollector.order(1)
-                .submitModel(this.getParentModel(), state, matrixStackIn, RenderTypes.entityTranslucent(state.maleOverlayTexture), light, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+            this.getParentModel().setupAnim(state);
+            submitNodeCollector.order(1).submitCustomGeometry(matrixStackIn, RenderTypes.entityTranslucent(state.maleOverlayTexture), (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.getParentModel().renderPartsToBuffer(fresh, buffer, light, OverlayTexture.NO_OVERLAY, -1);
+            });
         }
     }
 }

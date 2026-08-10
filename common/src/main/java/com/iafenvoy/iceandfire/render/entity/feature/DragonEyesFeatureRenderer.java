@@ -17,7 +17,12 @@ public class DragonEyesFeatureRenderer extends RenderLayer<DragonRenderState, Ta
     @Override
     public void submit(PoseStack matrices, SubmitNodeCollector submitNodeCollector, int light, DragonRenderState state, float yRot, float xRot) {
         if (!state.shouldRenderEyes || state.eyesTexture == null) return;
-        submitNodeCollector.order(1)
-            .submitModel(this.getParentModel(), state, matrices, RenderTypes.eyes(state.eyesTexture), light, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        this.getParentModel().setupAnim(state);
+        submitNodeCollector.order(1).submitCustomGeometry(matrices, RenderTypes.eyes(state.eyesTexture), (pose, buffer) -> {
+            PoseStack fresh = new PoseStack();
+            fresh.last().pose().set(pose.pose());
+            fresh.last().normal().set(pose.normal());
+            this.getParentModel().renderPartsToBuffer(fresh, buffer, light, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 }

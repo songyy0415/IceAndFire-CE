@@ -33,8 +33,13 @@ public class DragonArmorFeatureRenderer extends RenderLayer<DragonRenderState, T
 
     private void renderArmor(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int light, DragonRenderState state, @Nullable Identifier texture) {
         if (texture == null) return;
-        submitNodeCollector.order(1)
-            .submitModel(this.getParentModel(), state, matrixStackIn, RenderTypes.entityCutout(texture), light, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+        this.getParentModel().setupAnim(state);
+        submitNodeCollector.order(1).submitCustomGeometry(matrixStackIn, RenderTypes.entityCutout(texture), (pose, buffer) -> {
+            PoseStack fresh = new PoseStack();
+            fresh.last().pose().set(pose.pose());
+            fresh.last().normal().set(pose.normal());
+            this.getParentModel().renderPartsToBuffer(fresh, buffer, light, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 
     @Nullable

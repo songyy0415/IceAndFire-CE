@@ -24,8 +24,13 @@ public class SeaSerpentAncientFeatureRenderer extends RenderLayer<SeaSerpentRend
     public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int lightCoords, SeaSerpentRenderState state, float yRot, float xRot) {
         if (state.isAncient) {
             RenderType tex = RenderTypes.entityCutout(state.blinking ? TEXTURE_BLINK : TEXTURE, false);
-            submitNodeCollector.order(1)
-                .submitModel(this.getParentModel(), state, matrixStackIn, tex, lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+            this.getParentModel().setupAnim(state);
+            submitNodeCollector.order(1).submitCustomGeometry(matrixStackIn, tex, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+            });
         }
     }
 }

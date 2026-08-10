@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
-public class HippogryphEntityRenderer extends MobRenderer<HippogryphEntity, HippogryphRenderState, HippogryphModel> {
+public class HippogryphEntityRenderer extends AdvancedEntityRendererBase<HippogryphEntity, HippogryphRenderState, HippogryphModel> {
     public HippogryphEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new HippogryphModel(), 0.8F);
         this.layers.add(new LayerHippogriffSaddle(this));

@@ -6,10 +6,9 @@ import com.iafenvoy.iceandfire.render.entity.state.CyclopsRenderState;
 import com.iafenvoy.iceandfire.render.model.CyclopsModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-public class CyclopsEntityRenderer extends MobRenderer<CyclopsEntity, CyclopsRenderState, CyclopsModel> {
+public class CyclopsEntityRenderer extends AdvancedEntityRendererBase<CyclopsEntity, CyclopsRenderState, CyclopsModel> {
     public static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cyclops/cyclops_0.png");
     public static final Identifier BLINK_0_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cyclops/cyclops_0_blink.png");
     public static final Identifier BLINDED_0_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cyclops/cyclops_0_injured.png");

@@ -8,12 +8,11 @@ import com.iafenvoy.iceandfire.render.entity.state.PixieRenderState;
 import com.iafenvoy.iceandfire.render.model.PixieModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemDisplayContext;
 
-public class PixieEntityRenderer extends MobRenderer<PixieEntity, PixieRenderState, PixieModel> {
+public class PixieEntityRenderer extends AdvancedEntityRendererBase<PixieEntity, PixieRenderState, PixieModel> {
     public static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_0.png");
     public static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_1.png");
     public static final Identifier TEXTURE_2 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_2.png");

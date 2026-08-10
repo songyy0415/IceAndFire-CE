@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 
-public class SirenEntityRenderer extends MobRenderer<SirenEntity, SirenRenderState, SirenModel> {
+public class SirenEntityRenderer extends AdvancedEntityRendererBase<SirenEntity, SirenRenderState, SirenModel> {
     public static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/siren/siren_0.png");
     public static final Identifier TEXTURE_0_AGGRESSIVE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/siren/siren_0_aggressive.png");
     public static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/siren/siren_1.png");

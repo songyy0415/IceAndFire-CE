@@ -392,7 +392,7 @@ public class HippogryphModel extends DragonBaseModel<HippogryphRenderState> {
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         if (living instanceof LivingEntity livingEntity && livingEntity.isBaby()) {
             this.Body.setShouldScaleChildren(true);
             this.Head.setShouldScaleChildren(false);

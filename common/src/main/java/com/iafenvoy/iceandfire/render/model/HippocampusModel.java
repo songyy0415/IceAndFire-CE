@@ -326,7 +326,7 @@ public class HippocampusModel extends DragonBaseModel<HippocampusRenderState> {
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
-        this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        this.renderPartsToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
         this.NoseBand.showModel = false;
         this.ReinL.showModel = false;
         this.ReinR.showModel = false;

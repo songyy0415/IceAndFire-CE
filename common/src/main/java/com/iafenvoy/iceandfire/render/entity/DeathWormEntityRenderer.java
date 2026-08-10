@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 
-public class DeathWormEntityRenderer extends MobRenderer<DeathWormEntity, DeathWormRenderState, DeathWormModel> {
+public class DeathWormEntityRenderer extends AdvancedEntityRendererBase<DeathWormEntity, DeathWormRenderState, DeathWormModel> {
     public static final Identifier TEXTURE_RED = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/deathworm/deathworm_red.png");
     public static final Identifier TEXTURE_WHITE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/deathworm/deathworm_white.png");
     public static final Identifier TEXTURE_YELLOW = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/deathworm/deathworm_yellow.png");

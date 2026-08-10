@@ -30,8 +30,9 @@ public abstract class LivingEntityMixin {
             BuiltinAbilities.SUMMON_GHOST_SWORD.active((LivingEntity) (Object) this);
     }
 
-    @Inject(method = "onEffectRemoved", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;refreshDirtyAttributes()V"))
-    private void handleFrozenEffectRemove(MobEffectInstance effect, CallbackInfo ci) {
-        if (effect.getEffect().value() instanceof FrozenStatusEffect e) e.onRemoved((LivingEntity) (Object) this);
+    @Inject(method = "onEffectsRemoved", at = @At("RETURN"))
+    private void handleFrozenEffectRemove(java.util.Collection<MobEffectInstance> effects, CallbackInfo ci) {
+        for (MobEffectInstance effect : effects)
+            if (effect.getEffect().value() instanceof FrozenStatusEffect e) e.onRemoved((LivingEntity) (Object) this);
     }
 }

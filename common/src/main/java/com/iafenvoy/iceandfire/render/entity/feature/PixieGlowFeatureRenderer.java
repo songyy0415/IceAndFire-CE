@@ -18,7 +18,12 @@ public class PixieGlowFeatureRenderer extends RenderLayer<PixieRenderState, Pixi
     @Override
     public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int lightCoords, PixieRenderState state, float yRot, float xRot) {
         RenderType eyes = RenderTypes.eyes(state.texture);
-        submitNodeCollector.order(1)
-            .submitModel(this.getParentModel(), state, matrixStackIn, eyes, lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        this.getParentModel().setupAnim(state);
+        submitNodeCollector.order(1).submitCustomGeometry(matrixStackIn, eyes, (pose, buffer) -> {
+            PoseStack fresh = new PoseStack();
+            fresh.last().pose().set(pose.pose());
+            fresh.last().normal().set(pose.normal());
+            this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 }

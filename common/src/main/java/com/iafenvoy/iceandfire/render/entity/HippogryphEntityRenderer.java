@@ -81,22 +81,27 @@ public class HippogryphEntityRenderer extends AdvancedEntityRendererBase<Hippogr
                     default -> null;
                 };
                 if (type != null) {
-                    submitNodeCollector.order(1)
-                        .submitModel(this.getParentModel(), state, matrixStackIn, type, lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+                    this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, type);
                 }
             }
             if (state.saddled) {
-                submitNodeCollector.order(1)
-                    .submitModel(this.getParentModel(), state, matrixStackIn, this.SADDLE_TEXTURE, lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.SADDLE_TEXTURE);
             }
             if (state.saddled && state.hasPassenger) {
-                submitNodeCollector.order(1)
-                    .submitModel(this.getParentModel(), state, matrixStackIn, this.BRIDLE, lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.BRIDLE);
             }
             if (state.chested) {
-                submitNodeCollector.order(1)
-                    .submitModel(this.getParentModel(), state, matrixStackIn, this.CHEST, lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
+                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.CHEST);
             }
+        }
+
+        private void submitHippogryph(SubmitNodeCollector submitNodeCollector, PoseStack matrixStackIn, int lightCoords, RenderType renderType) {
+            submitNodeCollector.order(1).submitCustomGeometry(matrixStackIn, renderType, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+            });
         }
     }
 }

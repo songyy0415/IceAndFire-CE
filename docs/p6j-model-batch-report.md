@@ -46,6 +46,25 @@ Uranus `renderPartsToBuffer` + mod `AdvancedEntityRendererBase` (submitCustomGeo
 - Model-level cleanups: `PixieHouseModel` → `AdvancedEntityModel<EntityRenderState>`; `PixieModel` +
   `IFChainBuffer` partial-tick access → `Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)`.
 
+### G. P6-K (717de12): IafRenderLayers registry
+`IafRenderLayers` no longer extends the removed `RenderType`; 26.2 `RenderType.create` is
+package-private so custom pipelines can't be a mod RenderType. All 6 layers now return the closest
+stock `RenderTypes` type (getGhost→entityCutout, getGhostDaytime→entityTranslucent,
+getDreadlandsPortal→entityCutout(portal), getStoneMobRenderType→entitySolid, getIce→beaconBeam,
+getStoneCrackRenderType→entityTranslucent). Callers keep identical error counts.
+Report: `docs/p6k-render-layer-migration.md`.
+
+### H. P6 Step1 (f8c8f1d): StonePlayer + StoneStatue
+`StoneStatueEntityRenderer` → `EntityRenderer<StoneStatueEntity, StoneStatueRenderState>` + `submit()`:
+resolves the trapped-entity model via `dispatcher.getRenderer(tempEntity)` +
+`RenderLayerParent.getModel()`, draws stone pass + crack pass via `submitCustomGeometry`;
+`ICustomStatueModel.renderStatue(..., null)` (impls ignore the Entity arg) or vanilla
+`Model.renderToBuffer(root)`. `StonePlayerModel` → `HumanoidModel<StoneStatueRenderState>`;
+`StoneStatueRenderState` (HumanoidRenderState + trapped type/ageScale/crack/yaw).
+EntityType lookup via `BuiltInRegistries` (byString/PIG gone); `PigModel` → `animal.pig` package.
+Behavior: statues render in static default pose (26.2 removed model.young/riding/attackTime +
+setupAnim(entity)); hydra statue heads dropped (state-driven head system).
+
 ## Verified error change (javac `:common:compileJava`)
 | stage | errors |
 |---|---|
@@ -53,7 +72,8 @@ Uranus `renderPartsToBuffer` + mod `AdvancedEntityRendererBase` (submitCustomGeo
 | after Batch1 | 1,462 |
 | after Batch2 | 1,334 |
 | after Batch3-A-1 | 1,252 |
-| **current** | **1,252** |
+| after P6-K IafRenderLayers | 1,171 |
+| after StoneStatue | **1,149** |
 **0 new error files** across all batches. Animations/models unchanged.
 
 ## Migration recipe (repeatable, proven)

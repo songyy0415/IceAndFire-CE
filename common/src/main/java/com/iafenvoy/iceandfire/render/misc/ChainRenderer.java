@@ -7,8 +7,8 @@ import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -24,7 +24,7 @@ import java.util.UUID;
 public class ChainRenderer {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/misc/chain_link.png");
 
-    public static void render(LivingEntity entityLivingIn, PoseStack matrixStackIn, MultiBufferSource bufferIn, int lightIn, List<UUID> chainedTo) {
+    public static void render(LivingEntity entityLivingIn, PoseStack matrixStackIn, SubmitNodeCollector collector, int lightIn, List<UUID> chainedTo) {
         for (UUID uuid : chainedTo) {
             if (uuid == null) {
                 IceAndFire.LOGGER.warn("Found null value in list of target entities");
@@ -34,14 +34,14 @@ public class ChainRenderer {
             Entity chainTarget = Minecraft.getInstance().level.entityStorage.getEntityGetter().get(uuid);
             if (chainTarget == null) continue;
             try {
-                renderLink(entityLivingIn, matrixStackIn, bufferIn, lightIn, chainTarget);
+                renderLink(entityLivingIn, matrixStackIn, collector, lightIn, chainTarget);
             } catch (Exception e) {
                 IceAndFire.LOGGER.warn("Could not render chain link for {} connected to {}", entityLivingIn.toString(), chainTarget.toString());
             }
         }
     }
 
-    public static <E extends Entity> void renderLink(LivingEntity entityLivingIn, PoseStack matrixStackIn, MultiBufferSource bufferIn, int lightIn, E chainTarget) {
+    public static <E extends Entity> void renderLink(LivingEntity entityLivingIn, PoseStack matrixStackIn, SubmitNodeCollector collector, int lightIn, E chainTarget) {
         // Most of this code stems from the guardian lasers
         float f3 = entityLivingIn.getBbHeight() * 0.4f;
         matrixStackIn.pushPose();
@@ -72,19 +72,20 @@ public class ChainRenderer {
         float f32 = 0.75F;
         float f31 = f4 + f32;
 
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(getTexture()));
-        PoseStack.Pose entry = matrixStackIn.last();
-        Matrix4f matrix4f = entry.pose();
         matrixStackIn.pushPose();
-        vertex(ivertexbuilder, matrix4f, entry, f19, f4, f20, j, k, l, 0.4999F, f30, lightIn);
-        vertex(ivertexbuilder, matrix4f, entry, f19, 0.0F, f20, j, k, l, 0.4999F, f29, lightIn);
-        vertex(ivertexbuilder, matrix4f, entry, f21, 0.0F, f22, j, k, l, 0.0F, f29, lightIn);
-        vertex(ivertexbuilder, matrix4f, entry, f21, f4, f22, j, k, l, 0.0F, f30, lightIn);
+        collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityCutout(getTexture()), (pose, buffer) -> {
+            PoseStack.Pose entry = pose;
+            Matrix4f matrix4f = entry.pose();
+            vertex(buffer, matrix4f, entry, f19, f4, f20, j, k, l, 0.4999F, f30, lightIn);
+            vertex(buffer, matrix4f, entry, f19, 0.0F, f20, j, k, l, 0.4999F, f29, lightIn);
+            vertex(buffer, matrix4f, entry, f21, 0.0F, f22, j, k, l, 0.0F, f29, lightIn);
+            vertex(buffer, matrix4f, entry, f21, f4, f22, j, k, l, 0.0F, f30, lightIn);
 
-        vertex(ivertexbuilder, matrix4f, entry, f23, f4, f24, j, k, l, 0.4999F, f31, lightIn);
-        vertex(ivertexbuilder, matrix4f, entry, f23, 0.0F, f24, j, k, l, 0.4999F, f32, lightIn);
-        vertex(ivertexbuilder, matrix4f, entry, f25, 0.0F, f26, j, k, l, 0.0F, f32, lightIn);
-        vertex(ivertexbuilder, matrix4f, entry, f25, f4, f26, j, k, l, 0.0F, f31, lightIn);
+            vertex(buffer, matrix4f, entry, f23, f4, f24, j, k, l, 0.4999F, f31, lightIn);
+            vertex(buffer, matrix4f, entry, f23, 0.0F, f24, j, k, l, 0.4999F, f32, lightIn);
+            vertex(buffer, matrix4f, entry, f25, 0.0F, f26, j, k, l, 0.0F, f32, lightIn);
+            vertex(buffer, matrix4f, entry, f25, f4, f26, j, k, l, 0.0F, f31, lightIn);
+        });
         matrixStackIn.popPose();
         matrixStackIn.popPose();
     }

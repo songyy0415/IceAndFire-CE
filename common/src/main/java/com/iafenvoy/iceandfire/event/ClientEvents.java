@@ -8,7 +8,6 @@ import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
 import com.iafenvoy.iceandfire.registry.IafKeybindings;
 import com.iafenvoy.iceandfire.registry.IafStatusEffects;
 import com.iafenvoy.iceandfire.render.misc.ChainRenderer;
-import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
 import com.iafenvoy.iceandfire.render.misc.FrozenStateRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.networking.NetworkManager;
@@ -18,7 +17,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -73,19 +72,17 @@ public final class ClientEvents {
         }
     }
 
-    public static void onPostRenderLiving(LivingEntity entity, float partialRenderTick, PoseStack matrixStack, MultiBufferSource buffers, int light) {
+    public static void onPostRenderLiving(LivingEntity entity, float partialRenderTick, PoseStack matrixStack, SubmitNodeCollector collector, int light) {
         MiscData miscData = MiscData.get(entity);
         ClientLevel world = Minecraft.getInstance().level;
         if (world == null) return;
         miscData.checkScepterTarget(world.entityStorage.getEntityGetter()::get);
-        //Cockatrice Beam
-        for (Entity target : miscData.getTargetedByScepters().stream().filter(Objects::nonNull).map(x -> world.entityStorage.getEntityGetter().get(x)).filter(Objects::nonNull).toList())
-            CockatriceBeamRenderer.render(entity, target, matrixStack, buffers, partialRenderTick);
+        //Cockatrice Beam — now rendered by CockatriceEntityRenderer.submit from its render state
         //Frozen
         MobEffectInstance effect = entity.getEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.FROZEN.get()));
-        if (effect != null) FrozenStateRenderer.render(entity, matrixStack, buffers, light, effect.getDuration());
+        if (effect != null) FrozenStateRenderer.render(entity, matrixStack, collector, light, effect.getDuration());
         //Chain
         ChainData chainData = ChainData.get(entity);
-        ChainRenderer.render(entity, matrixStack, buffers, light, chainData.getChainedTo());
+        ChainRenderer.render(entity, matrixStack, collector, light, chainData.getChainedTo());
     }
 }

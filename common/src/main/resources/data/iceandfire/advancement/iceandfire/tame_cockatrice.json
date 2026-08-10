@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-    "id": "iceandfire:cockatrice_eye"
+      "id": "iceandfire:cockatrice_eye"
     },
     "title": {
       "translate": "advancements.iceandfire.tame_cockatrice.title"
@@ -15,9 +15,15 @@
     "tame_rat": {
       "trigger": "minecraft:tame_animal",
       "conditions": {
-        "entity": {
-          "type": "iceandfire:cockatrice"
-        }
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "iceandfire:cockatrice"
+            }
+          }
+        ]
       }
     }
   }

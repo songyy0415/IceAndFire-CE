@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-    "id": "iceandfire:cyclops_eye"
+      "id": "iceandfire:cyclops_eye"
     },
     "title": {
       "translate": "advancements.iceandfire.kill_cyclops.title"
@@ -15,9 +15,15 @@
     "killed_fire_dragon": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
-        "entity": {
-          "type": "iceandfire:cyclops"
-        }
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "iceandfire:cyclops"
+            }
+          }
+        ]
       }
     }
   }

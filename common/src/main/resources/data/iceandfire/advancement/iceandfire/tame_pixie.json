@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-    "id": "iceandfire:pixie_dust"
+      "id": "iceandfire:pixie_dust"
     },
     "title": {
       "translate": "advancements.iceandfire.tame_pixie.title"
@@ -15,9 +15,15 @@
     "tame_rat": {
       "trigger": "minecraft:tame_animal",
       "conditions": {
-        "entity": {
-          "type": "iceandfire:pixie"
-        }
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "iceandfire:pixie"
+            }
+          }
+        ]
       }
     }
   }

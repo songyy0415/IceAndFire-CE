@@ -1,12 +1,20 @@
 package com.iafenvoy.iceandfire.render.model;
 
+import java.util.Map;
+
+import java.util.List;
+
+import net.minecraft.client.model.geom.ModelPart;
+
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
-public class TrollWeaponModel extends AdvancedEntityModel<Entity> {
+public class TrollWeaponModel extends AdvancedEntityModel<EntityRenderState> {
     public final AdvancedModelBox log1;
     public final AdvancedModelBox log2;
     public final AdvancedModelBox handle;
@@ -20,6 +28,7 @@ public class TrollWeaponModel extends AdvancedEntityModel<Entity> {
     public final AdvancedModelBox top;
 
     public TrollWeaponModel() {
+        super(new ModelPart(List.of(), Map.of()));
         this.texWidth = 256;
         this.texHeight = 128;
         this.block = new AdvancedModelBox(this, 182, 19);
@@ -76,7 +85,7 @@ public class TrollWeaponModel extends AdvancedEntityModel<Entity> {
     }
 
     @Override
-    public void setAngles(Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(EntityRenderState state) {
     }
 
     @Override

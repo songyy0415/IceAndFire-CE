@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.mixin;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.render.item.TideTridentSpecialModelRenderer;
+import com.iafenvoy.iceandfire.render.item.TrollWeaponSpecialModelRenderer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderers;
@@ -23,5 +24,6 @@ public class SpecialModelRenderersMixin {
     @Inject(method = "bootstrap", at = @At("HEAD"))
     private static void iceandfire$registerSpecialModels(CallbackInfo ci) {
         ID_MAPPER.put(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "tide_trident"), TideTridentSpecialModelRenderer.Unbaked.MAP_CODEC);
+        ID_MAPPER.put(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "troll_weapon"), TrollWeaponSpecialModelRenderer.Unbaked.MAP_CODEC);
     }
 }

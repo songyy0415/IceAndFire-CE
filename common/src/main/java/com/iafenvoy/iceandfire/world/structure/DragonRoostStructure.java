@@ -53,7 +53,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             return Optional.empty();
         Rotation blockRotation = Rotation.getRandom(context.random());
         BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
-        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinBuildHeight() + 2)
+        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinY() + 2)
             return Optional.empty();
         return Optional.of(new GenerationStub(blockPos, collector -> collector.addPiece(this.createPiece(new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ()), context.random().nextBoolean()))));
     }
@@ -308,7 +308,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             dragon.setAgingDisabled(true);
             dragon.setHealth(dragon.getMaxHealth());
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.absMoveTo(origin.getX() + 0.5, world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
+            dragon.setPos(origin.getX() + 0.5, world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5); dragon.setYRot(random.nextFloat() * 360); dragon.setXRot(0);
             dragon.homePos = new HomePosition(origin, world.getLevel());
             dragon.hasHomePosition = true;
             dragon.setHunger(50);

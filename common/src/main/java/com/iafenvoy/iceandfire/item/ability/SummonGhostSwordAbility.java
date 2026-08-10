@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item.ability;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.GhostSwordEntity;
@@ -38,7 +39,7 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
             GhostSwordEntity shot = new GhostSwordEntity(IafEntities.GHOST_SWORD.get(), playerEntity.level(), playerEntity, totalDmg * 0.5F, stack);
             shot.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, 1, 0.5f);
             playerEntity.level().addFreshEntity(shot);
-            stack.hurtAndBreak(1, playerEntity, EquipmentSlot.MAINHAND);
+            IafItemUtil.damageStackServerSide(stack, 1, playerEntity);
             playerEntity.getCooldowns().addCooldown(stack, 10);
         }
     }

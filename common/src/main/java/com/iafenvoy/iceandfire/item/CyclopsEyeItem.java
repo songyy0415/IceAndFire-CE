@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import java.util.List;
@@ -41,7 +42,7 @@ public class CyclopsEyeItem extends Item {
                     tick++;
             }
             if (tick > 120) {
-                stack.hurtAndBreak(1, living, LivingEntity.getSlotForHand(living.getUsedItemHand()));
+                IafItemUtil.damageStackServerSide(stack, 1, living);
                 tick = 0;
             }
             stack.set(IafDataComponents.TICK_COUNTER.get(), tick);

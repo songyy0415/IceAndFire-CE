@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.entity.DreadLichSkullEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
@@ -14,12 +15,7 @@ import net.minecraft.world.level.Level;
 
 public class LichStaffItem extends Item {
     public LichStaffItem() {
-        super(new Properties().durability(100));
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.getItem() == IafItems.DREAD_SHARD.get() || super.isValidRepairItem(toRepair, repair);
+        super(new Properties().durability(100).repairable(IafItems.DREAD_SHARD.get()));
     }
 
     @Override
@@ -41,7 +37,7 @@ public class LichStaffItem extends Item {
             worldIn.addFreshEntity(charge);
             charge.shoot(d2, d3, d4, 1, 1);
             playerIn.playSound(SoundEvents.ZOMBIE_INFECT, 1F, 0.75F + 0.5F * playerIn.getRandom().nextFloat());
-            itemStackIn.hurtAndBreak(1, playerIn, LivingEntity.getSlotForHand(hand));
+            IafItemUtil.damageStackServerSide(itemStackIn, 1, playerIn);
             playerIn.getCooldowns().addCooldown(new ItemStack(this), 4);
         }
         return InteractionResult.SUCCESS;

@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
@@ -70,7 +71,7 @@ public class SirenFluteItem extends Item {
 
         if (pointedEntity instanceof LivingEntity livingEntity) {
             MiscData.get(livingEntity).setLoveTicks(10 * 20);
-            itemStackIn.hurtAndBreak(2, player, EquipmentSlot.MAINHAND);
+            IafItemUtil.damageStackServerSide(itemStackIn, 2, player);
             player.getCooldowns().addCooldown(itemStackIn, 45 * 20);
         }
 

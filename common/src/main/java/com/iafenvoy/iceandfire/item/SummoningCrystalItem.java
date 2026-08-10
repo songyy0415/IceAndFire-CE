@@ -46,7 +46,7 @@ public class SummoningCrystalItem extends Item {
     public static boolean hasDragon(ItemStack stack) {
         CompoundTag nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (stack.getItem() instanceof SummoningCrystalItem && nbt != null)
-            for (String tagInfo : nbt.getAllKeys())
+            for (String tagInfo : nbt.keySet())
                 if (tagInfo.contains("Dragon"))
                     return true;
         return false;
@@ -61,7 +61,7 @@ public class SummoningCrystalItem extends Item {
         if (stack.getItem() == IafItems.SUMMONING_CRYSTAL_LIGHTNING.get()) desc = "entity.iceandfire.lightning_dragon";
         CompoundTag nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (nbt != null)
-            for (String tagInfo : nbt.getAllKeys())
+            for (String tagInfo : nbt.keySet())
                 if (tagInfo.contains("Dragon")) {
                     CompoundTag dragonTag = nbt.getCompound(tagInfo).orElse(new CompoundTag());
                     String dragonName = I18n.get(desc);
@@ -86,7 +86,7 @@ public class SummoningCrystalItem extends Item {
         boolean displayError = false;
         CompoundTag nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (nbt != null && stack.getItem() == this && hasDragon(stack)) {
-            for (String tagInfo : nbt.getAllKeys()) {
+            for (String tagInfo : nbt.keySet()) {
                 if (tagInfo.contains("Dragon")) {
                     CompoundTag dragonTag = nbt.getCompound(tagInfo).orElse(new CompoundTag());
                     UUID id = dragonTag.read("DragonUUID", UUIDUtil.CODEC).orElse(null);
@@ -109,8 +109,8 @@ public class SummoningCrystalItem extends Item {
                             try {
                                 if (!flag && data != null && context.getLevel().isClientSide()) {//server side but couldn't find dragon
                                     ServerLevel serverWorld = (ServerLevel) context.getLevel();
-                                    ChunkPos pos = new ChunkPos(dragonChunkPos);
-                                    serverWorld.setChunkForced(pos.x, pos.z, true);
+                                    ChunkPos pos = new ChunkPos(dragonChunkPos.getX() >> 4, dragonChunkPos.getZ() >> 4);
+                                    serverWorld.setChunkForced(pos.x(), pos.z(), true);
                                 }
                             } catch (Exception e) {
                                 IceAndFire.LOGGER.warn("Could not load chunk when summoning dragon", e);
@@ -132,7 +132,9 @@ public class SummoningCrystalItem extends Item {
     }
 
     public void summonEntity(Entity entity, Level worldIn, BlockPos offsetPos, float yaw) {
-        entity.moveTo(offsetPos.getX() + 0.5D, offsetPos.getY() + 0.5D, offsetPos.getZ() + 0.5D, yaw, 0);
+        entity.setPos(offsetPos.getX() + 0.5D, offsetPos.getY() + 0.5D, offsetPos.getZ() + 0.5D);
+        entity.setYRot(yaw);
+        entity.setXRot(0);
         if (entity instanceof DragonBaseEntity dragon)
             dragon.setCrystalBound(false);
         if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {

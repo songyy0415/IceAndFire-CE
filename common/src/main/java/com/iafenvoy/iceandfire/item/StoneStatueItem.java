@@ -61,7 +61,7 @@ public class StoneStatueItem extends Item {
                 statue.yHeadRot = yaw;
                 statue.yBodyRot = yaw;
                 statue.yBodyRotO = yaw;
-                statue.absMoveTo(context.getClickedPos().getX() + 0.5, context.getClickedPos().getY() + 1, context.getClickedPos().getZ() + 0.5, yaw, 0);
+                statue.setPos(context.getClickedPos().getX() + 0.5, context.getClickedPos().getY() + 1, context.getClickedPos().getZ() + 0.5); statue.setYRot(yaw); statue.setXRot(0);
                 if (!context.getLevel().isClientSide()) context.getLevel().addFreshEntity(statue);
                 statue.setCrackAmount(0);
                 if (!context.getPlayer().isCreative()) stack.shrink(1);

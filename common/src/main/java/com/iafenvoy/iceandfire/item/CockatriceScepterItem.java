@@ -1,10 +1,12 @@
 package com.iafenvoy.iceandfire.item;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.entity.util.IafEntityUtil;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,8 +22,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -34,7 +37,7 @@ public class CockatriceScepterItem extends Item {
     private int specialWeaponDmg;
 
     public CockatriceScepterItem() {
-        super(new Properties().durability(700));
+        super(new Properties().durability(700).component(DataComponents.CONSUMABLE, Consumable.builder().animation(ItemUseAnimation.BOW).build()));
     }
 
     @Override
@@ -48,7 +51,7 @@ public class CockatriceScepterItem extends Item {
     @Override
     public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity livingEntity, int timeLeft) {
         if (this.specialWeaponDmg > 0) {
-            stack.hurtAndBreak(this.specialWeaponDmg, livingEntity, LivingEntity.getSlotForHand(livingEntity.getUsedItemHand()));
+            IafItemUtil.damageStackServerSide(stack, this.specialWeaponDmg, livingEntity);
             this.specialWeaponDmg = 0;
         }
         MiscData.get(livingEntity).getTargetedByScepters().clear();
@@ -67,10 +70,6 @@ public class CockatriceScepterItem extends Item {
         return 72000;
     }
 
-    @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
-    }
 
     @Override
     public InteractionResult use(Level worldIn, Player playerIn, InteractionHand hand) {

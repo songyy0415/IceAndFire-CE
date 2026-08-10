@@ -89,7 +89,7 @@ public class DragonHornItem extends Item {
                 }
 
                 assert entity != null;
-                entity.absMoveTo(context.getClickedPos().getX() + 0.5D, context.getClickedPos().getY() + 1, context.getClickedPos().getZ() + 0.5D, 180 + (context.getHorizontalDirection()).toYRot(), 0.0F);
+                entity.setPos(context.getClickedPos().getX() + 0.5D, context.getClickedPos().getY() + 1, context.getClickedPos().getZ() + 0.5D); entity.setYRot(180 + (context.getHorizontalDirection()).toYRot()); entity.setXRot(0.0F);
                 if (world.addFreshEntity(entity))
                     stack.remove(IafDataComponents.DRAGON_HORN.get());
             }

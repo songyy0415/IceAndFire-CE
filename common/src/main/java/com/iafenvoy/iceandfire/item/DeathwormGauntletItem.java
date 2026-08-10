@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 
 import net.minecraft.world.InteractionHand;
@@ -12,8 +13,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -23,17 +25,12 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DeathwormGauntletItem extends Item {
     public DeathwormGauntletItem() {
-        super(new Properties().durability(500).component(IafDataComponents.USER_ID.get(), -1));
+        super(new Properties().durability(500).component(IafDataComponents.USER_ID.get(), -1).component(DataComponents.CONSUMABLE, Consumable.builder().animation(ItemUseAnimation.BOW).build()));
     }
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity user) {
         return 10;
-    }
-
-    @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
     }
 
     @Override

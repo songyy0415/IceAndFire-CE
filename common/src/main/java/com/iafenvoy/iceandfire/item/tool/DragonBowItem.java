@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item.tool;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.uranus.object.RegistryHelper;
@@ -47,12 +48,9 @@ public class DragonBowItem extends BowItem {
                         AbstractArrow persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity, stack);
                         persistentProjectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, f * 3.0F, 1.0F);
                         if (f == 1.0F) persistentProjectileEntity.setCritArrow(true);
-                        int j = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.POWER), stack);
-                        if (j > 0)
-                            persistentProjectileEntity.setBaseDamage(persistentProjectileEntity.getBaseDamage() + (double) j * 0.5 + 0.5);
                         if (EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.FLAME), stack) > 0)
                             persistentProjectileEntity.igniteForSeconds(100);
-                        stack.hurtAndBreak(1, playerEntity, LivingEntity.getSlotForHand(user.getUsedItemHand()));
+                        IafItemUtil.damageStackServerSide(stack, 1, playerEntity);
                         if (bl2 || playerEntity.getAbilities().instabuild && (itemStack.is(Items.SPECTRAL_ARROW) || itemStack.is(Items.TIPPED_ARROW)))
                             persistentProjectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                         world.addFreshEntity(persistentProjectileEntity);

@@ -47,7 +47,7 @@ public class GhostChestBlockEntity extends ChestBlockEntity {
             this.generatedGhost = true;
             GhostEntity ghost = IafEntities.GHOST.get().create(this.level, EntitySpawnReason.SPAWNER);
             assert ghost != null;
-            ghost.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 0.5F, this.worldPosition.getZ() + 0.5F, ThreadLocalRandom.current().nextFloat() * 360F, 0);
+            ghost.setPos(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 0.5F, this.worldPosition.getZ() + 0.5F); ghost.setYRot(ThreadLocalRandom.current().nextFloat() * 360F); ghost.setXRot(0);
             if (this.level instanceof ServerLevel serverWorld) {
                 ghost.finalizeSpawn(serverWorld, this.level.getCurrentDifficultyAt(this.worldPosition), EntitySpawnReason.SPAWNER, null);
                 if (!player.isCreative()) ghost.setTarget(player);

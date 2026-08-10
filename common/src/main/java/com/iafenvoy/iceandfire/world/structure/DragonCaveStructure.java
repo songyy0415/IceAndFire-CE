@@ -56,13 +56,13 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             return Optional.empty();
         Rotation blockRotation = Rotation.getRandom(context.random());
         BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
-        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinBuildHeight() + 2)
+        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinY() + 2)
             return Optional.empty();
         return Optional.of(new GenerationStub(blockPos, collector -> this.addPieces(collector, blockPos, context, context.random().nextBoolean())));
     }
 
     private void addPieces(StructurePiecesBuilder collector, BlockPos pos, GenerationContext context, boolean male) {
-        int y = context.heightAccessor().getMinBuildHeight() + 40 + context.random().nextInt(30);
+        int y = context.heightAccessor().getMinY() + 40 + context.random().nextInt(30);
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
@@ -114,7 +114,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
 
             random = new LegacyRandomSource(this.seed);
             // Center the position at the "middle" of the chunk
-            BlockPos position = new BlockPos((chunkPos.x << 4) + 8, this.y, (chunkPos.z << 4) + 8).subtract(this.offset);
+            BlockPos position = new BlockPos((chunkPos.x() << 4) + 8, this.y, (chunkPos.z() << 4) + 8).subtract(this.offset);
             int dragonAge = 75 + random.nextInt(50);
             int radius = (int) (dragonAge * 0.2F) + random.nextInt(4);
             this.generateCave(world, radius, 3, position, random);
@@ -149,7 +149,8 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             shellBlocksSet.removeAll(hollowBlocksSet);
 
             //Remove blocks that is not belong to this piece
-            ChunkPos chunkPos = new ChunkPos(center.offset(this.offset));
+            BlockPos offsetCenter = center.offset(this.offset);
+            ChunkPos chunkPos = new ChunkPos(offsetCenter.getX() >> 4, offsetCenter.getZ() >> 4);
             shellBlocksSet.removeIf(x -> this.isOutOfRange(chunkPos, x));
             hollowBlocksSet.removeIf(x -> this.isOutOfRange(chunkPos, x));
 
@@ -246,7 +247,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             dragon.setAgingDisabled(true);
             dragon.setHealth(dragon.getMaxHealth());
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.absMoveTo(position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, random.nextFloat() * 360, 0);
+            dragon.setPos(position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5); dragon.setYRot(random.nextFloat() * 360); dragon.setXRot(0);
             dragon.setInSittingPose(true);
             dragon.homePos = new HomePosition(position, worldGen.getLevel());
             dragon.setHunger(50);

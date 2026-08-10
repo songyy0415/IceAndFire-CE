@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import java.util.List;
@@ -129,7 +130,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
     protected void damageShield(Player player, float damage) {
         if (damage >= 3.0F && player.getUseItem().getItem() instanceof ShieldItem) {
             int i = 1 + Mth.floor(damage);
-            player.getUseItem().hurtAndBreak(i, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+            IafItemUtil.damageStackServerSide(player.getUseItem(), i, player);
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();

@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.entity.PixieChargeEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
@@ -53,7 +54,7 @@ public class PixieWandItem extends Item {
                 world.addFreshEntity(charge);
             }
             user.playSound(IafSounds.PIXIE_WAND.get(), 1F, 0.75F + 0.5F * user.getRandom().nextFloat());
-            itemstack.hurtAndBreak(1, user, LivingEntity.getSlotForHand(user.getUsedItemHand()));
+            IafItemUtil.damageStackServerSide(itemstack, 1, user);
             user.getCooldowns().addCooldown(new ItemStack(this), 5);
         }
         return InteractionResult.SUCCESS;

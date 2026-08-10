@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -38,18 +39,25 @@ public class DragonSeekerItem extends Item {
             return super.use(world, user, hand);
         }
         ItemStack stack = user.getItemInHand(hand);
-        DragonBaseEntity dragon = world.getNearestEntity(DragonBaseEntity.class, TargetingConditions.forCombat().selector(entity -> {
-            if (!(entity instanceof DragonBaseEntity d)) return false;
-            if (d.isMobDead() && !this.type.trackDead) return false;
-            return !d.isTame() || this.type.trackTeamed;
-        }), user, user.getX(), user.getY(), user.getZ(), new AABB(this.type.add(user.position(), true), this.type.add(user.position(), false)));
+        DragonBaseEntity dragon = null;
+        double closest = Double.MAX_VALUE;
+        for (DragonBaseEntity d : world.getEntitiesOfClass(DragonBaseEntity.class, new AABB(this.type.add(user.position(), true), this.type.add(user.position(), false)), entity -> {
+            if (entity.isMobDead() && !this.type.trackDead) return false;
+            return !entity.isTame() || this.type.trackTeamed;
+        })) {
+            double distance = d.distanceToSqr(user);
+            if (distance < closest) {
+                closest = distance;
+                dragon = d;
+            }
+        }
         if (dragon == null) {
             user.sendSystemMessage(Component.translatable("item.iceandfire.dragon_seeker.not_found"));
             return InteractionResult.FAIL;
         }
         if (this.type.admin) {
             String pos1 = String.format("[%d, %d, %d]", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ()), pos2 = String.format("/tp @s %d %d %d", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ());
-            Component locationText = Component.literal(pos1).setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, pos2)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.coordinates.tooltip"))));
+            Component locationText = Component.literal(pos1).setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withClickEvent(new ClickEvent.SuggestCommand(pos2)).withHoverEvent(new HoverEvent.ShowText(Component.translatable("chat.coordinates.tooltip"))));
             user.sendSystemMessage(Component.translatable("item.iceandfire.dragon_seeker.found_location").append(locationText));
         } else
             user.sendSystemMessage(Component.translatable("item.iceandfire.dragon_seeker.found"));

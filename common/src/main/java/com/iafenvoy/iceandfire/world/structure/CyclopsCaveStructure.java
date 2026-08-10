@@ -143,7 +143,7 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
 
             CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel());
             if (cyclops != null) {
-                cyclops.absMoveTo(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5, random.nextFloat() * 360, 0);
+                cyclops.setPos(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5); cyclops.setYRot(random.nextFloat() * 360); cyclops.setXRot(0);
                 world.addFreshEntity(cyclops);
             }
         }

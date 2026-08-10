@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
@@ -16,6 +17,8 @@ import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
 
 public class HydraArrowEntity extends AbstractArrow {
+    private float baseDamage = 5F;
+
     public HydraArrowEntity(EntityType<? extends AbstractArrow> t, Level worldIn) {
         super(t, worldIn);
         this.setBaseDamage(5F);
@@ -36,7 +39,7 @@ public class HydraArrowEntity extends AbstractArrow {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide() && !this.inGround) {
+        if (this.level().isClientSide() && !this.isInGround()) {
             double d0 = this.getRandom().nextGaussian() * 0.02D;
             double d1 = this.getRandom().nextGaussian() * 0.02D;
             double d2 = this.getRandom().nextGaussian() * 0.02D;
@@ -52,11 +55,11 @@ public class HydraArrowEntity extends AbstractArrow {
         if (damage >= 3.0F && player.getUseItem().getItem() instanceof ShieldItem) {
             ItemStack copyBeforeUse = player.getUseItem().copy();
             int i = 1 + Mth.floor(damage);
-            player.getUseItem().hurtAndBreak(i, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+            IafItemUtil.damageStackServerSide(player.getUseItem(), i, player);
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();
-                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.level().getRandom().nextFloat() * 0.4F);
             }
         }
     }
@@ -64,11 +67,11 @@ public class HydraArrowEntity extends AbstractArrow {
     @Override
     protected void doPostHurtEffects(LivingEntity living) {
         if (living instanceof Player player)
-            this.damageShield(player, (float) this.getBaseDamage());
+            this.damageShield(player, this.baseDamage);
         living.addEffect(new MobEffectInstance(MobEffects.POISON, 300, 0));
         Entity shootingEntity = this.getOwner();
         if (shootingEntity instanceof LivingEntity living1)
-            living1.heal((float) this.getBaseDamage());
+            living1.heal(this.baseDamage);
     }
 
     @Override

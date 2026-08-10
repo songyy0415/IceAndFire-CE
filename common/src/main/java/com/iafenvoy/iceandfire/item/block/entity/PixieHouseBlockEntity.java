@@ -104,7 +104,7 @@ public class PixieHouseBlockEntity extends BlockEntity {
 
     public void releasePixie() {
         PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.level);
-        pixie.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F, ThreadLocalRandom.current().nextInt(360), 0);
+        pixie.setPos(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F); pixie.setYRot(ThreadLocalRandom.current().nextInt(360)); pixie.setXRot(0);
         pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst());
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;

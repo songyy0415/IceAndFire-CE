@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item.tool;
+import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.entity.TideTridentEntity;
 import com.iafenvoy.uranus.object.RegistryHelper;
@@ -51,7 +52,7 @@ public class TideTridentItem extends TridentItem {
                 int riptideLevel = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(worldIn.registryAccess(), Enchantments.RIPTIDE), stack);
                 if (riptideLevel <= 0 || player.isInWaterOrRain()) {
                     if (!worldIn.isClientSide()) {
-                        stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(user.getUsedItemHand()));
+                        IafItemUtil.damageStackServerSide(stack, 1, player);
                         if (riptideLevel == 0) {
                             TideTridentEntity tideTrident = new TideTridentEntity(worldIn, player, stack);
                             tideTrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float) riptideLevel * 0.5F, 1.0F);

@@ -153,7 +153,7 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
             HydraEntity hydra = new HydraEntity(IafEntities.HYDRA.get(), world.getLevel());
             hydra.setVariant(random.nextInt(3));
             hydra.restrictTo(pivot, 15);
-            hydra.absMoveTo(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5, random.nextFloat() * 360, 0);
+            hydra.setPos(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5); hydra.setYRot(random.nextFloat() * 360); hydra.setXRot(0);
             world.addFreshEntity(hydra);
         }
 

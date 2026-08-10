@@ -692,7 +692,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     private int findWaterSurface(int x, int z) {
-        for (int y = Math.min(this.level().getMaxBuildHeight() - 1, this.getBlockY() + 16); y >= this.level().getMinBuildHeight(); y--) {
+        for (int y = Math.min(this.level().getMaxBuildHeight() - 1, this.getBlockY() + 16); y >= this.level().getMinY(); y--) {
             if (this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER)) {
                 while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER))
                     y++;

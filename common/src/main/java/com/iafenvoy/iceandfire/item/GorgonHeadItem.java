@@ -9,6 +9,8 @@ import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 
 import net.minecraft.world.InteractionHand;
@@ -19,8 +21,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -32,17 +35,12 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 public class GorgonHeadItem extends Item {
     public GorgonHeadItem() {
-        super(new Properties().durability(1));
+        super(new Properties().durability(1).component(DataComponents.CONSUMABLE, Consumable.builder().animation(ItemUseAnimation.BOW).build()));
     }
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity user) {
         return 72000;
-    }
-
-    @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
     }
 
     @Override
@@ -92,7 +90,7 @@ public class GorgonHeadItem extends Item {
                 if (wasSuccesful) {
                     pointedEntity.playSound(IafSounds.TURN_STONE.get(), 1, 1);
                     StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(livingEntity);
-                    statue.absMoveTo(pointedEntity.getX(), pointedEntity.getY(), pointedEntity.getZ(), pointedEntity.getYRot(), pointedEntity.getXRot());
+                    statue.setPos(pointedEntity.getX(), pointedEntity.getY(), pointedEntity.getZ()); statue.setYRot(pointedEntity.getYRot()); statue.setXRot(pointedEntity.getXRot());
                     statue.yBodyRot = pointedEntity.getYRot();
                     if (!worldIn.isClientSide())
                         worldIn.addFreshEntity(statue);

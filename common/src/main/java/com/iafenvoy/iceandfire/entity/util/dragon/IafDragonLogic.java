@@ -182,8 +182,8 @@ public class IafDragonLogic {
             this.dragon.setHovering(false);
         }
         if (!this.dragon.isFlying() && !this.dragon.isHovering())
-            if (this.dragon.isAllowedToTriggerFlight() || this.dragon.getY() < this.dragon.level().getMinBuildHeight())
-                if (this.dragon.getRandom().nextInt(this.dragon.getFlightChancePerTick()) == 0 || this.dragon.getY() < this.dragon.level().getMinBuildHeight() || this.dragon.getTarget() != null && Math.abs(this.dragon.getTarget().getY() - this.dragon.getY()) > 5 || this.dragon.isInWater()) {
+            if (this.dragon.isAllowedToTriggerFlight() || this.dragon.getY() < this.dragon.level().getMinY())
+                if (this.dragon.getRandom().nextInt(this.dragon.getFlightChancePerTick()) == 0 || this.dragon.getY() < this.dragon.level().getMinY() || this.dragon.getTarget() != null && Math.abs(this.dragon.getTarget().getY() - this.dragon.getY()) > 5 || this.dragon.isInWater()) {
                     this.dragon.setHovering(true);
                     this.dragon.setInSittingPose(false);
                     this.dragon.setOrderedToSit(false);

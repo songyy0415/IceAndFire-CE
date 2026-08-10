@@ -7,6 +7,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -16,14 +19,14 @@ public class DragonScaleArmorItem extends Item {
     private final DragonColor color;
     private final ArmorType armorType;
 
-    public DragonScaleArmorItem(DragonColor color, ArmorType slot) {
+    public DragonScaleArmorItem(ResourceKey<Item> key, DragonColor color, ArmorType slot) {
         super(new Item.Properties().humanoidArmor(color.getMaterial(), slot).durability(switch (slot) {
             case HELMET -> 397;
             case CHESTPLATE -> 577;
             case LEGGINGS -> 541;
             case BOOTS -> 469;
             case BODY -> 0;
-        }));
+        }).setId(key));
         this.color = color;
         this.armorType = slot;
     }

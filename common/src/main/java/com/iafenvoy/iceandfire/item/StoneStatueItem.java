@@ -19,14 +19,16 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class StoneStatueItem extends Item {
-    public StoneStatueItem() {
-        super(new Properties().stacksTo(1).component(IafDataComponents.STONE_STATUS.get(), new StoneStatusComponent(true, "", new CompoundTag())));
+    public StoneStatueItem(ResourceKey<Item> key) {
+        super(new Properties().stacksTo(1).component(IafDataComponents.STONE_STATUS.get(), new StoneStatusComponent(true, "", new CompoundTag())).setId(key));
     }
 
     @Override

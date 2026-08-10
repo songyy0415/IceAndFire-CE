@@ -13,6 +13,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.Item;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -22,8 +25,8 @@ import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class CyclopsEyeItem extends Item {
-    public CyclopsEyeItem() {
-        super(new Properties().durability(500).component(IafDataComponents.TICK_COUNTER.get(), 0));
+    public CyclopsEyeItem(ResourceKey<Item> key) {
+        super(new Properties().durability(500).component(IafDataComponents.TICK_COUNTER.get(), 0).setId(key));
     }
 
     @Override

@@ -48,11 +48,11 @@ public class TrollType {
 
     public static void initArmors() {
         for (TrollType troll : IafRegistries.TROLL_TYPE) {
-            troll.leather = IafItems.registerItem(String.format(Locale.ROOT, "troll_leather_%s", troll.name.toLowerCase(Locale.ROOT)), () -> new Item(new Item.Properties()));
-            troll.helmet = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.HELMET), () -> new TrollArmorItem(troll, ArmorType.HELMET));
-            troll.chestplate = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.CHESTPLATE), () -> new TrollArmorItem(troll, ArmorType.CHESTPLATE));
-            troll.leggings = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.LEGGINGS), () -> new TrollArmorItem(troll, ArmorType.LEGGINGS));
-            troll.boots = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.BOOTS), () -> new TrollArmorItem(troll, ArmorType.BOOTS));
+            troll.leather = IafItems.registerItem(String.format(Locale.ROOT, "troll_leather_%s", troll.name.toLowerCase(Locale.ROOT)), key -> new Item(new Item.Properties().setId(key)));
+            troll.helmet = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.HELMET), key -> new TrollArmorItem(key, troll, ArmorType.HELMET));
+            troll.chestplate = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.CHESTPLATE), key -> new TrollArmorItem(key, troll, ArmorType.CHESTPLATE));
+            troll.leggings = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.LEGGINGS), key -> new TrollArmorItem(key, troll, ArmorType.LEGGINGS));
+            troll.boots = IafItems.registerArmor(TrollArmorItem.getName(troll, ArmorType.BOOTS), key -> new TrollArmorItem(key, troll, ArmorType.BOOTS));
         }
     }
 
@@ -97,7 +97,7 @@ public class TrollType {
         private final RegistrySupplier<Item> item;
 
         BuiltinWeapon() {
-            this.item = IafItems.registerToolOrWeapon("troll_weapon_" + this.name().toLowerCase(Locale.ROOT), () -> new TrollWeaponItem(this));
+            this.item = IafItems.registerToolOrWeapon("troll_weapon_" + this.name().toLowerCase(Locale.ROOT), key -> new TrollWeaponItem(key, this));
             ITrollWeapon.addWeapons(this);
         }
 

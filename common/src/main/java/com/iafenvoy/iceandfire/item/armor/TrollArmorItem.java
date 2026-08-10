@@ -8,6 +8,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -17,14 +20,14 @@ public class TrollArmorItem extends Item {
     private final TrollType trollType;
     private final ArmorType armorType;
 
-    public TrollArmorItem(TrollType trollType, ArmorType type) {
+    public TrollArmorItem(ResourceKey<Item> key, TrollType trollType, ArmorType type) {
         super(new Item.Properties().humanoidArmor(trollType.getMaterial(), type).durability(switch (type) {
             case HELMET -> 220;
             case CHESTPLATE -> 320;
             case LEGGINGS -> 300;
             case BOOTS -> 260;
             case BODY -> 0;
-        }));
+        }).setId(key));
         this.trollType = trollType;
         this.armorType = type;
     }

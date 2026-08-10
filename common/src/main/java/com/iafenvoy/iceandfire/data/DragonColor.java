@@ -49,10 +49,10 @@ public final class DragonColor {
         for (DragonColor color : IafRegistries.DRAGON_COLOR.stream().toList()) {
             color.material = IafArmorMaterials.create("dragon_scales_" + color.name, new int[]{5, 7, 9, 5}, 15, SoundEvents.ARMOR_EQUIP_CHAIN, 2, 0, IafItemTags.DRAGON_SCALES);
             String sub = "armor_" + color.getName().toLowerCase(Locale.ROOT);
-            color.helmet = IafItems.registerArmor(sub + "_helmet", () -> new DragonScaleArmorItem(color, ArmorType.HELMET));
-            color.chestplate = IafItems.registerArmor(sub + "_chestplate", () -> new DragonScaleArmorItem(color, ArmorType.CHESTPLATE));
-            color.leggings = IafItems.registerArmor(sub + "_leggings", () -> new DragonScaleArmorItem(color, ArmorType.LEGGINGS));
-            color.boots = IafItems.registerArmor(sub + "_boots", () -> new DragonScaleArmorItem(color, ArmorType.BOOTS));
+            color.helmet = IafItems.registerArmor(sub + "_helmet", key -> new DragonScaleArmorItem(key, color, ArmorType.HELMET));
+            color.chestplate = IafItems.registerArmor(sub + "_chestplate", key -> new DragonScaleArmorItem(key, color, ArmorType.CHESTPLATE));
+            color.leggings = IafItems.registerArmor(sub + "_leggings", key -> new DragonScaleArmorItem(key, color, ArmorType.LEGGINGS));
+            color.boots = IafItems.registerArmor(sub + "_boots", key -> new DragonScaleArmorItem(key, color, ArmorType.BOOTS));
         }
     }
 

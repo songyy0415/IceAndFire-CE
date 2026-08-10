@@ -13,12 +13,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
 public class DragonFluteItem extends Item {
-    public DragonFluteItem() {
-        super(new Properties().stacksTo(1));
+    public DragonFluteItem(ResourceKey<Item> key) {
+        super(new Properties().stacksTo(1).setId(key));
     }
 
     @Override

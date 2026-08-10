@@ -5,6 +5,9 @@ import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -18,10 +21,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ElementalFlowerBlock extends BushBlock {
-    private static final MapCodec<BushBlock> CODEC = simpleCodec(s -> new ElementalFlowerBlock());
-
-    public ElementalFlowerBlock() {
-        super(Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY));
+    public ElementalFlowerBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY).setId(key));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class ElementalFlowerBlock extends BushBlock {
 
     @Override
     public MapCodec<BushBlock> codec() {
-        return CODEC;
+        return MapCodec.unit(this);
     }
 
     @Override

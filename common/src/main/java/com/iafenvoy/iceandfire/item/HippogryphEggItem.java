@@ -20,6 +20,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -27,8 +30,8 @@ import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class HippogryphEggItem extends Item implements ProjectileItem {
-    public HippogryphEggItem() {
-        super(new Item.Properties().stacksTo(1));
+    public HippogryphEggItem(ResourceKey<Item> key) {
+        super(new Item.Properties().stacksTo(1).setId(key));
     }
 
     public static ItemStack createEggStack(HippogryphType parent1, HippogryphType parent2) {

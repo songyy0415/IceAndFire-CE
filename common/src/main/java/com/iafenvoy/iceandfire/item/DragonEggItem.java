@@ -13,6 +13,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import java.util.function.Consumer;
@@ -22,8 +25,8 @@ public class DragonEggItem extends Item {
     public static final Map<DragonColor, Item> EGGS = new HashMap<>();
     public final DragonColor type;
 
-    public DragonEggItem(DragonColor type) {
-        super(new Properties().stacksTo(1));
+    public DragonEggItem(ResourceKey<Item> key, DragonColor type) {
+        super(new Properties().stacksTo(1).setId(key));
         this.type = type;
         EGGS.put(type, this);
     }

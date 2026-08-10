@@ -12,14 +12,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.Level;
 
 public class DeathwormEggItem extends Item implements ProjectileItem {
     private final boolean gigantic;
 
-    public DeathwormEggItem(boolean gigantic) {
-        super(new Item.Properties().stacksTo(1));
+    public DeathwormEggItem(ResourceKey<Item> key, boolean gigantic) {
+        super(new Item.Properties().stacksTo(1).setId(key));
         this.gigantic = gigantic;
     }
 

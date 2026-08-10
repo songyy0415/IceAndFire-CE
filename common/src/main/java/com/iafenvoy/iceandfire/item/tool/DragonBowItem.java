@@ -12,6 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -21,8 +25,8 @@ import net.minecraft.world.level.Level;
 public class DragonBowItem extends BowItem {
     private static final Predicate<ItemStack> DRAGON_ARROWS = stack -> stack.is(IafItemTags.DRAGON_ARROWS);
 
-    public DragonBowItem() {
-        super(new Properties().durability(584));
+    public DragonBowItem(ResourceKey<Item> key) {
+        super(new Properties().durability(584).setId(key));
     }
 
     @Override

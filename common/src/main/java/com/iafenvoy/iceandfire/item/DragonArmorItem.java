@@ -11,6 +11,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
@@ -22,8 +25,8 @@ public class DragonArmorItem extends Item {
     public String name;
     private Pattern baseName = Pattern.compile("[a-z]+_[a-z]+");
 
-    public DragonArmorItem(DragonArmorMaterial type, DragonArmorPart dragonSlot) {
-        super(type.fireProof() ? new Properties().fireResistant() : new Properties());
+    public DragonArmorItem(ResourceKey<Item> key, DragonArmorMaterial type, DragonArmorPart dragonSlot) {
+        super(type.fireProof() ? new Properties().fireResistant().setId(key) : new Properties().setId(key));
         this.type = type;
         this.dragonSlot = dragonSlot;
         if (type.dragonSteel()) this.baseName = Pattern.compile("[a-z]+_[a-z]+_[a-z]+_[a-z]+");

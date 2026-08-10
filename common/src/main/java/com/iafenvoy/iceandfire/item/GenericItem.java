@@ -6,6 +6,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -13,8 +16,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class GenericItem extends Item {
     private final int description;
 
-    public GenericItem(int textLength) {
-        super(new Properties());
+    public GenericItem(ResourceKey<Item> key, int textLength) {
+        super(new Properties().setId(key));
         this.description = textLength;
     }
 

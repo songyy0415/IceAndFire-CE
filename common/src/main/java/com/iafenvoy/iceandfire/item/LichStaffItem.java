@@ -11,11 +11,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
 public class LichStaffItem extends Item {
-    public LichStaffItem() {
-        super(new Properties().durability(100).repairable(IafItems.DREAD_SHARD.get()));
+    public LichStaffItem(ResourceKey<Item> key) {
+        super(new Properties().durability(100).repairable(IafItems.DREAD_SHARD.get()).setId(key));
     }
 
     @Override

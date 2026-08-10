@@ -2,6 +2,9 @@ package com.iafenvoy.iceandfire.item.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
@@ -17,15 +20,15 @@ public class FallingReturningStateBlock extends FallingBlock {
     public static final BooleanProperty REVERTS = BooleanProperty.create("revert");
     private final BlockState returnState;
 
-    public FallingReturningStateBlock(float hardness, float resistance, SoundType sound, MapColor color, BlockState revertState) {
-        super(Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks());
+    public FallingReturningStateBlock(ResourceKey<Block> key, float hardness, float resistance, SoundType sound, MapColor color, BlockState revertState) {
+        super(Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks().setId(key));
 
         this.returnState = revertState;
         this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));
     }
 
-    public FallingReturningStateBlock(float hardness, float resistance, SoundType sound, boolean slippery, MapColor color, BlockState revertState) {
-        super(Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks());
+    public FallingReturningStateBlock(ResourceKey<Block> key, float hardness, float resistance, SoundType sound, boolean slippery, MapColor color, BlockState revertState) {
+        super(Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks().setId(key));
 
         this.returnState = revertState;
         this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));

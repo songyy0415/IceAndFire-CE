@@ -12,6 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.Level;
@@ -21,8 +24,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class TrollWeaponItem extends Item {
     public final TrollType.ITrollWeapon weapon;
 
-    public TrollWeaponItem(TrollType.ITrollWeapon weapon) {
-        super(new Item.Properties().sword(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL.toolMaterial(), 15, -3.5F));
+    public TrollWeaponItem(ResourceKey<Item> key, TrollType.ITrollWeapon weapon) {
+        super(new Item.Properties().sword(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL.toolMaterial(), 15, -3.5F).setId(key));
         this.weapon = weapon;
     }
 

@@ -9,13 +9,16 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.equipment.ArmorType;
 
 public class BlindfoldItem extends Item {
     private final ArmorType armorType = ArmorType.HELMET;
 
-    public BlindfoldItem() {
-        super(new Item.Properties().humanoidArmor(IafArmorMaterials.BLINDFOLD, ArmorType.HELMET).durability(55));
+    public BlindfoldItem(ResourceKey<Item> key) {
+        super(new Item.Properties().humanoidArmor(IafArmorMaterials.BLINDFOLD, ArmorType.HELMET).durability(55).setId(key));
     }
 
     @Override

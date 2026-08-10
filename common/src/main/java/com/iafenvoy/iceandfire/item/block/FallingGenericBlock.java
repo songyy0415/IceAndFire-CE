@@ -2,7 +2,11 @@ package com.iafenvoy.iceandfire.item.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,8 +30,8 @@ public class FallingGenericBlock extends FallingBlock {
         return 16777215;
     }
 
-    public static FallingGenericBlock builder(float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument) {
-        Properties props = Properties.of().mapColor(color).instrument(instrument).sound(sound).strength(hardness, resistance);
+    public static FallingGenericBlock builder(ResourceKey<Block> key, float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument) {
+        Properties props = Properties.of().mapColor(color).instrument(instrument).sound(sound).strength(hardness, resistance).setId(key);
         return new FallingGenericBlock(props);
     }
 }

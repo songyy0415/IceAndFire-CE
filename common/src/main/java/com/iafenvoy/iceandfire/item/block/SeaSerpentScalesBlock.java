@@ -2,7 +2,10 @@ package com.iafenvoy.iceandfire.item.block;
 
 import java.util.List;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -16,8 +19,8 @@ public class SeaSerpentScalesBlock extends Block {
     final ChatFormatting color;
     final String name;
 
-    public SeaSerpentScalesBlock(String name, ChatFormatting color) {
-        super(Properties.of().mapColor(MapColor.STONE).strength(30F, 500F).sound(SoundType.STONE).requiresCorrectToolForDrops());
+    public SeaSerpentScalesBlock(ResourceKey<Block> key, String name, ChatFormatting color) {
+        super(Properties.of().mapColor(MapColor.STONE).strength(30F, 500F).sound(SoundType.STONE).requiresCorrectToolForDrops().setId(key));
         this.color = color;
         this.name = name;
     }

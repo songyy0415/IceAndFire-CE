@@ -12,12 +12,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.Level;
 
 public class RottenEggItem extends Item implements ProjectileItem {
-    public RottenEggItem() {
-        super(new Item.Properties());
+    public RottenEggItem(ResourceKey<Item> key) {
+        super(new Item.Properties().setId(key));
     }
 
     @Override

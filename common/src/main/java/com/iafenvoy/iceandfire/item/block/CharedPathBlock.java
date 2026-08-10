@@ -3,6 +3,9 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -20,8 +23,8 @@ public class CharedPathBlock extends DirtPathBlock {
     public static final BooleanProperty REVERTS = BooleanProperty.create("revert");
     public final int dragonType;
 
-    public CharedPathBlock(int dragonType) {
-        super(Properties.of().mapColor(MapColor.PLANT).pushReaction(PushReaction.DESTROY).sound(dragonType != 1 ? SoundType.GRAVEL : SoundType.GLASS).strength(0.6F).friction(dragonType != 1 ? 0.6F : 0.98F).randomTicks().requiresCorrectToolForDrops());
+    public CharedPathBlock(ResourceKey<Block> key, int dragonType) {
+        super(Properties.of().mapColor(MapColor.PLANT).pushReaction(PushReaction.DESTROY).sound(dragonType != 1 ? SoundType.GRAVEL : SoundType.GLASS).strength(0.6F).friction(dragonType != 1 ? 0.6F : 0.98F).randomTicks().requiresCorrectToolForDrops().setId(key));
         this.dragonType = dragonType;
         this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));
     }

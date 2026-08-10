@@ -13,13 +13,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
 public class DragonFleshItem extends Item {
     private final DragonType type;
 
-    public DragonFleshItem(DragonType type) {
-        super(new Properties().food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build()));
+    public DragonFleshItem(ResourceKey<Item> key, DragonType type) {
+        super(new Properties().food(new FoodProperties.Builder().nutrition(8).saturationModifier(0.8F).build()).setId(key));
         this.type = type;
     }
 

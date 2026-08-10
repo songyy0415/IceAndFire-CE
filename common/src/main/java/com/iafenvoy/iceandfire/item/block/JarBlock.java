@@ -8,6 +8,9 @@ import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,13 +35,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Locale;
 
 public class JarBlock extends BaseEntityBlock {
-    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new JarBlock(-1));
     protected static final VoxelShape AABB = Block.box(3, 0, 3, 13, 16, 13);
     private final boolean empty;
     private final int pixieType;
 
-    public JarBlock(int pixieType) {
-        super(pixieType != -1 ? Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).lightLevel((state) -> 10) : Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS));
+    public JarBlock(ResourceKey<Block> key, int pixieType) {
+        super(pixieType != -1 ? Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).lightLevel((state) -> 10).setId(key) : Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).setId(key));
         this.empty = pixieType == -1;
         this.pixieType = pixieType;
     }
@@ -82,7 +84,7 @@ public class JarBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return MapCodec.unit(this);
     }
 
     @Override

@@ -15,6 +15,9 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -26,8 +29,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class DragonSeekerItem extends Item {
     private final SeekerType type;
 
-    public DragonSeekerItem(SeekerType type) {
-        super(new Properties().stacksTo(1).rarity(Rarity.RARE));
+    public DragonSeekerItem(ResourceKey<Item> key, SeekerType type) {
+        super(new Properties().stacksTo(1).rarity(Rarity.RARE).setId(key));
         this.type = type;
     }
 

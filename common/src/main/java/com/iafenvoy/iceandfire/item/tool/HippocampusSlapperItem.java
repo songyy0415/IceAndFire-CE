@@ -11,13 +11,16 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class HippocampusSlapperItem extends Item {
-    public HippocampusSlapperItem() {
-        super(new Item.Properties().sword(IafToolMaterials.HIPPOCAMPUS_SWORD_TOOL_MATERIAL.toolMaterial(), 3, -2.4F));
+    public HippocampusSlapperItem(ResourceKey<Item> key) {
+        super(new Item.Properties().sword(IafToolMaterials.HIPPOCAMPUS_SWORD_TOOL_MATERIAL.toolMaterial(), 3, -2.4F).setId(key));
     }
 
     @Override

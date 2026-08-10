@@ -10,12 +10,15 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class DragonArrowItem extends ArrowItem {
-    public DragonArrowItem() {
-        super(new Item.Properties());
+    public DragonArrowItem(ResourceKey<Item> key) {
+        super(new Item.Properties().setId(key));
     }
 
     @Override

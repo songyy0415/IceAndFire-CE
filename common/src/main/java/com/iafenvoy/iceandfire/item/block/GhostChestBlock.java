@@ -5,13 +5,16 @@ import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,8 +25,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootParams;
 
 public class GhostChestBlock extends ChestBlock {
-    public GhostChestBlock() {
-        super(IafBlockEntities.GHOST_CHEST::get, SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2.5F).sound(SoundType.WOOD));
+    public GhostChestBlock(ResourceKey<Block> key) {
+        super(IafBlockEntities.GHOST_CHEST::get, SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2.5F).sound(SoundType.WOOD).setId(key));
     }
 
     @Override

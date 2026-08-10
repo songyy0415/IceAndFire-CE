@@ -6,10 +6,14 @@ import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,10 +24,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class DreadPortalBlock extends BaseEntityBlock implements DreadBlock {
-    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new DreadPortalBlock());
-
-    public DreadPortalBlock() {
-        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.BLOCK).noOcclusion().dynamicShape().strength(-1, 100000).lightLevel((state) -> 1).randomTicks());
+    public DreadPortalBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.NONE).pushReaction(PushReaction.BLOCK).noOcclusion().dynamicShape().strength(-1, 100000).lightLevel((state) -> 1).randomTicks().setId(key));
     }
 
     @Override
@@ -52,7 +54,7 @@ public class DreadPortalBlock extends BaseEntityBlock implements DreadBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return MapCodec.unit(this);
     }
 
     @Override

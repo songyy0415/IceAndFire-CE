@@ -15,6 +15,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -24,14 +27,14 @@ public class SeaSerpentArmorItem extends Item {
     public final SeaSerpentType armorType;
     private final ArmorType type;
 
-    public SeaSerpentArmorItem(SeaSerpentType armorType, ArmorMaterial material, ArmorType slot) {
+    public SeaSerpentArmorItem(ResourceKey<Item> key, SeaSerpentType armorType, ArmorMaterial material, ArmorType slot) {
         super(new Item.Properties().humanoidArmor(material, slot).durability(switch (slot) {
             case HELMET -> 330;
             case CHESTPLATE -> 480;
             case LEGGINGS -> 450;
             case BOOTS -> 390;
             case BODY -> 0;
-        }));
+        }).setId(key));
         this.armorType = armorType;
         this.type = slot;
     }

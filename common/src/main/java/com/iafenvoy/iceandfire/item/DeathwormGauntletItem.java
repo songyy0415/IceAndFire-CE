@@ -13,6 +13,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.Consumable;
@@ -24,8 +27,8 @@ import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class DeathwormGauntletItem extends Item {
-    public DeathwormGauntletItem() {
-        super(new Properties().durability(500).component(IafDataComponents.USER_ID.get(), -1).component(DataComponents.CONSUMABLE, Consumable.builder().animation(ItemUseAnimation.BOW).build()));
+    public DeathwormGauntletItem(ResourceKey<Item> key) {
+        super(new Properties().durability(500).component(IafDataComponents.USER_ID.get(), -1).component(DataComponents.CONSUMABLE, Consumable.builder().animation(ItemUseAnimation.BOW).build()).setId(key));
     }
 
     @Override

@@ -5,8 +5,12 @@ import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,8 +18,8 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 
 public class DreadTorchWallBlock extends WallTorchBlock implements DreadBlock {
-    public DreadTorchWallBlock() {
-        super(ParticleTypes.DUST_PLUME, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().lightLevel((state) -> 5).sound(SoundType.STONE).noOcclusion().dynamicShape().noCollision());
+    public DreadTorchWallBlock(ResourceKey<Block> key) {
+        super(ParticleTypes.DUST_PLUME, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().lightLevel((state) -> 5).sound(SoundType.STONE).noOcclusion().dynamicShape().noCollision().setId(key));
     }
 
     @Override

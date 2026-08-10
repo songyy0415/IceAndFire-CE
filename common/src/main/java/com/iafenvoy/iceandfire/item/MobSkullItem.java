@@ -10,14 +10,17 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.context.UseOnContext;
 
 public class MobSkullItem extends Item {
 
     private final IafSkullType skull;
 
-    public MobSkullItem(IafSkullType skull) {
-        super(new Properties().stacksTo(1));
+    public MobSkullItem(ResourceKey<Item> key, IafSkullType skull) {
+        super(new Properties().stacksTo(1).setId(key));
         this.skull = skull;
     }
 

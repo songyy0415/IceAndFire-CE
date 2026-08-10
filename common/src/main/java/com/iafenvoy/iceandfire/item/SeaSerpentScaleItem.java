@@ -5,6 +5,9 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -12,8 +15,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class SeaSerpentScaleItem extends Item {
     private final SeaSerpentType type;
 
-    public SeaSerpentScaleItem(SeaSerpentType type) {
-        super(new Properties());
+    public SeaSerpentScaleItem(ResourceKey<Item> key, SeaSerpentType type) {
+        super(new Properties().setId(key));
         this.type = type;
     }
 

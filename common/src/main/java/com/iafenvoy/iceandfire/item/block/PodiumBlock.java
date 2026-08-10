@@ -4,6 +4,9 @@ import com.iafenvoy.iceandfire.item.block.entity.PodiumBlockEntity;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -23,11 +26,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PodiumBlock extends BaseEntityBlock {
-    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new PodiumBlock());
     protected static final VoxelShape AABB = Block.box(2, 0, 2, 14, 23, 14);
 
-    public PodiumBlock() {
-        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F).sound(SoundType.WOOD));
+    public PodiumBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F).sound(SoundType.WOOD).setId(key));
     }
 
     @Override
@@ -64,7 +66,7 @@ public class PodiumBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return MapCodec.unit(this);
     }
 
     @Override

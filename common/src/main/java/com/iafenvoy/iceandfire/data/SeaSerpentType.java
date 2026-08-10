@@ -50,13 +50,13 @@ public class SeaSerpentType {
 
     public static void initArmors() {
         for (SeaSerpentType type : SeaSerpentType.values()) {
-            IafBlocks.register(String.format(Locale.ROOT, "sea_serpent_scale_block_%s", type.name), () -> new SeaSerpentScalesBlock(type.name, type.color));
+            IafBlocks.register(String.format(Locale.ROOT, "sea_serpent_scale_block_%s", type.name), key -> new SeaSerpentScalesBlock(key, type.name, type.color));
             ArmorMaterial material = IafArmorMaterials.create(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), new int[]{ 4, 7, 8, 4 }, 25, SoundEvents.ARMOR_EQUIP_GOLD, 2.5F, 0, IafItemTags.SEA_SERPENT_SCALES);
-            type.scale = IafItems.registerItem(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), () -> new SeaSerpentScaleItem(type));
-            type.helmet = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_helmet", type.name), () -> new SeaSerpentArmorItem(type, material, ArmorType.HELMET));
-            type.chestplate = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_chestplate", type.name), () -> new SeaSerpentArmorItem(type, material, ArmorType.CHESTPLATE));
-            type.leggings = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_leggings", type.name), () -> new SeaSerpentArmorItem(type, material, ArmorType.LEGGINGS));
-            type.boots = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_boots", type.name), () -> new SeaSerpentArmorItem(type, material, ArmorType.BOOTS));
+            type.scale = IafItems.registerItem(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), key -> new SeaSerpentScaleItem(key, type));
+            type.helmet = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_helmet", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.HELMET));
+            type.chestplate = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_chestplate", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.CHESTPLATE));
+            type.leggings = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_leggings", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.LEGGINGS));
+            type.boots = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_boots", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.BOOTS));
         }
     }
 }

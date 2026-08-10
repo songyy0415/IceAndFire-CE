@@ -28,7 +28,7 @@ public enum IafSkullType implements SkullBlock.Type {
     public static void initItems() {
         //FIXME::Move to registries
         for (IafSkullType skull : IafSkullType.values())
-            IafItems.registerItem(skull.itemResourceName, () -> new MobSkullItem(skull));
+            IafItems.registerItem(skull.itemResourceName, key -> new MobSkullItem(key, skull));
     }
 
     public Item getSkullItem() {

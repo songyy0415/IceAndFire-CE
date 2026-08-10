@@ -4,6 +4,9 @@ import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,8 +25,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class IceSpikesBlock extends Block {
     protected static final VoxelShape VOXEL_SHAPE = Block.box(1, 0, 1, 15, 8, 15);
 
-    public IceSpikesBlock() {
-        super(Properties.of().mapColor(MapColor.ICE).noOcclusion().dynamicShape().randomTicks().sound(SoundType.GLASS).strength(2.5F).requiresCorrectToolForDrops());
+    public IceSpikesBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.ICE).noOcclusion().dynamicShape().randomTicks().sound(SoundType.GLASS).strength(2.5F).requiresCorrectToolForDrops().setId(key));
     }
 
     @Override

@@ -12,6 +12,9 @@ import dev.architectury.registry.menu.MenuRegistry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -39,8 +42,8 @@ public class DragonForgeInputBlock extends BaseEntityBlock implements DragonProo
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     private final DragonType dragonType;
 
-    public DragonForgeInputBlock(DragonType dragonType) {
-        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).dynamicShape().strength(40, 500).sound(SoundType.METAL));
+    public DragonForgeInputBlock(ResourceKey<Block> key, DragonType dragonType) {
+        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).dynamicShape().strength(40, 500).sound(SoundType.METAL).setId(key));
         this.dragonType = dragonType;
         this.registerDefaultState(this.getStateDefinition().any().setValue(ACTIVE, Boolean.FALSE));
         TYPE_MAP.put(dragonType, this);

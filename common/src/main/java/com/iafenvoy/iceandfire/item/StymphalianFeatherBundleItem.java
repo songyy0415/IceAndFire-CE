@@ -11,14 +11,17 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class StymphalianFeatherBundleItem extends Item {
-    public StymphalianFeatherBundleItem() {
-        super(new Properties());
+    public StymphalianFeatherBundleItem(ResourceKey<Item> key) {
+        super(new Properties().setId(key));
     }
 
     @Override

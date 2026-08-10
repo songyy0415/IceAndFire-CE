@@ -9,14 +9,17 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.equipment.ArmorType;
 
 public class EarPlugsArmorItem extends Item {
-    public EarPlugsArmorItem() {
-        super(new Item.Properties().humanoidArmor(IafArmorMaterials.EARPLUGS, ArmorType.HELMET).durability(55));
+    public EarPlugsArmorItem(ResourceKey<Item> key) {
+        super(new Item.Properties().humanoidArmor(IafArmorMaterials.EARPLUGS, ArmorType.HELMET).durability(55).setId(key));
     }
 
     private static boolean isAprilFool() {

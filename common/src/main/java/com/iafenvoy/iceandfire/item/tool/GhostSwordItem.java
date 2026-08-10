@@ -8,13 +8,16 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class GhostSwordItem extends Item {
-    public GhostSwordItem() {
-        super(new Item.Properties().sword(IafToolMaterials.GHOST_SWORD_TOOL_MATERIAL.toolMaterial(), 5, -1.0F));
+    public GhostSwordItem(ResourceKey<Item> key) {
+        super(new Item.Properties().sword(IafToolMaterials.GHOST_SWORD_TOOL_MATERIAL.toolMaterial(), 5, -1.0F).setId(key));
     }
 
     @Override

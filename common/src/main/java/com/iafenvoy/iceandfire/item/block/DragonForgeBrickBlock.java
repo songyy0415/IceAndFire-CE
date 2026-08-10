@@ -12,6 +12,9 @@ import dev.architectury.registry.menu.MenuRegistry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -41,8 +44,8 @@ public class DragonForgeBrickBlock extends BaseEntityBlock implements DragonProo
     public static final BooleanProperty GRILL = BooleanProperty.create("grill");
     private final DragonType dragonType;
 
-    public DragonForgeBrickBlock(DragonType dragonType) {
-        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).dynamicShape().strength(40, 500).sound(SoundType.METAL));
+    public DragonForgeBrickBlock(ResourceKey<Block> key, DragonType dragonType) {
+        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).dynamicShape().strength(40, 500).sound(SoundType.METAL).setId(key));
         this.dragonType = dragonType;
         this.registerDefaultState(this.getStateDefinition().any().setValue(GRILL, Boolean.FALSE));
         TYPE_MAP.put(dragonType, this);

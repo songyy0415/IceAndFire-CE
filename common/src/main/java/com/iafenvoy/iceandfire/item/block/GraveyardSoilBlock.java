@@ -3,6 +3,9 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.entity.GhostEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
@@ -15,8 +18,8 @@ import net.minecraft.world.phys.AABB;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GraveyardSoilBlock extends Block {
-    public GraveyardSoilBlock() {
-        super(Properties.of().mapColor(MapColor.DIRT).sound(SoundType.GRAVEL).strength(5, 1F).randomTicks());
+    public GraveyardSoilBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.DIRT).sound(SoundType.GRAVEL).strength(5, 1F).randomTicks().setId(key));
     }
 
     @SuppressWarnings("deprecation")

@@ -11,6 +11,9 @@ import dev.architectury.registry.menu.MenuRegistry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -36,8 +39,8 @@ public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof
     private static final Map<DragonType, Block> ACTIVATED_MAP = new HashMap<>();
     private final DragonType dragonType;
 
-    public DragonForgeCoreBlock(DragonType dragonType, boolean activated) {
-        super(Properties.of().mapColor(MapColor.METAL).dynamicShape().strength(40, 500).sound(SoundType.METAL).lightLevel((state) -> activated ? 15 : 0));
+    public DragonForgeCoreBlock(ResourceKey<Block> key, DragonType dragonType, boolean activated) {
+        super(Properties.of().mapColor(MapColor.METAL).dynamicShape().strength(40, 500).sound(SoundType.METAL).lightLevel((state) -> activated ? 15 : 0).setId(key));
         this.dragonType = dragonType;
         if (activated) ACTIVATED_MAP.put(dragonType, this);
     }

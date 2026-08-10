@@ -6,6 +6,9 @@ import java.util.Locale;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -13,8 +16,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 public class DragonScalesItem extends Item {
     final DragonColor type;
 
-    public DragonScalesItem(DragonColor type) {
-        super(new Properties());
+    public DragonScalesItem(ResourceKey<Item> key, DragonColor type) {
+        super(new Properties().setId(key));
         this.type = type;
     }
 

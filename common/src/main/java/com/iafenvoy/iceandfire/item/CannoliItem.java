@@ -10,13 +10,16 @@ import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.TooltipFlag;
 import java.util.function.Consumer;
 import net.minecraft.world.item.component.TooltipDisplay;
 
 public class CannoliItem extends Item {
-    public CannoliItem() {
-        super(new Properties().food(new FoodProperties.Builder().nutrition(20).saturationModifier(2).alwaysEdible().build(), Consumable.builder().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.STRENGTH, 3600, 2), 1.0F)).build()));
+    public CannoliItem(ResourceKey<Item> key) {
+        super(new Properties().food(new FoodProperties.Builder().nutrition(20).saturationModifier(2).alwaysEdible().build(), Consumable.builder().onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.STRENGTH, 3600, 2), 1.0F)).build()).setId(key));
     }
 
     @Override

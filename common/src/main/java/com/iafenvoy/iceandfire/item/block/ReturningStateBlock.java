@@ -1,6 +1,9 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
@@ -22,16 +25,16 @@ public class ReturningStateBlock extends Block {
         this.registerDefaultState(this.stateDefinition.any().setValue(REVERTS, Boolean.FALSE));
     }
 
-    public static ReturningStateBlock builder(float hardness, float resistance, SoundType sound, boolean slippery, MapColor color, NoteBlockInstrument instrument, PushReaction reaction, boolean ignited, BlockState returnToState) {
-        Properties props = Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).friction(0.98F).randomTicks();
+    public static ReturningStateBlock builder(ResourceKey<Block> key, float hardness, float resistance, SoundType sound, boolean slippery, MapColor color, NoteBlockInstrument instrument, PushReaction reaction, boolean ignited, BlockState returnToState) {
+        Properties props = Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).friction(0.98F).randomTicks().setId(key);
         if (instrument != null) props.instrument(instrument);
         if (reaction != null) props.pushReaction(reaction);
         if (ignited) props.ignitedByLava();
         return new ReturningStateBlock(props, returnToState);
     }
 
-    public static ReturningStateBlock builder(float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument, PushReaction reaction, boolean ignited, BlockState returnToState) {
-        Properties props = Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks();
+    public static ReturningStateBlock builder(ResourceKey<Block> key, float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument, PushReaction reaction, boolean ignited, BlockState returnToState) {
+        Properties props = Properties.of().mapColor(color).sound(sound).strength(hardness, resistance).randomTicks().setId(key);
         if (instrument != null) props.instrument(instrument);
         if (reaction != null) props.pushReaction(reaction);
         if (ignited) props.ignitedByLava();

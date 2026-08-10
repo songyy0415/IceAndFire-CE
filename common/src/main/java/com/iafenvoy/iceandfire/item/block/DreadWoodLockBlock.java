@@ -6,6 +6,9 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -26,8 +29,8 @@ import net.minecraft.world.phys.BlockHitResult;
 public class DreadWoodLockBlock extends Block implements DragonProof, DreadBlock {
     public static final BooleanProperty PLAYER_PLACED = BooleanProperty.create("player_placed");
 
-    public DreadWoodLockBlock() {
-        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(-1.0F, 1000000F).sound(SoundType.WOOD));
+    public DreadWoodLockBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(-1.0F, 1000000F).sound(SoundType.WOOD).setId(key));
         this.registerDefaultState(this.getStateDefinition().any().setValue(PLAYER_PLACED, Boolean.FALSE));
     }
 

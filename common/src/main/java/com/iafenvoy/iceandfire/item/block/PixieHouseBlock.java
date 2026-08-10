@@ -6,6 +6,9 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -23,11 +26,10 @@ import net.minecraft.world.level.material.MapColor;
 import java.util.Locale;
 
 public class PixieHouseBlock extends BaseEntityBlock {
-    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new PixieHouseBlock());
     public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
 
-    public PixieHouseBlock() {
-        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F, 5.0F).randomTicks());
+    public PixieHouseBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F, 5.0F).randomTicks().setId(key));
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
     }
 
@@ -52,7 +54,7 @@ public class PixieHouseBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return MapCodec.unit(this);
     }
 
     @Override

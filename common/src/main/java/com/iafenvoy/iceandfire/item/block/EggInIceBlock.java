@@ -4,11 +4,15 @@ import com.iafenvoy.iceandfire.item.block.entity.EggInIceBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -18,10 +22,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
 public class EggInIceBlock extends BaseEntityBlock {
-    private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new EggInIceBlock());
-
-    public EggInIceBlock() {
-        super(Properties.of().mapColor(MapColor.ICE).noOcclusion().dynamicShape().strength(0.5F).dynamicShape().sound(SoundType.GLASS));
+    public EggInIceBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.ICE).noOcclusion().dynamicShape().strength(0.5F).dynamicShape().sound(SoundType.GLASS).setId(key));
     }
 
     @Override
@@ -36,7 +38,7 @@ public class EggInIceBlock extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return MapCodec.unit(this);
     }
 
     @Override

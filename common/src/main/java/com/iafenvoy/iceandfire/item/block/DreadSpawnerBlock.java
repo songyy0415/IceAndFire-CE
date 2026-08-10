@@ -4,7 +4,11 @@ import com.iafenvoy.iceandfire.item.block.entity.DreadSpawnerBlockEntity;
 import com.iafenvoy.iceandfire.item.block.util.DreadBlock;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -15,8 +19,8 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 
 public class DreadSpawnerBlock extends SpawnerBlock implements DreadBlock {
-    public DreadSpawnerBlock() {
-        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(10.0F, 10000F).sound(SoundType.METAL).noOcclusion().dynamicShape());
+    public DreadSpawnerBlock(ResourceKey<Block> key) {
+        super(Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(10.0F, 10000F).sound(SoundType.METAL).noOcclusion().dynamicShape().setId(key));
     }
 
     @Override

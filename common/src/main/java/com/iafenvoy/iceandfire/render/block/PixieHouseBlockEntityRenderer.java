@@ -3,83 +3,114 @@ package com.iafenvoy.iceandfire.render.block;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.item.block.PixieHouseBlock;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
+import com.iafenvoy.iceandfire.render.block.state.PixieHouseRenderState;
+import com.iafenvoy.iceandfire.render.entity.PixieEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.PixieHouseModel;
 import com.iafenvoy.iceandfire.render.model.PixieModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.phys.Vec3;
 
-public class PixieHouseBlockEntityRenderer<T extends PixieHouseBlockEntity> implements BlockEntityRenderer<T> {
+public class PixieHouseBlockEntityRenderer implements BlockEntityRenderer<PixieHouseBlockEntity, PixieHouseRenderState> {
     private static final PixieHouseModel MODEL = new PixieHouseModel();
-    private static final RenderType TEXTURE_0 = RenderType.entityCutoutNoCull(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_0.png"), false);
-    private static final RenderType TEXTURE_1 = RenderType.entityCutoutNoCull(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_1.png"), false);
-    private static final RenderType TEXTURE_2 = RenderType.entityCutoutNoCull(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_2.png"), false);
-    private static final RenderType TEXTURE_3 = RenderType.entityCutoutNoCull(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_3.png"), false);
-    private static final RenderType TEXTURE_4 = RenderType.entityCutoutNoCull(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_4.png"), false);
-    private static final RenderType TEXTURE_5 = RenderType.entityCutoutNoCull(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_5.png"), false);
+    private static final Identifier HOUSE_TEXTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_0.png");
+    private static final Identifier HOUSE_TEXTURE_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_1.png");
+    private static final Identifier HOUSE_TEXTURE_2 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_2.png");
+    private static final Identifier HOUSE_TEXTURE_3 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_3.png");
+    private static final Identifier HOUSE_TEXTURE_4 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_4.png");
+    private static final Identifier HOUSE_TEXTURE_5 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/house/pixie_house_5.png");
     private final PixieModel pixieModel;
-    public BlockItem metaOverride;
 
     public PixieHouseBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.pixieModel = new PixieModel();
     }
 
     @Override
-    public void render(T entity, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        int rotation = 0;
-        int meta = 0;
-        if (entity != null && entity.getLevel() != null && entity.getBlockState().getBlock() instanceof PixieHouseBlock) {
-            meta = PixieHouseBlockEntity.getHouseTypeFromBlock(entity.getBlockState().getBlock());
-            rotation = entity.getBlockState().getValue(PixieHouseBlock.FACING).get2DDataValue() * 90;
+    public PixieHouseRenderState createRenderState() {
+        return new PixieHouseRenderState();
+    }
+
+    @Override
+    public void extractRenderState(PixieHouseBlockEntity entity, PixieHouseRenderState state, float partialTicks, Vec3 pos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(entity, state, crumblingOverlay);
+        if (entity.getBlockState().getBlock() instanceof PixieHouseBlock) {
+            state.meta = PixieHouseBlockEntity.getHouseTypeFromBlock(entity.getBlockState().getBlock());
+            state.rotation = entity.getBlockState().getValue(PixieHouseBlock.FACING).get2DDataValue() * 90;
         }
-        if (entity == null) meta = PixieHouseBlockEntity.getHouseTypeFromBlock(this.metaOverride.getBlock());
+        state.hasPixie = entity.getLevel() != null && entity.hasPixie;
+        state.pixieType = entity.pixieType;
+    }
+
+    @Override
+    public void submit(PixieHouseRenderState state, PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5F, 1.501F, 0.5F);
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotation));
-        if (entity != null && entity.getLevel() != null && entity.hasPixie) {
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(state.rotation));
+        if (state.hasPixie) {
             matrixStackIn.pushPose();
             matrixStackIn.translate(0F, 0.95F, 0F);
             matrixStackIn.scale(0.55F, 0.55F, 0.55F);
-            RenderType type = switch (entity.pixieType) {
-                case 1 -> JarBlockEntityRenderer.TEXTURE_1;
-                case 2 -> JarBlockEntityRenderer.TEXTURE_2;
-                case 3 -> JarBlockEntityRenderer.TEXTURE_3;
-                case 4 -> JarBlockEntityRenderer.TEXTURE_4;
-                case 5 -> JarBlockEntityRenderer.TEXTURE_5;
-                default -> JarBlockEntityRenderer.TEXTURE_0;
-            };
-            RenderType type2 = switch (entity.pixieType) {
-                case 1 -> JarBlockEntityRenderer.TEXTURE_1_GLO;
-                case 2 -> JarBlockEntityRenderer.TEXTURE_2_GLO;
-                case 3 -> JarBlockEntityRenderer.TEXTURE_3_GLO;
-                case 4 -> JarBlockEntityRenderer.TEXTURE_4_GLO;
-                case 5 -> JarBlockEntityRenderer.TEXTURE_5_GLO;
-                default -> JarBlockEntityRenderer.TEXTURE_0_GLO;
-            };
+            RenderType type = RenderTypes.entityCutout(this.getPixieTexture(state.pixieType));
+            RenderType type2 = RenderTypes.eyes(this.getPixieTexture(state.pixieType));
             matrixStackIn.pushPose();
-            this.pixieModel.animateInHouse(entity);
-            this.pixieModel.renderToBuffer(matrixStackIn, bufferIn.getBuffer(type), combinedLightIn, combinedOverlayIn, -1);
-            this.pixieModel.renderToBuffer(matrixStackIn, bufferIn.getBuffer(type2), combinedLightIn, combinedOverlayIn, -1);
+            this.pixieModel.animateInHouse();
+            submitNodeCollector.submitCustomGeometry(matrixStackIn, type, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.pixieModel.renderPartsToBuffer(fresh, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+            });
+            submitNodeCollector.submitCustomGeometry(matrixStackIn, type2, (pose, buffer) -> {
+                PoseStack fresh = new PoseStack();
+                fresh.last().pose().set(pose.pose());
+                fresh.last().normal().set(pose.normal());
+                this.pixieModel.renderPartsToBuffer(fresh, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+            });
             matrixStackIn.popPose();
             matrixStackIn.popPose();
         }
-        RenderType pixieType = switch (meta) {
-            case 1 -> TEXTURE_1;
-            case 2 -> TEXTURE_2;
-            case 3 -> TEXTURE_3;
-            case 4 -> TEXTURE_4;
-            case 5 -> TEXTURE_5;
-            default -> TEXTURE_0;
-        };
+        RenderType pixieType = RenderTypes.entityCutout(this.getHouseTexture(state.meta));
         matrixStackIn.pushPose();
-        MODEL.renderToBuffer(matrixStackIn, bufferIn.getBuffer(pixieType), combinedLightIn, combinedOverlayIn, -1);
+        submitNodeCollector.submitCustomGeometry(matrixStackIn, pixieType, (pose, buffer) -> {
+            PoseStack fresh = new PoseStack();
+            fresh.last().pose().set(pose.pose());
+            fresh.last().normal().set(pose.normal());
+            MODEL.renderPartsToBuffer(fresh, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
         matrixStackIn.popPose();
         matrixStackIn.popPose();
+    }
+
+    private Identifier getPixieTexture(int pixieType) {
+        return switch (pixieType) {
+            case 1 -> PixieEntityRenderer.TEXTURE_1;
+            case 2 -> PixieEntityRenderer.TEXTURE_2;
+            case 3 -> PixieEntityRenderer.TEXTURE_3;
+            case 4 -> PixieEntityRenderer.TEXTURE_4;
+            case 5 -> PixieEntityRenderer.TEXTURE_5;
+            default -> PixieEntityRenderer.TEXTURE_0;
+        };
+    }
+
+    private Identifier getHouseTexture(int meta) {
+        return switch (meta) {
+            case 1 -> HOUSE_TEXTURE_1;
+            case 2 -> HOUSE_TEXTURE_2;
+            case 3 -> HOUSE_TEXTURE_3;
+            case 4 -> HOUSE_TEXTURE_4;
+            case 5 -> HOUSE_TEXTURE_5;
+            default -> HOUSE_TEXTURE_0;
+        };
     }
 }

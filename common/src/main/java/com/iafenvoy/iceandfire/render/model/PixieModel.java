@@ -168,7 +168,7 @@ public class PixieModel extends DragonBaseModel<PixieRenderState> {
 
     }
 
-    public void animateInHouse(PixieHouseBlockEntity house) {
+    public void animateInHouse() {
         this.resetToDefaultPose();
         float speed_fly = 1.1F;
         float speed_idle = 0.05F;

@@ -119,7 +119,7 @@ public class DreadMobEntity extends Monster implements IDreadMob {
 
     @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
-        return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
+        return entityIn instanceof IDreadMob || super.considersEntityAsAlly(entityIn);
     }
 
     public UUID getCommanderId() {

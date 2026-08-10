@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.world.processor;
 
-import com.iafenvoy.iceandfire.registry.IafProcessors;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -9,10 +8,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class GraveyardProcessor extends StructureProcessor {
+public class GraveyardProcessor implements StructureProcessor {
     public static final GraveyardProcessor INSTANCE = new GraveyardProcessor();
     public static final MapCodec<GraveyardProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
 
@@ -31,21 +29,21 @@ public class GraveyardProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos pos, BlockPos pivot, StructureTemplate.StructureBlockInfo originalBlockInfo, StructureTemplate.StructureBlockInfo currentBlockInfo, StructurePlaceSettings data) {
-        RandomSource random = data.getRandom(currentBlockInfo.pos());
-        if (currentBlockInfo.state().getBlock() == Blocks.STONE_BRICKS) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos targetPosition, BlockPos referencePos, BlockPos templateRelativePos, StructureTemplate.StructureBlockInfo processedBlockInfo, StructurePlaceSettings data) {
+        RandomSource random = data.getRandom(processedBlockInfo.pos());
+        if (processedBlockInfo.state().getBlock() == Blocks.STONE_BRICKS) {
             BlockState state = getRandomCrackedBlock(random);
-            return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos(), state, null);
+            return new StructureTemplate.StructureBlockInfo(processedBlockInfo.pos(), state, null);
         }
-        if (currentBlockInfo.state().getBlock() == Blocks.COBBLESTONE) {
+        if (processedBlockInfo.state().getBlock() == Blocks.COBBLESTONE) {
             BlockState state = getRandomCobblestone(random);
-            return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos(), state, null);
+            return new StructureTemplate.StructureBlockInfo(processedBlockInfo.pos(), state, null);
         }
-        return currentBlockInfo;
+        return processedBlockInfo;
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
-        return IafProcessors.GRAVEYARD_PROCESSOR.get();
+    public MapCodec<GraveyardProcessor> codec() {
+        return CODEC;
     }
 }

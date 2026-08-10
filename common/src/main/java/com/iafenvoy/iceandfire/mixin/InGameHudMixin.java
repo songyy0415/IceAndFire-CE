@@ -4,10 +4,10 @@ import com.iafenvoy.iceandfire.render.PortalRenderHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,23 +16,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class InGameHudMixin {
-    @Shadow
-    protected abstract void renderTextureOverlay(GuiGraphics context, Identifier texture, float opacity);
-
     @Shadow
     @Final
     private static Identifier POWDER_SNOW_OUTLINE_LOCATION;
 
     @Shadow
-    @Final
-    private Minecraft minecraft;
+    protected abstract void extractTextureOverlay(GuiGraphicsExtractor graphics, Identifier texture, float alpha);
 
-    @Inject(method = "renderCameraOverlays", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getTicksFrozen()I"))
-    private void renderDreadPortalOverlay(GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci) {
-        if (this.minecraft.player == null) return;
-        int renderTick = PortalRenderHelper.getTick(), i = this.minecraft.player.getTicksRequiredToFreeze();
-        if (renderTick > 0) this.renderTextureOverlay(context, POWDER_SNOW_OUTLINE_LOCATION, (float) Math.min(renderTick, i) / i);
+    @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getPercentFrozen()F"))
+    private void renderDreadPortalOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        int renderTick = PortalRenderHelper.getTick();
+        if (renderTick > 0)
+            this.extractTextureOverlay(graphics, POWDER_SNOW_OUTLINE_LOCATION, Mth.clamp(renderTick / 140.0F, 0.0F, 1.0F));
     }
 }

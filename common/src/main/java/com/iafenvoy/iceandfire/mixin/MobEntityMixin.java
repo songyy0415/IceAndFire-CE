@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.WitherSkeleton;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -28,9 +28,9 @@ public abstract class MobEntityMixin extends Entity {
     }
 
     @Inject(method = "dropFromLootTable", at = @At("HEAD"))
-    public void dropHandler(DamageSource damageSource, boolean causedByPlayer, CallbackInfo ci) {
+    public void dropHandler(ServerLevel level, DamageSource damageSource, boolean causedByPlayer, CallbackInfo ci) {
         if (causedByPlayer && damageSource.getDirectEntity() instanceof Player player)
             if (iceandfire$isSkeleton(this))
-                this.spawnAtLocation((ServerLevel) this.level(), new ItemStack(IafItems.WITHERBONE.get(), this.getRandom().nextInt(2)));
+                this.spawnAtLocation(level, new ItemStack(IafItems.WITHERBONE.get(), this.getRandom().nextInt(2)));
     }
 }

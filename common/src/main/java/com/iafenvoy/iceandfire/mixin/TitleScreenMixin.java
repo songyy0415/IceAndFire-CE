@@ -2,9 +2,8 @@ package com.iafenvoy.iceandfire.mixin;
 
 import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.screen.TitleScreenRenderManager;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -34,10 +33,9 @@ public abstract class TitleScreenMixin extends Screen {
             this.splash = renderer;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/LogoRenderer;renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IF)V"))
-    private void renderModBrand(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci, @Local(ordinal = 2) int i) {
+    @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/LogoRenderer;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IF)V"))
+    private void renderModBrand(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!IafClientConfig.INSTANCE.customMainMenu.getValue()) return;
-        if (Minecraft.getInstance().screen instanceof TitleScreen)
-            TitleScreenRenderManager.drawModName(context, this.width, this.height, 16777215 | i);
+        TitleScreenRenderManager.drawModName(context, this.width, this.height, 255 << 24);
     }
 }

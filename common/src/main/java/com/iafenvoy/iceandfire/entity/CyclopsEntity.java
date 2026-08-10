@@ -128,7 +128,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F, 1.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, true, (Predicate<LivingEntity>) entity -> {
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, true, (entity, level) -> {
             if (GorgonEntity.isStoneMob(entity))
                 return false;
             if (!DragonUtils.isAlive(entity))
@@ -149,7 +149,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
             return !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SHEEP);
         }));
 
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, true, entity -> entity instanceof Player player && !(player.isCreative() || player.isSpectator())));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, true, (entity, level) -> entity instanceof Player player && !(player.isCreative() || player.isSpectator())));
         this.targetSelector.addGoal(3, new CyclopsAITargetSheepPlayersGoal<>(this, Player.class, true));
     }
 

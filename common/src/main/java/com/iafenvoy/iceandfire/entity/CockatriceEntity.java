@@ -151,7 +151,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(3, new CockatriceAIFollowOwnerGoal(this, 1.0D, 7.0F, 2.0F));
         this.goalSelector.addGoal(3, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 14.0F, 1.0D, 1.0D, (entity, level) -> {
+        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 14.0F, 1.0D, 1.0D, entity -> {
             if (entity instanceof Player player) return !player.isCreative() && !entity.isSpectator();
             else
                 return BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SCARES_COCKATRICES) && !BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS);

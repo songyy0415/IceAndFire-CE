@@ -223,7 +223,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
                         if (!this.level().isClientSide()) {
                             if (this.playerStatueCooldown == 0) {
                                 StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(attackTarget);
-                                statue.absMoveTo(attackTarget.getX(), attackTarget.getY(), attackTarget.getZ(), attackTarget.getYRot(), attackTarget.getXRot());
+                                statue.setPos(attackTarget.getX(), attackTarget.getY(), attackTarget.getZ()); statue.setYRot(attackTarget.getYRot()); statue.setXRot(attackTarget.getXRot());
                                 if (!this.level().isClientSide())
                                     this.level().addFreshEntity(statue);
                                 statue.setYRot(attackTarget.getYRot());

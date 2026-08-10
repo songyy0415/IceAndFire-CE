@@ -329,7 +329,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 this.stoneProgress = 20;
                 StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(this);
                 statue.getTrappedTag().putFloat("StoneProgress", 20);
-                statue.absMoveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+                statue.setPos(this.getX(), this.getY(), this.getZ()); statue.setYRot(this.getYRot()); statue.setXRot(this.getXRot());
                 if (!this.level().isClientSide()) this.level().addFreshEntity(statue);
                 statue.yRotO = this.getYRot();
                 statue.setYRot(this.getYRot());

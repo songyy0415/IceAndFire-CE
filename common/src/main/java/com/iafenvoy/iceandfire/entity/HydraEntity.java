@@ -116,7 +116,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, entity -> DragonUtils.isAlive(entity) && !(entity instanceof Enemy) || entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone()));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> DragonUtils.isAlive(entity) && !(entity instanceof Enemy) || entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone()));
     }
 
     @Override

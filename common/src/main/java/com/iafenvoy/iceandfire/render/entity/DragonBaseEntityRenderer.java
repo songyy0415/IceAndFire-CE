@@ -28,7 +28,7 @@ import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobRenderer<T, DragonRenderState, TabulaModel<DragonRenderState>> {
+public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends AdvancedEntityRendererBase<T, DragonRenderState, TabulaModel<DragonRenderState>> {
     public DragonBaseEntityRenderer(EntityRendererProvider.Context context, TabulaModel<DragonRenderState> model) {
         super(context, model, 0.0025F);
         this.addLayer(new DragonMaleOverlayFeatureRenderer(this));

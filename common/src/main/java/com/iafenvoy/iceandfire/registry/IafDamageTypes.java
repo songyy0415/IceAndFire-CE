@@ -22,7 +22,7 @@ public final class IafDamageTypes {
 
     private static Holder<DamageType> get(Entity entity, ResourceKey<DamageType> key) {
         Registry<DamageType> registry = entity.level().damageSources().damageTypes;
-        return registry.getHolder(key).orElse(registry.getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD));
+        return registry.get(key).orElse(registry.getOrThrow(DamageTypes.FELL_OUT_OF_WORLD));
     }
 
     public static DamageSource bonusDamage(Entity attacker) {

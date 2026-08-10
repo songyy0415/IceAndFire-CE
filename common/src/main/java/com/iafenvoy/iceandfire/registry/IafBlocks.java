@@ -16,9 +16,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TorchBlock;
+import net.minecraft.world.level.block.UntintedParticleLeavesBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -130,7 +132,7 @@ public final class IafBlocks {
     public static final RegistrySupplier<Block> DREAD_STONE_BRICKS_SLAB = register("dread_stone_slab", () -> new DreadSlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(10F, 10000F)));
     public static final RegistrySupplier<Block> DREADWOOD_LOG = register("dreadwood_log", DreadWoodLogBlock::new);
     public static final RegistrySupplier<DreadBaseBlock> DREADWOOD_PLANKS = register("dreadwood_planks", () -> new DreadBaseBlock(true));
-    public static final RegistrySupplier<Block> DREADWOOD_LEAVES = register("dreadwood_leaves", () -> Blocks.leaves(SoundType.GRASS));
+    public static final RegistrySupplier<Block> DREADWOOD_LEAVES = register("dreadwood_leaves", () -> new UntintedParticleLeavesBlock(0.0F, ParticleTypes.ASH, BlockBehaviour.Properties.of().mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()));
     public static final RegistrySupplier<Block> DREADWOOD_SAPLING = register("dreadwood_sapling", DreadwoodSaplingBlock::new);
     public static final RegistrySupplier<Block> DREADWOOD_PLANKS_LOCK = register("dreadwood_planks_lock", DreadWoodLockBlock::new);
     public static final RegistrySupplier<Block> DREAD_PORTAL = register("dread_portal", DreadPortalBlock::new);
@@ -160,7 +162,7 @@ public final class IafBlocks {
 
     private static <T extends TorchBlock> RegistrySupplier<T> registerWallBlock(String name, Supplier<T> block) {
         RegistrySupplier<T> r = REGISTRY.register(name, block);
-        IafItems.registerBlock(name, () -> new StandingAndWallBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), new Item.Properties(), Direction.DOWN));
+        IafItems.registerBlock(name, () -> new StandingAndWallBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), Direction.DOWN, new Item.Properties()));
         return r;
     }
 

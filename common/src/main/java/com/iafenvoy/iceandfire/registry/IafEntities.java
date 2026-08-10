@@ -18,6 +18,8 @@ import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import java.util.function.Supplier;
 
 public final class IafEntities {
@@ -78,13 +80,15 @@ public final class IafEntities {
     private static <T extends Entity> RegistrySupplier<EntityType<T>> build(String entityName, EntityType.EntityFactory<T> constructor, MobCategory category, boolean fireImmune, float sizeX, float sizeY) {
         EntityType.Builder<T> builder = EntityType.Builder.of(constructor, category).sized(sizeX, sizeY);
         if (fireImmune) builder.fireImmune();
-        return register(entityName, () -> builder.build(entityName));
+        ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, entityName));
+        return register(entityName, () -> builder.build(key));
     }
 
     private static <T extends Entity> RegistrySupplier<EntityType<T>> build(String entityName, EntityType.EntityFactory<T> constructor, MobCategory category, boolean fireImmune, float sizeX, float sizeY, int trackingRange) {
         EntityType.Builder<T> builder = EntityType.Builder.of(constructor, category).sized(sizeX, sizeY).clientTrackingRange(trackingRange);
         if (fireImmune) builder.fireImmune();
-        return register(entityName, () -> builder.build(entityName));
+        ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, entityName));
+        return register(entityName, () -> builder.build(key));
     }
 
     private static <T extends Entity> RegistrySupplier<EntityType<T>> register(String entityName, Supplier<EntityType<T>> builder) {
@@ -139,14 +143,14 @@ public final class IafEntities {
         if (Platform.isNeoForge()) return;
 
         if (IafCommonConfig.INSTANCE.hippogryphs.spawn.getValue())
-            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.HIPPOGRYPH), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.HIPPOGRYPH.get(), IafCommonConfig.INSTANCE.hippogryphs.spawnWeight.getValue(), 1, 1)));
+            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.HIPPOGRYPH), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.HIPPOGRYPH.get(), IafCommonConfig.INSTANCE.hippogryphs.spawnWeight.getValue(), 1), 1));
         if (IafCommonConfig.INSTANCE.lich.spawn.getValue())
-            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.MAUSOLEUM), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(IafEntities.DREAD_LICH.get(), IafCommonConfig.INSTANCE.lich.spawnWeight.getValue(), 1, 1)));
+            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.MAUSOLEUM), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(IafEntities.DREAD_LICH.get(), IafCommonConfig.INSTANCE.lich.spawnWeight.getValue(), 1), 1));
         if (IafCommonConfig.INSTANCE.cockatrice.spawn.getValue())
-            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.COCKATRICE), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.COCKATRICE.get(), IafCommonConfig.INSTANCE.cockatrice.spawnWeight.getValue(), 1, 2)));
+            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.COCKATRICE), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.COCKATRICE.get(), IafCommonConfig.INSTANCE.cockatrice.spawnWeight.getValue(), 2), 2));
         if (IafCommonConfig.INSTANCE.amphithere.spawn.getValue())
-            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.AMPHITHERE), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.AMPHITHERE.get(), IafCommonConfig.INSTANCE.amphithere.spawnWeight.getValue(), 1, 3)));
+            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.AMPHITHERE), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.AMPHITHERE.get(), IafCommonConfig.INSTANCE.amphithere.spawnWeight.getValue(), 3), 3));
         if (IafCommonConfig.INSTANCE.troll.spawn.getValue())
-            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.TROLL), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(IafEntities.TROLL.get(), IafCommonConfig.INSTANCE.troll.spawnWeight.getValue(), 1, 3)));
+            BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.TROLL), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(IafEntities.TROLL.get(), IafCommonConfig.INSTANCE.troll.spawnWeight.getValue(), 3), 3));
     }
 }

@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.util.IafMath;
 import java.util.EnumSet;
 import java.util.List;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 
 public class DreadAIRideHorseGoal extends Goal {
     private final DreadKnightEntity knight;

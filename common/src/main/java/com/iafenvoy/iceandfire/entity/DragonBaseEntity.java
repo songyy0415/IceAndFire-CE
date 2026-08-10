@@ -789,7 +789,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.setHunger(compound.getInt("Hunger").orElse(0));
         this.setAgeInTicks(compound.getInt("AgeTicks").orElse(0));
         this.setGender(compound.getBooleanOr("Gender", false));
-        this.setVariant(compound.getString("Variant").orElse(""));
+        String variant = compound.getString("Variant").orElse("");
+        // summon with NBT that omits Variant leaves an empty id; fall back to the
+        // type's first color so client rendering (DragonColor.getById) doesn't crash.
+        this.setVariant(variant.isEmpty() ? this.dragonType.colors().get(0).getName() : variant);
         this.setInSittingPose(compound.getBooleanOr("Sleeping", false));
         this.setTame(compound.getBooleanOr("TamedDragon", false), true);
         this.setBreathingFire(compound.getBooleanOr("FireBreathing", false));

@@ -13,7 +13,6 @@ import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.ArmorMaterial;
@@ -57,7 +56,9 @@ public final class DragonColor {
     }
 
     public static DragonColor getById(String id) {
-        return IafRegistries.DRAGON_COLOR.get(IceAndFire.id(id)).map(Holder.Reference::value).orElseThrow();
+        // getValue falls back to the registry default (iceandfire:red) for missing/empty
+        // ids — render-time lookup must not throw for a dragon summoned without a Variant.
+        return IafRegistries.DRAGON_COLOR.getValue(IceAndFire.id(id));
     }
 
     public DragonTextureProvider getTextureProvider() {

@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.util.IafItemUtil;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.GhostSwordEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -27,7 +27,7 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
     public void active(LivingEntity attacker) {
         if (attacker instanceof Player playerEntity) {
             ItemStack stack = playerEntity.getItemInHand(InteractionHand.MAIN_HAND);
-            if (playerEntity.getCooldowns().isOnCooldown(stack.getItem())) {
+            if (playerEntity.getCooldowns().isOnCooldown(stack)) {
                 return;
             }
             final ItemAttributeModifiers dmg = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
@@ -45,7 +45,7 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
-        tooltip.add(Component.translatable("item.iceandfire.ghost_sword.desc_0").withStyle(ChatFormatting.GRAY));
+    public void addDescription(Consumer<Component> tooltip) {
+        tooltip.accept(Component.translatable("item.iceandfire.ghost_sword.desc_0").withStyle(ChatFormatting.GRAY));
     }
 }

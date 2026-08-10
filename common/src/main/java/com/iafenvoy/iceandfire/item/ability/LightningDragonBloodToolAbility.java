@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.item.ability;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,10 +27,10 @@ public class LightningDragonBloodToolAbility implements PostHitAbility {
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
-        tooltip.add(Component.translatable("dragon_sword_lightning.hurt1").withStyle(ChatFormatting.GREEN));
+    public void addDescription(Consumer<Component> tooltip) {
+        tooltip.accept(Component.translatable("dragon_sword_lightning.hurt1").withStyle(ChatFormatting.GREEN));
         if (this.isEnable()) {
-            tooltip.add(Component.translatable("dragon_sword_lightning.hurt2").withStyle(ChatFormatting.DARK_PURPLE));
+            tooltip.accept(Component.translatable("dragon_sword_lightning.hurt2").withStyle(ChatFormatting.DARK_PURPLE));
         }
     }
 }

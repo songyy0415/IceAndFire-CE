@@ -3,7 +3,8 @@ package com.iafenvoy.iceandfire.item.ability;
 import com.iafenvoy.iceandfire.registry.IafDamageTypes;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.function.Consumer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -21,7 +22,7 @@ public record DamageBonusAbility(float bonus, TagKey<EntityType<?>> targetType,
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
-        if (this.tooltip != null) tooltip.add(this.tooltip);
+    public void addDescription(Consumer<Component> tooltip) {
+        if (this.tooltip != null) tooltip.accept(this.tooltip);
     }
 }

@@ -24,7 +24,7 @@ public class GraveyardSoilBlock extends Block {
     public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if (!worldIn.isClientSide()) {
             if (!worldIn.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3))) return;
-            if (!worldIn.getSkyDarken() < 4 && !worldIn.getBlockState(pos.above()).canOcclude() && rand.nextInt(9) == 0 && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
+            if (worldIn.getSkyDarken() < 4 && !worldIn.getBlockState(pos.above()).canOcclude() && rand.nextInt(9) == 0 && worldIn.getDifficulty() != Difficulty.PEACEFUL) {
                 int checkRange = 32;
                 int k = worldIn.getEntitiesOfClass(GhostEntity.class, (new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)).inflate(checkRange)).size();
                 if (k < 10) {

@@ -68,11 +68,6 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
         return this.spawner.onEventTriggered(this.level, p_59797_) || super.triggerEvent(p_59797_, p_59798_);
     }
 
-    @Override
-    public boolean onlyOpCanSetNbt() {
-        return true;
-    }
-
     public BaseSpawner getLogic() {
         return this.spawner;
     }

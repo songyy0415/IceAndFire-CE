@@ -19,11 +19,6 @@ public class DragonScalesItem extends Item {
     }
 
     @Override
-    public String getDescriptionId() {
-        return "item.iceandfire.dragonscales";
-    }
-
-    @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
         tooltip.accept(Component.translatable("dragon." + this.type.getName().toLowerCase(Locale.ROOT)).withStyle(this.type.getColorFormatting()));

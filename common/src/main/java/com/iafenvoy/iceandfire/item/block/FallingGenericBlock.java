@@ -1,8 +1,11 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 
@@ -16,6 +19,11 @@ public class FallingGenericBlock extends FallingBlock {
     @Override
     protected MapCodec<? extends FallingBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    public int getDustColor(BlockState state, BlockGetter getter, BlockPos pos) {
+        return 16777215;
     }
 
     public static FallingGenericBlock builder(float hardness, float resistance, SoundType sound, MapColor color, NoteBlockInstrument instrument) {

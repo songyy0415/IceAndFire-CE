@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.registry.IafSounds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -68,8 +69,8 @@ public class PileBlock extends Block {
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return !stateIn.canSurvive(worldIn, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    public BlockState updateShape(BlockState stateIn, LevelReader levelReader, ScheduledTickAccess tickAccess, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
+        return !stateIn.canSurvive(levelReader, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, levelReader, tickAccess, currentPos, facing, facingPos, facingState, random);
     }
 
 
@@ -97,9 +98,9 @@ public class PileBlock extends Block {
                 item.shrink(1);
                 Inventory inventory = player.getInventory();
                 if (item.isEmpty())
-                    inventory.setItem(inventory.selected, ItemStack.EMPTY);
+                    inventory.setItem(inventory.getSelectedSlot(), ItemStack.EMPTY);
                 else
-                    inventory.setItem(inventory.selected, item);
+                    inventory.setItem(inventory.getSelectedSlot(), item);
             }
             return InteractionResult.SUCCESS;
         }

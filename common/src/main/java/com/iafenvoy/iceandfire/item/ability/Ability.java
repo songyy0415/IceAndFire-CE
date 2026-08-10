@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.item.ability;
 
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 
 public interface Ability {
@@ -8,6 +8,6 @@ public interface Ability {
         return true;
     }
 
-    default void addDescription(List<Component> tooltip) {
+    default void addDescription(Consumer<Component> tooltip) {
     }
 }

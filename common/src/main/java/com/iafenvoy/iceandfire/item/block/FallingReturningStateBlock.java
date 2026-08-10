@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -33,6 +34,11 @@ public class FallingReturningStateBlock extends FallingBlock {
     @Override
     protected MapCodec<? extends FallingBlock> codec() {
         return simpleCodec(s -> this);
+    }
+
+    @Override
+    public int getDustColor(BlockState state, BlockGetter getter, BlockPos pos) {
+        return 16777215;
     }
 
     @SuppressWarnings("deprecation")

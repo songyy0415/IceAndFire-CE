@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.item.ability;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
-import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,9 +24,9 @@ public class DragonsteelFireToolAbility implements PostHitAbility {
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
+    public void addDescription(Consumer<Component> tooltip) {
         if (this.isEnable()) {
-            tooltip.add(Component.translatable("dragon_sword_fire.hurt2").withStyle(ChatFormatting.DARK_RED));
+            tooltip.accept(Component.translatable("dragon_sword_fire.hurt2").withStyle(ChatFormatting.DARK_RED));
         }
     }
 }

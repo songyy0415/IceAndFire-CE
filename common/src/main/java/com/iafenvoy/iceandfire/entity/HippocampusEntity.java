@@ -21,6 +21,7 @@ import dev.architectury.registry.menu.MenuRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
@@ -40,7 +41,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -56,7 +56,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.Saddleable;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -85,7 +84,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
-public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProvider, ISyncMount, IAnimatedEntity, ICustomMoveController, ContainerListener, Saddleable {
+public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProvider, ISyncMount, IAnimatedEntity, ICustomMoveController {
     public static final int INV_SLOT_SADDLE = 0;
     public static final int INV_SLOT_CHEST = 1;
     public static final int INV_SLOT_ARMOR = 2;
@@ -153,7 +152,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     protected void addBehaviourGoals() {
-        this.goalSelector.addGoal(0, new TemptGoal(this, 1.0D, Ingredient.of(IafItemTags.TEMPT_HIPPOCAMPUS), false));
+        this.goalSelector.addGoal(0, new TemptGoal(this, 1.0D, Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(IafItemTags.TEMPT_HIPPOCAMPUS)), false));
     }
 
     @Override
@@ -166,7 +165,6 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         return this.level().getBlockState(pos.below()).is(Blocks.WATER) ? 10.0F : this.level().getMaxLocalRawBrightness(pos) - 0.5F;
     }
 
-    @Override
     @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         if (this.isTame()) {
@@ -206,7 +204,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     @Override
-    public ItemStack equipItemIfPossible(ItemStack itemStackIn) {
+    public ItemStack equipItemIfPossible(ServerLevel level, ItemStack itemStackIn) {
         if (itemStackIn == null)
             return ItemStack.EMPTY;
         EquipmentSlot equipmentSlot = this.getEquipmentSlotForItem(itemStackIn);
@@ -219,8 +217,8 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     @Override
-    protected void dropEquipment() {
-        super.dropEquipment();
+    protected void dropEquipment(ServerLevel level) {
+        super.dropEquipment(level);
         if (this.inventory != null && !this.level().isClientSide()) {
             for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.inventory.getItem(i);
@@ -309,7 +307,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         Vec2 vec2 = this.getRiddenRotation(player);
         this.setRot(vec2.y, vec2.x);
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
-        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide()) {
+        if (this.getControllingPassenger() instanceof Player controllingPlayer ? controllingPlayer.isLocalPlayer() : !this.level().isClientSide()) {
             Vec3 vec3 = this.getDeltaMovement();
 
             if (this.isGoingUp()) {
@@ -364,7 +362,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         compound.putBoolean("Chested", this.isChested());
         compound.putBoolean("Saddled", this.isSaddled());
         compound.putInt("Armor", this.getArmorValue());
-        compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), this.inventory.getItems()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new ListTag()));
+        compound.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.inventory.getItems());
     }
 
     @Override
@@ -376,7 +374,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         this.setArmor(compound.getInt("Armor").orElse(0));
 
         this.createInventory();
-        List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> stacks = compound.read("Items", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         if (this.inventory != null)
             for (int i = 0; i < stacks.size() && i < this.inventory.getContainerSize(); i++)
                 this.inventory.setItem(i, stacks.get(i));
@@ -390,7 +388,6 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         SimpleContainer simplecontainer = this.inventory;
         this.inventory = new SimpleContainer(this.getInventorySize());
         if (simplecontainer != null) {
-            simplecontainer.removeListener(this);
             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
 
             for (int j = 0; j < i; ++j) {
@@ -400,7 +397,6 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
             }
         }
 
-        this.inventory.addListener(this);
         this.updateContainerEquipment();
     }
 
@@ -416,17 +412,14 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         return this.inventory != pInventory;
     }
 
-    @Override
     public boolean isSaddleable() {
         return this.isAlive() && !this.isBaby() && this.isTame();
     }
 
-    @Override
     public void equipSaddle(ItemStack stack, @Nullable SoundSource soundCategory) {
         this.inventory.setItem(0, new ItemStack(Items.SADDLE));
     }
 
-    @Override
     public boolean isSaddled() {
         return this.entityData.get(SADDLE);
     }
@@ -513,7 +506,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
 
     @Override
     public void travel(Vec3 pTravelVector) {
-        if (this.getControllingPassenger() instanceof Player player ? player.isLocalPlayer() : !this.level().isClientSide() && this.isInWater()) {
+        if (this.getControllingPassenger() instanceof Player controllingPlayer ? controllingPlayer.isLocalPlayer() : !this.level().isClientSide() && this.isInWater()) {
             this.moveRelative(0.1F, pTravelVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
@@ -559,7 +552,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
                 this.heal(5);
                 this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                 for (int i = 0; i < 3; i++)
-                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack.getItem()), this.getX() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.getRandom().nextFloat() * this.getBbHeight(), this.getZ() + this.getRandom().nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
                 if (!player.isCreative())
                     itemstack.shrink(1);
             }
@@ -580,7 +573,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         if (this.isOwnedBy(player) && itemstack.isEmpty() && player.isShiftKeyDown()) {
             if (player instanceof ServerPlayer serverPlayer)
                 MenuRegistry.openExtendedMenu(serverPlayer, this);
-            return InteractionResult.sidedSuccess(this.level().isClientSide());
+            return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         }
         // Riding
         if (this.isOwnedBy(player) && this.isSaddled() && !this.isBaby() && !player.isPassenger()) {
@@ -670,7 +663,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         if (!this.level().getFluidState(pos).is(FluidTags.WATER))
             return 0;
         int y = pos.getY();
-        while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(pos.getX(), y, pos.getZ())).is(FluidTags.WATER))
+        while (y < this.level().getMinY() + this.level().getHeight() && this.level().getFluidState(new BlockPos(pos.getX(), y, pos.getZ())).is(FluidTags.WATER))
             y++;
         return y - pos.getY();
     }
@@ -692,9 +685,9 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
     }
 
     private int findWaterSurface(int x, int z) {
-        for (int y = Math.min(this.level().getMaxBuildHeight() - 1, this.getBlockY() + 16); y >= this.level().getMinY(); y--) {
+        for (int y = Math.min(this.level().getMinY() + this.level().getHeight() - 1, this.getBlockY() + 16); y >= this.level().getMinY(); y--) {
             if (this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER)) {
-                while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER))
+                while (y < this.level().getMinY() + this.level().getHeight() && this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER))
                     y++;
                 return y;
             }
@@ -706,7 +699,6 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         return 5; // TODO :: Introduce upgrade item?
     }
 
-    @Override
     public void containerChanged(Container pInvBasic) {
         boolean flag = this.isSaddled();
         this.updateContainerEquipment();

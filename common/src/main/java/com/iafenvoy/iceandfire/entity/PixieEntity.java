@@ -260,7 +260,7 @@ public class PixieEntity extends TamableAnimal {
     }
 
     private boolean isBeyondHeight() {
-        if (this.getY() > this.level().getMaxBuildHeight()) return true;
+        if (this.getY() > this.level().getMinY() + this.level().getHeight()) return true;
         BlockPos height = this.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.blockPosition());
         int maxY = 20 + height.getY();
         return this.getY() > maxY;

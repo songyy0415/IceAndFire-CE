@@ -187,7 +187,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, LivingEntity.class, 6.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(5, new HippogryphAIMateGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(IafItemTags.TEMPT_HIPPOGRYPH), false));
+        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(IafItemTags.TEMPT_HIPPOGRYPH)), false));
         this.goalSelector.addGoal(8, new HippogryphAIWanderGoal(this, 1.0D));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -329,7 +329,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
                 if (player.isShiftKeyDown()) {
                     if (player instanceof ServerPlayer serverPlayer)
                         MenuRegistry.openExtendedMenu(serverPlayer, this);
-                    return InteractionResult.sidedSuccess(this.level().isClientSide());
+                    return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
                 } else if (this.isSaddled() && !this.isBaby() && !player.isPassenger()) {
                     player.startRiding(this, true, false);
                     return InteractionResult.SUCCESS;

@@ -419,7 +419,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (this.getWormAge() > 4 && player.getVehicle() == null && player.getMainHandItem().is(Items.FISHING_ROD) && player.getOffhandItem().is(Items.FISHING_ROD)) {
             player.startRiding(this);
-            return InteractionResult.sidedSuccess(this.level().isClientSide());
+            return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         }
         return super.mobInteract(player, hand);
     }

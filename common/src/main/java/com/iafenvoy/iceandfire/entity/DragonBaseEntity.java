@@ -45,6 +45,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 
 
@@ -339,7 +340,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.goalSelector.addGoal(3, new DragonAIReturnToRoostGoal(this, 1.0D));
         this.goalSelector.addGoal(4, new DragonAIEscortGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new DragonAIAttackMeleeGoal(this, 1.5D, false));
-        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(IafItemTags.TEMPT_DRAGON), false));
+        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(IafItemTags.TEMPT_DRAGON)), false));
         this.goalSelector.addGoal(7, new DragonAIWanderGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new DragonAIWatchClosestGoal(this, LivingEntity.class, 6.0F));
         this.goalSelector.addGoal(8, new DragonAILookIdleGoal(this));
@@ -1145,7 +1146,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 } else if (stack.isEmpty() && player.isShiftKeyDown()) {
                     if (player instanceof ServerPlayer serverPlayer)
                         MenuRegistry.openExtendedMenu(serverPlayer, this);
-                    return InteractionResult.sidedSuccess(this.level().isClientSide());
+                    return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
                 } else {
                     int itemFoodAmount = FoodUtils.getFoodPoints(stack, true, this.dragonType.piscivore());
                     if (itemFoodAmount > 0 && (this.getHunger() < 100 || this.getHealth() < this.getMaxHealth())) {
@@ -1368,7 +1369,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     public boolean isBeyondHeight() {
-        if (this.getY() > this.level().getMaxBuildHeight()) {
+        if (this.getY() > this.level().getMinY() + this.level().getHeight()) {
             return true;
         }
         return this.getY() > IafCommonConfig.INSTANCE.dragon.maxFlight.getValue();

@@ -13,6 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -158,7 +159,7 @@ public class GhostSwordEntity extends AbstractArrow {
                 living.setLastHurtMob(entity);
             }
 
-        boolean flag = entity.getType() == EntityType.ENDERMAN;
+        boolean flag = entity instanceof EnderMan;
         int j = entity.getRemainingFireTicks();
         if (this.isOnFire() && !flag)
             entity.igniteForSeconds(5);

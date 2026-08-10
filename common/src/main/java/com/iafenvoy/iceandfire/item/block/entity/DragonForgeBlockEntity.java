@@ -1,4 +1,5 @@
 package com.iafenvoy.iceandfire.item.block.entity;
+import net.minecraft.server.level.ServerLevel;
 
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.DragonForgeBrickBlock;
@@ -219,12 +220,12 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public Optional<DragonForgeRecipe> getCurrentRecipe() {
         assert this.level != null;
-        return this.level.getRecipeManager().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
+        return ((ServerLevel) this.level).getRecipeManager().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
     }
 
     public List<DragonForgeRecipe> getRecipes() {
         assert this.level != null;
-        return this.level.getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        return ((ServerLevel) this.level).getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {

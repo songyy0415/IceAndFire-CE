@@ -82,7 +82,9 @@ public class HippogryphAIMateGoal extends Goal {
         this.targetMate.setAge(6000);
         this.hippo.resetLove();
         this.targetMate.resetLove();
-        egg.moveTo(this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), 0.0F, 0.0F);
+        egg.setPos(this.hippo.getX(), this.hippo.getY(), this.hippo.getZ());
+        egg.setYRot(0.0F);
+        egg.setXRot(0.0F);
         if (!this.world.isClientSide()) this.world.addFreshEntity(egg);
         RandomSource random = this.hippo.getRandom();
 

@@ -265,7 +265,9 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             int x = (int) (this.getX()) - 5 + this.getRandom().nextInt(10);
             int z = (int) (this.getZ()) - 5 + this.getRandom().nextInt(10);
             double y = this.getHeightFromXZ(x, z);
-            minion.moveTo(x + 0.5D, y, z + 0.5D, this.getYRot(), this.getXRot());
+            minion.setPos(x + 0.5D, y, z + 0.5D);
+            minion.setYRot(this.getYRot());
+            minion.setXRot(this.getXRot());
             minion.setTarget(target);
             Level currentLevel = this.level();
             if (currentLevel instanceof ServerLevelAccessor serverWorldAccess)

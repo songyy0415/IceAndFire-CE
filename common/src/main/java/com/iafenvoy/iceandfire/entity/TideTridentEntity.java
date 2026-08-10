@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
@@ -59,7 +60,7 @@ public class TideTridentEntity extends ThrownTrident {
             this.dealtDamage = true;
         SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
         if (entity.hurtOrSimulate(damagesource, f)) {
-            if (entity.getType() == EntityType.ENDERMAN) return;
+            if (entity instanceof EnderMan) return;
 
             if (entity instanceof LivingEntity livingentity1) {
                 if (entity1 instanceof LivingEntity && this.level() instanceof ServerLevel serverWorld)

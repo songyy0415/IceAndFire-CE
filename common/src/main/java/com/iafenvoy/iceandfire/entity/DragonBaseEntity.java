@@ -132,9 +132,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
 
-public abstract class DragonBaseEntity extends TamableAnimal implements ExtendedMenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener {
+public abstract class DragonBaseEntity extends TamableAnimal implements ExtendedMenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController {
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
     private static final Identifier ARMOR_MODIFIER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "armor_modifier");
     private static final EntityDataAccessor<Integer> HUNGER = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.INT);
@@ -286,7 +285,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.legSolver = new LegSolverQuadruped(0.3F, 0.35F, 0.2F, 1.45F, 1.0F);
         this.flightManager = new IafDragonFlightManager(this);
         this.logic = this.createDragonLogic();
-        this.noCulling = true;
         this.switchNavigator(0);
         this.randomizeAttacks();
         this.lastScale = 0;//Ensure scale will be updated so that multipart can generate correctly
@@ -311,12 +309,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(Math.min(2048, IafCommonConfig.INSTANCE.dragon.targetSearchLength.getValue()));
     }
 
-    @Override
     public BlockPos getRestrictCenter() {
-        return this.homePos == null ? super.getRestrictCenter() : this.homePos.getPosition();
+        return this.homePos == null ? this.blockPosition() : this.homePos.getPosition();
     }
 
-    @Override
     public float getRestrictRadius() {
         return IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue();
     }
@@ -325,11 +321,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         return this.homePos == null ? "" : this.homePos.getDimension();
     }
 
-    @Override
     public boolean hasRestriction() {
         return this.hasHomePosition &&
-                this.getHomeDimensionName().equals(DragonUtils.getDimensionName(this.level()))
-                || super.hasRestriction();
+                this.getHomeDimensionName().equals(DragonUtils.getDimensionName(this.level()));
     }
 
     @Override
@@ -781,7 +775,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         compound.putBoolean("AgingDisabled", this.isAgingDisabled());
         compound.putInt("Command", this.getCommand());
         if (this.dragonInventory != null)
-            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), this.dragonInventory.getItems()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new ListTag()));
+            compound.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.dragonInventory.getItems());
         compound.putBoolean("CrystalBound", this.isBoundToCrystal());
         this.removeParts();
         this.lastScale = 0;
@@ -813,7 +807,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.setCommand(compound.getInt("Command").orElse(0));
 
         this.createInventory();
-        List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> stacks = compound.read("Items", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         for (int i = 0; i < stacks.size() && i < this.dragonInventory.getContainerSize(); i++)
             this.dragonInventory.setItem(i, stacks.get(i));
 
@@ -831,7 +825,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         SimpleContainer tempInventory = this.dragonInventory;
         this.dragonInventory = new SimpleContainer(this.getContainerSize());
         if (tempInventory != null) {
-            tempInventory.removeListener(this);
             int i = Math.min(tempInventory.getContainerSize(), this.dragonInventory.getContainerSize());
 
             for (int j = 0; j < i; ++j) {
@@ -841,7 +834,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             }
         }
 
-        this.dragonInventory.addListener(this);
         this.updateContainerEquipment();
     }
 
@@ -858,7 +850,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     public LivingEntity getControllingPassenger() {
         for (Entity passenger : this.getPassengers())
             if (passenger instanceof LivingEntity living && this.getTarget() != living)
-                if (this.isTame() && this.getOwnerUUID() != null && this.getOwnerUUID().equals(living.getUUID()))
+                if (this.isTame() && this.getOwner() != null && living.getUUID().equals(this.getOwner().getUUID()))
                     return living;
         return null;
     }
@@ -1058,13 +1050,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 vec) {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == IafItems.DRAGON_DEBUG_STICK.get()) {
             this.logic.debug();
             return InteractionResult.SUCCESS;
         }
-        return super.interactAt(player, vec, hand);
+        return super.interact(player, hand, vec);
     }
 
     @Override
@@ -1275,8 +1267,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     public abstract Identifier getDeadLootTable();
 
     public ItemStack getItemFromLootTable() {
-        assert this.getServer() != null;
-        LootTable lootTable = this.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, this.getDeadLootTable()));
+        assert this.level().getServer() != null;
+        LootTable lootTable = this.level().getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, this.getDeadLootTable()));
         LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, this.level().damageSources().generic());
         if (lootTable != null)
             for (ItemStack itemstack : lootTable.getRandomItems(lootparams$builder.create(LootContextParamSets.ENTITY)))
@@ -1326,15 +1318,15 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             final double motionZ = this.getRandom().nextGaussian() * 0.07D;
             final Vec3 headVec = this.getHeadPosition();
             if (!this.level().isClientSide()) {
-                ((ServerLevel) this.level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(item)), headVec.x, headVec.y, headVec.z, 1, motionX, motionY, motionZ, 0.1);
+                ((ServerLevel) this.level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(item).getItem()), headVec.x, headVec.y, headVec.z, 1, motionX, motionY, motionZ, 0.1);
             } else {
-                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(item)), headVec.x, headVec.y, headVec.z, motionX, motionY, motionZ);
+                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(item).getItem()), headVec.x, headVec.y, headVec.z, motionX, motionY, motionZ);
             }
         }
     }
 
     public boolean isTimeToWake() {
-        return this.level().isDay() || this.getCommand() == 2;
+        return this.level().getSkyDarken() < 4 || this.getCommand() == 2;
     }
 
     private boolean isStuck() {
@@ -1456,7 +1448,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                         final double motionY = this.getRandom().nextGaussian() * 0.07D;
                         final double motionZ = this.getRandom().nextGaussian() * 0.07D;
 
-                        this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, BlockState), true, this.getX() + extraX, ground.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
+                        this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, BlockState), this.getX() + extraX, ground.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
                     }
                 }
             }
@@ -1560,7 +1552,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         return this.getDragonStage() >= 4;
     }
 
-    @Override
     public boolean shouldDropLoot() {
         return this.isMature();
     }
@@ -1651,7 +1642,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             this.updateParts();
         }
         this.prevDragonPitch = this.getDragonPitch();
-        this.level().getProfiler().push("dragonLogic");
         this.getAttribute(Attributes.STEP_HEIGHT).setBaseValue(this.maxUpStep());
         this.isOverAir = this.isOverAirLogic();
         this.logic.updateDragonCommon();
@@ -1677,13 +1667,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 this.logic.updateDragonAttack();
             }
         }
-        this.level().getProfiler().pop();
-        this.level().getProfiler().push("dragonFlight");
         if (this.useFlyingPathFinder() && !this.level().isClientSide() /*&& isControlledByLocalInstance()*/) {
             this.flightManager.update();
         }
-        this.level().getProfiler().pop();
-        this.level().getProfiler().pop();
 
         if (!this.level().isClientSide()) {
             if (IafCommonConfig.INSTANCE.dragon.digWhenStuck.getValue() && this.isStuck()) {
@@ -1743,7 +1729,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public boolean doHurtTarget(Entity entityIn) {
+    public boolean doHurtTarget(ServerLevel level, Entity entityIn) {
         this.getLookControl().setLookAt(entityIn, 30.0F, 30.0F);
         if (this.isTackling() || this.isModelDead()) return false;
         return entityIn.hurtOrSimulate(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
@@ -2010,7 +1996,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                     this.calculateEntityAnimation(false);
                 } else
                     this.setDeltaMovement(Vec3.ZERO);
-                this.tryCheckInsideBlocks();
+
                 this.updatePitch(this.yOld - this.getY());
             }
             // In water move control, for those that can't swim
@@ -2060,7 +2046,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 } else {
                     this.setDeltaMovement(Vec3.ZERO);
                 }
-                this.tryCheckInsideBlocks();
+
                 this.updatePitch(this.yOld - this.getY());
             }
         }
@@ -2367,7 +2353,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                     final boolean isStrongerDragon = entity instanceof DragonBaseEntity && ((DragonBaseEntity) entity).getDragonStage() >= this.getDragonStage();
                     if (entity instanceof LivingEntity living && !isStrongerDragon) {
                         if (this.isOwnedBy(living) || this.isOwnersPet(living))
-                            living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 50 * size));
+                            living.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 50 * size));
                         else if (living.getItemBySlot(EquipmentSlot.HEAD).getItem() != IafItems.EARPLUGS.get())
                             living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 50 * size));
                     }
@@ -2385,7 +2371,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                     final boolean isStrongerDragon = entity instanceof DragonBaseEntity && ((DragonBaseEntity) entity).getDragonStage() >= this.getDragonStage();
                     if (entity instanceof LivingEntity living && !isStrongerDragon)
                         if (this.isOwnedBy(living) || this.isOwnersPet(living))
-                            living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 30 * size));
+                            living.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 30 * size));
                         else
                             living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 30 * size));
                 }
@@ -2417,7 +2403,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    protected void dropFromLootTable(DamageSource damageSourceIn, boolean attackedRecently) {
+    protected void dropFromLootTable(ServerLevel level, DamageSource damageSourceIn, boolean attackedRecently) {
     }
 
     public HitResult rayTraceRider(Entity rider, double blockReachDistance, float partialTicks) {
@@ -2519,14 +2505,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     @Override
-    public void kill() {
+    public void kill(ServerLevel level) {
         this.remove(RemovalReason.KILLED);
         this.setDeathStage(this.getAgeInDays() / 5);
         this.setModelDead(false);
     }
 
-    @Override
-    @Override
     public boolean considersEntityAsAlly(Entity entityIn) {
         // Workaround to make sure dragons won't be attacked when dead
         if (this.isModelDead())
@@ -2695,8 +2679,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     @Override
     public boolean wantsToAttack(LivingEntity target, LivingEntity owner) {
         if (this.isTame() && target instanceof TamableAnimal tamableTarget) {
-            UUID targetOwner = tamableTarget.getOwnerUUID();
-            if (targetOwner != null && targetOwner.equals(this.getOwnerUUID())) {
+            UUID targetOwner = tamableTarget.getOwner() != null ? tamableTarget.getOwner().getUUID() : null;
+            if (targetOwner != null && targetOwner.equals(this.getOwner() != null ? this.getOwner().getUUID() : null)) {
                 return false;
             }
         }
@@ -2845,7 +2829,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         return Mth.ceil(this.getBbHeight());
     }
 
-    @Override
     public void containerChanged(Container invBasic) {
         if (!this.level().isClientSide()) {
             this.refreshDirtyAttributes();
@@ -2855,13 +2838,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     @Override
     public boolean canSprint() {
         return true;
-    }
-
-    @Override // TODO :: Block collision performance impact (due to the multi-part entity)?
-    public Vec3 handleRelativeFrictionAndCalculateMovement(Vec3 pDeltaMovement, float pFriction) {
-        if (this.moveControl instanceof IafDragonFlightManager.PlayerFlightMoveHelper)
-            return pDeltaMovement;
-        return super.handleRelativeFrictionAndCalculateMovement(pDeltaMovement, pFriction);
     }
 
     @Override

@@ -35,7 +35,6 @@ public class HippogryphSwordItem extends Item {
                     LivingEntity.hurt(attacker.level().damageSources().playerAttack(player), f3);
                 }
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
-            player.sweepAttack();
         }
         super.hurtEnemy(stack, targetEntity, attacker);
     }

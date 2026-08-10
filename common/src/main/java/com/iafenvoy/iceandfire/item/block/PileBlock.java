@@ -89,7 +89,7 @@ public class PileBlock extends Block {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
-        ItemStack item = player.getInventory().getSelected();
+        ItemStack item = player.getInventory().getSelectedItem();
 
         if (!item.isEmpty() && item.getItem() != null && item.getItem() == this.asItem() && state.getValue(LAYERS) < 8) {
             world.setBlock(pos, state.setValue(LAYERS, state.getValue(LAYERS) + 1), 3);

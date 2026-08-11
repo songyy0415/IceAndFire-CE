@@ -13,14 +13,12 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 
 public class DragonRiderFeatureRenderer extends RenderLayer<DragonRenderState, TabulaModel<DragonRenderState>> {
-    private final boolean excludeDreadQueenMob;
-
-    public DragonRiderFeatureRenderer(RenderLayerParent<DragonRenderState, TabulaModel<DragonRenderState>> renderIn, boolean excludeDreadQueenMob) {
+    public DragonRiderFeatureRenderer(RenderLayerParent<DragonRenderState, TabulaModel<DragonRenderState>> renderIn) {
         super(renderIn);
-        this.excludeDreadQueenMob = excludeDreadQueenMob;
     }
 
     @Override
@@ -30,21 +28,30 @@ public class DragonRiderFeatureRenderer extends RenderLayer<DragonRenderState, T
             float dragonScale = state.dragonScale;
             for (int i = 0; i < state.preyRenderStates.size(); i++) {
                 EntityRenderState prey = state.preyRenderStates.get(i);
-                boolean isPrey = i < state.preyModelTypes.size();
+                // prey = true -> drawn in the jaws; prey = false -> the controlling rider, drawn on
+                // the back. The migration had stubbed this to always-true (the list-size check), which
+                // put the rider in the dragon's mouth; this restores the original 1.21.1 formula
+                // computed in DragonBaseEntityRenderer.extractRenderState.
+                boolean isPrey = i < state.preyIsPrey.size() ? state.preyIsPrey.get(i) : true;
                 byte modelType = i < state.preyModelTypes.size() ? state.preyModelTypes.get(i) : 2;
+                // Original used the passenger's interpolated yaw; fall back to the dragon's for
+                // non-living passengers whose render state has no yaw.
                 float riderRot = state.yRot;
+                if (prey instanceof LivingEntityRenderState livingPrey) riderRot = livingPrey.yRot;
                 int animationTicks = state.shakingPrey ? state.animationTick : 0;
                 if (animationTicks == 0 || animationTicks >= 15) this.translateToBody(matrixStackIn);
                 if (isPrey) {
                     if (animationTicks == 0 || animationTicks >= 15 || state.isFlying) {
                         this.translateToHead(matrixStackIn);
+                        if (state.isLightningDragon) matrixStackIn.translate(0.1F, -0.2F, -0.1F); // offsetPerDragonType(LIGHTNING)
                         if (modelType == 0) {
-                            matrixStackIn.translate(-0.15F * state.boundingBoxHeight, 0.1F * dragonScale - 0.1F * state.boundingBoxHeight, -0.1F * dragonScale - 0.1F * state.boundingBoxWidth);
+                            // Offsets use the prey's own dimensions (the dragon's would scale them).
+                            matrixStackIn.translate(-0.15F * prey.boundingBoxHeight, 0.1F * dragonScale - 0.1F * prey.boundingBoxHeight, -0.1F * dragonScale - 0.1F * prey.boundingBoxWidth);
                             matrixStackIn.mulPose(Axis.ZP.rotationDegrees(90.0F));
                             matrixStackIn.mulPose(Axis.YP.rotationDegrees(45.0F));
                         } else {
                             boolean horse = modelType == 1;
-                            matrixStackIn.translate((horse ? -0.08F : -0.15F) * state.boundingBoxWidth, 0.1F * dragonScale - 0.15F * state.boundingBoxWidth, -0.1F * dragonScale - 0.1F * state.boundingBoxWidth);
+                            matrixStackIn.translate((horse ? -0.08F : -0.15F) * prey.boundingBoxWidth, 0.1F * dragonScale - 0.15F * prey.boundingBoxWidth, -0.1F * dragonScale - 0.1F * prey.boundingBoxWidth);
                             matrixStackIn.mulPose(Axis.XN.rotationDegrees(90.0F));
                         }
                     } else matrixStackIn.translate(0, 0.555F * dragonScale, -0.5F * dragonScale);

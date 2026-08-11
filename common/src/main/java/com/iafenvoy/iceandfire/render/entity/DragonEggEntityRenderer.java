@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -53,6 +54,15 @@ public class DragonEggEntityRenderer extends LivingEntityRenderer<DragonEggEntit
             this.model.renderPartsToBuffer(fresh, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
         });
         poseStack.popPose();
-        super.submit(state, poseStack, submitNodeCollector, camera);
+        // Inline EntityRenderer.submit tail (leash + name display) instead of delegating to
+        // super: as a LivingEntityRenderer, super.submit would re-run the full pose setup and the
+        // layer loop, and would become a real double-render the moment DragonEggModel gains a
+        // populated ModelPart root.
+        if (state.leashStates != null) {
+            for (EntityRenderState.LeashState leashState : state.leashStates) {
+                submitNodeCollector.submitLeash(poseStack, leashState);
+            }
+        }
+        this.submitNameDisplay(state, poseStack, submitNodeCollector, camera);
     }
 }

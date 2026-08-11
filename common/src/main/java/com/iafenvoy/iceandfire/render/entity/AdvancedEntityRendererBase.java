@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -89,6 +90,19 @@ public abstract class AdvancedEntityRendererBase<E extends Mob, S extends Living
         }
         this.submitExtra(state, poseStack, submitNodeCollector, state.lightCoords);
         poseStack.popPose();
-        super.submit(state, poseStack, submitNodeCollector, camera);
+        // Tail: leash + name display. This replicates EntityRenderer.submit instead of
+        // delegating to super. AdvancedEntityRendererBase extends MobRenderer (no submit
+        // override) so super.submit resolves to LivingEntityRenderer.submit, which re-renders
+        // the body and every feature layer on top of the geometry already submitted above.
+        // AdvancedEntityModel mirrors its geometry into a real 26.2 ModelPart render tree, so
+        // that second pass actually draws an overlapping duplicate model (z-fighting ghost,
+        // doubled translucent layers, an extra setupAnim per frame). Its only unique work is
+        // the leash + name display tail, replicated here.
+        if (state.leashStates != null) {
+            for (EntityRenderState.LeashState leashState : state.leashStates) {
+                submitNodeCollector.submitLeash(poseStack, leashState);
+            }
+        }
+        this.submitNameDisplay(state, poseStack, submitNodeCollector, camera);
     }
 }

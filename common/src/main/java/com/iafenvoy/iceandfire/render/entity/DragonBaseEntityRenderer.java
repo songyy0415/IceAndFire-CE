@@ -24,6 +24,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +34,7 @@ public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends Advanc
         super(context, model, 0.0025F);
         this.addLayer(new DragonMaleOverlayFeatureRenderer(this));
         this.addLayer(new DragonEyesFeatureRenderer(this));
-        this.addLayer(new DragonRiderFeatureRenderer(this, false));
+        this.addLayer(new DragonRiderFeatureRenderer(this));
         this.addLayer(new DragonBannerFeatureRenderer(this));
         this.addLayer(new DragonArmorFeatureRenderer(this));
     }
@@ -110,7 +111,14 @@ public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends Advanc
         }
         state.preyRenderStates.clear();
         state.preyModelTypes.clear();
+        state.preyIsPrey.clear();
+        LivingEntity controllingRider = entity.getControllingPassenger();
         for (Entity passenger : entity.getPassengers()) {
+            // Restores the original 1.21.1 distinction: the controlling rider is drawn on the
+            // dragon's back (prey = false branch of DragonRiderFeatureRenderer) and its standalone
+            // world render is suppressed by PlayerEntityRendererMixin; only non-rider passengers
+            // (mouth prey, matching positionRider's updatePreyInMouth branch) are drawn in the jaws.
+            boolean isPrey = controllingRider == null || !controllingRider.getUUID().equals(passenger.getUUID());
             state.preyRenderStates.add(Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(passenger, partialTicks));
             byte modelType = 2;
             EntityRenderer<?, ?> render = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(passenger);
@@ -122,6 +130,7 @@ public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends Advanc
                 else if (passenger.getBbHeight() > passenger.getBbWidth()) modelType = 0;
             } else if (passenger.getBbHeight() > passenger.getBbWidth()) modelType = 0;
             state.preyModelTypes.add(modelType);
+            state.preyIsPrey.add(isPrey);
         }
     }
 

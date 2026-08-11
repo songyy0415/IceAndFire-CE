@@ -41,6 +41,7 @@ public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<Ligh
     @Override
     public void extractRenderState(LightningDragonEntity entity, DragonRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
+        state.isLightningDragon = true;
         state.hasLightningTarget = entity.hasLightningTarget();
         if (state.hasLightningTarget) {
             Minecraft client = Minecraft.getInstance();

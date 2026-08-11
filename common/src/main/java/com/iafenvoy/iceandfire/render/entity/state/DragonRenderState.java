@@ -67,6 +67,8 @@ public class DragonRenderState extends LivingEntityRenderState implements IAnima
     public LegSolverQuadruped legSolver;
     public final List<EntityRenderState> preyRenderStates = new ArrayList<>();
     public final List<Byte> preyModelTypes = new ArrayList<>();
+    public final List<Boolean> preyIsPrey = new ArrayList<>();
+    public boolean isLightningDragon;
     public float partialTicks;
     public float dragonScale = 1.0F;
     public boolean shakingPrey;

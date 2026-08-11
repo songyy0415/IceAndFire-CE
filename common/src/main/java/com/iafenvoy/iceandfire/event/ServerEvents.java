@@ -196,13 +196,11 @@ public final class ServerEvents {
         }
         if (entity instanceof MultipartPartEntity mutlipartPart) {
             Entity parent = mutlipartPart.getParent();
-            try {
-                //If the attacked entity is the parent itself parent will be null and also doesn't have to be attacked
-                if (parent != null)
-                    player.attack(parent);
-            } catch (Exception e) {
-                IceAndFire.LOGGER.warn("Exception thrown while interacting with entity.", e);
-            }
+            // Hitting a part already damages the parent through MultipartPartEntity.hurtServer's
+            // relay (parent.hurtOrSimulate). The removed player.attack(parent) here dealt a second
+            // full attack on the parent every swing, and the PlayerHitMultipartC2SPayload handler
+            // a third — the parent took up to 3x damage per hit. Only the non-damage side effects
+            // (hydra head reaction) remain.
             int extraData = 0;
             if (mutlipartPart instanceof HydraHeadEntity hydraHead && parent instanceof HydraEntity hydra) {
                 extraData = hydraHead.headIndex;

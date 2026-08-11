@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.data.TrollType;
 import com.iafenvoy.iceandfire.event.ServerEvents;
 import com.iafenvoy.iceandfire.network.ServerNetworkHelper;
 import com.iafenvoy.iceandfire.registry.*;
+import com.iafenvoy.iceandfire.util.IafEntityDataSerializers;
 import com.iafenvoy.jupiter.ConfigManager;
 import com.iafenvoy.jupiter.ServerConfigManager;
 import com.iafenvoy.uranus.event.EntityEvents;
@@ -59,9 +60,14 @@ public class IceAndFire {
         IafBlocks.REGISTRY.register();
         IafBlockEntities.REGISTRY.register();
         IafDataComponents.REGISTRY.register();
+        // Force the custom entity-data serializers to be registered before any entity class loads
+        // (entities reference them in their class static initializers; on NeoForge those run during
+        // the RegisterEvent, after Architectury's serializer-registration buffer has flushed).
+        IafEntityDataSerializers.init();
         IafEntities.REGISTRY.register();
         IafItemGroups.REGISTRY.register();
         IafItems.REGISTRY.register();
+        IafLoots.REGISTRY.register();
         IafRecipes.REGISTRY.register();
         IafRecipeSerializers.REGISTRY.register();
         IafParticles.REGISTRY.register();
@@ -82,7 +88,6 @@ public class IceAndFire {
         IafTrades.init();
         IafRecipes.init();
         IafFeatures.init();
-        IafToolMaterials.init();
 
         BlockEvent.BREAK.register((level, pos, state, player) -> ServerEvents.onBreakBlock(level, pos, state, player, null));
         InteractionEvent.INTERACT_ENTITY.register(ServerEvents::onEntityInteract);

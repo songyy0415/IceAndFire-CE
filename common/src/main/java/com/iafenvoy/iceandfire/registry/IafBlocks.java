@@ -159,14 +159,14 @@ public final class IafBlocks {
     public static <T extends Block> RegistrySupplier<T> register(String name, Function<ResourceKey<Block>, T> block) {
         ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
         RegistrySupplier<T> r = REGISTRY.register(name, () -> block.apply(key));
-        IafItems.registerBlock(name, key2 -> new BlockItem(r.get(), new Item.Properties().setId(key2)));
+        IafItems.registerBlock(name, key2 -> new BlockItem(r.get(), new Item.Properties().setId(key2).useBlockDescriptionPrefix()));
         return r;
     }
 
     private static <T extends TorchBlock> RegistrySupplier<T> registerWallBlock(String name, Function<ResourceKey<Block>, T> block) {
         ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
         RegistrySupplier<T> r = REGISTRY.register(name, () -> block.apply(key));
-        IafItems.registerBlock(name, key2 -> new StandingAndWallBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), Direction.DOWN, new Item.Properties().setId(key2)));
+        IafItems.registerBlock(name, key2 -> new StandingAndWallBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), Direction.DOWN, new Item.Properties().setId(key2).useBlockDescriptionPrefix()));
         return r;
     }
 

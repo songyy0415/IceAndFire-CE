@@ -54,7 +54,7 @@ public final class IafDamageTypes {
     }
 
     public static CustomIndirectEntityDamageSource causeIndirectDragonLightningDamage(Entity source, Entity indirectEntityIn) {
-        return new CustomIndirectEntityDamageSource(get(indirectEntityIn, DRAGON_ICE_TYPE), source, indirectEntityIn);
+        return new CustomIndirectEntityDamageSource(get(indirectEntityIn, DRAGON_LIGHTNING_TYPE), source, indirectEntityIn);
     }
 
     public static class CustomEntityDamageSource extends DamageSource {

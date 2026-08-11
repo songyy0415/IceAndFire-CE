@@ -12,6 +12,7 @@
   "client": [
     "GameRendererMixin",
     "InGameHudMixin",
+    "ItemStackRenderStateMixin",
     "LivingEntityRendererMixin",
     "ParticleEngineMixin",
     "PlayerEntityRendererMixin",

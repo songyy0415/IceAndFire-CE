@@ -110,7 +110,10 @@ public class SummoningCrystalItem extends Item {
                             dragonChunkPos = data.getDragonPos(id);
                         if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {
                             try {
-                                if (!flag && data != null && context.getLevel().isClientSide()) {//server side but couldn't find dragon
+                                // This block already runs on the server (see outer guard above); the
+                                // pre-fix condition used isClientSide() here, which is always false on
+                                // the server and made the chunk force-load dead code.
+                                if (!flag && data != null && dragonChunkPos != null) {
                                     ServerLevel serverWorld = (ServerLevel) context.getLevel();
                                     ChunkPos pos = new ChunkPos(dragonChunkPos.getX() >> 4, dragonChunkPos.getZ() >> 4);
                                     serverWorld.setChunkForced(pos.x(), pos.z(), true);

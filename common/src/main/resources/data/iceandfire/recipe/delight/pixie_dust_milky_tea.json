@@ -2,18 +2,10 @@
   "type": "farmersdelight:cooking",
   "recipe_book_tab": "drinks",
   "ingredients": [
-    {
-      "item": "iceandfire:pixie_dust"
-    },
-    {
-      "item": "iceandfire:pixie_dust"
-    },
-    {
-      "item": "iceandfire:pixie_dust"
-    },
-    {
-      "tag": "c:milks"
-    }
+    "iceandfire:pixie_dust",
+    "iceandfire:pixie_dust",
+    "iceandfire:pixie_dust",
+    "#c:milks"
   ],
   "result": {
     "id": "iceandfire:pixie_dust_milky_tea"

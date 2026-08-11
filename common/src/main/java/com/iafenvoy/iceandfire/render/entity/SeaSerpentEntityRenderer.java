@@ -12,6 +12,7 @@ import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.AABB;
 
 public class SeaSerpentEntityRenderer extends AdvancedEntityRendererBase<SeaSerpentEntity, SeaSerpentRenderState, TabulaModel<SeaSerpentRenderState>> {
     public SeaSerpentEntityRenderer(EntityRendererProvider.Context context) {
@@ -55,6 +56,15 @@ public class SeaSerpentEntityRenderer extends AdvancedEntityRendererBase<SeaSerp
     protected void scale(SeaSerpentRenderState state, PoseStack matrixStackIn) {
         this.shadowRadius = state.seaSerpentScale;
         matrixStackIn.scale(this.shadowRadius, this.shadowRadius, this.shadowRadius);
+    }
+
+    @Override
+    protected AABB getBoundingBoxForCulling(SeaSerpentEntity entity) {
+        // The serpent body segments span roughly [-3.6, +2.5] x seaSerpentScale around the entity
+        // origin — far beyond the small base entity AABB, so without this the serpent is culled and
+        // vanishes as soon as the camera nears its tail. 4x scale covers the worst-case tail extent.
+        float s = entity.getSeaSerpentScale();
+        return super.getBoundingBoxForCulling(entity).inflate(s * 4.0);
     }
 
     @Override

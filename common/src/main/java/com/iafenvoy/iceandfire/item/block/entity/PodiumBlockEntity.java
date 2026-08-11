@@ -156,11 +156,6 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int index) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
     public Component getDisplayName() {
         return this.getDefaultName();
     }

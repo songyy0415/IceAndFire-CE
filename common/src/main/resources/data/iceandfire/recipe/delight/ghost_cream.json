@@ -2,18 +2,10 @@
   "type": "farmersdelight:cooking",
   "recipe_book_tab": "drinks",
   "ingredients": [
-    {
-      "item": "iceandfire:ectoplasm"
-    },
-    {
-      "item": "iceandfire:ectoplasm"
-    },
-    {
-      "item": "iceandfire:ectoplasm"
-    },
-    {
-      "tag": "c:milks"
-    }
+    "iceandfire:ectoplasm",
+    "iceandfire:ectoplasm",
+    "iceandfire:ectoplasm",
+    "#c:milks"
   ],
   "result": {
     "id": "iceandfire:ghost_cream"

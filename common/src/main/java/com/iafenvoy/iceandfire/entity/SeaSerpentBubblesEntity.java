@@ -45,7 +45,10 @@ public class SeaSerpentBubblesEntity extends Fireball implements IDragonProjecti
         if (this.tickCount > 400) this.remove(RemovalReason.DISCARDED);
         this.autoTarget();
 
-        if (this.level().isClientSide() || (shootingEntity == null || !shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
+        // Server-side gate: advance the projectile only while the shooting serpent is alive.
+        // (The pre-migration condition was inverted — it skipped the server while the shooter
+        // lived, so the breath attack never moved or dealt damage.)
+        if (this.level().isClientSide() || (shootingEntity != null && shootingEntity.isAlive()) && this.level().hasChunkAt(this.blockPosition())) {
             this.baseTick();
             HitResult raytraceresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (raytraceresult.getType() != HitResult.Type.MISS)

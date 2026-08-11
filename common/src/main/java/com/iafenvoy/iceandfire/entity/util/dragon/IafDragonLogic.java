@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.entity.util.dragon;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import com.iafenvoy.iceandfire.entity.DreadQueenEntity;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
@@ -150,7 +149,8 @@ public class IafDragonLogic {
             if (this.dragon.getControllingPassenger() == null && this.dragon.doesWantToLand() && !this.dragon.onGround() && !this.dragon.isInWater())
                 this.dragon.setDeltaMovement(this.dragon.getDeltaMovement().add(0, -0.25, 0));
             else {
-                if ((this.dragon.getControllingPassenger() == null || this.dragon.getControllingPassenger() instanceof DreadQueenEntity) && !this.dragon.isBeyondHeight()) {
+                // DreadQueenEntity is never registered/instantiated, so its instanceof clause was dead.
+                if (this.dragon.getControllingPassenger() == null && !this.dragon.isBeyondHeight()) {
                     double up = this.dragon.isInWater() ? 0.12D : 0.08D;
                     this.dragon.setDeltaMovement(this.dragon.getDeltaMovement().add(0, up, 0));
                 }

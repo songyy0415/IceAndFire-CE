@@ -101,8 +101,12 @@ public class DeathWormAIAttackGoal extends Goal {
             this.worm.setXRot(Mth.rotLerp(this.worm.getXRot(), 0.0F, 0.2F));
         else {
             final double d0 = vector3d.horizontalDistance();
-            final double d1 = Math.signum(-vector3d.y) * Math.acos(d0 / vector3d.length()) * (180F / (float) Math.PI);
-            this.worm.setXRot((float) d1);
+            final double length = vector3d.length();
+            // Guard 0/0: a stationary worm produces the zero vector, and acos(NaN) poisons xRot permanently.
+            if (length > 0.0D) {
+                final double d1 = Math.signum(-vector3d.y) * Math.acos(d0 / length) * (180F / (float) Math.PI);
+                this.worm.setXRot((float) d1);
+            }
         }
         if (this.shouldJump()) this.jumpAttack();
         else if (this.worm.getNavigation().isDone())

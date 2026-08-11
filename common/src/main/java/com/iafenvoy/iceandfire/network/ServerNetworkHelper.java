@@ -46,19 +46,24 @@ public class ServerNetworkHelper {
                                 hippogryph.setControlState(payload.controlState());
                         }
                         case HippocampusEntity hippo -> {
-                            if (hippo.isOwnedBy(player))
+                            if (hippo.isOwnedBy(player)) {
                                 hippo.setControlState(payload.controlState());
-                            hippo.setPos(pos.getX(), pos.getY(), pos.getZ());
+                                hippo.setPos(pos.getX(), pos.getY(), pos.getZ());
+                            }
                         }
                         case DeathWormEntity deathWorm -> {
-                            deathWorm.setControlState(payload.controlState());
-                            deathWorm.setPos(pos.getX(), pos.getY(), pos.getZ());
+                            // DeathWorm previously applied control + position with no ownership check,
+                            // letting any riding player teleport the worm regardless of ownership.
+                            if (deathWorm.isOwnedBy(player)) {
+                                deathWorm.setControlState(payload.controlState());
+                                deathWorm.setPos(pos.getX(), pos.getY(), pos.getZ());
+                            }
                         }
                         case AmphithereEntity amphithere -> {
-                            if (amphithere.isOwnedBy(player))
+                            if (amphithere.isOwnedBy(player)) {
                                 amphithere.setControlState(payload.controlState());
-                            // TODO :: Is this handled by Entity#move due to recent changes?
-                            amphithere.setPos(pos.getX(), pos.getY(), pos.getZ());
+                                amphithere.setPos(pos.getX(), pos.getY(), pos.getZ());
+                            }
                         }
                         default -> {
                         }
@@ -89,7 +94,10 @@ public class ServerNetworkHelper {
                 if (entity instanceof LivingEntity livingEntity) {
                     double dist = player.distanceTo(livingEntity);
                     if (dist < 100) {
-                        player.attack(livingEntity);
+                        // Parent damage is applied server-side via the part's hurtServer relay; this
+                        // payload only carries the non-damage side effect (hydra head reaction).
+                        // The removed player.attack(...) here made the parent take an extra hit per
+                        // client swing on top of the relay.
                         if (livingEntity instanceof HydraEntity hydra)
                             hydra.triggerHeadFlags(payload.index());
                     }

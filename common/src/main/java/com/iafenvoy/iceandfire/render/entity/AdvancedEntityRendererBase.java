@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Mob;
@@ -76,19 +77,40 @@ public abstract class AdvancedEntityRendererBase<E extends Mob, S extends Living
             int tintedColor = ARGB.multiply(baseColor, this.getModelTint(state));
             M model = this.getModel(state);
             model.setupAnim(state);
-            submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
-                PoseStack fresh = new PoseStack();
-                fresh.last().pose().set(pose.pose());
-                fresh.last().normal().set(pose.normal());
-                // Re-run setupAnim at deferred-draw time so each node draws the pose of ITS
-                // render state. The per-renderer model is shared: without this, every visible
-                // same-type entity renders the pose of whichever entity was submitted last this
-                // frame, so multiple dragons all animate in sync with the last one and snap when
-                // its animation state changes (visible jerk). IAF models are idempotent
-                // (resetToDefaultPose first), so re-running is safe.
-                model.setupAnim(state);
-                model.renderPartsToBuffer(fresh, buffer, state.lightCoords, overlayCoords, tintedColor);
-            });
+            // Body: skipped when getRenderType chose an outline render type (invisible-but-glowing
+            // entity renders its outline only) — matches vanilla submitModel's !renderType.isOutline().
+            if (!renderType.isOutline()) {
+                submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+                    PoseStack fresh = new PoseStack();
+                    fresh.last().pose().set(pose.pose());
+                    fresh.last().normal().set(pose.normal());
+                    // Re-run setupAnim at deferred-draw time so each node draws the pose of ITS
+                    // render state. The per-renderer model is shared: without this, every visible
+                    // same-type entity renders the pose of whichever entity was submitted last this
+                    // frame, so multiple dragons all animate in sync with the last one and snap when
+                    // its animation state changes (visible jerk). IAF models are idempotent
+                    // (resetToDefaultPose first), so re-running is safe.
+                    model.setupAnim(state);
+                    model.renderPartsToBuffer(fresh, buffer, state.lightCoords, overlayCoords, tintedColor);
+                });
+            }
+            // Glowing outline (spectral arrow, team color, spectator): vanilla submitModel submits a
+            // second node to the outline phase with the outline render type and the outline color as
+            // the vertex tint. submitCustomGeometry routes to the outline phase when the render type
+            // isOutline(), so submit the same geometry again with that render type and full-bright
+            // light — otherwise a glowing dragon/sea-serpent loses its outline entirely.
+            if (state.outlineColor != 0) {
+                RenderType outlineRenderType = renderType.isOutline() ? renderType : renderType.outline().orElse(null);
+                if (outlineRenderType != null) {
+                    submitNodeCollector.submitCustomGeometry(poseStack, outlineRenderType, (pose, buffer) -> {
+                        PoseStack fresh = new PoseStack();
+                        fresh.last().pose().set(pose.pose());
+                        fresh.last().normal().set(pose.normal());
+                        model.setupAnim(state);
+                        model.renderPartsToBuffer(fresh, buffer, 15728880, OverlayTexture.NO_OVERLAY, state.outlineColor);
+                    });
+                }
+            }
         }
         if (this.shouldRenderLayers(state) && !this.layers.isEmpty()) {
             for (RenderLayer<S, M> layer : this.layers) {

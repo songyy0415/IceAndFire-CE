@@ -123,7 +123,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.MoverType;
@@ -804,7 +803,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.modelDeadProgress = compound.getFloatOr("DeadProg", 0.0F);
         this.setCustomPose(compound.getString("CustomPose").orElse(""));
         this.hasHomePosition = compound.getBooleanOr("HasHomePosition", false);
-        if (this.hasHomePosition && compound.getInt("HomeAreaX").orElse(0) != 0 && compound.getInt("HomeAreaY").orElse(0) != 0 && compound.getInt("HomeAreaZ").orElse(0) != 0)
+        // The != 0 guards dropped the home of any dragon parked near the world origin (block 0,0,0);
+        // HomePosition.read handles missing tags with isPresent() defaults, so trusting the flag is safe.
+        if (this.hasHomePosition)
             this.homePos = new HomePosition(compound, this.level());
         this.setTackling(compound.getBooleanOr("Tackle", false));
         this.setAgingDisabled(compound.getBooleanOr("AgingDisabled", false));
@@ -1102,7 +1103,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                     if (this.level() instanceof ServerLevel serverWorld) {
                         DragonColor color = DragonColor.getById(this.getVariant());
                         Vec3 pos = this.position();
-                        EntityUtil.item(serverWorld, pos.x, pos.y, pos.z, new ItemStack(color.getScaleItem(), new Random().nextInt(IafCommonConfig.INSTANCE.dragon.maxBrushScalesDropPerTime.getValue()) + 1), 0);
+                        EntityUtil.item(serverWorld, pos.x, pos.y, pos.z, new ItemStack(color.getScaleItem(), this.getRandom().nextInt(IafCommonConfig.INSTANCE.dragon.maxBrushScalesDropPerTime.getValue()) + 1), 0);
                     }
                     this.brushedTime++;
                     return InteractionResult.SUCCESS;
@@ -1830,7 +1831,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     //FIXME::Do not use id to find types
     public DragonEggEntity createEgg() {
         DragonEggEntity dragon = new DragonEggEntity(IafEntities.DRAGON_EGG.get(), this.level());
-        dragon.setEggType(IafRegistries.DRAGON_COLOR.byId(new Random().nextInt(4) + this.getStartMetaForType()));
+        dragon.setEggType(IafRegistries.DRAGON_COLOR.byId(this.getRandom().nextInt(4) + this.getStartMetaForType()));
         dragon.setPos(Mth.floor(this.getX()) + 0.5, Mth.floor(this.getY()) + 1, Mth.floor(this.getZ()) + 0.5);
         return dragon;
     }
@@ -2210,61 +2211,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             if (this.getInBlockState().getFluidState().isSource() && this.isInWater() && !this.isGoingUp()) {
                 this.setFlying(false);
                 this.setHovering(false);
-            }
-        } else if (controllingPassenger instanceof DreadQueenEntity) {
-            // Original logic involves riding
-            Player ridingPlayer = this.getRidingPlayer();
-            if (ridingPlayer != null) {
-                if (this.isGoingUp()) {
-                    if (!this.isFlying() && !this.isHovering()) {
-                        this.spacebarTicks += 2;
-                    }
-                } else if (this.isDismounting()) {
-                    if (this.isFlying() || this.isHovering()) {
-                        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.04, 0));
-                        this.setFlying(false);
-                        this.setHovering(false);
-                    }
-                }
-            }
-            if (!this.isDismounting() && (this.isFlying() || this.isHovering())) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0, 0.01, 0));
-            }
-            if (this.isStriking() && this.getControllingPassenger() != null && this.getDragonStage() > 1) {
-                this.setBreathingFire(true);
-                this.riderShootFire(this.getControllingPassenger());
-                this.fireStopTicks = 10;
-            }
-            if (this.isAggressive() && this.getControllingPassenger() != null && this.getControllingPassenger() instanceof Player) {
-                LivingEntity target = DragonUtils.riderLookingAtEntity(this, this.getControllingPassenger(), this.getDragonStage() + (this.getBoundingBox().maxX - this.getBoundingBox().minX));
-                if (this.getAnimation() != DragonBaseEntity.ANIMATION_BITE) {
-                    this.setAnimation(DragonBaseEntity.ANIMATION_BITE);
-                }
-                if (target != null && !DragonUtils.hasSameOwner(this, target)) {
-                    this.logic.attackTarget(target, ridingPlayer, (int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
-                }
-            }
-            if (this.isFlying()) {
-                if (!this.isHovering() && this.getControllingPassenger() != null && !this.onGround() && Math.max(Math.abs(this.getDeltaMovement().x()), Math.abs(this.getDeltaMovement().z())) < 0.1F) {
-                    this.setHovering(true);
-                    this.setFlying(false);
-                }
-            } else {
-                if (this.isHovering() && this.getControllingPassenger() != null && !this.onGround() && Math.max(Math.abs(this.getDeltaMovement().x()), Math.abs(this.getDeltaMovement().z())) > 0.1F) {
-                    this.setFlying(true);
-                    this.usingGroundAttack = false;
-                    this.setHovering(false);
-                }
-            }
-            if (this.spacebarTicks > 0) {
-                this.spacebarTicks--;
-            }
-            if (this.spacebarTicks > 20 && this.getOwner() != null && this.getPassengers().contains(this.getOwner()) && !this.isFlying() && !this.isHovering()) {
-                this.setHovering(true);
-            }
-
-            if (this.isVehicle() && !this.isOverAir() && this.isFlying() && !this.isHovering() && this.flyTicks > 40) {
-                this.setFlying(false);
             }
         }
     }

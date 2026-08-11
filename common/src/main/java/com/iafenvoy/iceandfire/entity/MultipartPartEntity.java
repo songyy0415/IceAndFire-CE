@@ -199,9 +199,12 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
     }
 
     public Entity getParent() {
+        // Level.getEntity(UUID) works on ClientLevel too — the ServerLevel restriction made client
+        // multipart parts unable to resolve their parent (breaking is(), getOwnerUUID(), and
+        // collideWithNearbyEntities() on the client).
         UUID id = this.getParentId();
-        if (id != null && this.level() instanceof ServerLevel serverLevel)
-            return serverLevel.getEntity(id);
+        if (id != null)
+            return this.level().getEntity(id);
         return null;
     }
 
@@ -229,9 +232,10 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        // hurtServer only ever runs on a ServerLevel, so the former isClientSide() branch here was
+        // unreachable dead code (player attacks are server-authoritative in 26.2). Damage is relayed
+        // to the parent directly below.
         Entity parent = this.getParent();
-        if (this.level().isClientSide() && this.getParentId() != null && source.getEntity() instanceof Player)
-            NetworkManager.sendToServer(new MultipartInteractC2SPayload(this.getParentId(), damage * this.damageMultiplier));
         return parent != null && parent.hurtOrSimulate(source, damage * this.damageMultiplier);
     }
 

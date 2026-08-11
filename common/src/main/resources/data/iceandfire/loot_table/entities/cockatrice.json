@@ -83,7 +83,7 @@
                 {
                   "condition": "entity_properties",
                   "entity": "this",
-                  "properties": {
+                  "predicate": {
                     "on_fire": true
                   }
                 }

@@ -10,6 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
@@ -23,11 +24,11 @@ import java.util.List;
 public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonForgeRecipeInput> {
     private final Ingredient input;
     private final Ingredient blood;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final String dragonType;
     private final int cookTime;
 
-    public DragonForgeRecipe(Ingredient input, Ingredient blood, ItemStack result, String dragonType, int cookTime) {
+    public DragonForgeRecipe(Ingredient input, Ingredient blood, ItemStackTemplate result, String dragonType, int cookTime) {
         this.input = input;
         this.blood = blood;
         this.result = result;
@@ -63,7 +64,7 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
 
     @Override
     public ItemStack assemble(DragonForgeBlockEntity.DragonForgeRecipeInput input) {
-        return this.result;
+        return this.result.create();
     }
 
     public boolean isValidInput(ItemStack stack) {
@@ -75,6 +76,10 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
     }
 
     public ItemStack getResultItem() {
+        return this.result.create();
+    }
+
+    public ItemStackTemplate getResultTemplate() {
         return this.result;
     }
 
@@ -112,7 +117,7 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
     public static final MapCodec<DragonForgeRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Ingredient.CODEC.fieldOf("input").forGetter(DragonForgeRecipe::getInput),
             Ingredient.CODEC.fieldOf("blood").forGetter(DragonForgeRecipe::getBlood),
-            ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(DragonForgeRecipe::getResultItem),
+            ItemStackTemplate.MAP_CODEC.fieldOf("result").forGetter(DragonForgeRecipe::getResultTemplate),
             Codec.STRING.fieldOf("dragonType").forGetter(DragonForgeRecipe::getDragonType),
             Codec.INT.fieldOf("cookTime").forGetter(DragonForgeRecipe::getCookTime)
     ).apply(i, DragonForgeRecipe::new));
@@ -120,7 +125,7 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
     public static final StreamCodec<RegistryFriendlyByteBuf, DragonForgeRecipe> STREAM_CODEC = StreamCodec.composite(
             Ingredient.CONTENTS_STREAM_CODEC, DragonForgeRecipe::getInput,
             Ingredient.CONTENTS_STREAM_CODEC, DragonForgeRecipe::getBlood,
-            ItemStack.OPTIONAL_STREAM_CODEC, DragonForgeRecipe::getResultItem,
+            ItemStackTemplate.STREAM_CODEC, DragonForgeRecipe::getResultTemplate,
             ByteBufCodecs.STRING_UTF8, DragonForgeRecipe::getDragonType,
             ByteBufCodecs.INT, DragonForgeRecipe::getCookTime,
             DragonForgeRecipe::new

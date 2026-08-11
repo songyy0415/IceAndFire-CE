@@ -220,11 +220,16 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public Optional<DragonForgeRecipe> getCurrentRecipe() {
         assert this.level != null;
+        // 26.2: recipeAccess() only exists on ServerLevel. The block-entity tick runs on the client
+        // (cookTime is synced via the update tag), so guard the cast — the client never needs the
+        // actual recipe, only the menu's server-side data slots do.
+        if (this.level.isClientSide()) return Optional.empty();
         return ((ServerLevel) this.level).recipeAccess().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
     }
 
     public List<DragonForgeRecipe> getRecipes() {
         assert this.level != null;
+        if (this.level.isClientSide()) return List.of();
         return ((ServerLevel) this.level).recipeAccess().getRecipes().stream()
                 .filter(r -> r.value().getType() == IafRecipes.DRAGON_FORGE_TYPE.get())
                 .map(r -> (DragonForgeRecipe) r.value())

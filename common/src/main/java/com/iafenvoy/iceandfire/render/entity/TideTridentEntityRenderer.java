@@ -42,7 +42,10 @@ public class TideTridentEntityRenderer extends EntityRenderer<TideTridentEntity,
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(Axis.YP.rotationDegrees(state.yaw - 90.0F));
         matrixStackIn.mulPose(Axis.ZP.rotationDegrees(state.pitch + 90.0F));
-        RenderType renderType = RenderTypes.entitySolid(this.getTextureLocation(state));
+        // entityCutout (not entitySolid): tide_trident.png has large fully-transparent regions
+        // (792/1024 texels alpha 0); entitySolid renders those as BLACK — the stuck trident showed
+        // as a black rectangle with only the opaque pixels visible.
+        RenderType renderType = RenderTypes.entityCutout(this.getTextureLocation(state));
         if (renderType != null) {
             submitNodeCollector.submitCustomGeometry(matrixStackIn, renderType, (pose, buffer) -> {
                 PoseStack fresh = new PoseStack();

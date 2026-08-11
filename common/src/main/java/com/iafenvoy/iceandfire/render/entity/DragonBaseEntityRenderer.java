@@ -28,6 +28,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
 public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends AdvancedEntityRendererBase<T, DragonRenderState, TabulaModel<DragonRenderState>> {
     public DragonBaseEntityRenderer(EntityRendererProvider.Context context, TabulaModel<DragonRenderState> model) {
@@ -139,6 +140,17 @@ public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends Advanc
         this.shadowRadius = state.renderSize / 3;
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(state.dragonPitch));
         matrixStackIn.scale(this.shadowRadius, this.shadowRadius, this.shadowRadius);
+    }
+
+    @Override
+    protected AABB getBoundingBoxForCulling(T entity) {
+        // The dragon model (head + long tail + wings, rendered at renderSize/3 scale) extends far
+        // beyond the 0.78x1.2 base entity AABB used by the default culling box. Without this, the
+        // whole dragon is culled (and vanishes) as soon as the camera gets near the tail or wing
+        // tips and the small torso box leaves the frustum. 1.5x renderSize covers the head (~0.52r),
+        // tail tip (~0.65r) and wings (~0.47r) with margin in every yaw.
+        float r = entity.getRenderSize();
+        return super.getBoundingBoxForCulling(entity).inflate(r * 1.5);
     }
 
     @Override

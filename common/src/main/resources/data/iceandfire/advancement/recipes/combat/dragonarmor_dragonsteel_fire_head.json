@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "iceandfire:dragonarmor_dragonsteel_fire_head"
+        "recipe": "iceandfire:dragonarmor_dragon_steel_fire_head"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "iceandfire:dragonarmor_dragonsteel_fire_head"
+      "iceandfire:dragonarmor_dragon_steel_fire_head"
     ]
   },
   "sends_telemetry_event": false

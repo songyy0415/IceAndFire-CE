@@ -16,6 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -78,13 +79,40 @@ public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof
         return RenderShape.MODEL;
     }
 
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof DragonForgeBlockEntity) {
-            Containers.dropContents(world, pos, (DragonForgeBlockEntity) blockEntity);
-            world.updateNeighbourForOutputSignal(pos, this);
-            world.removeBlockEntity(pos);
+    // 26.2 removed Block.onRemove — block-break cleanup is now done via the player hooks (see
+    // vanilla BeehiveBlock). Survival break goes through ServerPlayerGameMode.destroyBlock, which
+    // calls playerWillDestroy (before removal) then playerDestroy (after). Creative break goes
+    // through destroyAndAck -> destroyBlock as well, but the block entity passed to playerDestroy
+    // is null there, so the drop must also happen in playerWillDestroy where the block entity is
+    // still retrievable by position. dropContents drains the inventory, so both hooks are idempotent.
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockState result = super.playerWillDestroy(level, pos, state, player);
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof DragonForgeBlockEntity blockEntity) {
+            Containers.dropContents(level, pos, blockEntity);
+            level.updateNeighbourForOutputSignal(pos, this);
         }
+        return result;
+    }
+
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool) {
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
+        if (blockEntity instanceof DragonForgeBlockEntity) {
+            Containers.dropContents(level, pos, (DragonForgeBlockEntity) blockEntity);
+            level.updateNeighbourForOutputSignal(pos, this);
+            level.removeBlockEntity(pos);
+        }
+    }
+
+    // 26.2: Block.onRemove is gone; block-state changes now call preRemoveSideEffects + removeBlockEntity
+    // unless shouldChangedStateKeepBlockEntity returns true (see LevelChunk.setBlockState). setState()
+    // swaps between the activated/disabled variants of this same block to assemble/disassemble the
+    // forge — without this override that swap would drain the forge's whole inventory. When the block
+    // is actually broken (new state = air) the air block's default (false) still applies.
+    @Override
+    public boolean shouldChangedStateKeepBlockEntity(BlockState oldState) {
+        return oldState.getBlock() instanceof DragonForgeCoreBlock;
     }
 
     @Override

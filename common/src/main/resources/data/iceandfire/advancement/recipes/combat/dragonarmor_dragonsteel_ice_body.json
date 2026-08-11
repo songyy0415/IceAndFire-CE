@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "iceandfire:dragonarmor_dragonsteel_ice_body"
+        "recipe": "iceandfire:dragonarmor_dragon_steel_ice_body"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "iceandfire:dragonarmor_dragonsteel_ice_body"
+      "iceandfire:dragonarmor_dragon_steel_ice_body"
     ]
   },
   "sends_telemetry_event": false

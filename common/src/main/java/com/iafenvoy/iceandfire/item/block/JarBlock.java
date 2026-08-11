@@ -60,12 +60,24 @@ public class JarBlock extends BaseEntityBlock {
         return AABB;
     }
 
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        this.dropPixie(worldIn, pos);
+    // 26.2 removed Block.onRemove — block-break cleanup is now done via the player hooks (see
+    // vanilla BeehiveBlock). Survival break goes through ServerPlayerGameMode.destroyBlock, which
+    // calls playerWillDestroy (before removal) then playerDestroy (after). Creative break goes
+    // through destroyAndAck -> destroyBlock as well, but the block entity passed to playerDestroy
+    // is null there, so the release must also happen in playerWillDestroy where the block entity
+    // is still retrievable by position. releasePixie clears hasPixie, so both hooks are idempotent.
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockState result = super.playerWillDestroy(level, pos, state, player);
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie)
+            jar.releasePixie();
+        return result;
     }
 
-    public void dropPixie(Level world, BlockPos pos) {
-        if (world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie)
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool) {
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
+        if (!level.isClientSide() && blockEntity instanceof JarBlockEntity jar && jar.hasPixie)
             jar.releasePixie();
     }
 

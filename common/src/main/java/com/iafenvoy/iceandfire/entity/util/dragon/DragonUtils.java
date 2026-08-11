@@ -37,10 +37,12 @@ public class DragonUtils {
         BlockPos escortPos = dragon.getEscortPosition();
         BlockPos ground = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, escortPos);
         int distFromGround = escortPos.getY() - ground.getY();
+        // Config permits wanderFromHomeDistance = 0, but RandomSource.nextInt(0) throws IllegalArgumentException.
+        int wander = Math.max(1, IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue());
         for (int i = 0; i < 10; i++) {
-            BlockPos pos = new BlockPos(escortPos.getX() + dragon.getRandom().nextInt(IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue()) - IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue() / 2,
+            BlockPos pos = new BlockPos(escortPos.getX() + dragon.getRandom().nextInt(wander) - wander / 2,
                     (distFromGround > 16 ? escortPos.getY() : escortPos.getY() + 8 + dragon.getRandom().nextInt(16)),
-                    (escortPos.getZ() + dragon.getRandom().nextInt(IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue()) - IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue() / 2));
+                    (escortPos.getZ() + dragon.getRandom().nextInt(wander) - wander / 2));
             if (dragon.getDistanceSquared(Vec3.atCenterOf(pos)) > 6 && !dragon.isTargetBlocked(Vec3.atCenterOf(pos)))
                 return pos;
         }
@@ -69,9 +71,11 @@ public class DragonUtils {
             BlockPos dragonPos = dragon.blockPosition();
             BlockPos ground = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, dragonPos);
             int distFromGround = (int) dragon.getY() - ground.getY();
+            // Config permits wanderFromHomeDistance = 0, but RandomSource.nextInt(0) throws IllegalArgumentException.
+            int wander = Math.max(1, IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue());
             for (int i = 0; i < 10; i++) {
                 BlockPos homePos = dragon.homePos.getPosition();
-                BlockPos pos = new BlockPos(homePos.getX() + dragon.getRandom().nextInt(IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue() * 2) - IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue(), (distFromGround > 16 ? (int) Math.min(IafCommonConfig.INSTANCE.dragon.maxFlight.getValue(), dragon.getY() + dragon.getRandom().nextInt(16) - 8) : (int) dragon.getY() + dragon.getRandom().nextInt(16) + 1), (homePos.getZ() + dragon.getRandom().nextInt(IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue() * 2) - IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue()));
+                BlockPos pos = new BlockPos(homePos.getX() + dragon.getRandom().nextInt(wander * 2) - wander, (distFromGround > 16 ? (int) Math.min(IafCommonConfig.INSTANCE.dragon.maxFlight.getValue(), dragon.getY() + dragon.getRandom().nextInt(16) - 8) : (int) dragon.getY() + dragon.getRandom().nextInt(16) + 1), (homePos.getZ() + dragon.getRandom().nextInt(wander * 2) - wander));
                 if (dragon.getDistanceSquared(Vec3.atCenterOf(pos)) > 6 && !dragon.isTargetBlocked(Vec3.atCenterOf(pos)))
                     return pos;
             }

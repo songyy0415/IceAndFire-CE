@@ -257,7 +257,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
             IafEntityUtil.updatePart(this.headBoxes[i], this);
 
             this.headBoxes[HEADS + i].setPos(this.headBoxes[HEADS + i].getX(), this.getY() + partY, this.headBoxes[HEADS + i].getZ());
-            IafEntityUtil.updatePart(this.headBoxes[HEADS + 1], this);
+            IafEntityUtil.updatePart(this.headBoxes[HEADS + i], this);
         }
 
         if (this.getHeadCount() > 1 && !this.isOnFire())

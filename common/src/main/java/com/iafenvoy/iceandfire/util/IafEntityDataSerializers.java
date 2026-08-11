@@ -21,6 +21,16 @@ public final class IafEntityDataSerializers {
         EntityDataSerializerRegistry.register(IceAndFire.id("optional_uuid"), OPTIONAL_UUID);
     }
 
+    /**
+     * Forces the static initializer above to run during mod construction instead of on the first
+     * entity-class load. Entity classes are only initialized when their entity-type suppliers fire,
+     * which on NeoForge happens during the RegisterEvent — after Architectury has already flushed
+     * the serializer registration buffer. Calling this early (before IafEntities registers) ensures
+     * the serializer is buffered in time on every loader.
+     */
+    public static void init() {
+    }
+
     private IafEntityDataSerializers() {
     }
 }

@@ -213,11 +213,6 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int index) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }

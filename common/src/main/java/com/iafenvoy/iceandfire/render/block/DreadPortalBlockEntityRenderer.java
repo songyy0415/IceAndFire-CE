@@ -2,7 +2,6 @@ package com.iafenvoy.iceandfire.render.block;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.item.block.entity.DreadPortalBlockEntity;
-import com.iafenvoy.iceandfire.registry.IafRenderLayers;
 import com.iafenvoy.iceandfire.render.block.state.DreadPortalRenderState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -12,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -37,7 +37,15 @@ public class DreadPortalBlockEntityRenderer implements BlockEntityRenderer<Dread
 
     @Override
     public void submit(DreadPortalRenderState state, PoseStack matrices, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        RenderType renderType = this.renderType();
+        // Two layers: the opaque light-blue body (dread_portal_background.png) plus the sparse
+        // white-dot particles (dread_portal.png, only 2% opaque) blended on top. The original
+        // 1.21.1 renderer drove both from a custom shader (DREAD_PORTAL_PROGRAM, removed in P7-H2);
+        // this static approximation keeps the portal body visible instead of just the dots.
+        this.submitFaces(matrices, submitNodeCollector, RenderTypes.entityCutout(DREAD_PORTAL_BACKGROUND), state);
+        this.submitFaces(matrices, submitNodeCollector, RenderTypes.entityTranslucent(DREAD_PORTAL), state);
+    }
+
+    private void submitFaces(PoseStack matrices, SubmitNodeCollector submitNodeCollector, RenderType renderType, DreadPortalRenderState state) {
         if (renderType != null) {
             submitNodeCollector.submitCustomGeometry(matrices, renderType, (pose, buffer) -> {
                 PoseStack fresh = new PoseStack();
@@ -46,44 +54,41 @@ public class DreadPortalBlockEntityRenderer implements BlockEntityRenderer<Dread
                 Matrix4f matrix4f = fresh.last().pose();
                 VertexConsumer consumer = buffer;
                 // z = 1
-                this.vertex(consumer, matrix4f, pose, 0, 0, 1, state);
-                this.vertex(consumer, matrix4f, pose, 1, 0, 1, state);
-                this.vertex(consumer, matrix4f, pose, 1, 1, 1, state);
-                this.vertex(consumer, matrix4f, pose, 0, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 0, 1, 0, 1, state);
+                this.vertex(consumer, matrix4f, pose, 1, 0, 1, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 1, 1, 1, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 0, 1, 1, 0, 0, state);
                 // z = 0
-                this.vertex(consumer, matrix4f, pose, 0, 0, 0, state);
-                this.vertex(consumer, matrix4f, pose, 0, 1, 0, state);
-                this.vertex(consumer, matrix4f, pose, 1, 1, 0, state);
-                this.vertex(consumer, matrix4f, pose, 1, 0, 0, state);
+                this.vertex(consumer, matrix4f, pose, 0, 0, 0, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 1, 0, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 1, 1, 0, 0, 0, state);
+                this.vertex(consumer, matrix4f, pose, 1, 0, 0, 0, 1, state);
                 // x = 0
-                this.vertex(consumer, matrix4f, pose, 0, 0, 0, state);
-                this.vertex(consumer, matrix4f, pose, 0, 0, 1, state);
-                this.vertex(consumer, matrix4f, pose, 0, 1, 1, state);
-                this.vertex(consumer, matrix4f, pose, 0, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 0, 0, 0, 0, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 0, 1, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 1, 1, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 0, 1, 0, 0, 0, state);
                 // x = 1
-                this.vertex(consumer, matrix4f, pose, 1, 0, 1, state);
-                this.vertex(consumer, matrix4f, pose, 1, 0, 0, state);
-                this.vertex(consumer, matrix4f, pose, 1, 1, 0, state);
-                this.vertex(consumer, matrix4f, pose, 1, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 1, 0, 1, 0, 1, state);
+                this.vertex(consumer, matrix4f, pose, 1, 0, 0, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 1, 1, 0, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 1, 1, 1, 0, 0, state);
                 // y = 1
-                this.vertex(consumer, matrix4f, pose, 0, 1, 0, state);
-                this.vertex(consumer, matrix4f, pose, 0, 1, 1, state);
-                this.vertex(consumer, matrix4f, pose, 1, 1, 1, state);
-                this.vertex(consumer, matrix4f, pose, 1, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 0, 1, 0, 0, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 1, 1, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 1, 1, 1, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 1, 1, 0, 0, 0, state);
                 // y = 0
-                this.vertex(consumer, matrix4f, pose, 0, 0, 0, state);
-                this.vertex(consumer, matrix4f, pose, 1, 0, 0, state);
-                this.vertex(consumer, matrix4f, pose, 1, 0, 1, state);
-                this.vertex(consumer, matrix4f, pose, 0, 0, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 0, 0, 0, 0, state);
+                this.vertex(consumer, matrix4f, pose, 1, 0, 0, 1, 0, state);
+                this.vertex(consumer, matrix4f, pose, 1, 0, 1, 1, 1, state);
+                this.vertex(consumer, matrix4f, pose, 0, 0, 1, 0, 1, state);
             });
         }
     }
 
-    private void vertex(VertexConsumer consumer, Matrix4f matrix4f, PoseStack.Pose pose, float x, float y, float z, DreadPortalRenderState state) {
-        consumer.addVertex(matrix4f, x, y, z).setColor(-1).setUv(0.0F, 0.0F).setOverlay(OverlayTexture.NO_OVERLAY).setLight(state.lightCoords).setNormal(pose, 0.0F, 1.0F, 0.0F);
+    private void vertex(VertexConsumer consumer, Matrix4f matrix4f, PoseStack.Pose pose, float x, float y, float z, float u, float v, DreadPortalRenderState state) {
+        consumer.addVertex(matrix4f, x, y, z).setColor(-1).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(state.lightCoords).setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 
-    protected RenderType renderType() {
-        return IafRenderLayers.getDreadlandsPortal();
-    }
 }

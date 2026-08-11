@@ -17,9 +17,14 @@
       "conditions": {
         "damage": {
           "type": {
-            "is_projectile": true,
+            "tags": [
+              {
+                "id": "minecraft:is_projectile",
+                "expected": true
+              }
+            ],
             "direct_entity": {
-              "type": "iceandfire:tide_trident"
+              "minecraft:entity_type": "iceandfire:tide_trident"
             }
           }
         }

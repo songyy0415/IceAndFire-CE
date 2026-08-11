@@ -42,12 +42,22 @@ public abstract class AdvancedSpecialModelRenderer<T> implements SpecialModelRen
             PoseStack fresh = new PoseStack();
             fresh.last().pose().set(pose.pose());
             fresh.last().normal().set(pose.normal());
-            model.renderPartsToBuffer(fresh, buffer, light, overlay, color);
+            // 26.2: vanilla SpecialModelRenderers (Trident/Shield/Conduit) always draw
+            // their model with a white (-1) vertex color; the `color` argument is a
+            // separate item-tint input, NOT the model color. ItemInHandRenderer and the
+            // GUI item atlas pass 0 here, which as a vertex color is fully transparent
+            // black — held items render black and GUI items are invisible. Match vanilla.
+            model.renderPartsToBuffer(fresh, buffer, light, overlay, -1);
         });
     }
 
     @Override
     public void getExtents(Consumer<Vector3fc> extents) {
+        // Report the model's GUI extents (vanilla special renderers do the same via
+        // model.root().getExtentsForGui); without them ItemStackRenderState.getModelBoundingBox()
+        // can't size/place the item in GUI slots and oversized-item detection breaks.
+        PoseStack poseStack = new PoseStack();
+        this.model.root().getExtentsForGui(poseStack, extents);
     }
 
     @Override

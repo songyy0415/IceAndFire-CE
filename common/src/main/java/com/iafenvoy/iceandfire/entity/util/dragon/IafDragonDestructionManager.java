@@ -265,7 +265,7 @@ public class IafDragonDestructionManager {
             return IafBlocks.CHARRED_GRASS.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
         else if (in.is(Blocks.DIRT))
             return IafBlocks.CHARRED_DIRT.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
-        else if (in.is(BlockTags.SAND) && in.getBlock() == Blocks.GRAVEL)
+        else if (in.getBlock() == Blocks.GRAVEL)
             return IafBlocks.CHARRED_GRAVEL.get().defaultBlockState().setValue(FallingReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.BASE_STONE_OVERWORLD) && (in.getBlock() == Blocks.COBBLESTONE || in.getBlock().getDescriptionId().contains("cobblestone")))
             return IafBlocks.CHARRED_COBBLESTONE.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
@@ -285,7 +285,7 @@ public class IafDragonDestructionManager {
             return IafBlocks.FROZEN_GRASS.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.DIRT) && in.getBlock() == Blocks.DIRT || in.is(BlockTags.SNOW))
             return IafBlocks.FROZEN_DIRT.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
-        else if (in.is(BlockTags.SAND) && in.getBlock() == Blocks.GRAVEL)
+        else if (in.getBlock() == Blocks.GRAVEL)
             return IafBlocks.FROZEN_GRAVEL.get().defaultBlockState().setValue(FallingReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.SAND) && in.getBlock() != Blocks.GRAVEL)
             return in;
@@ -309,7 +309,7 @@ public class IafDragonDestructionManager {
             return IafBlocks.CRACKLED_GRASS.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.DIRT) && in.getBlock() == Blocks.DIRT)
             return IafBlocks.CRACKLED_DIRT.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
-        else if (in.is(BlockTags.SAND) && in.getBlock() == Blocks.GRAVEL)
+        else if (in.getBlock() == Blocks.GRAVEL)
             return IafBlocks.CRACKLED_GRAVEL.get().defaultBlockState().setValue(FallingReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.BASE_STONE_OVERWORLD) && (in.getBlock() == Blocks.COBBLESTONE || in.getBlock().getDescriptionId().contains("cobblestone")))
             return IafBlocks.CRACKLED_COBBLESTONE.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);

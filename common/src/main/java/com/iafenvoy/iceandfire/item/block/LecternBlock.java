@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -68,11 +69,28 @@ public class LecternBlock extends BaseEntityBlock {
     }
 
 
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+    // 26.2 removed Block.onRemove — block-break cleanup is now done via the player hooks (see
+    // vanilla BeehiveBlock). Survival break goes through ServerPlayerGameMode.destroyBlock, which
+    // calls playerWillDestroy (before removal) then playerDestroy (after). Creative break goes
+    // through destroyAndAck -> destroyBlock as well, but the block entity passed to playerDestroy
+    // is null there, so the drop must also happen in playerWillDestroy where the block entity is
+    // still retrievable by position. dropContents drains the inventory, so both hooks are idempotent.
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockState result = super.playerWillDestroy(level, pos, state, player);
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof LecternBlockEntity blockEntity) {
+            Containers.dropContents(level, pos, blockEntity);
+            level.updateNeighbourForOutputSignal(pos, this);
+        }
+        return result;
+    }
+
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool) {
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
         if (blockEntity instanceof LecternBlockEntity) {
-            Containers.dropContents(worldIn, pos, (LecternBlockEntity) blockEntity);
-            worldIn.updateNeighbourForOutputSignal(pos, this);
+            Containers.dropContents(level, pos, (LecternBlockEntity) blockEntity);
+            level.updateNeighbourForOutputSignal(pos, this);
         }
     }
 

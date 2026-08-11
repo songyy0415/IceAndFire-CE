@@ -113,6 +113,9 @@ public class JarBlockEntity extends BlockEntity {
     }
 
     public void releasePixie() {
+        // 26.2: release is also triggered from preRemoveSideEffects (fires for ANY removal,
+        // incl. explosions) and stays reachable from the player-break hooks, so self-guard here.
+        if (this.level == null || this.level.isClientSide() || !this.hasPixie) return;
         PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.level);
         pixie.setPos(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F); pixie.setYRot(new Random().nextInt(360)); pixie.setXRot(0);
         pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst());
@@ -126,5 +129,15 @@ public class JarBlockEntity extends BlockEntity {
         this.pixieType = 0;
         if (!this.level.isClientSide())
             ServerHelper.sendToAll(new UpdatePixieHouseS2CPayload(this.worldPosition, false, 0));
+    }
+
+    // 26.2 replaced Block.onRemove with this hook, which fires for ANY removal of the block
+    // (player break, explosion, piston, destroyBlock). Without it, non-player destruction used
+    // to permanently lose the captured pixie because the playerWillDestroy/playerDestroy hooks
+    // only run for player-initiated breaks.
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        this.releasePixie();
     }
 }

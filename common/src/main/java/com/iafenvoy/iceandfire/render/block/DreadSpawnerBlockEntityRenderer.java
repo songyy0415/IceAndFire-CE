@@ -41,7 +41,9 @@ public class DreadSpawnerBlockEntityRenderer implements BlockEntityRenderer<Drea
     @Override
     public void submit(DreadSpawnerRenderState state, PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.displayEntity != null) {
-            SpawnerRenderer.submitEntityInSpawner(matrixStackIn, submitNodeCollector, state.displayEntity, this.entityRenderer, state.scale, state.spin, camera);
+            // 26.2 signature is (..., float spin, float scale, ...) — passing scale where spin goes
+            // made the display entity render at giant scale and never rotate.
+            SpawnerRenderer.submitEntityInSpawner(matrixStackIn, submitNodeCollector, state.displayEntity, this.entityRenderer, state.spin, state.scale, camera);
         }
     }
 }

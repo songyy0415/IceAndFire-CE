@@ -9,9 +9,11 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -28,16 +30,28 @@ public class DragonRiderFeatureRenderer extends RenderLayer<DragonRenderState, T
             float dragonScale = state.dragonScale;
             for (int i = 0; i < state.preyRenderStates.size(); i++) {
                 EntityRenderState prey = state.preyRenderStates.get(i);
+                // First person: the ONLY place the local player's avatar is drawn while riding is
+                // this feature render (vanilla skips the camera entity from standalone extraction).
+                // Suppress it here — this replaces the old PlayerRenderer.render cancel, which is
+                // ineffective in the 26.2 two-pass pipeline.
+                if (prey instanceof AvatarRenderState avatarState) {
+                    LocalPlayer localPlayer = Minecraft.getInstance().player;
+                    if (localPlayer != null && avatarState.id == localPlayer.getId()
+                            && Minecraft.getInstance().options.getCameraType().isFirstPerson())
+                        continue;
+                }
                 // prey = true -> drawn in the jaws; prey = false -> the controlling rider, drawn on
                 // the back. The migration had stubbed this to always-true (the list-size check), which
                 // put the rider in the dragon's mouth; this restores the original 1.21.1 formula
                 // computed in DragonBaseEntityRenderer.extractRenderState.
                 boolean isPrey = i < state.preyIsPrey.size() ? state.preyIsPrey.get(i) : true;
                 byte modelType = i < state.preyModelTypes.size() ? state.preyModelTypes.get(i) : 2;
-                // Original used the passenger's interpolated yaw; fall back to the dragon's for
-                // non-living passengers whose render state has no yaw.
+                // Original used the passenger's interpolated absolute yaw. In 26.2 LivingEntityRenderState.yRot
+                // is the HEAD yaw RELATIVE to the body (a small value while riding), so it must not be used —
+                // bodyRot is the absolute body yaw. Fall back to the dragon's for non-living passengers whose
+                // render state has no bodyRot.
                 float riderRot = state.yRot;
-                if (prey instanceof LivingEntityRenderState livingPrey) riderRot = livingPrey.yRot;
+                if (prey instanceof LivingEntityRenderState livingPrey) riderRot = livingPrey.bodyRot;
                 int animationTicks = state.shakingPrey ? state.animationTick : 0;
                 if (animationTicks == 0 || animationTicks >= 15) this.translateToBody(matrixStackIn);
                 if (isPrey) {

@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -47,9 +48,28 @@ public class PixieHouseBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        this.dropPixie(worldIn, pos);
-        popResource(worldIn, pos, new ItemStack(this, 0));
+    // 26.2 removed Block.onRemove — block-break cleanup is now done via the player hooks (see
+    // vanilla BeehiveBlock). Survival break goes through ServerPlayerGameMode.destroyBlock, which
+    // calls playerWillDestroy (before removal) then playerDestroy (after). Creative break goes
+    // through destroyAndAck -> destroyBlock as well, but the block entity passed to playerDestroy
+    // is null there, so the release must also happen in playerWillDestroy where the block entity
+    // is still retrievable by position. releasePixie clears hasPixie, so both hooks are idempotent.
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        BlockState result = super.playerWillDestroy(level, pos, state, player);
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof PixieHouseBlockEntity house && house.hasPixie)
+            house.releasePixie();
+        return result;
+    }
+
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool) {
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
+        if (!level.isClientSide() && blockEntity instanceof PixieHouseBlockEntity house && house.hasPixie)
+            house.releasePixie();
+        // Removed a count-0 popResource(new ItemStack(this, 0)) here: Block.popResource ignores empty
+        // stacks, so it was a no-op. The block item itself already drops via super.playerDestroy ->
+        // dropResources (loot table); re-adding it with count 1 would duplicate the block.
     }
 
     @Override

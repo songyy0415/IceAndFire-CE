@@ -51,7 +51,12 @@ public class BestiaryItem extends Item implements MenuProvider {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
-        if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 340) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 344)) {
+        // Minecraft.getInstance() is null on a dedicated server; tooltips can still be evaluated
+        // there by other mods/registries, so guard the client-only shift-key check.
+        Minecraft mc = Minecraft.getInstance();
+        boolean shiftHeld = mc != null && mc.player != null
+                && (InputConstants.isKeyDown(mc.getWindow(), 340) || InputConstants.isKeyDown(mc.getWindow(), 344));
+        if (shiftHeld) {
             tooltip.accept(Component.translatable("bestiary.contains").withStyle(ChatFormatting.GRAY));
             BestiaryPageComponent component = stack.get(IafDataComponents.BESTIARY_PAGES.get());
             if (component != null)

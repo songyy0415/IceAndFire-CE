@@ -38,6 +38,9 @@ public class DragonArmorFeatureRenderer extends RenderLayer<DragonRenderState, T
             PoseStack fresh = new PoseStack();
             fresh.last().pose().set(pose.pose());
             fresh.last().normal().set(pose.normal());
+            // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase) so the
+            // layer renders this dragon's own pose, not the last-submitted same-type dragon's.
+            this.getParentModel().setupAnim(state);
             this.getParentModel().renderPartsToBuffer(fresh, buffer, light, OverlayTexture.NO_OVERLAY, -1);
         });
     }

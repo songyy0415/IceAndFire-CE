@@ -23,6 +23,8 @@ public class PixieGlowFeatureRenderer extends RenderLayer<PixieRenderState, Pixi
             PoseStack fresh = new PoseStack();
             fresh.last().pose().set(pose.pose());
             fresh.last().normal().set(pose.normal());
+            // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase).
+            this.getParentModel().setupAnim(state);
             this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
         });
     }

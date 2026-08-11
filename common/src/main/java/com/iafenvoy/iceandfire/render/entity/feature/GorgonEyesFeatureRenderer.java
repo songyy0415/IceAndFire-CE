@@ -28,6 +28,8 @@ public class GorgonEyesFeatureRenderer extends RenderLayer<GorgonRenderState, Go
                 PoseStack fresh = new PoseStack();
                 fresh.last().pose().set(pose.pose());
                 fresh.last().normal().set(pose.normal());
+                // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase).
+                this.getParentModel().setupAnim(state);
                 this.getParentModel().renderPartsToBuffer(fresh, buffer, packedLight, OverlayTexture.NO_OVERLAY, -1);
             });
         }

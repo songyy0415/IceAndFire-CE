@@ -26,6 +26,9 @@ public class GenericGlowingFeatureRenderer<S extends LivingEntityRenderState, M 
             PoseStack fresh = new PoseStack();
             fresh.last().pose().set(pose.pose());
             fresh.last().normal().set(pose.normal());
+            // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase) so this
+            // layer draws the state's own pose, not the last-submitted same-type entity's.
+            this.getParentModel().setupAnim(state);
             this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
         });
     }

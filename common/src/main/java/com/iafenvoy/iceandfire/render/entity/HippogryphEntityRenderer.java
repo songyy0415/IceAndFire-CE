@@ -81,25 +81,27 @@ public class HippogryphEntityRenderer extends AdvancedEntityRendererBase<Hippogr
                     default -> null;
                 };
                 if (type != null) {
-                    this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, type);
+                    this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, type, state);
                 }
             }
             if (state.saddled) {
-                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.SADDLE_TEXTURE);
+                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.SADDLE_TEXTURE, state);
             }
             if (state.saddled && state.hasPassenger) {
-                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.BRIDLE);
+                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.BRIDLE, state);
             }
             if (state.chested) {
-                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.CHEST);
+                this.submitHippogryph(submitNodeCollector, matrixStackIn, lightCoords, this.CHEST, state);
             }
         }
 
-        private void submitHippogryph(SubmitNodeCollector submitNodeCollector, PoseStack matrixStackIn, int lightCoords, RenderType renderType) {
+        private void submitHippogryph(SubmitNodeCollector submitNodeCollector, PoseStack matrixStackIn, int lightCoords, RenderType renderType, HippogryphRenderState state) {
             submitNodeCollector.order(1).submitCustomGeometry(matrixStackIn, renderType, (pose, buffer) -> {
                 PoseStack fresh = new PoseStack();
                 fresh.last().pose().set(pose.pose());
                 fresh.last().normal().set(pose.normal());
+                // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase).
+                this.getParentModel().setupAnim(state);
                 this.getParentModel().renderPartsToBuffer(fresh, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
             });
         }

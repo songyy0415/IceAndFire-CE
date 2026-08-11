@@ -97,13 +97,13 @@ public class HippocampusEntityRenderer extends AdvancedEntityRendererBase<Hippoc
         @Override
         public void submit(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, int packedLightIn, HippocampusRenderState state, float yRot, float xRot) {
             if (state.isSaddled) {
-                this.submitModel(matrixStackIn, submitNodeCollector, this.SADDLE_TEXTURE, packedLightIn);
+                this.submitModel(matrixStackIn, submitNodeCollector, this.SADDLE_TEXTURE, packedLightIn, state);
             }
             if (state.isSaddled && state.hasPassenger) {
-                this.submitModel(matrixStackIn, submitNodeCollector, this.BRIDLE, packedLightIn);
+                this.submitModel(matrixStackIn, submitNodeCollector, this.BRIDLE, packedLightIn, state);
             }
             if (state.isChested) {
-                this.submitModel(matrixStackIn, submitNodeCollector, this.CHEST, packedLightIn);
+                this.submitModel(matrixStackIn, submitNodeCollector, this.CHEST, packedLightIn, state);
             }
             if (state.armorValue != 0) {
                 RenderType type = switch (state.armorValue) {
@@ -112,15 +112,17 @@ public class HippocampusEntityRenderer extends AdvancedEntityRendererBase<Hippoc
                     case 3 -> this.TEXTURE_DIAMOND;
                     default -> null;
                 };
-                if (type != null) this.submitModel(matrixStackIn, submitNodeCollector, type, packedLightIn);
+                if (type != null) this.submitModel(matrixStackIn, submitNodeCollector, type, packedLightIn, state);
             }
         }
 
-        private void submitModel(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, RenderType renderType, int packedLightIn) {
+        private void submitModel(PoseStack matrixStackIn, SubmitNodeCollector submitNodeCollector, RenderType renderType, int packedLightIn, HippocampusRenderState state) {
             submitNodeCollector.submitCustomGeometry(matrixStackIn, renderType, (pose, buffer) -> {
                 PoseStack fresh = new PoseStack();
                 fresh.last().pose().set(pose.pose());
                 fresh.last().normal().set(pose.normal());
+                // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase).
+                this.getParentModel().setupAnim(state);
                 this.getParentModel().renderPartsToBuffer(fresh, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             });
         }
@@ -142,6 +144,8 @@ public class HippocampusEntityRenderer extends AdvancedEntityRendererBase<Hippoc
                     PoseStack fresh = new PoseStack();
                     fresh.last().pose().set(pose.pose());
                     fresh.last().normal().set(pose.normal());
+                    // Re-run setupAnim at deferred-draw time (see AdvancedEntityRendererBase).
+                    this.getParentModel().setupAnim(state);
                     this.getParentModel().renderPartsToBuffer(fresh, buffer, packedLightIn, getOverlayCoords(state, 0.0F), state.rainbowColor);
                 });
             }

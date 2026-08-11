@@ -80,6 +80,13 @@ public abstract class AdvancedEntityRendererBase<E extends Mob, S extends Living
                 PoseStack fresh = new PoseStack();
                 fresh.last().pose().set(pose.pose());
                 fresh.last().normal().set(pose.normal());
+                // Re-run setupAnim at deferred-draw time so each node draws the pose of ITS
+                // render state. The per-renderer model is shared: without this, every visible
+                // same-type entity renders the pose of whichever entity was submitted last this
+                // frame, so multiple dragons all animate in sync with the last one and snap when
+                // its animation state changes (visible jerk). IAF models are idempotent
+                // (resetToDefaultPose first), so re-running is safe.
+                model.setupAnim(state);
                 model.renderPartsToBuffer(fresh, buffer, state.lightCoords, overlayCoords, tintedColor);
             });
         }

@@ -1,0 +1,176 @@
+[
+ {
+  "file": "ChunkRegionMixin.java",
+  "mixin_class": "net.minecraft.world.ChunkRegion",
+  "mixin_cls_mapped": "net.minecraft.server.level.WorldGenRegion",
+  "shadows": [
+   [
+    "currentlyGeneratingStructureName",
+    "Supplier<String>"
+   ],
+   [
+    "currentlyGeneratingStructureName",
+    "private Supplier<String> currentlyGeneratingStructureName;"
+   ]
+  ],
+  "injects": [
+   "isValidForSetBlock"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "GameRendererMixin.java",
+  "mixin_class": "net.minecraft.client.render.GameRenderer",
+  "mixin_cls_mapped": "net.minecraft.client.renderer.GameRenderer",
+  "shadows": [
+   [
+    "camera",
+    "Camera"
+   ],
+   [
+    "camera",
+    "private Camera camera;"
+   ]
+  ],
+  "injects": [
+   "renderWorld",
+   "loadPrograms"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "InGameHudMixin.java",
+  "mixin_class": "net.minecraft.client.gui.hud.InGameHud",
+  "mixin_cls_mapped": "net.minecraft.client.gui.Gui",
+  "shadows": [
+   [
+    "renderOverlay",
+    "abstract void"
+   ],
+   [
+    "POWDER_SNOW_OUTLINE",
+    "static Identifier"
+   ],
+   [
+    "client",
+    "MinecraftClient"
+   ],
+   [
+    "renderOverlay",
+    "protected abstract void renderOverlay(DrawContext context, Identifier texture, float opacity);"
+   ],
+   [
+    "POWDER_SNOW_OUTLINE",
+    "private static Identifier POWDER_SNOW_OUTLINE;"
+   ],
+   [
+    "client",
+    "private MinecraftClient client;"
+   ]
+  ],
+  "injects": [
+   "renderMiscOverlays"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "LivingEntityMixin.java",
+  "mixin_class": "net.minecraft.entity.LivingEntity",
+  "mixin_cls_mapped": "net.minecraft.world.entity.LivingEntity",
+  "shadows": [
+   [
+    "getStackInHand",
+    "abstract ItemStack"
+   ],
+   [
+    "getStackInHand",
+    "public abstract ItemStack getStackInHand(Hand hand);"
+   ]
+  ],
+  "injects": [
+   "tick",
+   "swingHand(Lnet/minecraft/util/Hand;Z)V",
+   "onStatusEffectRemoved"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "LivingEntityRendererMixin.java",
+  "mixin_class": "net.minecraft.client.render.entity.LivingEntityRenderer",
+  "mixin_cls_mapped": "net.minecraft.client.renderer.entity.LivingEntityRenderer",
+  "shadows": [],
+  "injects": [
+   "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "MobEntityMixin.java",
+  "mixin_class": "net.minecraft.entity.mob.MobEntity",
+  "mixin_cls_mapped": "net.minecraft.world.entity.Mob",
+  "shadows": [],
+  "injects": [
+   "dropLoot"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "PlayerEntityRendererMixin.java",
+  "mixin_class": "net.minecraft.client.render.entity.PlayerEntityRenderer",
+  "mixin_cls_mapped": "net.minecraft.client.renderer.entity.player.PlayerRenderer",
+  "shadows": [],
+  "injects": [
+   "render(Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "RotatingCubeMapRendererMixin.java",
+  "mixin_class": "net.minecraft.client.gui.RotatingCubeMapRenderer",
+  "mixin_cls_mapped": "net.minecraft.client.renderer.PanoramaRenderer",
+  "shadows": [],
+  "injects": [
+   "render"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "TitleScreenMixin.java",
+  "mixin_class": "net.minecraft.client.gui.screen.TitleScreen",
+  "mixin_cls_mapped": "net.minecraft.client.gui.screens.TitleScreen",
+  "shadows": [
+   [
+    "splashText",
+    "SplashTextRenderer"
+   ],
+   [
+    "splashText",
+    "private SplashTextRenderer splashText;"
+   ]
+  ],
+  "injects": [
+   "init",
+   "render"
+  ],
+  "invokes": []
+ },
+ {
+  "file": "WorldRendererMixin.java",
+  "mixin_class": "net.minecraft.client.render.WorldRenderer",
+  "mixin_cls_mapped": "net.minecraft.client.renderer.LevelRenderer",
+  "shadows": [
+   [
+    "bufferBuilders",
+    "BufferBuilderStorage"
+   ],
+   [
+    "bufferBuilders",
+    "private BufferBuilderStorage bufferBuilders;"
+   ]
+  ],
+  "injects": [
+   "render"
+  ],
+  "invokes": []
+ }
+]

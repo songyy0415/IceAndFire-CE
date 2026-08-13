@@ -1,0 +1,474 @@
+{
+ "net.minecraft.block.MapColor::color": [
+  [
+   "FallingGenericBlock.java",
+   21,
+   "public static FallingGenericBlock builder(float hardness, float resistance, BlockSoundGroup sound, MapColor color, NoteBlockInstrument instrument) {"
+  ],
+  [
+   "FallingReturningStateBlock.java",
+   19,
+   "public FallingReturningStateBlock(float hardness, float resistance, BlockSoundGroup sound, MapColor color, BlockState revertState) {"
+  ],
+  [
+   "FallingReturningStateBlock.java",
+   26,
+   "public FallingReturningStateBlock(float hardness, float resistance, BlockSoundGroup sound, boolean slippery, MapColor color, BlockState revertState) {"
+  ]
+ ],
+ "net.minecraft.client.gui.screen.ingame.InventoryScreen::mouseX": [
+  [
+   "HippocampusScreen.java",
+   42,
+   "InventoryScreen.drawEntity(context, i + 26, j + 18, i + 77, j + 69, 17, 0.25F, mouseX, mouseY, hippo);"
+  ],
+  [
+   "HippogryphScreen.java",
+   44,
+   "InventoryScreen.drawEntity(context, i + 26, j + 18, i + 77, j + 69, 17, 0.25F, mouseX, mouseY, hippo);"
+  ]
+ ],
+ "net.minecraft.client.gui.screen.ingame.InventoryScreen::mouseY": [
+  [
+   "HippocampusScreen.java",
+   42,
+   "InventoryScreen.drawEntity(context, i + 26, j + 18, i + 77, j + 69, 17, 0.25F, mouseX, mouseY, hippo);"
+  ],
+  [
+   "HippogryphScreen.java",
+   44,
+   "InventoryScreen.drawEntity(context, i + 26, j + 18, i + 77, j + 69, 17, 0.25F, mouseX, mouseY, hippo);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::build": [
+  [
+   "IafRenderLayers.java",
+   43,
+   "MultiPhaseParameters rendertype = MultiPhaseParameters.builder().program(RenderLayer.ENTITY_CUTOUT_PROGRAM).texture(textureState).transparency(NO_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);"
+  ],
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::cull": [
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::depthTest": [
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::lightmap": [
+  [
+   "IafRenderLayers.java",
+   43,
+   "MultiPhaseParameters rendertype = MultiPhaseParameters.builder().program(RenderLayer.ENTITY_CUTOUT_PROGRAM).texture(textureState).transparency(NO_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);"
+  ],
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::of": [
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "LecternBlockEntityRenderer.java",
+   18,
+   "private static final RenderLayer ENCHANTMENT_TABLE_BOOK_TEXTURE = RenderLayer.getEntityCutoutNoCull(Identifier.of(IceAndFire.MOD_ID, \"textures/entity/lectern_book.png\"));"
+  ],
+  [
+   "PixieHouseBlockEntityRenderer.java",
+   19,
+   "private static final RenderLayer TEXTURE_0 = RenderLayer.getEntityCutoutNoCull(Identifier.of(IceAndFire.MOD_ID, \"textures/entity/pixie/house/pixie_house_0.png\"), false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::overlay": [
+  [
+   "IafRenderLayers.java",
+   43,
+   "MultiPhaseParameters rendertype = MultiPhaseParameters.builder().program(RenderLayer.ENTITY_CUTOUT_PROGRAM).texture(textureState).transparency(NO_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);"
+  ],
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::program": [
+  [
+   "IafRenderLayers.java",
+   43,
+   "MultiPhaseParameters rendertype = MultiPhaseParameters.builder().program(RenderLayer.ENTITY_CUTOUT_PROGRAM).texture(textureState).transparency(NO_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);"
+  ],
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::texture": [
+  [
+   "IafRenderLayers.java",
+   43,
+   "MultiPhaseParameters rendertype = MultiPhaseParameters.builder().program(RenderLayer.ENTITY_CUTOUT_PROGRAM).texture(textureState).transparency(NO_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);"
+  ],
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.render.RenderLayer::transparency": [
+  [
+   "IafRenderLayers.java",
+   43,
+   "MultiPhaseParameters rendertype = MultiPhaseParameters.builder().program(RenderLayer.ENTITY_CUTOUT_PROGRAM).texture(textureState).transparency(NO_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);"
+  ],
+  [
+   "IafRenderLayers.java",
+   49,
+   "return of(\"ice_texture\", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder().program(RenderLayer.BEACON_BEAM_PROGRAM).texture(lvt_1_1_).transparency(TRANSLUCENT_TRANSPARENCY).cull(ENABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true));"
+  ],
+  [
+   "IafRenderLayers.java",
+   54,
+   "MultiPhaseParameters rendertype$state = MultiPhaseParameters.builder().texture(textureState).program(RenderLayer.ENTITY_CUTOUT_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);"
+  ]
+ ],
+ "net.minecraft.client.util.math.MatrixStack::stack": [
+  [
+   "DreadScuttlerEntityRenderer.java",
+   22,
+   "public void scale(DreadScuttlerEntity LivingEntityIn, MatrixStack stack, float partialTickTime) {"
+  ],
+  [
+   "DreadThrallEntityRenderer.java",
+   55,
+   "public void scale(DreadThrallEntity livingEntityIn, MatrixStack stack, float partialTickTime) {"
+  ],
+  [
+   "GhostEntityRenderer.java",
+   146,
+   "public void scale(GhostEntity LivingEntityIn, MatrixStack stack, float partialTickTime) {"
+  ]
+ ],
+ "net.minecraft.entity.Entity::pos": [
+  [
+   "IceSpikesBlock.java",
+   54,
+   "public void onSteppedOn(World worldIn, BlockPos pos, BlockState pState, Entity entityIn) {"
+  ],
+  [
+   "RestrictWorldAccess.java",
+   179,
+   "public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {"
+  ]
+ ],
+ "net.minecraft.entity.Entity::yaw": [
+  [
+   "SummoningCrystalItem.java",
+   131,
+   "public void summonEntity(Entity entity, World worldIn, BlockPos offsetPos, float yaw) {"
+  ],
+  [
+   "DragonRiderFeatureRenderer.java",
+   115,
+   "public <E extends Entity> void renderEntity(E entityIn, int x, int y, int z, float yaw, float partialTicks, MatrixStack matrixStack, VertexConsumerProvider bufferIn, int packedLight) {"
+  ]
+ ],
+ "net.minecraft.entity.damage.DamageSource::attacker": [
+  [
+   "IafDamageTypes.java",
+   28,
+   "public static DamageSource bonusDamage(Entity attacker) {"
+  ],
+  [
+   "IafDamageTypes.java",
+   29,
+   "return new DamageSource(get(attacker, BONUS), attacker);"
+  ]
+ ],
+ "net.minecraft.entity.damage.DamageSource::source": [
+  [
+   "AmphithereEntity.java",
+   285,
+   "public boolean damage(DamageSource source, float damage) {"
+  ],
+  [
+   "AmphithereEntity.java",
+   744,
+   "protected SoundEvent getHurtSound(DamageSource source) {"
+  ],
+  [
+   "AmphithereEntity.java",
+   786,
+   "protected void playHurtSound(DamageSource source) {"
+  ]
+ ],
+ "net.minecraft.entity.data.DataTracker::entity": [
+  [
+   "AmphithereEntity.java",
+   29,
+   "import net.minecraft.entity.data.DataTracker;"
+  ],
+  [
+   "ChainTieEntity.java",
+   12,
+   "import net.minecraft.entity.data.DataTracker;"
+  ],
+  [
+   "CockatriceEntity.java",
+   20,
+   "import net.minecraft.entity.data.DataTracker;"
+  ]
+ ],
+ "net.minecraft.item.Items::register": [
+  [
+   "IafArmorMaterials.java",
+   28,
+   "public static final RegistrySupplier<ArmorMaterial> COPPER = register(\"copper\", new int[]{1, 3, 4, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0, new MemorizeSupplier<>(() -> Ingredient.ofItems(Items.COPPER_INGOT)));"
+  ]
+ ],
+ "net.minecraft.network.codec.PacketCodecs::packetCodec": [
+  [
+   "IafDataComponents.java",
+   23,
+   ".packetCodec(PacketCodecs.INTEGER)"
+  ],
+  [
+   "IafDataComponents.java",
+   27,
+   ".packetCodec(PacketCodecs.INTEGER)"
+  ]
+ ],
+ "net.minecraft.registry.RegistryKey::registry": [
+  [
+   "DeathWormEntity.java",
+   45,
+   "import net.minecraft.registry.RegistryKey;"
+  ],
+  [
+   "DragonBaseEntity.java",
+   85,
+   "import net.minecraft.registry.RegistryKey;"
+  ],
+  [
+   "GhostEntity.java",
+   35,
+   "import net.minecraft.registry.RegistryKey;"
+  ]
+ ],
+ "net.minecraft.registry.RegistryOps::of": [
+  [
+   "DragonBaseEntity.java",
+   759,
+   "compound.put(\"Items\", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), this.dragonInventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));"
+  ],
+  [
+   "DragonBaseEntity.java",
+   791,
+   "List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), compound.get(\"Items\")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());"
+  ],
+  [
+   "HippocampusEntity.java",
+   351,
+   "compound.put(\"Items\", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), this.inventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));"
+  ]
+ ],
+ "net.minecraft.structure.StructurePieceType::register": [
+  [
+   "IafStructurePieces.java",
+   15,
+   "public static final RegistrySupplier<StructurePieceType> FIRE_DRAGON_ROOST = register(\"fire_dragon_roost\", () -> FireDragonRoostStructure.FireDragonRoostPiece::new);"
+  ],
+  [
+   "IafStructurePieces.java",
+   16,
+   "public static final RegistrySupplier<StructurePieceType> ICE_DRAGON_ROOST = register(\"ice_dragon_roost\", () -> IceDragonRoostStructure.IceDragonRoostPiece::new);"
+  ],
+  [
+   "IafStructurePieces.java",
+   17,
+   "public static final RegistrySupplier<StructurePieceType> LIGHTNING_DRAGON_ROOST = register(\"lightning_dragon_roost\", () -> LightningDragonRoostStructure.LightningDragonRoostPiece::new);"
+  ]
+ ],
+ "net.minecraft.text.HoverEvent::tooltip": [
+  [
+   "DragonSeekerItem.java",
+   52,
+   "Text locationText = Text.literal(pos1).setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, pos2)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable(\"chat.coordinates.tooltip\"))));"
+  ]
+ ],
+ "net.minecraft.text.Text::contains": [
+  [
+   "BestiaryItem.java",
+   52,
+   "tooltip.add(Text.translatable(\"bestiary.contains\").formatted(Formatting.GRAY));"
+  ]
+ ],
+ "net.minecraft.text.Text::of": [
+  [
+   "IceAndFireFabricClient.java",
+   22,
+   "FabricLoader.getInstance().getModContainer(IceAndFire.MOD_ID).ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of(IceAndFire.MOD_ID, \"iaf_legacy\"), container, Text.translatable(\"resourcePack.iceandfire.legacy.name\"), ResourcePackActivationType.NORMAL));"
+  ]
+ ],
+ "net.minecraft.util.math.BlockPos::dx": [
+  [
+   "DeathWormAIJumpGoal.java",
+   42,
+   "private boolean canJumpTo(BlockPos pos, int dx, int dz, int scale) {"
+  ],
+  [
+   "DeathWormAIJumpGoal.java",
+   43,
+   "BlockPos blockpos = pos.add(dx * scale, 0, dz * scale);"
+  ],
+  [
+   "DeathWormAIJumpGoal.java",
+   47,
+   "private boolean isAirAbove(BlockPos pos, int dx, int dz, int scale) {"
+  ]
+ ],
+ "net.minecraft.util.math.BlockPos::pos": [
+  [
+   "AmphithereEntity.java",
+   111,
+   "BlockPos pos = new BlockPos(x, entity.getBlockY(), z);"
+  ],
+  [
+   "AmphithereEntity.java",
+   178,
+   "protected void fall(double y, boolean onGroundIn, BlockState state, BlockPos pos) {"
+  ],
+  [
+   "AmphithereEntity.java",
+   182,
+   "public float getPathfindingFavor(BlockPos pos) {"
+  ]
+ ],
+ "net.minecraft.util.math.Direction::HORIZONTAL": [
+  [
+   "LecternBlock.java",
+   30,
+   "public static final DirectionProperty FACING = DirectionProperty.of(\"facing\", Direction.Type.HORIZONTAL);"
+  ],
+  [
+   "PixieHouseBlock.java",
+   23,
+   "public static final DirectionProperty FACING = DirectionProperty.of(\"facing\", Direction.Type.HORIZONTAL);"
+  ],
+  [
+   "DragonForgeBlockEntity.java",
+   128,
+   "for (Direction facing : Direction.Type.HORIZONTAL) {"
+  ]
+ ],
+ "net.minecraft.util.math.Direction::name": [
+  [
+   "IafBlocks.java",
+   158,
+   "IafItems.registerBlock(name, () -> new VerticallyAttachableBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), new Item.Settings(), Direction.DOWN));"
+  ]
+ ],
+ "net.minecraft.util.math.Direction::offset": [
+  [
+   "CyclopsCaveStructure.java",
+   207,
+   "level.setBlockState(rightRib.up(ribHeight).offset(direction.rotateYCounterclockwise()), Blocks.BONE_BLOCK.getDefaultState().with(PillarBlock.AXIS, Direction.Axis.Y), Block.NOTIFY_LISTENERS);"
+  ],
+  [
+   "CyclopsCaveStructure.java",
+   209,
+   "level.setBlockState(leftRib.up(ribHeight).offset(direction.rotateYClockwise()), Blocks.BONE_BLOCK.getDefaultState().with(PillarBlock.AXIS, Direction.Axis.Y), Block.NOTIFY_LISTENERS);"
+  ]
+ ],
+ "net.minecraft.world.RaycastContext::end": [
+  [
+   "DeathWormSandNavigation.java",
+   49,
+   "HitResult raytraceresult = this.world.raycast(new CustomRayTraceContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this.entity));"
+  ]
+ ],
+ "net.minecraft.world.RaycastContext::start": [
+  [
+   "DeathWormSandNavigation.java",
+   49,
+   "HitResult raytraceresult = this.world.raycast(new CustomRayTraceContext(start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this.entity));"
+  ]
+ ],
+ "net.minecraft.world.WorldAccess::direction": [
+  [
+   "LightningDragonRoostStructure.java",
+   110,
+   "private void generateSpike(WorldAccess worldIn, Random rand, BlockPos position, Direction direction) {"
+  ]
+ ],
+ "net.minecraft.world.biome.Biome::name": [
+  [
+   "HippogryphType.java",
+   15,
+   "public record HippogryphType(String name, boolean developer, TagKey<Biome> spawnBiomes) {"
+  ],
+  [
+   "TrollType.java",
+   32,
+   "public TrollType(String name, RegistryEntry<ArmorMaterial> material, TagKey<Biome> spawnBiomes, ITrollWeapon... weapons) {"
+  ],
+  [
+   "IafHippogryphTypes.java",
+   23,
+   "private static HippogryphType register(String name, boolean developer, TagKey<Biome> spawnBiomes) {"
+  ]
+ ],
+ "net.minecraft.world.event.GameEvent::emitter": [
+  [
+   "RestrictWorldAccess.java",
+   115,
+   "public void emitGameEvent(RegistryEntry<GameEvent> event, Vec3d emitterPos, GameEvent.Emitter emitter) {"
+  ]
+ ]
+}

@@ -60,6 +60,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -122,6 +123,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.util.Pair;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.world.Difficulty;
@@ -828,7 +831,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
 
     protected void createInventory() {
         SimpleContainer tempInventory = this.dragonInventory;
-        this.dragonInventory = new SimpleContainer(this.getContainerSize());
+        this.dragonInventory = new DragonInventory();
         if (tempInventory != null) {
             int i = Math.min(tempInventory.getContainerSize(), this.dragonInventory.getContainerSize());
 
@@ -845,6 +848,37 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     protected void updateContainerEquipment() {
         if (!this.level().isClientSide())
             this.refreshDirtyAttributes();
+    }
+
+    /**
+     * MC 26.2 removed the container change-listener API (SimpleContainer.setChanged() is a no-op and
+     * there is no addListener), so the dragon is never told when its armor/banner items change. This
+     * container restores that hook: any mutation re-computes the armor attribute and re-broadcasts the
+     * equipment so clients see the armor pieces (and banner) immediately instead of only after re-login.
+     */
+    public class DragonInventory extends SimpleContainer {
+        public DragonInventory() {
+            super(DragonBaseEntity.this.getContainerSize());
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            if (!DragonBaseEntity.this.level().isClientSide())
+                DragonBaseEntity.this.onDragonInventoryChanged();
+        }
+    }
+
+    protected void onDragonInventoryChanged() {
+        this.refreshDirtyAttributes();
+        if (this.level() instanceof ServerLevel serverLevel) {
+            List<Pair<EquipmentSlot, ItemStack>> slots = new ArrayList<>();
+            for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+                ItemStack stack = this.getItemBySlot(slot);
+                slots.add(Pair.of(slot, stack.copy()));
+            }
+            serverLevel.getChunkSource().sendToTrackingPlayers(this, new ClientboundSetEquipmentPacket(this.getId(), slots));
+        }
     }
 
     public boolean hasInventoryChanged(Container pInventory) {
@@ -2221,6 +2255,17 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             pPos = new Vec3(0, pPos.y(), 0);
         }
 
+        // 26.2's Entity.move() → restituteMovementAfterCollisions() zeroes the vertical
+        // velocity on any vertical collision (the bounce/restitution system added after
+        // 1.21.1). A descending dragon's large bounding box grazes trees/hills on the way
+        // down, so this stalls it mid-descent: onGround() stays true, flyTicks resets →
+        // doesWantToLand() false → getBlockInView returns an airborne target → it climbs
+        // away instead of landing. Capture the pre-collision Y so a flying dragon keeps
+        // its descent momentum and glides over the obstruction (1.21.1 never zeroed Y in
+        // move()).
+        boolean flying = this.isHovering() || this.isFlying();
+        double preCollisionY = this.getDeltaMovement().y;
+
         if (this.isVehicle()) {
             // When riding, the server side movement check is performed in ServerGamePacketListenerImpl#handleMoveVehicle
             // verticalCollide tag might get inconsistent due to dragon's large bounding box and causes move wrongly msg
@@ -2236,11 +2281,19 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             }
 
             // Set no gravity flag to prevent getting kicked by flight disabled servers
-            this.setNoGravity(this.isHovering() || this.isFlying());
+            this.setNoGravity(flying);
         } else {
             // The flight mgr is not ready for noGravity
             this.setNoGravity(false);
             super.move(pType, pPos);
+        }
+
+        // Restore the descent momentum of a flying dragon that clipped terrain, so it
+        // passes over the obstruction instead of stalling on top of it. Once it genuinely
+        // lands (setFlying(false) from the landing gate or roost/escort goal), this branch
+        // goes inert and normal grounded physics applies.
+        if (flying && this.verticalCollisionBelow && preCollisionY < 0) {
+            this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.0, 1.0).add(0.0, preCollisionY, 0.0));
         }
     }
 

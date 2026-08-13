@@ -387,7 +387,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
 
     protected void createInventory() {
         SimpleContainer simplecontainer = this.inventory;
-        this.inventory = new SimpleContainer(this.getInventorySize());
+        this.inventory = new HippocampusInventory();
         if (simplecontainer != null) {
             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
 
@@ -406,6 +406,24 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
             this.setSaddled(!this.inventory.getItem(INV_SLOT_SADDLE).isEmpty());
             this.setChested(!this.inventory.getItem(INV_SLOT_CHEST).isEmpty());
             this.setArmor(getIntFromArmor(this.inventory.getItem(INV_SLOT_ARMOR)));
+        }
+    }
+
+    /**
+     * MC 26.2 removed the container change-listener API, so the hippocampus is never told when its
+     * saddle/chest/armor items change. This restores that hook so the armor value and visuals update
+     * immediately instead of only after re-login.
+     */
+    public class HippocampusInventory extends SimpleContainer {
+        public HippocampusInventory() {
+            super(HippocampusEntity.this.getInventorySize());
+        }
+
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            if (!HippocampusEntity.this.level().isClientSide())
+                HippocampusEntity.this.updateContainerEquipment();
         }
     }
 

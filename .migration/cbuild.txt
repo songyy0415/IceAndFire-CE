@@ -1,0 +1,57 @@
+
+> Configure project :
+Architect Plugin: 3.4.164
+Architectury Loom: 1.11.458
+
+> Task :common:compileJava UP-TO-DATE
+> Task :common:processResources UP-TO-DATE
+> Task :common:classes UP-TO-DATE
+> Task :common:jar UP-TO-DATE
+> Task :common:compileTestJava NO-SOURCE
+> Task :common:processIncludeJars
+> Task :fabric:processResources
+> Task :fabric:compileJava UP-TO-DATE
+> Task :fabric:classes
+> Task :fabric:jar
+> Task :fabric:compileTestJava NO-SOURCE
+
+> Task :fabric:processIncludeJars
+(0.2) is not valid semver for dependency com.github.IAFEnvoy.Integration:integration-fabric:0.2
+
+> Task :fabric:sourcesJar
+> Task :fabric:processTestResources NO-SOURCE
+> Task :fabric:testClasses UP-TO-DATE
+> Task :fabric:test NO-SOURCE
+> Task :fabric:validateAccessWidener
+> Task :fabric:check
+> Task :fabric:remapSourcesJar
+> Task :common:sourcesJar
+> Task :common:processTestResources NO-SOURCE
+> Task :common:testClasses UP-TO-DATE
+> Task :common:test NO-SOURCE
+> Task :common:validateAccessWidener
+> Task :common:check
+
+> Task :common:transformProductionFabric
+[Architectury Transformer] Read classpath in 1.462 s
+[Architectury Transformer] Transformed jar with 5 transformer(s) in 3.771 s
+
+> Task :common:remapJar
+> Task :common:remapSourcesJar
+> Task :common:assemble
+> Task :common:build
+> Task :fabric:shadowJar
+> Task :fabric:remapJar
+> Task :fabric:assemble
+> Task :fabric:build
+
+[Incubating] Problems report is available at: file:///D:/IceAndFire-CE/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 38s
+18 actionable tasks: 14 executed, 4 up-to-date

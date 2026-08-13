@@ -1,0 +1,37 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+Architect Plugin: 3.4.164
+Architectury Loom: 1.11.458
+
+> Task :fabric:processResources UP-TO-DATE
+> Task :fabric:generateLog4jConfig UP-TO-DATE
+> Task :fabric:generateRemapClasspath UP-TO-DATE
+> Task :fabric:generateDLIConfig UP-TO-DATE
+
+> Task :common:compileJava
+Note: D:\IceAndFire-CE\common\src\main\java\com\iafenvoy\iceandfire\entity\AmphithereEntity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :fabric:prepareArchitecturyTransformer
+> Task :fabric:configureLaunch
+> Task :fabric:downloadAssets UP-TO-DATE
+> Task :fabric:configureClientLaunch
+> Task :common:processResources UP-TO-DATE
+> Task :common:classes
+> Task :common:jar UP-TO-DATE
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Gradle build daemon has been stopped: stop command received
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+> Task :fabric:compileJava

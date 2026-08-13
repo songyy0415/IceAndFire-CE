@@ -23,7 +23,7 @@ public class DragonPosWorldData extends SavedData {
         data.lastDragonPositions.putAll(map);
         return data;
     }));
-    private static final SavedDataType<DragonPosWorldData> TYPE = new SavedDataType<>(Identifier.fromNamespaceAndPath("iceandfire", "dragonPositions"), DragonPosWorldData::new, CODEC, DataFixTypes.CHUNK);
+    private static final SavedDataType<DragonPosWorldData> TYPE = new SavedDataType<>(Identifier.fromNamespaceAndPath("iceandfire", "dragon_positions"), DragonPosWorldData::new, CODEC, DataFixTypes.CHUNK);
     protected final Map<UUID, BlockPos> lastDragonPositions = new HashMap<>();
 
     public static DragonPosWorldData get(Level world) {

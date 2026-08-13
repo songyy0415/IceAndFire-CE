@@ -1,0 +1,925 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/songy/.gradle/wrapper/dists/gradle-8.14-bin/38aieal9i53h9rfe7vjup95b9/gradle-8.14/lib/native-platform-0.22-milestone-28.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+
+> Configure project :
+Architect Plugin: 3.4.164
+Architectury Loom: 1.11.458
+
+> Task :fabric:processResources UP-TO-DATE
+> Task :fabric:generateLog4jConfig UP-TO-DATE
+> Task :fabric:generateRemapClasspath UP-TO-DATE
+> Task :fabric:generateDLIConfig UP-TO-DATE
+> Task :common:compileJava UP-TO-DATE
+> Task :common:processResources UP-TO-DATE
+> Task :common:classes UP-TO-DATE
+> Task :common:jar UP-TO-DATE
+> Task :fabric:prepareArchitecturyTransformer
+> Task :fabric:compileJava UP-TO-DATE
+> Task :fabric:classes UP-TO-DATE
+> Task :fabric:configureLaunch
+> Task :fabric:downloadAssets UP-TO-DATE
+> Task :fabric:configureClientLaunch
+
+> Task :fabric:runClient
+[Architectury Transformer] Architectury Runtime 5.2.91
+[Architectury Transformer] Read classpath in 1.687 s
+[Architectury Transformer] Listening at D:\IceAndFire-CE\common\build\devlibs\IceAndFireCE-common-2.0-beta.16-dev.jar
+[08:44:07] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 1.21.1 with Fabric Loader 0.17.2
+[08:44:07] [main/INFO] (FabricLoader) Loading 66 mods:
+	- architectury 13.0.8
+	- cardinal-components-base 6.1.1
+	- cardinal-components-entity 6.1.1
+	- emi 1.1.19+1.21.1+fabric
+	- fabric-api 0.116.5+1.21.1
+	- fabric-api-base 0.4.42+6573ed8cd1
+	- fabric-api-lookup-api-v1 1.6.71+b559734419
+	- fabric-biome-api-v1 13.0.31+d527f9fd19
+	- fabric-block-api-v1 1.1.0+0bc3503219
+	- fabric-block-view-api-v2 1.0.11+ebb2264e19
+	- fabric-blockrenderlayer-v1 1.1.52+0af3f5a719
+	- fabric-client-tags-api-v1 1.1.15+6573ed8c19
+	- fabric-command-api-v1 1.2.49+f71b366f19
+	- fabric-command-api-v2 2.2.28+6ced4dd919
+	- fabric-commands-v0 0.2.66+df3654b319
+	- fabric-content-registries-v0 8.0.19+b559734419
+	- fabric-convention-tags-v1 2.1.5+7f945d5b19
+	- fabric-convention-tags-v2 2.11.1+a406e79519
+	- fabric-crash-report-info-v1 0.2.29+0af3f5a719
+	- fabric-data-attachment-api-v1 1.4.5+6116a37819
+	- fabric-data-generation-api-v1 20.2.33+37516cd619
+	- fabric-dimensions-v1 4.0.0+6fc22b9919
+	- fabric-entity-events-v1 1.8.0+2b27e0a419
+	- fabric-events-interaction-v0 0.7.13+ba9dae0619
+	- fabric-game-rule-api-v1 1.0.53+6ced4dd919
+	- fabric-gametest-api-v1 2.0.5+6fc22b9919
+	- fabric-item-api-v1 11.2.0+3b3cb2e819
+	- fabric-item-group-api-v1 4.1.7+def88e3a19
+	- fabric-key-binding-api-v1 1.0.47+0af3f5a719
+	- fabric-keybindings-v0 0.2.45+df3654b319
+	- fabric-lifecycle-events-v1 2.6.0+0865547519
+	- fabric-loot-api-v2 3.0.15+3f89f5a519
+	- fabric-loot-api-v3 1.0.3+3f89f5a519
+	- fabric-message-api-v1 6.0.14+8aaf3aca19
+	- fabric-model-loading-api-v1 2.1.0+b4d813fc19
+	- fabric-networking-api-v1 4.3.0+c7469b2119
+	- fabric-object-builder-api-v1 15.2.1+40875a9319
+	- fabric-particles-v1 4.0.2+6573ed8c19
+	- fabric-recipe-api-v1 5.0.14+248df81c19
+	- fabric-registry-sync-v0 5.3.1+e3eddc2119
+	- fabric-renderer-api-v1 3.4.1+b4d813fc19
+	- fabric-renderer-indigo 1.7.1+c705a49c19
+	- fabric-renderer-registries-v1 3.2.69+df3654b319
+	- fabric-rendering-data-attachment-v1 0.3.49+73761d2e19
+	- fabric-rendering-fluids-v1 3.1.6+1daea21519
+	- fabric-rendering-v0 1.1.72+df3654b319
+	- fabric-rendering-v1 5.1.0+ab4c25a019
+	- fabric-resource-conditions-api-v1 4.3.0+8dc279b119
+	- fabric-resource-loader-v0 1.3.1+5b5275af19
+	- fabric-screen-api-v1 2.0.25+8b68f1c719
+	- fabric-screen-handler-api-v1 1.3.90+b559734419
+	- fabric-sound-api-v1 1.0.23+6573ed8c19
+	- fabric-transfer-api-v1 5.4.3+c24bd99419
+	- fabric-transitive-access-wideners-v1 6.2.0+45b9699719
+	- fabricloader 0.17.2
+	- generated_01b3176 1.0.0
+	- iceandfire 2.0-beta.16
+	- integration 0.2
+	- jade 15.9.2+fabric
+	- java 21
+	- jupiter 2.3.4
+	- minecraft 1.21.1
+	- mixinextras 0.4.1
+	- modmenu 11.0.3
+	- trinkets 3.10.0
+	- uranus 2.4
+[08:44:08] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/songy/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.3+mixin.0.8.7/51ee0a44ab05f6fddd66b09e66b3a16904f9c55d/sponge-mixin-0.15.3+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[08:44:08] [main/INFO] (FabricLoader/Mixin) Loaded Fabric development mappings for mixin remapper!
+[08:44:08] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_17
+[08:44:08] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_21
+[08:44:08] [main/WARN] (FabricLoader/Mixin) Error loading class: me/shedaniel/autoconfig/AutoConfig (java.lang.ClassNotFoundException: me/shedaniel/autoconfig/AutoConfig)
+[08:44:08] [main/WARN] (FabricLoader/Mixin) Error loading class: me/shedaniel/autoconfig/AutoConfig (java.lang.ClassNotFoundException: me/shedaniel/autoconfig/AutoConfig)
+[08:44:09] [main/WARN] (FabricLoader/Mixin) Error loading class: mezz/jei/library/load/PluginCaller (java.lang.ClassNotFoundException: mezz/jei/library/load/PluginCaller)
+[08:44:10] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.4.1).
+[08:44:11] [Datafixer Bootstrap/INFO] (Minecraft) 226 Datafixer optimizations took 440 milliseconds
+[08:44:19] [Render thread/INFO] (Minecraft) Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[08:44:19] [Render thread/INFO] (Minecraft) Setting user: Player344
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_multipart
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for multipart
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra_multipart
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for cylcops_multipart
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_egg
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_arrow
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_skull
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for fire_dragon
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for ice_dragon
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for lightning_dragon
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for fire_dragon_charge
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for ice_dragon_charge
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for lightning_dragon_charge
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hippogryph_egg
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hippogryph
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for stone_statue
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for gorgon
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for pixie
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for cyclops
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for siren
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hippocampus
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for deathworm
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for deathworm_egg
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for cockatrice
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for cockatrice_egg
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for stymphalian_bird
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for stymphalian_feather
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for stymphalian_arrow
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for troll
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for amphithere
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for amphithere_arrow
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for sea_serpent
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for sea_serpent_bubbles
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for sea_serpent_arrow
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for chain_tie
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for pixie_charge
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for tide_trident
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for mob_skull
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_thrall
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_ghoul
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_beast
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_scuttler
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_lich
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_lich_skull
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_knight
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_horse
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra_breath
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra_arrow
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for ghost
+[08:44:20] [Render thread/ERROR] (Minecraft) No data fixer registered for ghost_sword
+[08:44:21] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:dragon_control
+[08:44:21] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:multipart_interact
+[08:44:21] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:player_hit_multipart
+[08:44:21] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:start_riding_mob_c2s
+[08:44:21] [Render thread/INFO] (Indigo) [Indigo] Registering Indigo renderer!
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:dragon_set_burn_block
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:lightning_bolt_s2c
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:start_riding_mob_s2c
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:update_pixie_house
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:update_pixie_jar
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:update_podium
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id uranus:animation
+[08:44:22] [Render thread/INFO] (Mod Menu/Update Checker) Checking mod updates...
+[08:44:22] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id architectury:spawn_entity_packet
+[08:44:22] [ModMenu/Update Checker/Fabric Loader/INFO] (Mod Menu/Update Checker) Update available for 'fabricloader@0.17.2'
+[08:44:23] [Render thread/INFO] (Minecraft) Backend library: LWJGL version 3.3.3-snapshot
+[08:44:24] [Render thread/INFO] (Minecraft) Reloading ResourceManager: vanilla, fabric, cardinal-components-base, cardinal-components-entity, emi, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-view-api-v2, fabric-blockrenderlayer-v1, fabric-client-tags-api-v1, fabric-command-api-v1, fabric-command-api-v2, fabric-commands-v0, fabric-content-registries-v0, fabric-convention-tags-v1, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-gametest-api-v1, fabric-item-api-v1, fabric-item-group-api-v1, fabric-key-binding-api-v1, fabric-keybindings-v0, fabric-lifecycle-events-v1, fabric-loot-api-v2, fabric-loot-api-v3, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-renderer-registries-v1, fabric-rendering-data-attachment-v1, fabric-rendering-fluids-v1, fabric-rendering-v0, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-screen-api-v1, fabric-screen-handler-api-v1, fabric-sound-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, generated_01b3176, jade, jupiter, modmenu, trinkets
+[08:44:24] [Worker-Main-13/INFO] (Minecraft) Found unifont_all_no_pua-15.1.05.hex, loading
+[08:44:24] [Worker-Main-9/INFO] (Minecraft) Found unifont_jp_patch-15.1.05.hex, loading
+[08:44:25] [Render thread/INFO] (Jade) Start loading plugin from Ice And Fire Community Edition: com.iafenvoy.iceandfire.compat.jade.IceAndFireJadePlugin
+[08:44:25] [Render thread/INFO] (Jade) Bootstrapped plugin from com.iafenvoy.iceandfire.compat.jade.IceAndFireJadePlugin in 38.53 ms
+[08:44:25] [Render thread/INFO] (Jade) Loaded plugin from com.iafenvoy.iceandfire.compat.jade.IceAndFireJadePlugin in 49.10 ms
+[08:44:25] [Render thread/INFO] (Jade) Start loading plugin from Jade: snownee.jade.addon.core.CorePlugin
+[08:44:25] [Render thread/INFO] (Jade) Bootstrapped plugin from snownee.jade.addon.core.CorePlugin in 12.79 ms
+[08:44:25] [Render thread/INFO] (Jade) Loaded plugin from snownee.jade.addon.core.CorePlugin in 13.14 ms
+[08:44:25] [Render thread/INFO] (Jade) Start loading plugin from Jade: snownee.jade.addon.vanilla.VanillaPlugin
+[08:44:25] [Worker-Main-11/WARN] (Minecraft) Texture iceandfire:item/dragonsteel_lightning_sword with size 36x36 limits mip level from 4 to 2
+[08:44:25] [Worker-Main-11/WARN] (Minecraft) Texture iceandfire:item/dread_queen_sword with size 38x43 limits mip level from 2 to 0
+[08:44:25] [Worker-Main-11/WARN] (Minecraft) minecraft:textures/atlas/blocks.png: dropping miplevel from 4 to 0, because of minimum power of two: 1
+[08:44:25] [Render thread/INFO] (Jade) Bootstrapped plugin from snownee.jade.addon.vanilla.VanillaPlugin in 38.11 ms
+[08:44:25] [Render thread/INFO] (Jade) Loaded plugin from snownee.jade.addon.vanilla.VanillaPlugin in 47.74 ms
+[08:44:25] [Render thread/INFO] (Jade) Start loading plugin from Jade: snownee.jade.addon.universal.UniversalPlugin
+[08:44:25] [Render thread/INFO] (Jade) Bootstrapped plugin from snownee.jade.addon.universal.UniversalPlugin in 9.593 ms
+[08:44:25] [Render thread/INFO] (Jade) Loaded plugin from snownee.jade.addon.universal.UniversalPlugin in 10.27 ms
+[08:44:25] [Render thread/INFO] (Jade) Start loading plugin from Jade: snownee.jade.addon.access.AccessibilityPlugin
+[08:44:25] [Render thread/INFO] (Jade) Bootstrapped plugin from snownee.jade.addon.access.AccessibilityPlugin in 6.779 ms
+[08:44:25] [Render thread/INFO] (Jade) Loaded plugin from snownee.jade.addon.access.AccessibilityPlugin in 7.242 ms
+[08:44:25] [Render thread/INFO] (Jade) Start loading plugin from Jade: snownee.jade.addon.debug.DebugPlugin
+[08:44:25] [Render thread/INFO] (Jade) Bootstrapped plugin from snownee.jade.addon.debug.DebugPlugin in 4.498 ms
+[08:44:25] [Render thread/INFO] (Jade) Loaded plugin from snownee.jade.addon.debug.DebugPlugin in 4.929 ms
+[08:44:26] [Worker-Main-9/INFO] (Uranus) Successfully load 192 tabula models
+[08:44:26] [Render thread/WARN] (Minecraft) Missing sound for event: minecraft:item.goat_horn.play
+[08:44:26] [Render thread/WARN] (Minecraft) Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[08:44:27] [Render thread/INFO] (Minecraft) OpenAL initialized on device OpenAL Soft on 本机扬声器 (Audio Device)
+[08:44:27] [Render thread/INFO] (Minecraft) Sound engine started
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 1024x1024x0 minecraft:textures/atlas/blocks.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 1024x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 1024x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[08:44:27] [Render thread/INFO] (Minecraft) Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[08:44:28] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[08:44:28] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[08:44:28] [Render thread/INFO] (Minecraft) Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[08:44:28] [Render thread/INFO] (Minecraft) Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[08:44:28] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
+[08:44:28] [Render thread/WARN] (Minecraft) Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[08:44:35] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/pixie_dust_milky_tea
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(CreateWorldScreen.java:329) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.loadLevels(WorldSelectionList.java:183) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.<init>(WorldSelectionList.java:106) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.SelectWorldScreen.init(SelectWorldScreen.java:51) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.init(Screen.java:309) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.setScreen(Minecraft.java:1143) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.method_19861(TitleScreen.java:146) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.Button.onPress(Button.java:96) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractButton.onClick(AbstractButton.java:48) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractWidget.mouseClicked(AbstractWidget.java:141) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.mouseClicked(TitleScreen.java:295) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwWaitEventsTimeout(GLFW.java:3509) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.limitDisplayFPS(RenderSystem.java:184) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1310) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:44:35] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/cooked_rice_with_ice_dragon_meat
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(CreateWorldScreen.java:329) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.loadLevels(WorldSelectionList.java:183) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.<init>(WorldSelectionList.java:106) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.SelectWorldScreen.init(SelectWorldScreen.java:51) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.init(Screen.java:309) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.setScreen(Minecraft.java:1143) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.method_19861(TitleScreen.java:146) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.Button.onPress(Button.java:96) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractButton.onClick(AbstractButton.java:48) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractWidget.mouseClicked(AbstractWidget.java:141) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.mouseClicked(TitleScreen.java:295) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwWaitEventsTimeout(GLFW.java:3509) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.limitDisplayFPS(RenderSystem.java:184) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1310) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:44:35] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/cooked_rice_with_lightning_dragon_meat
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(CreateWorldScreen.java:329) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.loadLevels(WorldSelectionList.java:183) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.<init>(WorldSelectionList.java:106) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.SelectWorldScreen.init(SelectWorldScreen.java:51) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.init(Screen.java:309) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.setScreen(Minecraft.java:1143) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.method_19861(TitleScreen.java:146) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.Button.onPress(Button.java:96) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractButton.onClick(AbstractButton.java:48) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractWidget.mouseClicked(AbstractWidget.java:141) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.mouseClicked(TitleScreen.java:295) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwWaitEventsTimeout(GLFW.java:3509) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.limitDisplayFPS(RenderSystem.java:184) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1310) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:44:35] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/ghost_cream
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(CreateWorldScreen.java:329) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.loadLevels(WorldSelectionList.java:183) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.<init>(WorldSelectionList.java:106) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.SelectWorldScreen.init(SelectWorldScreen.java:51) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.init(Screen.java:309) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.setScreen(Minecraft.java:1143) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.method_19861(TitleScreen.java:146) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.Button.onPress(Button.java:96) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractButton.onClick(AbstractButton.java:48) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractWidget.mouseClicked(AbstractWidget.java:141) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.mouseClicked(TitleScreen.java:295) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwWaitEventsTimeout(GLFW.java:3509) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.limitDisplayFPS(RenderSystem.java:184) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1310) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:44:35] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/cooked_rice_with_fire_dragon_meat
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(CreateWorldScreen.java:329) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.loadLevels(WorldSelectionList.java:183) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList.<init>(WorldSelectionList.java:106) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.SelectWorldScreen.init(SelectWorldScreen.java:51) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.init(Screen.java:309) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.setScreen(Minecraft.java:1143) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.method_19861(TitleScreen.java:146) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.Button.onPress(Button.java:96) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractButton.onClick(AbstractButton.java:48) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractWidget.mouseClicked(AbstractWidget.java:141) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.TitleScreen.mouseClicked(TitleScreen.java:295) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwWaitEventsTimeout(GLFW.java:3509) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.limitDisplayFPS(RenderSystem.java:184) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1310) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:44:35] [Render thread/INFO] (Minecraft) Loaded 1678 recipes
+[08:44:35] [Render thread/INFO] (Minecraft) Loaded 1735 advancements
+[08:44:36] [Render thread/INFO] (Jade) LootTableMineableCollector took 5.618 ms
+[08:44:40] [Render thread/INFO] (BiomeModificationImpl) Applied 264 biome modifications to 66 of 66 new biomes in 14.05 ms
+[08:44:40] [Server thread/INFO] (Minecraft) Starting integrated minecraft server version 1.21.1
+[08:44:40] [Server thread/INFO] (Minecraft) Generating keypair
+[08:44:43] [Server thread/INFO] (Minecraft) Preparing start region for dimension minecraft:overworld
+[08:44:43] [Render thread/INFO] (Minecraft) Preparing spawn area: 2%
+[08:44:44] [Render thread/INFO] (Minecraft) Preparing spawn area: 2%
+[08:44:44] [Render thread/INFO] (Minecraft) Preparing spawn area: 2%
+[08:44:45] [Render thread/INFO] (Minecraft) Preparing spawn area: 18%
+[08:44:45] [Render thread/INFO] (Minecraft) Preparing spawn area: 22%
+[08:44:46] [Render thread/INFO] (Minecraft) Preparing spawn area: 51%
+[08:44:46] [Server thread/WARN] (TranslationConventionLogWarnings) 
+	Dev warning - Untranslated Item Tags detected. Please translate your item tags so other mods such as recipe viewers can properly display your tag's name.
+	The format desired is tag.item.<namespace>.<path> for the translation key with slashes in path turned into periods.
+	To disable this message, set this system property in your runs: `-Dfabric-tag-conventions-v2.missingTagTranslationWarning=SILENCED`.
+	To see individual untranslated item tags found, set the system property to `-Dfabric-tag-conventions-v2.missingTagTranslationWarning=VERBOSE`.
+	Default is `SHORT`.
+
+[08:44:46] [Render thread/INFO] (Minecraft) Time elapsed: 2899 ms
+[08:44:46] [Server thread/INFO] (Minecraft) Changing view distance to 12, from 10
+[08:44:46] [Server thread/INFO] (Minecraft) Changing simulation distance to 12, from 0
+[08:44:47] [Render thread/INFO] (EMI) [EMI] Recipes synchronized, waiting for tags to reload EMI...
+[08:44:47] [Server thread/INFO] (Minecraft) Player344[local:E:88252aba] logged in with entity id 11 at (229.5, 71.0, -58.5)
+[08:44:47] [Server thread/INFO] (Minecraft) Player344 joined the game
+[08:44:47] [Server thread/INFO] (Minecraft) Player344 has made the advancement [Ice and Fire]
+[08:44:47] [Render thread/INFO] (EMI) [EMI] Joining server, EMI waiting for data from server...
+[08:44:47] [Render thread/INFO] (EMI) [EMI] Tags synchronized, reloading EMI
+[08:44:47] [Render thread/INFO] (EMI) [EMI] Starting Reload
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Starting EMI reload...
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Clearing data
+[08:44:47] [Render thread/INFO] (Minecraft) [System] [CHAT] Player344 has made the advancement [Ice and Fire]
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Initializing plugin from emi
+[08:44:47] [Render thread/INFO] (Minecraft) Loaded 20 advancements
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Initialized plugin from emi in 7ms
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Initializing plugin from iceandfire
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Initialized plugin from iceandfire in 0ms
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Initializing plugin from trinkets
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Initialized plugin from trinkets in 0ms
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Processing tags
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:bones/dragon
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:bones/wither
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:gems/sapphire
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:ingots/silver
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:milks
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:nuggets/silver
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:ores/sapphire
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:ores/silver
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:raw_materials/silver
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:storage_blocks/raw_silver
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #c:storage_blocks/silver
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:breed_ampithere
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:breed_hippocampus
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:breed_hippogryph
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:charred_blocks
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:crackled_blocks
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_body
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_head
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_neck
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_tail
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armors
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_arrows
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_bloods
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_food_meat
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_hearts
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_skulls
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_steels
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:frozen_blocks
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_ampithere
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_cockatrice
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_hippocampus
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_pixie
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:make_item_drops_fireimmune
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:mob_skulls
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:pixie_stolen_blacklist
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon/fire
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon/ice
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon/lightning
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/sea_serpent
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:storage_blocks/scales/dragon/fire
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:storage_blocks/scales/dragon/ice
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:storage_blocks/scales/dragon/lightning
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:summon_ghost_sword
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tame_hippogryph
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tame_pixie
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tempt_dragon
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tempt_hippocampus
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tempt_hippogryph
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #minecraft:break_decorated_pot
+[08:44:47] [Thread-13/ERROR] (EMI) [EMI] Untranslated tag #trinkets:legs/belt
+[08:44:47] [Thread-13/INFO] (EMI) [EMI]  Tag warning can be disabled in the config, EMI docs describe how to add a translation or exclude tags.
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Constructing index
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Reloading item groups on client thread...
+[08:44:47] [Render thread/INFO] (Jade) Received config from the server: 
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Reloading item groups on client thread took 66ms
+[08:44:47] [Thread-13/INFO] (EMI) [EMI] Loading plugin from emi
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Reloaded plugin from emi in 223ms
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Loading plugin from iceandfire
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Reloaded plugin from iceandfire in 3ms
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Loading plugin from trinkets
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Reloaded plugin from trinkets in 1ms
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Baking index
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Registering late recipes
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Baking recipes
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Baked 6282 recipes in 175ms
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Baking search
+[08:44:48] [Thread-14/INFO] (EMI) [EMI] Baked recipes after reload in 73ms
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Finishing up
+[08:44:48] [Thread-13/INFO] (EMI) [EMI] Reloaded EMI in 915ms
+[08:44:55] [Server thread/INFO] (Minecraft) [Player344: Set own game mode to Creative Mode]
+[08:44:55] [Render thread/INFO] (Minecraft) [System] [CHAT] Set own game mode to Creative Mode
+[08:45:05] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[08:45:05] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[08:45:05] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[08:45:05] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/iceandfire:dread_land
+[08:45:05] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[08:45:05] [Render thread/INFO] (EMI) [EMI] Disconnecting from server, EMI data cleared
+[08:45:05] [Thread-17/INFO] (EMI) [EMI] Clearing data
+[08:45:05] [Server thread/INFO] (Minecraft) Player344 lost connection: Disconnected
+[08:45:05] [Server thread/INFO] (Minecraft) Player344 left the game
+[08:45:05] [Server thread/INFO] (Minecraft) Stopping singleplayer server as player logged out
+[08:45:05] [Server thread/INFO] (Minecraft) Stopping server
+[08:45:05] [Server thread/INFO] (Minecraft) Saving players
+[08:45:05] [Server thread/INFO] (Minecraft) Saving worlds
+[08:45:06] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[08:45:07] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[08:45:07] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/iceandfire:dread_land
+[08:45:07] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[08:45:07] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (New World): All chunks are saved
+[08:45:07] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:45:07] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (dread_land): All chunks are saved
+[08:45:07] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:45:07] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage: All dimensions are saved
+[08:45:27] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/pixie_dust_milky_tea
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:182) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:137) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:323) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:313) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:278) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:243) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:434) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:411) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:150) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:168) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:303) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1307) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:45:27] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/cooked_rice_with_ice_dragon_meat
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:182) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:137) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:323) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:313) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:278) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:243) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:434) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:411) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:150) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:168) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:303) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1307) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:45:27] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/cooked_rice_with_lightning_dragon_meat
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:182) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:137) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:323) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:313) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:278) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:243) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:434) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:411) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:150) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:168) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:303) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1307) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:45:27] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/ghost_cream
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:182) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:137) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:323) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:313) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:278) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:243) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:434) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:411) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:150) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:168) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:303) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1307) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:45:27] [Render thread/ERROR] (Minecraft) Parsing error loading recipe iceandfire:delight/cooked_rice_with_fire_dragon_meat
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / minecraft:recipe_serializer]: farmersdelight:cooking
+	at knot/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:62) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.world.item.crafting.RecipeManager.apply(RecipeManager.java:35) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.server.packs.resources.SimplePreparableReloadListener.method_18790(SimplePreparableReloadListener.java:13) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at knot/net.minecraft.server.packs.resources.SimpleReloadInstance.method_18365(SimpleReloadInstance.java:69) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:162) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:136) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:145) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:182) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:137) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:323) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:313) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:278) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:243) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:434) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:411) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_1611(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:431) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:107) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22686(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:108) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.MouseHandler.method_22684(MouseHandler.java:196) ~[minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar:?]
+	at knot/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) [lwjgl-glfw-3.3.3.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:150) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:168) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:303) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.runTick(Minecraft.java:1307) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.Minecraft.run(Minecraft.java:882) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:256) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:45:27] [Render thread/INFO] (Minecraft) Loaded 1678 recipes
+[08:45:27] [Render thread/INFO] (Minecraft) Loaded 1735 advancements
+[08:45:27] [Render thread/INFO] (Jade) LootTableMineableCollector took 3.264 ms
+[08:45:27] [Render thread/WARN] (Uranus) Suppressing EXPERIMENTAL level lifecycle
+[08:45:27] [Render thread/INFO] (BiomeModificationImpl) Applied 264 biome modifications to 66 of 66 new biomes in 3.333 ms
+[08:45:27] [Server thread/INFO] (Minecraft) Starting integrated minecraft server version 1.21.1
+[08:45:27] [Server thread/INFO] (Minecraft) Generating keypair
+[08:45:28] [Server thread/INFO] (Minecraft) Preparing start region for dimension minecraft:overworld
+[08:45:28] [Render thread/INFO] (Minecraft) Preparing spawn area: 0%
+[08:45:28] [Render thread/INFO] (Minecraft) Time elapsed: 178 ms
+[08:45:28] [Server thread/WARN] (TranslationConventionLogWarnings) 
+	Dev warning - Untranslated Item Tags detected. Please translate your item tags so other mods such as recipe viewers can properly display your tag's name.
+	The format desired is tag.item.<namespace>.<path> for the translation key with slashes in path turned into periods.
+	To disable this message, set this system property in your runs: `-Dfabric-tag-conventions-v2.missingTagTranslationWarning=SILENCED`.
+	To see individual untranslated item tags found, set the system property to `-Dfabric-tag-conventions-v2.missingTagTranslationWarning=VERBOSE`.
+	Default is `SHORT`.
+
+[08:45:28] [Server thread/INFO] (Minecraft) Changing view distance to 12, from 10
+[08:45:28] [Server thread/INFO] (Minecraft) Changing simulation distance to 12, from 0
+[08:45:28] [Render thread/INFO] (EMI) [EMI] Recipes synchronized, waiting for tags to reload EMI...
+[08:45:28] [Server thread/INFO] (Minecraft) Player344[local:E:f264ef05] logged in with entity id 1161 at (229.5, 71.0, -58.5)
+[08:45:28] [Server thread/INFO] (Minecraft) Player344 joined the game
+[08:45:28] [Render thread/INFO] (EMI) [EMI] Joining server, EMI waiting for data from server...
+[08:45:28] [Render thread/INFO] (EMI) [EMI] Tags synchronized, reloading EMI
+[08:45:28] [Render thread/INFO] (EMI) [EMI] Starting Reload
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Starting EMI reload...
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Clearing data
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Initializing plugin from emi
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Initialized plugin from emi in 0ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Initializing plugin from iceandfire
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Initialized plugin from iceandfire in 0ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Initializing plugin from trinkets
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Initialized plugin from trinkets in 0ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Processing tags
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:bones/dragon
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:bones/wither
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:gems/sapphire
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:ingots/silver
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:milks
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:nuggets/silver
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:ores/sapphire
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:ores/silver
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:raw_materials/silver
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:storage_blocks/raw_silver
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #c:storage_blocks/silver
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:breed_ampithere
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:breed_hippocampus
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:breed_hippogryph
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:charred_blocks
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:crackled_blocks
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_body
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_head
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_neck
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armor_tail
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_armors
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_arrows
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_bloods
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_food_meat
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_hearts
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_skulls
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:dragon_steels
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:frozen_blocks
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_ampithere
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_cockatrice
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_hippocampus
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:heal_pixie
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:make_item_drops_fireimmune
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:mob_skulls
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:pixie_stolen_blacklist
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon/fire
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon/ice
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/dragon/lightning
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:scales/sea_serpent
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:storage_blocks/scales/dragon/fire
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:storage_blocks/scales/dragon/ice
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:storage_blocks/scales/dragon/lightning
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:summon_ghost_sword
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tame_hippogryph
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tame_pixie
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tempt_dragon
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tempt_hippocampus
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #iceandfire:tempt_hippogryph
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #minecraft:break_decorated_pot
+[08:45:28] [Thread-22/ERROR] (EMI) [EMI] Untranslated tag #trinkets:legs/belt
+[08:45:28] [Thread-22/INFO] (EMI) [EMI]  Tag warning can be disabled in the config, EMI docs describe how to add a translation or exclude tags.
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Constructing index
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Reloading item groups on client thread...
+[08:45:28] [Render thread/INFO] (Minecraft) Loaded 20 advancements
+[08:45:28] [Render thread/INFO] (Jade) Received config from the server: 
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Reloading item groups on client thread took 23ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Loading plugin from emi
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Reloaded plugin from emi in 79ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Loading plugin from iceandfire
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Reloaded plugin from iceandfire in 0ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Loading plugin from trinkets
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Reloaded plugin from trinkets in 0ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Baking index
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Registering late recipes
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Baking recipes
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Baked 6282 recipes in 117ms
+[08:45:28] [Thread-22/INFO] (EMI) [EMI] Baking search
+[08:45:29] [Thread-23/INFO] (EMI) [EMI] Baked recipes after reload in 109ms
+[08:45:29] [Thread-22/INFO] (EMI) [EMI] Finishing up
+[08:45:29] [Thread-22/INFO] (EMI) [EMI] Reloaded EMI in 386ms
+[08:46:16] [Server thread/INFO] (Minecraft) [Player344: Summoned new Pixie]
+[08:46:16] [Render thread/INFO] (Minecraft) [System] [CHAT] Summoned new Pixie
+[08:46:30] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[08:46:30] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[08:46:30] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[08:46:30] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/iceandfire:dread_land
+[08:46:30] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[08:46:31] [Render thread/INFO] (EMI) [EMI] Disconnecting from server, EMI data cleared
+[08:46:31] [Thread-27/INFO] (EMI) [EMI] Clearing data
+[08:46:31] [Server thread/INFO] (Minecraft) Player344 lost connection: Disconnected
+[08:46:31] [Server thread/INFO] (Minecraft) Player344 left the game
+[08:46:31] [Server thread/INFO] (Minecraft) Stopping singleplayer server as player logged out
+[08:46:31] [Server thread/INFO] (Minecraft) Stopping server
+[08:46:31] [Server thread/INFO] (Minecraft) Saving players
+[08:46:31] [Server thread/INFO] (Minecraft) Saving worlds
+[08:46:31] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[08:46:32] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[08:46:32] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/iceandfire:dread_land
+[08:46:32] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[08:46:32] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (New World): All chunks are saved
+[08:46:32] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[08:46:32] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (dread_land): All chunks are saved
+[08:46:32] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[08:46:32] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage: All dimensions are saved
+[08:46:33] [Render thread/INFO] (Minecraft) Stopping!
+
+[Incubating] Problems report is available at: file:///D:/IceAndFire-CE/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 2m 36s
+11 actionable tasks: 2 executed, 9 up-to-date

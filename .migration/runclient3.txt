@@ -1,0 +1,579 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/songy/.gradle/wrapper/dists/gradle-8.14-bin/38aieal9i53h9rfe7vjup95b9/gradle-8.14/lib/native-platform-0.22-milestone-28.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Starting a Gradle Daemon, 3 stopped Daemons could not be reused, use --status for details
+
+> Configure project :
+Architect Plugin: 3.4.164
+Architectury Loom: 1.11.458
+
+> Task :fabric:processResources UP-TO-DATE
+> Task :fabric:generateLog4jConfig UP-TO-DATE
+> Task :fabric:generateRemapClasspath UP-TO-DATE
+> Task :fabric:generateDLIConfig UP-TO-DATE
+
+> Task :common:compileJava
+Note: D:\IceAndFire-CE\common\src\main\java\com\iafenvoy\iceandfire\entity\AmphithereEntity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :fabric:prepareArchitecturyTransformer
+> Task :fabric:configureLaunch
+> Task :fabric:downloadAssets UP-TO-DATE
+> Task :fabric:configureClientLaunch
+> Task :common:processResources UP-TO-DATE
+> Task :common:classes
+> Task :common:jar UP-TO-DATE
+> Task :fabric:compileJava
+> Task :fabric:classes
+
+> Task :fabric:runClient
+[Architectury Transformer] Architectury Runtime 5.2.91
+[Architectury Transformer] Read classpath in 1.667 s
+[Architectury Transformer] Listening at D:\IceAndFire-CE\common\build\devlibs\IceAndFireCE-common-2.0-beta.16-dev.jar
+[08:38:26] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 1.21.1 with Fabric Loader 0.17.2
+[08:38:26] [main/INFO] (FabricLoader) Loading 66 mods:
+	- architectury 13.0.8
+	- cardinal-components-base 6.1.1
+	- cardinal-components-entity 6.1.1
+	- emi 1.1.19+1.21.1+fabric
+	- fabric-api 0.116.5+1.21.1
+	- fabric-api-base 0.4.42+6573ed8cd1
+	- fabric-api-lookup-api-v1 1.6.71+b559734419
+	- fabric-biome-api-v1 13.0.31+d527f9fd19
+	- fabric-block-api-v1 1.1.0+0bc3503219
+	- fabric-block-view-api-v2 1.0.11+ebb2264e19
+	- fabric-blockrenderlayer-v1 1.1.52+0af3f5a719
+	- fabric-client-tags-api-v1 1.1.15+6573ed8c19
+	- fabric-command-api-v1 1.2.49+f71b366f19
+	- fabric-command-api-v2 2.2.28+6ced4dd919
+	- fabric-commands-v0 0.2.66+df3654b319
+	- fabric-content-registries-v0 8.0.19+b559734419
+	- fabric-convention-tags-v1 2.1.5+7f945d5b19
+	- fabric-convention-tags-v2 2.11.1+a406e79519
+	- fabric-crash-report-info-v1 0.2.29+0af3f5a719
+	- fabric-data-attachment-api-v1 1.4.5+6116a37819
+	- fabric-data-generation-api-v1 20.2.33+37516cd619
+	- fabric-dimensions-v1 4.0.0+6fc22b9919
+	- fabric-entity-events-v1 1.8.0+2b27e0a419
+	- fabric-events-interaction-v0 0.7.13+ba9dae0619
+	- fabric-game-rule-api-v1 1.0.53+6ced4dd919
+	- fabric-gametest-api-v1 2.0.5+6fc22b9919
+	- fabric-item-api-v1 11.2.0+3b3cb2e819
+	- fabric-item-group-api-v1 4.1.7+def88e3a19
+	- fabric-key-binding-api-v1 1.0.47+0af3f5a719
+	- fabric-keybindings-v0 0.2.45+df3654b319
+	- fabric-lifecycle-events-v1 2.6.0+0865547519
+	- fabric-loot-api-v2 3.0.15+3f89f5a519
+	- fabric-loot-api-v3 1.0.3+3f89f5a519
+	- fabric-message-api-v1 6.0.14+8aaf3aca19
+	- fabric-model-loading-api-v1 2.1.0+b4d813fc19
+	- fabric-networking-api-v1 4.3.0+c7469b2119
+	- fabric-object-builder-api-v1 15.2.1+40875a9319
+	- fabric-particles-v1 4.0.2+6573ed8c19
+	- fabric-recipe-api-v1 5.0.14+248df81c19
+	- fabric-registry-sync-v0 5.3.1+e3eddc2119
+	- fabric-renderer-api-v1 3.4.1+b4d813fc19
+	- fabric-renderer-indigo 1.7.1+c705a49c19
+	- fabric-renderer-registries-v1 3.2.69+df3654b319
+	- fabric-rendering-data-attachment-v1 0.3.49+73761d2e19
+	- fabric-rendering-fluids-v1 3.1.6+1daea21519
+	- fabric-rendering-v0 1.1.72+df3654b319
+	- fabric-rendering-v1 5.1.0+ab4c25a019
+	- fabric-resource-conditions-api-v1 4.3.0+8dc279b119
+	- fabric-resource-loader-v0 1.3.1+5b5275af19
+	- fabric-screen-api-v1 2.0.25+8b68f1c719
+	- fabric-screen-handler-api-v1 1.3.90+b559734419
+	- fabric-sound-api-v1 1.0.23+6573ed8c19
+	- fabric-transfer-api-v1 5.4.3+c24bd99419
+	- fabric-transitive-access-wideners-v1 6.2.0+45b9699719
+	- fabricloader 0.17.2
+	- generated_381268e 1.0.0
+	- iceandfire 2.0-beta.16
+	- integration 0.2
+	- jade 15.9.2+fabric
+	- java 21
+	- jupiter 2.3.4
+	- minecraft 1.21.1
+	- mixinextras 0.4.1
+	- modmenu 11.0.3
+	- trinkets 3.10.0
+	- uranus 2.4
+[08:38:26] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/songy/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.3+mixin.0.8.7/51ee0a44ab05f6fddd66b09e66b3a16904f9c55d/sponge-mixin-0.15.3+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[08:38:27] [main/INFO] (FabricLoader/Mixin) Loaded Fabric development mappings for mixin remapper!
+[08:38:27] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_17
+[08:38:27] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_21
+[08:38:27] [main/WARN] (FabricLoader/Mixin) Error loading class: me/shedaniel/autoconfig/AutoConfig (java.lang.ClassNotFoundException: me/shedaniel/autoconfig/AutoConfig)
+[08:38:27] [main/WARN] (FabricLoader/Mixin) Error loading class: me/shedaniel/autoconfig/AutoConfig (java.lang.ClassNotFoundException: me/shedaniel/autoconfig/AutoConfig)
+[08:38:27] [main/WARN] (FabricLoader/Mixin) Error loading class: mezz/jei/library/load/PluginCaller (java.lang.ClassNotFoundException: mezz/jei/library/load/PluginCaller)
+[08:38:28] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.4.1).
+[08:38:29] [Datafixer Bootstrap/INFO] (Minecraft) 226 Datafixer optimizations took 342 milliseconds
+[08:38:36] [Render thread/INFO] (Minecraft) Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[08:38:36] [Render thread/INFO] (Minecraft) Setting user: Player945
+[08:38:36] [Render thread/ERROR] (Jupiter) Failed to load config: ./config/iceandfire/iaf-common.json
+java.nio.file.NoSuchFileException: .\config\iceandfire\iaf-common.json
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85) ~[?:?]
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103) ~[?:?]
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108) ~[?:?]
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(WindowsFileSystemProvider.java:234) ~[?:?]
+	at java.base/java.nio.file.Files.newByteChannel(Files.java:380) ~[?:?]
+	at java.base/java.nio.file.Files.newByteChannel(Files.java:432) ~[?:?]
+	at java.base/java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:420) ~[?:?]
+	at java.base/java.nio.file.Files.newInputStream(Files.java:160) ~[?:?]
+	at knot/org.apache.commons.io.FileUtils.lambda$readFileToString$12(FileUtils.java:2615) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/org.apache.commons.io.IOUtils.toString(IOUtils.java:3239) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/org.apache.commons.io.IOUtils.toString(IOUtils.java:3214) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/org.apache.commons.io.FileUtils.readFileToString(FileUtils.java:2615) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/com.iafenvoy.jupiter.config.container.FileConfigContainer.load(FileConfigContainer.java:34) ~[jupiter-4c662d4c-5pNXzmee.jar:?]
+	at knot/com.iafenvoy.jupiter.ConfigManager.registerConfigHandler(ConfigManager.java:26) ~[jupiter-4c662d4c-5pNXzmee.jar:?]
+	at knot/com.iafenvoy.jupiter.ConfigManager.registerConfigHandler(ConfigManager.java:30) ~[jupiter-4c662d4c-5pNXzmee.jar:?]
+	at knot/com.iafenvoy.iceandfire.IceAndFire.init(IceAndFire.java:42) ~[IceAndFireCE-common-2.0-beta.16-dev.jar:?]
+	at knot/com.iafenvoy.iceandfire.fabric.IceAndFireFabric.onInitialize(IceAndFireFabric.java:16) ~[main/:?]
+	at net.fabricmc.loader.impl.FabricLoaderImpl.invokeEntrypoints(FabricLoaderImpl.java:405) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.Hooks.startClient(Hooks.java:52) [fabric-loader-0.17.2.jar:?]
+	at knot/net.minecraft.client.Minecraft.<init>(Minecraft.java:477) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:239) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_multipart
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for multipart
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra_multipart
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for cylcops_multipart
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_egg
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_arrow
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dragon_skull
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for fire_dragon
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for ice_dragon
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for lightning_dragon
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for fire_dragon_charge
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for ice_dragon_charge
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for lightning_dragon_charge
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hippogryph_egg
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hippogryph
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for stone_statue
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for gorgon
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for pixie
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for cyclops
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for siren
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hippocampus
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for deathworm
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for deathworm_egg
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for cockatrice
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for cockatrice_egg
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for stymphalian_bird
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for stymphalian_feather
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for stymphalian_arrow
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for troll
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for amphithere
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for amphithere_arrow
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for sea_serpent
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for sea_serpent_bubbles
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for sea_serpent_arrow
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for chain_tie
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for pixie_charge
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for tide_trident
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for mob_skull
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_thrall
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_ghoul
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_beast
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_scuttler
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_lich
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_lich_skull
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_knight
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for dread_horse
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra_breath
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for hydra_arrow
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for ghost
+[08:38:37] [Render thread/ERROR] (Minecraft) No data fixer registered for ghost_sword
+[08:38:37] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:dragon_control
+[08:38:37] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:multipart_interact
+[08:38:37] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:player_hit_multipart
+[08:38:37] [Render thread/INFO] (NetworkManagerImpl) Registering C2S receiver with id iceandfire:start_riding_mob_c2s
+[08:38:38] [Render thread/INFO] (Indigo) [Indigo] Registering Indigo renderer!
+[08:38:38] [Render thread/INFO] (Mod Menu/Update Checker) Checking mod updates...
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id uranus:animation
+[08:38:38] [Render thread/ERROR] (Jupiter) Failed to load config: ./config/iceandfire/iaf-client.json
+java.nio.file.NoSuchFileException: .\config\iceandfire\iaf-client.json
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85) ~[?:?]
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103) ~[?:?]
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:108) ~[?:?]
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.newByteChannel(WindowsFileSystemProvider.java:234) ~[?:?]
+	at java.base/java.nio.file.Files.newByteChannel(Files.java:380) ~[?:?]
+	at java.base/java.nio.file.Files.newByteChannel(Files.java:432) ~[?:?]
+	at java.base/java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:420) ~[?:?]
+	at java.base/java.nio.file.Files.newInputStream(Files.java:160) ~[?:?]
+	at knot/org.apache.commons.io.FileUtils.lambda$readFileToString$12(FileUtils.java:2615) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/org.apache.commons.io.IOUtils.toString(IOUtils.java:3239) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/org.apache.commons.io.IOUtils.toString(IOUtils.java:3214) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/org.apache.commons.io.FileUtils.readFileToString(FileUtils.java:2615) ~[commons-io-2.15.1.jar:2.15.1]
+	at knot/com.iafenvoy.jupiter.config.container.FileConfigContainer.load(FileConfigContainer.java:34) ~[jupiter-4c662d4c-5pNXzmee.jar:?]
+	at knot/com.iafenvoy.jupiter.ConfigManager.registerConfigHandler(ConfigManager.java:26) ~[jupiter-4c662d4c-5pNXzmee.jar:?]
+	at knot/com.iafenvoy.jupiter.ConfigManager.registerConfigHandler(ConfigManager.java:30) ~[jupiter-4c662d4c-5pNXzmee.jar:?]
+	at knot/com.iafenvoy.iceandfire.IceAndFireClient.init(IceAndFireClient.java:22) ~[IceAndFireCE-common-2.0-beta.16-dev.jar:?]
+	at knot/com.iafenvoy.iceandfire.fabric.IceAndFireFabricClient.onInitializeClient(IceAndFireFabricClient.java:18) ~[main/:?]
+	at net.fabricmc.loader.impl.FabricLoaderImpl.invokeEntrypoints(FabricLoaderImpl.java:405) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.Hooks.startClient(Hooks.java:53) [fabric-loader-0.17.2.jar:?]
+	at knot/net.minecraft.client.Minecraft.<init>(Minecraft.java:477) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at knot/net.minecraft.client.main.Main.main(Main.java:239) [minecraft-merged-76c799a31a-1.21.1-loom.mappings.1_21_1.layered+hash.40545-v2.jar:?]
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23) [fabric-loader-0.17.2.jar:?]
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220) [architectury-transformer-5.2.91-runtime.jar:5.2.91]
+[08:38:38] [ModMenu/Update Checker/Fabric Loader/INFO] (Mod Menu/Update Checker) Update available for 'fabricloader@0.17.2'
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:dragon_set_burn_block
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:lightning_bolt_s2c
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:start_riding_mob_s2c
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:update_pixie_house
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:update_pixie_jar
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id iceandfire:update_podium
+[08:38:38] [Render thread/INFO] (NetworkManagerImpl) Registering S2C receiver with id architectury:spawn_entity_packet
+[08:38:39] [Render thread/INFO] (Minecraft) Backend library: LWJGL version 3.3.3-snapshot
+[08:38:39] [Render thread/WARN] (Minecraft) Removed resource pack jade from options because it is no longer compatible
+---- Minecraft Crash Report ----
+// Hey, that tickles! Hehehe!
+
+Time: 2026-08-07 08:38:40
+Description: Initializing game
+
+java.lang.RuntimeException: Mixin transformation of net.minecraft.client.gui.Gui failed
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.getPostMixinClassByteArray(KnotClassDelegate.java:440)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.tryLoadClass(KnotClassDelegate.java:336)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.loadClass(KnotClassDelegate.java:231)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassLoader.loadClass(KnotClassLoader.java:119)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at knot//net.minecraft.client.Minecraft.<init>(Minecraft.java:640)
+	at knot//net.minecraft.client.main.Main.main(Main.java:239)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86)
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220)
+Caused by: org.spongepowered.asm.mixin.transformer.throwables.MixinTransformerError: An unexpected critical error was encountered
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.applyMixins(MixinProcessor.java:392)
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClass(MixinTransformer.java:234)
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClassBytes(MixinTransformer.java:202)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.getPostMixinClassByteArray(KnotClassDelegate.java:435)
+	... 11 more
+Caused by: org.spongepowered.asm.mixin.injection.throwables.InjectionError: Critical injection failure: Callback method renderDreadPortalOverlay(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V in iceandfire.mixins.json:InGameHudMixin from mod iceandfire failed injection check, (0/1) succeeded. Scanned 0 target(s). No refMap loaded.
+	at org.spongepowered.asm.mixin.injection.struct.InjectionInfo.postInject(InjectionInfo.java:531)
+	at org.spongepowered.asm.mixin.transformer.MixinTargetContext.applyInjections(MixinTargetContext.java:1490)
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.applyInjections(MixinApplicatorStandard.java:752)
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.applyMixin(MixinApplicatorStandard.java:330)
+	at org.spongepowered.asm.mixin.transformer.MixinApplicatorStandard.apply(MixinApplicatorStandard.java:246)
+	at org.spongepowered.asm.mixin.transformer.TargetClassContext.apply(TargetClassContext.java:437)
+	at org.spongepowered.asm.mixin.transformer.TargetClassContext.applyMixins(TargetClassContext.java:418)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.applyMixins(MixinProcessor.java:363)
+	... 14 more
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Render thread
+Stacktrace:
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.getPostMixinClassByteArray(KnotClassDelegate.java:440)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.tryLoadClass(KnotClassDelegate.java:336)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.loadClass(KnotClassDelegate.java:231)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassLoader.loadClass(KnotClassLoader.java:119)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at knot//net.minecraft.client.Minecraft.<init>(Minecraft.java:640)
+
+-- Initialization --
+Details:
+	Modules: 
+		ADVAPI32.dll:Advanced Windows 32 Base API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		COMCTL32.dll:User Experience Controls Library:6.10 (WinBuild.160101.0800):Microsoft Corporation
+		CRYPT32.dll:Crypto API32:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		CRYPTBASE.dll:Base cryptographic API DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		CRYPTSP.dll:Cryptographic Service Provider API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		CoreMessaging.dll:Microsoft CoreMessaging Dll:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		DBGHELP.DLL:Windows Image Helper:10.0.26100.8328 (WinBuild.160101.0800):Microsoft Corporation
+		DEVOBJ.dll:Device Information Set DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		DNSAPI.dll:DNS Client API DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		DSPARSE.dll:Active Directory Domain Services API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		GDI32.dll:GDI Client DLL:10.0.26100.8328 (WinBuild.160101.0800):Microsoft Corporation
+		GLU32.dll:OpenGL Utility Library DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		IMM32.DLL:Multi-User Windows IMM32 API Client DLL:10.0.26100.8521 (WinBuild.160101.0800):Microsoft Corporation
+		IPHLPAPI.DLL:IP Helper API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		KERNEL32.DLL:Windows NT BASE API Client DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		KERNELBASE.dll:Windows NT BASE API Client DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		MMDevApi.dll:MMDevice API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		MSASN1.dll:ASN.1 Runtime APIs:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		MSCTF.dll:MSCTF Server DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		MpOav.dll:IOfficeAntiVirus Module:4.18.26070.9 (797b3603749206dfffe67a1cc891531b0a2cf438):Microsoft Corporation
+		NSI.dll:NSI User-mode interface DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		NTASN1.dll:Microsoft ASN.1 API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		OLEAUT32.dll:OLEAUT32.DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		Ole32.dll:Microsoft OLE for Windows:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		Oleacc.dll:Active Accessibility Core Component:7.2.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		OpenAL.dll:Main implementation library:1.23.1:
+		POWRPROF.dll:Power Profile Helper DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		PSAPI.DLL:Process Status Helper:10.0.26100.8521 (WinBuild.160101.0800):Microsoft Corporation
+		Pdh.dll:Windows Performance Data Helper DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		RPCRT4.dll:Remote Procedure Call Runtime:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		SHCORE.dll:SHCORE:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		SHELL32.dll:Windows Shell Common Dll:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		UMPDC.dll:User Mode Power Dependency Coordinator:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		USER32.dll:Multi-User Windows USER API Client DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		USERENV.dll:Userenv:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		VCRUNTIME140.dll:Microsoft? C Runtime Library:14.40.33810.0:Microsoft Corporation
+		VERSION.dll:Version Checking and File Installation Libraries:10.0.26100.1150 (WinBuild.160101.0800):Microsoft Corporation
+		WINHTTP.dll:Windows HTTP Services:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		WINMM.dll:MCI API DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		WINTRUST.dll:Microsoft Trust Verification APIs:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		WS2_32.dll:Windows Socket 2.0 32-Bit DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		amsi.dll:Anti-Malware Scan Interface:10.0.26100.7309 (WinBuild.160101.0800):Microsoft Corporation
+		bcrypt.dll:Windows Cryptographic Primitives Library:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		bcryptPrimitives.dll:Windows Cryptographic Primitives Library:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		cfgmgr32.dll:Configuration Manager DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		clbcatq.dll:COM+ Configuration Catalog:2001.12.10941.16384 (WinBuild.160101.0800):Microsoft Corporation
+		combase.dll:Microsoft COM for Windows:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		dbgcore.DLL:Windows Core Debugging Helpers:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		dinput8.dll:Microsoft DirectInput:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		directxdatabasehelper.dll:DirectXDatabaseHelper:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		dwmapi.dll:Microsoft Desktop Window Manager API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		dxcore.dll:DXCore:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		dxgi.dll:DirectX Graphics Infrastructure:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		extnet.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		fastprox.dll:WMI Custom Marshaller:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		fwpuclnt.dll:FWP/IPsec User-Mode API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		gdi32full.dll:GDI Client DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		glfw.dll:GLFW 3.4.0 DLL:3.4.0:GLFW
+		icm32.dll:Microsoft Color Management Module (CMM):10.0.26100.2314 (WinBuild.160101.0800):Microsoft Corporation
+		igc64.dll:Intel Graphics Shader Compiler for Intel(R) Graphics Accelerator:31.0.101.4146:Intel Corporation
+		igdgmm64.dll:User Mode Driver for Intel(R) Graphics Technology:31.0.101.4146:Intel Corporation
+		igdml64.dll:Metrics Library for Intel(R) Graphics Technology:31.0.101.4146:Intel Corporation
+		igxelpicd64.dll:OpenGL(R) Driver for Intel(R) Graphics Accelerator:31.0.101.4146:Intel Corporation
+		inputhost.dll:InputHost:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		instrument.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		java.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		java.exe:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		jemalloc.dll
+		jimage.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		jli.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		jna16015603544557083603.dll:JNA native library:7.0.0:Java(TM) Native Access (JNA)
+		jsvml.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		jvm.dll:Zulu 64-Bit Server VM:21.0.11:Azul Systems Inc.
+		kernel.appcore.dll:AppModel API Host:10.0.26100.8737 (WinBuild.160101.0800):Microsoft Corporation
+		lwjgl.dll
+		lwjgl_opengl.dll
+		lwjgl_stb.dll
+		management.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		management_ext.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		mdnsNSP.dll:Bonjour Namespace Provider:3,1,0,1:Apple Inc.
+		mscms.dll:Microsoft Color Matching System DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		msvcp140.dll:Microsoft? C Runtime Library:14.40.33810.0:Microsoft Corporation
+		msvcp_win.dll:Microsoft? C Runtime Library:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		msvcrt.dll:Windows NT CRT DLL:7.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		mswsock.dll:Microsoft Windows Sockets 2.0 Service Provider:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		napinsp.dll:E-mail Naming Shim Provider:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		ncrypt.dll:Windows NCrypt Router:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		net.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		nio.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		nlansp_c.dll:NLA Namespace Service Provider DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		ntdll.dll:NT Layer DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		opengl32.dll:OpenGL Client DLL:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		perfos.dll:Windows System Performance Objects DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		pfclient.dll:SysMain Client:10.0.26100.4202 (WinBuild.160101.0800):Microsoft Corporation
+		profapi.dll:User Profile Basic API:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		rasadhlp.dll:Remote Access AutoDial Helper:10.0.26100.7920 (WinBuild.160101.0800):Microsoft Corporation
+		rsaenh.dll:Microsoft Enhanced Cryptographic Provider:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		sechost.dll:Host for SCM/SDDL/LSA Lookup APIs:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		shlwapi.dll:Shell Light-weight Utility Library:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		sunmscapi.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		textinputframework.dll:"TextInputFramework.DYNLINK":10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		ucrtbase.dll:Microsoft? C Runtime Library:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		uxtheme.dll:Microsoft UxTheme Library:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		vcruntime140_1.dll:Microsoft? C Runtime Library:14.40.33810.0:Microsoft Corporation
+		verify.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+		wbemcomn.dll:WMI:10.0.26100.7920 (WinBuild.160101.0800):Microsoft Corporation
+		wbemprox.dll:WMI:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		wbemsvc.dll:WMI:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		win32u.dll:Win32u:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		windows.staterepositorycore.dll:Windows StateRepository API Core:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		windows.storage.dll:Microsoft WinRT Storage API:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		winrnr.dll:LDAP RnR Provider DLL:10.0.26100.8737 (WinBuild.160101.0800):Microsoft Corporation
+		wshbth.dll:Windows Sockets Helper DLL:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		wshunix.dll:AF_UNIX Winsock2 Helper DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		xinput1_4.dll:Microsoft Common Controller API:10.0.26100.8875 (WinBuild.160101.0800):Microsoft Corporation
+		zip.dll:Zulu Platform x64 Architecture:21.0.11:Azul Systems Inc.
+Stacktrace:
+	at knot//net.minecraft.client.main.Main.main(Main.java:239)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:506)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86)
+	at dev.architectury.transformer.TransformerRuntime.main(TransformerRuntime.java:220)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.21.1
+	Minecraft Version ID: 1.21.1
+	Operating System: Windows 11 (amd64) version 10.0
+	Java Version: 21.0.11, Azul Systems, Inc.
+	Java VM Version: OpenJDK 64-Bit Server VM (mixed mode, sharing), Azul Systems, Inc.
+	Memory: 182018432 bytes (173 MiB) / 1090519040 bytes (1040 MiB) up to 4223664128 bytes (4028 MiB)
+	CPUs: 20
+	Processor Vendor: GenuineIntel
+	Processor Name: 13th Gen Intel(R) Core(TM) i7-13700H
+	Identifier: Intel64 Family 6 Model 186 Stepping 2
+	Microarchitecture: Raptor Lake
+	Frequency (GHz): 2.92
+	Number of physical packages: 1
+	Number of physical CPUs: 14
+	Number of logical CPUs: 20
+	Graphics card #0 name: Intel(R) Iris(R) Xe Graphics
+	Graphics card #0 vendor: Intel Corporation
+	Graphics card #0 VRAM (MiB): 1024.00
+	Graphics card #0 deviceId: VideoController1
+	Graphics card #0 versionInfo: 31.0.101.4146
+	Memory slot #0 capacity (MiB): 2048.00
+	Memory slot #0 clockSpeed (GHz): 4.27
+	Memory slot #0 type: LPDDR4
+	Memory slot #1 capacity (MiB): 2048.00
+	Memory slot #1 clockSpeed (GHz): 4.27
+	Memory slot #1 type: LPDDR4
+	Memory slot #2 capacity (MiB): 2048.00
+	Memory slot #2 clockSpeed (GHz): 4.27
+	Memory slot #2 type: LPDDR4
+	Memory slot #3 capacity (MiB): 2048.00
+	Memory slot #3 clockSpeed (GHz): 4.27
+	Memory slot #3 type: LPDDR4
+	Memory slot #4 capacity (MiB): 2048.00
+	Memory slot #4 clockSpeed (GHz): 4.27
+	Memory slot #4 type: LPDDR4
+	Memory slot #5 capacity (MiB): 2048.00
+	Memory slot #5 clockSpeed (GHz): 4.27
+	Memory slot #5 type: LPDDR4
+	Memory slot #6 capacity (MiB): 2048.00
+	Memory slot #6 clockSpeed (GHz): 4.27
+	Memory slot #6 type: LPDDR4
+	Memory slot #7 capacity (MiB): 2048.00
+	Memory slot #7 clockSpeed (GHz): 4.27
+	Memory slot #7 type: LPDDR4
+	Virtual memory max (MiB): 29420.24
+	Virtual memory used (MiB): 20139.30
+	Swap memory total (MiB): 13312.00
+	Swap memory used (MiB): 786.87
+	Space in storage for jna.tmpdir (MiB): <path not set>
+	Space in storage for org.lwjgl.system.SharedLibraryExtractPath (MiB): <path not set>
+	Space in storage for io.netty.native.workdir (MiB): <path not set>
+	Space in storage for java.io.tmpdir (MiB): available: 13988.65, total: 204800.00
+	Space in storage for workdir (MiB): available: 177271.30, total: 751777.00
+	JVM Flags: 0 total; 
+	Fabric Mods: 
+		architectury: Architectury 13.0.8
+		cardinal-components-base: Cardinal Components API (base) 6.1.1
+		cardinal-components-entity: Cardinal Components API (entities) 6.1.1
+		emi: EMI 1.1.19+1.21.1+fabric
+		fabric-api: Fabric API 0.116.5+1.21.1
+		fabric-api-base: Fabric API Base 0.4.42+6573ed8cd1
+		fabric-api-lookup-api-v1: Fabric API Lookup API (v1) 1.6.71+b559734419
+		fabric-biome-api-v1: Fabric Biome API (v1) 13.0.31+d527f9fd19
+		fabric-block-api-v1: Fabric Block API (v1) 1.1.0+0bc3503219
+		fabric-block-view-api-v2: Fabric BlockView API (v2) 1.0.11+ebb2264e19
+		fabric-blockrenderlayer-v1: Fabric BlockRenderLayer Registration (v1) 1.1.52+0af3f5a719
+		fabric-client-tags-api-v1: Fabric Client Tags 1.1.15+6573ed8c19
+		fabric-command-api-v1: Fabric Command API (v1) 1.2.49+f71b366f19
+		fabric-command-api-v2: Fabric Command API (v2) 2.2.28+6ced4dd919
+		fabric-commands-v0: Fabric Commands (v0) 0.2.66+df3654b319
+		fabric-content-registries-v0: Fabric Content Registries (v0) 8.0.19+b559734419
+		fabric-convention-tags-v1: Fabric Convention Tags 2.1.5+7f945d5b19
+		fabric-convention-tags-v2: Fabric Convention Tags (v2) 2.11.1+a406e79519
+		fabric-crash-report-info-v1: Fabric Crash Report Info (v1) 0.2.29+0af3f5a719
+		fabric-data-attachment-api-v1: Fabric Data Attachment API (v1) 1.4.5+6116a37819
+		fabric-data-generation-api-v1: Fabric Data Generation API (v1) 20.2.33+37516cd619
+		fabric-dimensions-v1: Fabric Dimensions API (v1) 4.0.0+6fc22b9919
+		fabric-entity-events-v1: Fabric Entity Events (v1) 1.8.0+2b27e0a419
+		fabric-events-interaction-v0: Fabric Events Interaction (v0) 0.7.13+ba9dae0619
+		fabric-game-rule-api-v1: Fabric Game Rule API (v1) 1.0.53+6ced4dd919
+		fabric-gametest-api-v1: Fabric Game Test API (v1) 2.0.5+6fc22b9919
+		fabric-item-api-v1: Fabric Item API (v1) 11.2.0+3b3cb2e819
+		fabric-item-group-api-v1: Fabric Item Group API (v1) 4.1.7+def88e3a19
+		fabric-key-binding-api-v1: Fabric Key Binding API (v1) 1.0.47+0af3f5a719
+		fabric-keybindings-v0: Fabric Key Bindings (v0) 0.2.45+df3654b319
+		fabric-lifecycle-events-v1: Fabric Lifecycle Events (v1) 2.6.0+0865547519
+		fabric-loot-api-v2: Fabric Loot API (v2) 3.0.15+3f89f5a519
+		fabric-loot-api-v3: Fabric Loot API (v3) 1.0.3+3f89f5a519
+		fabric-message-api-v1: Fabric Message API (v1) 6.0.14+8aaf3aca19
+		fabric-model-loading-api-v1: Fabric Model Loading API (v1) 2.1.0+b4d813fc19
+		fabric-networking-api-v1: Fabric Networking API (v1) 4.3.0+c7469b2119
+		fabric-object-builder-api-v1: Fabric Object Builder API (v1) 15.2.1+40875a9319
+		fabric-particles-v1: Fabric Particles (v1) 4.0.2+6573ed8c19
+		fabric-recipe-api-v1: Fabric Recipe API (v1) 5.0.14+248df81c19
+		fabric-registry-sync-v0: Fabric Registry Sync (v0) 5.3.1+e3eddc2119
+		fabric-renderer-api-v1: Fabric Renderer API (v1) 3.4.1+b4d813fc19
+		fabric-renderer-indigo: Fabric Renderer - Indigo 1.7.1+c705a49c19
+		fabric-renderer-registries-v1: Fabric Renderer Registries (v1) 3.2.69+df3654b319
+		fabric-rendering-data-attachment-v1: Fabric Rendering Data Attachment (v1) 0.3.49+73761d2e19
+		fabric-rendering-fluids-v1: Fabric Rendering Fluids (v1) 3.1.6+1daea21519
+		fabric-rendering-v0: Fabric Rendering (v0) 1.1.72+df3654b319
+		fabric-rendering-v1: Fabric Rendering (v1) 5.1.0+ab4c25a019
+		fabric-resource-conditions-api-v1: Fabric Resource Conditions API (v1) 4.3.0+8dc279b119
+		fabric-resource-loader-v0: Fabric Resource Loader (v0) 1.3.1+5b5275af19
+		fabric-screen-api-v1: Fabric Screen API (v1) 2.0.25+8b68f1c719
+		fabric-screen-handler-api-v1: Fabric Screen Handler API (v1) 1.3.90+b559734419
+		fabric-sound-api-v1: Fabric Sound API (v1) 1.0.23+6573ed8c19
+		fabric-transfer-api-v1: Fabric Transfer API (v1) 5.4.3+c24bd99419
+		fabric-transitive-access-wideners-v1: Fabric Transitive Access Wideners (v1) 6.2.0+45b9699719
+		fabricloader: Fabric Loader 0.17.2
+		generated_381268e: Generated Mod (Please Ignore) 1.0.0
+		iceandfire: Ice And Fire Community Edition 2.0-beta.16
+		integration: Integration 0.2
+		jade: Jade 15.9.2+fabric
+		java: OpenJDK 64-Bit Server VM 21
+		jupiter: Jupiter 2.3.4
+		minecraft: Minecraft 1.21.1
+		mixinextras: MixinExtras 0.4.1
+		modmenu: Mod Menu 11.0.3
+		trinkets: Trinkets 3.10.0
+		uranus: Uranus 2.4
+	Launched Version: Fabric
+	Backend library: LWJGL version 3.3.3-snapshot
+	Backend API: Intel(R) Iris(R) Xe Graphics GL version 3.2.0 - Build 31.0.101.4146, Intel
+	Window size: <not initialized>
+	GFLW Platform: win32
+	GL Caps: Using framebuffer using OpenGL 3.2
+	GL debug messages: 
+	Is Modded: Definitely; Client brand changed to 'fabric'
+	Universe: 404
+	Type: Client (map_client.txt)
+	Locale: en_US
+	System encoding: GBK
+	File encoding: UTF-8
+	CPU: 20x 13th Gen Intel(R) Core(TM) i7-13700H
+#@!@# Game crashed! Crash report saved to: #@!@# D:\IceAndFire-CE\fabric\run\crash-reports\crash-2026-08-07_08.38.40-client.txt
+
+> Task :fabric:runClient FAILED
+
+[Incubating] Problems report is available at: file:///D:/IceAndFire-CE/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':fabric:runClient'.
+> Process 'command 'C:\Program Files\Zulu\zulu-21\bin\java.exe'' finished with non-zero exit value -1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 43s
+11 actionable tasks: 4 executed, 7 up-to-date

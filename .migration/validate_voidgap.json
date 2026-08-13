@@ -1,0 +1,991 @@
+{
+ "net.minecraft.block.Block": [
+  "appendProperties",
+  "appendTooltip",
+  "dropStack",
+  "equals",
+  "getBlastResistance",
+  "randomDisplayTick",
+  "setDefaultState"
+ ],
+ "net.minecraft.block.DispenserBlock": [
+  "registerProjectileBehavior"
+ ],
+ "net.minecraft.block.FallingBlock": [
+  "scheduledTick"
+ ],
+ "net.minecraft.block.SlabBlock": [
+  "appendProperties"
+ ],
+ "net.minecraft.block.StairsBlock": [
+  "appendProperties"
+ ],
+ "net.minecraft.block.TorchBlock": [
+  "randomDisplayTick"
+ ],
+ "net.minecraft.block.WallTorchBlock": [
+  "randomDisplayTick"
+ ],
+ "net.minecraft.block.entity.BlockEntity": [
+  "cancelRemoval",
+  "copyItemDataRequiresOperator",
+  "markDirty",
+  "readNbt",
+  "writeNbt"
+ ],
+ "net.minecraft.block.entity.BlockEntityTicker": [
+  "tick"
+ ],
+ "net.minecraft.block.entity.ChestBlockEntity": [
+  "getPlayersLookingInChestCount",
+  "onOpen",
+  "readNbt",
+  "size",
+  "writeNbt"
+ ],
+ "net.minecraft.block.entity.LockableContainerBlockEntity": [
+  "canPlayerUse",
+  "clear",
+  "isEmpty",
+  "readNbt",
+  "setHeldStacks",
+  "writeNbt"
+ ],
+ "net.minecraft.block.entity.Spawner": [
+  "setEntityType"
+ ],
+ "net.minecraft.block.spawner.MobSpawnerLogic": [
+  "clientTick",
+  "getLastRotation",
+  "getRotation",
+  "isPlayerInRange",
+  "readNbt",
+  "serverTick",
+  "setEntityId",
+  "setSpawnEntry"
+ ],
+ "net.minecraft.client.MinecraftClient": [
+  "close",
+  "tick"
+ ],
+ "net.minecraft.client.font.TextRenderer": [
+  "getWidth"
+ ],
+ "net.minecraft.client.gui.DrawContext": [
+  "draw"
+ ],
+ "net.minecraft.client.gui.hud.InGameHud": [
+  "render",
+  "renderMiscOverlays"
+ ],
+ "net.minecraft.client.gui.screen.Screen": [
+  "init"
+ ],
+ "net.minecraft.client.gui.screen.TitleScreen": [
+  "init"
+ ],
+ "net.minecraft.client.gui.screen.ingame.HandledScreen": [
+  "handledScreenTick",
+  "init"
+ ],
+ "net.minecraft.client.network.ClientPlayerEntity": [
+  "init",
+  "tick"
+ ],
+ "net.minecraft.client.option.GameOptions": [
+  "setPerspective"
+ ],
+ "net.minecraft.client.option.KeyBinding": [
+  "wasPressed"
+ ],
+ "net.minecraft.client.particle.SpriteBillboardParticle": [
+  "setSprite"
+ ],
+ "net.minecraft.client.render.Camera": [
+  "setPos"
+ ],
+ "net.minecraft.client.render.Frustum": [
+  "isVisible"
+ ],
+ "net.minecraft.client.render.GameRenderer": [
+  "clearPrograms",
+  "disablePostProcessor",
+  "loadPostProcessor",
+  "renderWorld",
+  "tick"
+ ],
+ "net.minecraft.client.render.entity.model.BipedEntityModel": [
+  "setArmAngle"
+ ],
+ "net.minecraft.client.render.entity.model.EntityModel": [
+  "copyStateTo"
+ ],
+ "net.minecraft.client.render.entity.model.ModelWithArms": [
+  "setArmAngle"
+ ],
+ "net.minecraft.client.render.model.json.ModelTransformationMode": [
+  "isFirstPerson"
+ ],
+ "net.minecraft.client.util.math.MatrixStack": [
+  "isEmpty",
+  "multiply",
+  "pop",
+  "push"
+ ],
+ "net.minecraft.client.world.ClientWorld": [
+  "create",
+  "getColor",
+  "tick"
+ ],
+ "net.minecraft.enchantment.EnchantmentHelper": [
+  "getEquipmentLevel",
+  "getLevel",
+  "onTargetDamaged",
+  "set"
+ ],
+ "net.minecraft.entity.Entity": [
+  "addVelocity",
+  "baseTick",
+  "canHit",
+  "canMoveVoluntarily",
+  "checkBlockCollision",
+  "copyFrom",
+  "distanceTo",
+  "emitGameEvent",
+  "equals",
+  "extinguish",
+  "getBlockX",
+  "getBlockZ",
+  "getEyeY",
+  "getFireTicks",
+  "getHeight",
+  "getId",
+  "getPitch",
+  "getStandingEyeHeight",
+  "getTargetingMargin",
+  "getVelocityMultiplier",
+  "getWidth",
+  "getX",
+  "getY",
+  "getYaw",
+  "getZ",
+  "hasNoGravity",
+  "hasPassengers",
+  "hasVehicle",
+  "initDataTracker",
+  "isAlive",
+  "isInLava",
+  "isInvulnerableTo",
+  "isLogicalSideForUpdatingMovement",
+  "isOnFire",
+  "isOnGround",
+  "isPartOf",
+  "isPushable",
+  "isPushedByFluids",
+  "isRemoved",
+  "isSilent",
+  "isSneaking",
+  "isSprinting",
+  "isSwimming",
+  "isTeammate",
+  "isTouchingWater",
+  "isTouchingWaterOrRain",
+  "lookAt",
+  "move",
+  "populateCrashReport",
+  "readCustomDataFromNbt",
+  "readNbt",
+  "refreshPositionAfterTeleport",
+  "remove",
+  "saveNbt",
+  "sendMessage",
+  "setBoundingBox",
+  "setPosition",
+  "setUuid",
+  "setVelocity",
+  "squaredDistanceTo",
+  "startRiding",
+  "stopRiding",
+  "tick",
+  "tryCheckBlockCollision",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.EntityType": [
+  "getHeight",
+  "getWidth",
+  "isIn"
+ ],
+ "net.minecraft.entity.ExperienceOrbEntity": [
+  "tick"
+ ],
+ "net.minecraft.entity.FallingBlockEntity": [
+  "setFallingBlockPos"
+ ],
+ "net.minecraft.entity.ItemEntity": [
+  "initDataTracker",
+  "readCustomDataFromNbt",
+  "resetPickupDelay",
+  "setOwner",
+  "tick",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.LightningEntity": [
+  "setChanneler"
+ ],
+ "net.minecraft.entity.LivingEntity": [
+  "addStatusEffect",
+  "baseTick",
+  "canHit",
+  "canSee",
+  "clearActiveItem",
+  "getAttributeValue",
+  "getHealth",
+  "getMaxHealth",
+  "getMovementSpeed",
+  "getScaleFactor",
+  "getSoundPitch",
+  "getStepHeight",
+  "getStuckArrowCount",
+  "getVelocityMultiplier",
+  "hasStatusEffect",
+  "initDataTracker",
+  "isAlive",
+  "isBaby",
+  "isDead",
+  "isInvulnerableTo",
+  "isSleeping",
+  "jump",
+  "lookAt",
+  "onAttacking",
+  "onStatusEffectRemoved",
+  "playSound",
+  "readCustomDataFromNbt",
+  "remove",
+  "setAttacker",
+  "setAttacking",
+  "setCurrentHand",
+  "setStackInHand",
+  "sleep",
+  "stopRiding",
+  "swingHand",
+  "tick",
+  "tickMovement",
+  "travel",
+  "tryAttack",
+  "updateAttributes",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.ai.control.FlightMoveControl": [
+  "tick"
+ ],
+ "net.minecraft.entity.ai.control.LookControl": [
+  "lookAt",
+  "tick"
+ ],
+ "net.minecraft.entity.ai.control.MoveControl": [
+  "getTargetX",
+  "getTargetY",
+  "getTargetZ",
+  "isMoving",
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.ActiveTargetGoal": [
+  "canStart"
+ ],
+ "net.minecraft.entity.ai.goal.AnimalMateGoal": [
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.FollowOwnerGoal": [
+  "canStart"
+ ],
+ "net.minecraft.entity.ai.goal.Goal": [
+  "canStart",
+  "canStop",
+  "setControls",
+  "shouldContinue",
+  "start",
+  "stop",
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.LookAroundGoal": [
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.LookAtEntityGoal": [
+  "canStart",
+  "shouldContinue",
+  "stop",
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.MeleeAttackGoal": [
+  "attack",
+  "stop",
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.SwimGoal": [
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.TemptGoal": [
+  "tick"
+ ],
+ "net.minecraft.entity.ai.goal.TrackTargetGoal": [
+  "getFollowRange",
+  "shouldContinue",
+  "start",
+  "stop"
+ ],
+ "net.minecraft.entity.ai.goal.WanderAroundGoal": [
+  "canStart",
+  "shouldContinue"
+ ],
+ "net.minecraft.entity.ai.pathing.BirdNavigation": [
+  "isValidPosition"
+ ],
+ "net.minecraft.entity.ai.pathing.EntityNavigation": [
+  "canPathDirectlyThrough",
+  "canSwim",
+  "checkTimeouts",
+  "continueFollowingPath",
+  "isAtValidPosition",
+  "isIdle",
+  "isValidPosition",
+  "recalculatePath",
+  "stop",
+  "tick"
+ ],
+ "net.minecraft.entity.ai.pathing.Path": [
+  "getCurrentNodeIndex",
+  "getLength",
+  "write"
+ ],
+ "net.minecraft.entity.ai.pathing.SpiderNavigation": [
+  "tick"
+ ],
+ "net.minecraft.entity.ai.pathing.SwimNavigation": [
+  "canPathDirectlyThrough",
+  "isAtValidPosition",
+  "isValidPosition"
+ ],
+ "net.minecraft.entity.attribute.DefaultAttributeContainer": [
+  "getBaseValue",
+  "getValue"
+ ],
+ "net.minecraft.entity.attribute.EntityAttributeInstance": [
+  "getValue"
+ ],
+ "net.minecraft.entity.attribute.EntityAttributeModifier": [
+  "getId"
+ ],
+ "net.minecraft.entity.boss.BossBar": [
+  "setName"
+ ],
+ "net.minecraft.entity.boss.ServerBossBar": [
+  "addPlayer",
+  "removePlayer",
+  "setName"
+ ],
+ "net.minecraft.entity.damage.DamageSource": [
+  "isIn",
+  "isOf"
+ ],
+ "net.minecraft.entity.data.DataTracker": [
+  "write"
+ ],
+ "net.minecraft.entity.data.TrackedData": [
+  "equals"
+ ],
+ "net.minecraft.entity.data.TrackedDataHandlerRegistry": [
+  "getId",
+  "register"
+ ],
+ "net.minecraft.entity.decoration.AbstractDecorationEntity": [
+  "canStayAttached",
+  "onPlace"
+ ],
+ "net.minecraft.entity.effect.StatusEffect": [
+  "getColor",
+  "onRemoved"
+ ],
+ "net.minecraft.entity.effect.StatusEffectInstance": [
+  "equals",
+  "getAmplifier",
+  "getDuration",
+  "getTarget",
+  "update"
+ ],
+ "net.minecraft.entity.mob.AbstractSkeletonEntity": [
+  "equipStack",
+  "readCustomDataFromNbt",
+  "tickMovement"
+ ],
+ "net.minecraft.entity.mob.HostileEntity": [
+  "getPathfindingFavor",
+  "isSpawnDark",
+  "shouldDropXp",
+  "tickMovement"
+ ],
+ "net.minecraft.entity.mob.MobEntity": [
+  "baseTick",
+  "canMobSpawn",
+  "canMoveVoluntarily",
+  "canSpawn",
+  "canTarget",
+  "cannotDespawn",
+  "checkDespawn",
+  "equipStack",
+  "getMaxHeadRotation",
+  "getMaxLookPitchChange",
+  "getMinAmbientSoundDelay",
+  "getPathfindingPenalty",
+  "getPositionTargetRange",
+  "getSafeFallDistance",
+  "getXpToDrop",
+  "hasPositionTarget",
+  "initDataTracker",
+  "initEquipment",
+  "initGoals",
+  "isAffectedByDaylight",
+  "isAiDisabled",
+  "isAttacking",
+  "isPersistent",
+  "loot",
+  "mobTick",
+  "playAmbientSound",
+  "playHurtSound",
+  "readCustomDataFromNbt",
+  "setTarget",
+  "tick",
+  "tickMovement",
+  "tryAttack",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.mob.PathAwareEntity": [
+  "canSpawn",
+  "getPathfindingFavor"
+ ],
+ "net.minecraft.entity.mob.SkeletonHorseEntity": [
+  "readCustomDataFromNbt",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.mob.WaterCreatureEntity": [
+  "canSpawn",
+  "getXpToDrop",
+  "isPushedByFluids"
+ ],
+ "net.minecraft.entity.mob.ZombieEntity": [
+  "initDataTracker",
+  "readCustomDataFromNbt",
+  "tickMovement",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.AbstractHorseEntity": [
+  "getSaddledSpeed",
+  "getSoundVolume",
+  "initDataTracker",
+  "initGoals",
+  "isBreedingItem",
+  "isSaddled",
+  "readCustomDataFromNbt",
+  "saddle",
+  "set",
+  "setStack",
+  "tick",
+  "tickControlled",
+  "tickMovement",
+  "updatePassengerPosition",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.AnimalEntity": [
+  "canBreedWith",
+  "canEat",
+  "eat",
+  "getMinAmbientSoundDelay",
+  "getXpToDrop",
+  "isBreedingItem",
+  "isInLove",
+  "lovePlayer",
+  "mobTick",
+  "readCustomDataFromNbt",
+  "resetLoveTicks",
+  "tickMovement",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.MerchantEntity": [
+  "initDataTracker",
+  "isClient",
+  "readCustomDataFromNbt",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.PassiveEntity": [
+  "getBreedingAge",
+  "initDataTracker",
+  "isBaby",
+  "onTrackedDataSet",
+  "readCustomDataFromNbt",
+  "tickMovement",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.PolarBearEntity": [
+  "initDataTracker",
+  "initGoals",
+  "readCustomDataFromNbt",
+  "tick",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.SheepEntity": [
+  "getRgbColor",
+  "setColor"
+ ],
+ "net.minecraft.entity.passive.TameableEntity": [
+  "canAttackWithOwner",
+  "canTarget",
+  "initDataTracker",
+  "isOwner",
+  "isSitting",
+  "isTamed",
+  "isTeammate",
+  "onDeath",
+  "readCustomDataFromNbt",
+  "setOwner",
+  "tick",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.passive.WolfEntity": [
+  "initDataTracker",
+  "initGoals",
+  "readCustomDataFromNbt",
+  "setVariant",
+  "tick",
+  "tickMovement",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.player.PlayerEntity": [
+  "attack",
+  "canModifyBlocks",
+  "canSprintAsVehicle",
+  "dismountVehicle",
+  "dropInventory",
+  "equipStack",
+  "getBlockBreakingSpeed",
+  "getMovementSpeed",
+  "getVelocityMultiplier",
+  "getXpToDrop",
+  "incrementStat",
+  "initDataTracker",
+  "isCreative",
+  "isImmobile",
+  "isInvulnerableTo",
+  "isPushedByFluids",
+  "isSpectator",
+  "isSwimming",
+  "jump",
+  "onDeath",
+  "onKilledOther",
+  "onSwimmingStart",
+  "playStepSound",
+  "readCustomDataFromNbt",
+  "remove",
+  "set",
+  "shouldAlwaysDropXp",
+  "shouldDamagePlayer",
+  "spawnSweepAttackParticles",
+  "tick",
+  "tickMovement",
+  "tickRiding",
+  "travel",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.player.PlayerInventory": [
+  "canPlayerUse",
+  "clear",
+  "contains",
+  "indexOf",
+  "insertStack",
+  "isEmpty",
+  "markDirty",
+  "readNbt",
+  "size"
+ ],
+ "net.minecraft.entity.projectile.PersistentProjectileEntity": [
+  "age",
+  "getDamage",
+  "getPierceLevel",
+  "isCritical",
+  "move",
+  "onEntityHit",
+  "onHit",
+  "readCustomDataFromNbt",
+  "setOwner",
+  "tick",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.entity.projectile.TridentEntity": [
+  "onEntityHit"
+ ],
+ "net.minecraft.entity.projectile.thrown.EggEntity": [
+  "onCollision"
+ ],
+ "net.minecraft.entity.vehicle.BoatEntity": [
+  "initDataTracker",
+  "isPushable",
+  "pushAwayFrom",
+  "readCustomDataFromNbt",
+  "remove",
+  "setVariant",
+  "tick",
+  "updateVelocity",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.fluid.FluidState": [
+  "getHeight",
+  "isEmpty",
+  "isIn",
+  "isOf"
+ ],
+ "net.minecraft.inventory.Inventories": [
+  "readNbt"
+ ],
+ "net.minecraft.inventory.Inventory": [
+  "isEmpty",
+  "markDirty",
+  "size"
+ ],
+ "net.minecraft.inventory.InventoryChangedListener": [
+  "onInventoryChanged"
+ ],
+ "net.minecraft.inventory.SimpleInventory": [
+  "addListener",
+  "canInsert",
+  "canPlayerUse",
+  "isEmpty",
+  "markDirty",
+  "removeListener",
+  "size"
+ ],
+ "net.minecraft.item.BowItem": [
+  "getMaxUseTime"
+ ],
+ "net.minecraft.item.Item": [
+  "appendTooltip",
+  "canRepair",
+  "getMaxCount",
+  "getMaxUseTime",
+  "getRawId",
+  "hasGlint",
+  "postHit"
+ ],
+ "net.minecraft.item.ItemStack": [
+  "areEqual",
+  "areItemsEqual",
+  "canBreak",
+  "getCount",
+  "getDamage",
+  "getMaxCount",
+  "getMaxUseTime",
+  "hasEnchantments",
+  "hasGlint",
+  "isEmpty",
+  "isIn",
+  "isOf",
+  "isStackable",
+  "postHit"
+ ],
+ "net.minecraft.item.SwordItem": [
+  "postHit"
+ ],
+ "net.minecraft.item.ToolMaterial": [
+  "getAttackDamage",
+  "getDurability",
+  "getEnchantability",
+  "getMiningSpeedMultiplier"
+ ],
+ "net.minecraft.item.TridentItem": [
+  "getMaxUseTime"
+ ],
+ "net.minecraft.loot.context.LootContextParameterSet": [
+  "contains"
+ ],
+ "net.minecraft.nbt.NbtCompound": [
+  "contains",
+  "containsUuid",
+  "equals",
+  "getBoolean",
+  "getByte",
+  "getDouble",
+  "getFloat",
+  "getInt",
+  "getLong",
+  "getSize",
+  "getType",
+  "isEmpty",
+  "putString",
+  "putUuid",
+  "remove",
+  "skip",
+  "write"
+ ],
+ "net.minecraft.nbt.NbtElement": [
+  "getType"
+ ],
+ "net.minecraft.nbt.NbtList": [
+  "clear",
+  "equals",
+  "getType",
+  "isEmpty",
+  "size",
+  "skip",
+  "write"
+ ],
+ "net.minecraft.network.PacketByteBuf": [
+  "equals",
+  "readInt",
+  "writeRegistryKey"
+ ],
+ "net.minecraft.recipe.Ingredient": [
+  "equals",
+  "isEmpty",
+  "test"
+ ],
+ "net.minecraft.recipe.Recipe": [
+  "matches"
+ ],
+ "net.minecraft.recipe.RecipeEntry": [
+  "equals"
+ ],
+ "net.minecraft.recipe.input.RecipeInput": [
+  "getSize"
+ ],
+ "net.minecraft.registry.Registries": [
+  "init"
+ ],
+ "net.minecraft.registry.RegistryKey": [
+  "isOf"
+ ],
+ "net.minecraft.registry.RegistryOps": [
+  "equals"
+ ],
+ "net.minecraft.screen.ArrayPropertyDelegate": [
+  "size"
+ ],
+ "net.minecraft.screen.PropertyDelegate": [
+  "size"
+ ],
+ "net.minecraft.screen.ScreenHandler": [
+  "addListener",
+  "addProperties",
+  "calculateComparatorOutput",
+  "canUse",
+  "dropInventory",
+  "onClosed",
+  "onContentChanged",
+  "removeListener",
+  "set"
+ ],
+ "net.minecraft.screen.slot.FurnaceOutputSlot": [
+  "onTakeItem"
+ ],
+ "net.minecraft.screen.slot.Slot": [
+  "canInsert",
+  "getMaxItemCount",
+  "hasStack",
+  "isEnabled",
+  "markDirty",
+  "onCrafted",
+  "onQuickTransfer",
+  "onTakeItem",
+  "setStack",
+  "setStackNoCallbacks"
+ ],
+ "net.minecraft.server.MinecraftServer": [
+  "sendMessage",
+  "tick"
+ ],
+ "net.minecraft.server.network.ServerPlayerEntity": [
+  "attack",
+  "getYaw",
+  "isCreative",
+  "isSpectator",
+  "lookAt",
+  "onDeath",
+  "readCustomDataFromNbt",
+  "sendMessage",
+  "shouldDamagePlayer",
+  "stopRiding",
+  "swingHand",
+  "tick",
+  "tickRiding",
+  "travel",
+  "writeCustomDataToNbt"
+ ],
+ "net.minecraft.server.world.ServerWorld": [
+  "create",
+  "emitGameEvent",
+  "spawnEntity",
+  "tick",
+  "updateNeighborsAlways"
+ ],
+ "net.minecraft.structure.StructurePiece": [
+  "generate",
+  "writeNbt"
+ ],
+ "net.minecraft.structure.StructurePiecesCollector": [
+  "addPiece",
+  "clear",
+  "isEmpty"
+ ],
+ "net.minecraft.structure.StructureTemplate": [
+  "getId"
+ ],
+ "net.minecraft.util.Arm": [
+  "getId"
+ ],
+ "net.minecraft.util.DyeColor": [
+  "getId"
+ ],
+ "net.minecraft.util.Identifier": [
+  "equals",
+  "hashCode"
+ ],
+ "net.minecraft.util.ItemScatterer": [
+  "onStateReplaced",
+  "spawn"
+ ],
+ "net.minecraft.util.Util": [
+  "getMeasuringTimeMs"
+ ],
+ "net.minecraft.util.collection.DefaultedList": [
+  "clear",
+  "size"
+ ],
+ "net.minecraft.util.hit.HitResult": [
+  "squaredDistanceTo"
+ ],
+ "net.minecraft.util.math.BlockBox": [
+  "contains",
+  "equals",
+  "getBlockCountX",
+  "getMaxY",
+  "getMinX",
+  "getMinY",
+  "getMinZ"
+ ],
+ "net.minecraft.util.math.BlockPos": [
+  "asLong"
+ ],
+ "net.minecraft.util.math.Box": [
+  "contains",
+  "equals",
+  "getLengthX",
+  "getLengthZ"
+ ],
+ "net.minecraft.util.math.ChunkPos": [
+  "equals",
+  "getEndX",
+  "getEndZ",
+  "getSquaredDistance",
+  "getStartX",
+  "getStartZ"
+ ],
+ "net.minecraft.util.math.Direction": [
+  "asRotation",
+  "getId",
+  "getOffsetX",
+  "getOffsetY",
+  "getOffsetZ",
+  "offset",
+  "test"
+ ],
+ "net.minecraft.util.math.Position": [
+  "getX",
+  "getY",
+  "getZ"
+ ],
+ "net.minecraft.util.math.Vec2f": [
+  "equals"
+ ],
+ "net.minecraft.util.math.Vec3d": [
+  "distanceTo",
+  "dotProduct",
+  "equals",
+  "getX",
+  "getY",
+  "getZ",
+  "horizontalLength",
+  "length",
+  "lengthSquared",
+  "squaredDistanceTo"
+ ],
+ "net.minecraft.util.math.Vec3i": [
+  "equals",
+  "getSquaredDistance",
+  "getX",
+  "getY",
+  "getZ"
+ ],
+ "net.minecraft.util.math.intprovider.ConstantIntProvider": [
+  "get"
+ ],
+ "net.minecraft.util.math.intprovider.UniformIntProvider": [
+  "get"
+ ],
+ "net.minecraft.util.math.random.Random": [
+  "nextBoolean",
+  "nextDouble",
+  "nextFloat",
+  "nextGaussian",
+  "nextInt",
+  "nextLong"
+ ],
+ "net.minecraft.util.shape.VoxelShape": [
+  "isEmpty"
+ ],
+ "net.minecraft.world.ChunkRegion": [
+  "isValidForSetBlock"
+ ],
+ "net.minecraft.world.Difficulty": [
+  "getId"
+ ],
+ "net.minecraft.world.GameRules": [
+  "equals",
+  "getBoolean"
+ ],
+ "net.minecraft.world.LocalDifficulty": [
+  "getLocalDifficulty"
+ ],
+ "net.minecraft.world.PersistentState": [
+  "markDirty"
+ ],
+ "net.minecraft.world.World": [
+  "addBlockEntity",
+  "getTime",
+  "hasRain",
+  "isClient",
+  "isDay",
+  "isThundering",
+  "isValid",
+  "markDirty",
+  "removeBlockEntity",
+  "setBlockState",
+  "updateComparators",
+  "updateNeighborsAlways"
+ ],
+ "net.minecraft.world.WorldView": [
+  "getHeight",
+  "isClient"
+ ],
+ "net.minecraft.world.border.WorldBorder": [
+  "tick"
+ ],
+ "net.minecraft.world.chunk.light.LightingProvider": [
+  "getTopY"
+ ],
+ "net.minecraft.world.explosion.Explosion": [
+  "collectBlocksAndDamageEntities",
+  "getExposure"
+ ],
+ "net.minecraft.world.gen.feature.Feature": [
+  "generate"
+ ],
+ "net.minecraft.world.gen.heightprovider.HeightProvider": [
+  "get"
+ ]
+}

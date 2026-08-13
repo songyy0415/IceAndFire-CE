@@ -86,7 +86,7 @@ public class LightningDragonEntity extends DragonBaseEntity {
 
     @Override
     public boolean isTimeToWake() {
-        return this.level().getSkyDarken() < 4 || this.getCommand() == 2;
+        return this.level().getSkyDarken() >= 4 || this.getCommand() == 2;
     }
 
     @Override

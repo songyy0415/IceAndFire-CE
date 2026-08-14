@@ -266,7 +266,18 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
     @Override
     public void tick() {
         this.pollPendingPath();
-        super.tick();
+        if (this.path != null) {
+            super.tick();
+        } else {
+            // No path has been applied yet (still computing async, or none found). Vanilla's
+            // PathNavigation.tick() dereferences this.path whenever isDone() returns false, but our
+            // isDone() override reports false while a path is being computed (to keep goals alive),
+            // so skip the follow logic and just advance the tick counter until a path exists.
+            this.tick++;
+            if (this.hasDelayedRecomputation) {
+                this.recomputePath();
+            }
+        }
         if (this.stuckHandler != null) {
             this.stuckHandler.checkStuck(this);
         }

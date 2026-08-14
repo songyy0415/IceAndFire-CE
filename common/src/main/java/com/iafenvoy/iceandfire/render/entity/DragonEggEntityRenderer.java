@@ -42,15 +42,22 @@ public class DragonEggEntityRenderer extends LivingEntityRenderer<DragonEggEntit
     @Override
     public void submit(DragonEggRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
-        this.setupRotations(state, poseStack, state.bodyRot, state.scale);
+        float scale = state.scale;
+        poseStack.scale(scale, scale, scale);
+        this.setupRotations(state, poseStack, state.bodyRot, scale);
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         this.scale(state, poseStack);
+        poseStack.translate(0.0F, -1.501F, 0.0F);
         RenderType renderType = RenderTypes.entityCutout(this.getTextureLocation(state));
         this.model.setupAnim(state);
         submitNodeCollector.order(0).submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
             PoseStack fresh = new PoseStack();
             fresh.last().pose().set(pose.pose());
             fresh.last().normal().set(pose.normal());
+            // Re-run setupAnim at deferred-draw time so each egg draws its own pose (the
+            // per-renderer model is shared across all eggs; without this, every egg animates
+            // in sync with the last-submitted one). Matches AdvancedEntityRendererBase.
+            this.model.setupAnim(state);
             this.model.renderPartsToBuffer(fresh, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
         });
         poseStack.popPose();

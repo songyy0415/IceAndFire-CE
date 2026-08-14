@@ -1,24 +1,46 @@
 package com.iafenvoy.iceandfire.entity.pathfinding.raycoms;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.NodeEvaluator;
+import net.minecraft.world.level.PathNavigationRegion;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Advanced path navigation re-implemented in-mod from the removed Uranus raycoms
  * {@code AdvancedPathNavigate}. Backed by vanilla {@link GroundPathNavigation} + a shared
  * {@link CustomWalkNodeEvaluator} that honours {@link ICustomSizeNavigator} / {@link IPassabilityNavigator}
  * and the requested {@link MovementType}, plus a {@link PathingStuckHandler}.
+ *
+ * <p>Path computation is dispatched to a background executor (like Uranus's async
+ * {@code Pathfinding} executor) and applied on the server thread in {@link #tick()}. Each job uses
+ * a fresh {@link PathFinder}/{@link CustomWalkNodeEvaluator} so no mutable evaluator state is shared
+ * across threads; the job only reads the (effectively immutable) mob attributes and a position
+ * snapshot.</p>
  */
 public class AdvancedPathNavigate extends GroundPathNavigation {
     public enum MovementType {
         WALKING, FLYING, CLIMBING
     }
+
+    private static final int MIN_PATH_NODES = 5000;
+    private static final ExecutorService PATH_EXECUTOR = Executors.newFixedThreadPool(2, runnable -> {
+        Thread thread = new Thread(runnable, "IceAndFire-Pathfinding");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final Mob ourEntity;
     private MovementType movementType = MovementType.WALKING;
@@ -26,6 +48,9 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
     private BlockPos desiredPos;
     private final float width;
     private final float height;
+
+    private Future<Path> pendingPath;
+    private double pendingSpeed;
 
     public AdvancedPathNavigate(Mob mob, Level world, MovementType type, float xzSize, float yzSize) {
         this(mob, world, type, xzSize, yzSize, PathingStuckHandler.createStuckHandler().withTeleportSteps(6).withTeleportOnFullStuck());
@@ -39,7 +64,8 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
         this.height = yzSize;
         this.stuckHandler = stuckHandler;
         // createPathFinder ran during super() with the default WALKING type; re-point the shared
-        // evaluator instance (the same one the PathFinder holds) to the requested movement type.
+        // evaluator instance to the requested movement type (it is only used for passability reads
+        // by the move helpers, not for path search itself).
         if (this.nodeEvaluator instanceof CustomWalkNodeEvaluator customEvaluator) {
             customEvaluator.setFlying(type == MovementType.FLYING);
             customEvaluator.setCanOpenDoors(true);
@@ -56,10 +82,7 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
     protected PathFinder createPathFinder(int maxVisitedNodes) {
         CustomWalkNodeEvaluator evaluator = new CustomWalkNodeEvaluator();
         this.nodeEvaluator = evaluator;
-        // Uranus allowed up to 5000 path nodes; vanilla budgets FOLLOW_RANGE * 16 (~2048 for a
-        // dragon), aborting searches early with a partial path in dense terrain. BoundedPathFinder
-        // enforces this floor so later vanilla budget updates cannot shrink it.
-        return new BoundedPathFinder(evaluator, Math.max(maxVisitedNodes, 5000));
+        return new PathFinder(evaluator, maxVisitedNodes);
     }
 
     @Override
@@ -82,6 +105,39 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
     }
 
     @Override
+    protected void followThePath() {
+        if (this.path == null || this.path.isDone()) {
+            return;
+        }
+
+        // Vanilla followThePath() measures "close enough to the next node" against the raw block
+        // centre with maxDistanceToWaypoint = bbWidth / 2. For a large mob that radius equals its
+        // body radius, so the waypoint it steers toward sits inside its own body; the slow-turning
+        // GroundMoveHelper then chases that near point and spins in place. Uranus's
+        // continueFollowingPath() instead used a full-body-width reach distance measured against the
+        // width-adjusted node position and looked ahead several nodes, keeping the steering target
+        // clearly ahead of the body. Replicate that here for both ground and flying movement types.
+        double reach = Math.max(1.2D, this.mob.getBbWidth());
+        int maxDropHeight = 3;
+        int startIndex = this.path.getNextNodeIndex();
+        int endIndex = Math.min(this.path.getNodeCount(), startIndex + 4);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Vec3 next = this.path.getEntityPosAtNode(this.mob, i);
+            double xDiff = Math.abs(this.mob.getX() - next.x);
+            double zDiff = Math.abs(this.mob.getZ() - next.z);
+            double yDiff = Math.abs(this.mob.getY() - next.y);
+            double xzReach = reach - yDiff * 0.1D;
+            boolean closeHorizontally = xDiff < xzReach && zDiff < xzReach;
+            boolean closeVertically = yDiff <= Math.min(1.0F, Math.ceil(this.mob.getBbHeight() / 2.0F))
+                    || yDiff <= Math.ceil(this.mob.getBbWidth() / 2.0F) * maxDropHeight;
+            if (closeHorizontally && closeVertically) {
+                this.path.advance();
+            }
+        }
+    }
+
+    @Override
     protected void doStuckDetection(Vec3 mobPos) {
         // Vanilla's built-in stuck detection (100-tick stop + path timeout) races the in-mod
         // PathingStuckHandler (both run: super.tick() then checkStuck()). Uranus's navigation had
@@ -91,8 +147,93 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
         // own flight target).
     }
 
+    // --- Async path computation -------------------------------------------------------------
+
+    private void submitPathJob(Set<BlockPos> targets, int radiusOffset, boolean above, double speed) {
+        this.pendingSpeed = speed;
+        if (this.pendingPath != null && !this.pendingPath.isDone()) {
+            return; // a path is already being computed; ignore redundant requests
+        }
+        if (!this.canUpdatePath()) {
+            return; // can't path right now (e.g. an airborne ground mob)
+        }
+        final Mob mob = this.mob;
+        if (mob.getY() < this.level.getMinY()) {
+            return;
+        }
+        final float maxPathLength = Math.max((float) mob.getAttributeValue(Attributes.FOLLOW_RANGE), 16.0F);
+        BlockPos fromPos = above ? mob.blockPosition().above() : mob.blockPosition();
+        int radius = (int) (maxPathLength + radiusOffset);
+        // Build the chunk snapshot on the server thread: PathNavigationRegion reads the chunk cache
+        // via ChunkSource.getChunkNow(), which is not safe to touch from a worker thread. Only the
+        // expensive A* itself runs on the executor.
+        final PathNavigationRegion region = new PathNavigationRegion(this.level, fromPos.offset(-radius, -radius, -radius), fromPos.offset(radius, radius, radius));
+        final boolean flying = this.movementType == MovementType.FLYING;
+        this.pendingPath = PATH_EXECUTOR.submit(() -> computePath(mob, targets, maxPathLength, flying, region));
+    }
+
+    private static Path computePath(Mob mob, Set<BlockPos> targets, float maxPathLength, boolean flying, PathNavigationRegion region) {
+        if (targets.isEmpty()) {
+            return null;
+        }
+        CustomWalkNodeEvaluator evaluator = new CustomWalkNodeEvaluator();
+        evaluator.setFlying(flying);
+        evaluator.setCanOpenDoors(true);
+        evaluator.setCanFloat(true);
+        int maxVisitedNodes = Math.max(Mth.floor(maxPathLength * 16.0F), MIN_PATH_NODES);
+        PathFinder finder = new PathFinder(evaluator, maxVisitedNodes);
+        return finder.findPath(region, mob, targets, maxPathLength, 1, 1.0F);
+    }
+
+    private void pollPendingPath() {
+        Future<Path> pending = this.pendingPath;
+        if (pending == null || !pending.isDone()) {
+            return;
+        }
+        Path path = null;
+        try {
+            path = pending.get();
+        } catch (Exception ignored) {
+        }
+        this.pendingPath = null;
+        if (path != null) {
+            super.moveTo(path, this.pendingSpeed);
+        }
+    }
+
+    private boolean isFollowingPath() {
+        return this.pendingPath != null || (this.path != null && !this.path.isDone());
+    }
+
+    @Override
+    public boolean isDone() {
+        return this.pendingPath == null && super.isDone();
+    }
+
+    // --- Move entry points (async) ----------------------------------------------------------
+
+    @Override
+    public boolean moveTo(double x, double y, double z, double speed) {
+        BlockPos target = BlockPos.containing(x, y, z);
+        if (!target.equals(this.desiredPos) || !this.isFollowingPath()) {
+            this.desiredPos = target;
+            this.submitPathJob(Set.of(target), 8, false, speed);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean moveTo(Entity entity, double speed) {
+        BlockPos target = entity.blockPosition();
+        if (!target.equals(this.desiredPos) || !this.isFollowingPath()) {
+            this.desiredPos = target;
+            this.submitPathJob(Set.of(target), 16, true, speed);
+        }
+        return true;
+    }
+
     public boolean moveToLivingEntity(LivingEntity entity, double speed) {
-        return this.moveTo(entity, speed);
+        return this.moveTo((Entity) entity, speed);
     }
 
     public BlockPos getDesiredPos() {
@@ -118,44 +259,33 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
         // leave desiredPos unchanged (Uranus passed safeDestination=false here). Otherwise every
         // move-away resets the stuck handler's escalation, so completeStuckAction's teleport-to-goal
         // at stuckLevel >= 9 never fires and the dragon loops stuck -> move-away -> stuck forever.
-        return super.moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, speed);
-    }
-
-    @Override
-    public boolean moveTo(double x, double y, double z, double speed) {
-        this.desiredPos = BlockPos.containing(x, y, z);
-        return super.moveTo(x, y, z, speed);
-    }
-
-    public boolean moveTo(LivingEntity entity, double speed) {
-        this.desiredPos = entity.blockPosition();
-        return super.moveTo(entity, speed);
+        this.submitPathJob(Set.of(target), 8, false, speed);
+        return true;
     }
 
     @Override
     public void tick() {
+        this.pollPendingPath();
         super.tick();
         if (this.stuckHandler != null) {
             this.stuckHandler.checkStuck(this);
         }
     }
 
-    /**
-     * Path finder that enforces a minimum node budget, so vanilla budget updates
-     * ({@code updatePathfinderMaxVisitedNodes()}) cannot shrink it below what large mobs (dragons)
-     * need to complete searches in dense terrain.
-     */
-    private static class BoundedPathFinder extends PathFinder {
-        private final int minVisitedNodes;
-
-        BoundedPathFinder(NodeEvaluator evaluator, int minVisitedNodes) {
-            super(evaluator, minVisitedNodes);
-            this.minVisitedNodes = minVisitedNodes;
+    @Override
+    public void stop() {
+        if (this.pendingPath != null) {
+            this.pendingPath.cancel(true);
         }
+        this.pendingPath = null;
+        super.stop();
+    }
 
-        @Override
-        public void setMaxVisitedNodes(int maxVisitedNodes) {
-            super.setMaxVisitedNodes(Math.max(maxVisitedNodes, this.minVisitedNodes));
+    @Override
+    public void recomputePath() {
+        this.hasDelayedRecomputation = false;
+        if (this.desiredPos != null && !this.isFollowingPath()) {
+            this.submitPathJob(Set.of(this.desiredPos), 8, false, this.speedModifier);
         }
     }
 }

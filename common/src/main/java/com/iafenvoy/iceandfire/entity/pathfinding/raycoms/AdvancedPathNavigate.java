@@ -266,16 +266,27 @@ public class AdvancedPathNavigate extends GroundPathNavigation {
     @Override
     public void tick() {
         this.pollPendingPath();
-        if (this.path != null) {
-            super.tick();
-        } else {
-            // No path has been applied yet (still computing async, or none found). Vanilla's
-            // PathNavigation.tick() dereferences this.path whenever isDone() returns false, but our
-            // isDone() override reports false while a path is being computed (to keep goals alive),
-            // so skip the follow logic and just advance the tick counter until a path exists.
-            this.tick++;
-            if (this.hasDelayedRecomputation) {
-                this.recomputePath();
+        this.tick++;
+        if (this.hasDelayedRecomputation) {
+            this.recomputePath();
+        }
+        // Replicate vanilla PathNavigation.tick()'s follow logic, but gate it on the actual path
+        // being present and unfinished. We cannot reuse super.tick() here: our isDone() override
+        // reports false while a path is still being computed async (to keep goals alive), which
+        // would make vanilla dereference this.path even when it is null or already finished.
+        if (this.path != null && !this.path.isDone()) {
+            if (this.canUpdatePath()) {
+                this.followThePath();
+            } else if (this.path != null && !this.path.isDone()) {
+                Vec3 mobPos = this.getTempMobPos();
+                Vec3 pos = this.path.getNextEntityPos(this.mob);
+                if (mobPos.y > pos.y && !this.mob.onGround() && Mth.floor(mobPos.x) == Mth.floor(pos.x) && Mth.floor(mobPos.z) == Mth.floor(pos.z)) {
+                    this.path.advance();
+                }
+            }
+            if (this.path != null && !this.path.isDone()) {
+                Vec3 target = this.path.getNextEntityPos(this.mob);
+                this.mob.getMoveControl().setWantedPosition(target.x, this.getGroundY(target), target.z, this.speedModifier);
             }
         }
         if (this.stuckHandler != null) {

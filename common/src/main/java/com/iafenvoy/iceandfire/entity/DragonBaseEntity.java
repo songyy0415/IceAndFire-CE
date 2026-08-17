@@ -493,7 +493,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     public void updateBurnTarget() {
         if (this.burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isDragonBaby()) {
             float maxDist = 115 * this.getDragonStage();
-            if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && this.distanceToSqr(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D) < maxDist && this.canPositionBeSeen(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D)) {
+            if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && this.distanceToSqr(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D) < maxDist && this.canSeeFromHead(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D)) {
                 this.getLookControl().setLookAt(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D, 180F, 180F);
                 this.breathFireAtPos(this.burningTarget);
                 this.setBreathingFire(true);
@@ -1303,6 +1303,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         final HitResult result = this.level().clip(new ClipContext(new Vec3(this.getX(), this.getY() + (double) this.getEyeHeight(), this.getZ()), new Vec3(x, y, z), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
         final double dist = result.getLocation().distanceToSqr(x, y, z);
         return dist <= 1.0D || result.getType() == HitResult.Type.MISS;
+    }
+
+    public boolean canSeeFromHead(final double x, final double y, final double z) {
+        final Vec3 head = this.getHeadPosition();
+        final HitResult result = this.level().clip(new ClipContext(head, new Vec3(x, y, z), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+        return head.distanceTo(result.getLocation()) < 10 + this.getBbWidth() * 2;
     }
 
     public abstract Identifier getDeadLootTable();

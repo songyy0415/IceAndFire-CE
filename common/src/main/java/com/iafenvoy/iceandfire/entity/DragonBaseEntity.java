@@ -304,7 +304,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 .add(Attributes.FOLLOW_RANGE, Math.min(2048, IafCommonConfig.INSTANCE.dragon.targetSearchLength.getValue()))
                 //ARMOR
                 .add(Attributes.ARMOR, 4)
-                .add(Attributes.TEMPT_RANGE, 10.0D);
+                .add(Attributes.TEMPT_RANGE, 10.0D)
+                //DRAGON FORGE
+                .add(IafAttributes.DRAGON_FORGE_SPEED.asHolder(), 0.025D);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class HippogryphEntityRenderer extends AdvancedEntityRendererBase<Hippogr
     @Override
     public void extractRenderState(HippogryphEntity entity, HippogryphRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
-        state.armorValue = entity.getArmorValue();
+        state.armorValue = entity.getArmorTier();
         state.saddled = entity.isSaddled();
         state.hasPassenger = entity.getControllingPassenger() != null;
         state.chested = entity.isChested();

@@ -414,7 +414,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         compound.putBoolean("Saddled", this.isSaddled());
         compound.putBoolean("Hovering", this.isHovering());
         compound.putBoolean("Flying", this.isFlying());
-        compound.putInt("Armor", this.getArmorValue());
+        compound.putInt("Armor", this.getArmorTier());
         compound.putInt("Feedings", this.feedings);
         if (this.hippogryphInventory != null) {
             ValueOutput.TypedOutputList<ItemStack> items = compound.list("Items", ItemStack.OPTIONAL_CODEC);
@@ -557,8 +557,14 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         }
     }
 
-    @Override
-    public int getArmorValue() {
+    /**
+     * Armor tier stored in the entity data: 0 = none, 1 = iron, 2 = gold, 3 = diamond, 4 = netherite.
+     * <p>
+     * This must NOT override {@link net.minecraft.world.entity.LivingEntity#getArmorValue()}: vanilla uses that
+     * method for the armor damage reduction, and overriding it made the damage formula read the tier index (0-4)
+     * instead of the armor attribute value set in {@link #setArmor(int)}.
+     */
+    public int getArmorTier() {
         return this.entityData.get(ARMOR);
     }
 

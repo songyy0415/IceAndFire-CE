@@ -49,7 +49,7 @@ public class HippocampusEntityRenderer extends AdvancedEntityRendererBase<Hippoc
         state.isSaddled = entity.isSaddled();
         state.hasPassenger = entity.getControllingPassenger() != null;
         state.isChested = entity.isChested();
-        state.armorValue = entity.getArmorValue();
+        state.armorValue = entity.getArmorTier();
         state.onLandProgress = entity.onLandProgress;
         state.sitProgress = entity.sitProgress;
         state.onGround = entity.onGround();

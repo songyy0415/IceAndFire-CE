@@ -100,28 +100,24 @@ public class LecternScreenHandler extends AbstractContainerMenu {
         this.possiblePagesInt[1] = this.getPageField(1);
         this.possiblePagesInt[2] = this.getPageField(2);
         BestiaryPage[] pages = new BestiaryPage[3];
-        List<BestiaryPage> allPages = IafRegistries.BESTIARY_PAGE.stream().toList();
-        if (this.tileFurnace.getItem(0).getItem() == IafItems.BESTIARY.get()) {
-            if (this.possiblePagesInt[0] < 0) pages[0] = null;
-            else pages[0] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[0]));
-            if (this.possiblePagesInt[1] < 0) pages[1] = null;
-            else pages[1] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[1]));
-            if (this.possiblePagesInt[2] < 0) pages[2] = null;
-            else pages[2] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[2]));
-        }
+        if (this.tileFurnace.getItem(0).getItem() == IafItems.BESTIARY.get())
+            for (int i = 0; i < pages.length; i++)
+                pages[i] = this.possiblePagesInt[i] < 0 ? null : IafRegistries.BESTIARY_PAGE.byId(this.possiblePagesInt[i]);
         return pages;
     }
 
     @Override
     public boolean clickMenuButton(Player playerIn, int id) {
+        if (id < 0 || id >= this.possiblePagesInt.length || !this.stillValid(playerIn)) return false;
         this.onUpdate();
         ItemStack bookStack = this.tileFurnace.getItem(0);
         ItemStack manuscriptStack = this.tileFurnace.getItem(1);
         int i = 3;
         if ((manuscriptStack.isEmpty() || manuscriptStack.getCount() < i || manuscriptStack.getItem() != IafItems.MANUSCRIPT.get()))
             return false;
-        else if (this.possiblePagesInt[id] > 0 && !bookStack.isEmpty() && bookStack.getItem() == IafItems.BESTIARY.get()) {
-            BestiaryPage page = this.getPossiblePages()[Mth.clamp(id, 0, 2)];
+        else if (this.possiblePagesInt[id] >= 0 && !bookStack.isEmpty() && bookStack.getItem() == IafItems.BESTIARY.get()) {
+            BestiaryPage page = this.getPossiblePages()[id];
+            if (page == null || !BestiaryPage.possiblePages(bookStack).contains(page)) return false;
             if (page != null) {
                 if (!playerIn.level().isClientSide()) {
                     manuscriptStack.shrink(i);

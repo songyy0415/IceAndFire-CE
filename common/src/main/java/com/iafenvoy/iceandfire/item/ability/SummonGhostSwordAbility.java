@@ -1,16 +1,15 @@
 package com.iafenvoy.iceandfire.item.ability;
-import com.iafenvoy.iceandfire.util.IafItemUtil;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.GhostSwordEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
+import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -25,21 +24,26 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
 
     @Override
     public void active(LivingEntity attacker) {
-        if (attacker instanceof Player playerEntity) {
-            ItemStack stack = playerEntity.getItemInHand(InteractionHand.MAIN_HAND);
-            if (playerEntity.getCooldowns().isOnCooldown(stack)) {
+        this.active(attacker, InteractionHand.MAIN_HAND);
+    }
+
+    @Override
+    public void active(LivingEntity attacker, InteractionHand hand) {
+        if (this.isEnable() && !attacker.level().isClientSide() && attacker instanceof Player playerEntity) {
+            ItemStack stack = playerEntity.getItemInHand(hand);
+            if (!stack.is(IafItemTags.SUMMON_GHOST_SWORD) || playerEntity.getCooldowns().isOnCooldown(stack)) {
                 return;
             }
             final ItemAttributeModifiers dmg = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
             double totalDmg = 0D;
-            for (ItemAttributeModifiers.Entry modifier : dmg.modifiers())
+            if (dmg != null) for (ItemAttributeModifiers.Entry modifier : dmg.modifiers())
                 if (modifier.attribute().equals(Attributes.ATTACK_DAMAGE))
                     totalDmg += modifier.modifier().amount();
             playerEntity.playSound(SoundEvents.ZOMBIE_INFECT, 1, 1);
             GhostSwordEntity shot = new GhostSwordEntity(IafEntities.GHOST_SWORD.get(), playerEntity.level(), playerEntity, totalDmg * 0.5F, stack);
             shot.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, 1, 0.5f);
             playerEntity.level().addFreshEntity(shot);
-            IafItemUtil.damageStackServerSide(stack, 1, playerEntity);
+            stack.hurtAndBreak(1, playerEntity, hand);
             playerEntity.getCooldowns().addCooldown(stack, 10);
         }
     }

@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 import com.iafenvoy.iceandfire.util.IafMath;
+import com.iafenvoy.iceandfire.util.SearchCooldown;
 import com.iafenvoy.uranus.object.item.FoodUtils;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
 public class DragonAITargetItemsGoal extends TargetGoal {
+    private final SearchCooldown searchCooldown = new SearchCooldown(4);
     protected final Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     private final int targetChance;
@@ -62,9 +64,10 @@ public class DragonAITargetItemsGoal extends TargetGoal {
     }
 
     private boolean updateList() {
-        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+        if (this.searchCooldown.isReady(this.mob.level().getGameTime()))
             this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
+        if (!this.list.isEmpty()) this.list.removeIf(item -> !item.isAlive() || item.level() != this.mob.level() || !this.targetEntitySelector.test(item));
         if (this.list.isEmpty()) return false;
         else {
             this.list.sort(this.theNearestAttackableTargetSorter);
@@ -86,9 +89,12 @@ public class DragonAITargetItemsGoal extends TargetGoal {
     @Override
     public void tick() {
         super.tick();
+        if (this.targetEntity == null || !this.targetEntity.isAlive() || this.targetEntity.getItem().isEmpty()) {
+            this.stop();
+            return;
+        }
         ItemStack stack = this.targetEntity.getItem();
-        if (this.targetEntity == null || !this.targetEntity.isAlive() || stack.isEmpty()) this.stop();
-        else if (this.mob.distanceToSqr(this.targetEntity) < this.mob.getBbWidth() * 2 + this.mob.getBbHeight() / 2 || (this.mob instanceof DragonBaseEntity dragon && dragon.getHeadPosition().distanceToSqr(this.targetEntity.position()) < this.mob.getBbHeight())) {
+        if (this.mob.distanceToSqr(this.targetEntity) < this.mob.getBbWidth() * 2 + this.mob.getBbHeight() / 2 || (this.mob instanceof DragonBaseEntity dragon && dragon.getHeadPosition().distanceToSqr(this.targetEntity.position()) < this.mob.getBbHeight())) {
             this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             final int hunger = FoodUtils.getFoodPoints(this.targetEntity.getItem(), true, this.isIce);
             final DragonBaseEntity dragon = ((DragonBaseEntity) this.mob);

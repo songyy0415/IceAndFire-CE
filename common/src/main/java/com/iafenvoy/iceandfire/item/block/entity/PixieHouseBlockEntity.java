@@ -1,12 +1,10 @@
 package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.entity.PixieEntity;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieHouseS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafParticles;
-import com.iafenvoy.uranus.ServerHelper;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -89,15 +87,20 @@ public class PixieHouseBlockEntity extends BlockEntity {
         return this.saveWithFullMetadata(registryLookup);
     }
 
+    public void markUpdated() {
+        this.setChanged();
+        if (this.level != null && !this.level.isClientSide())
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+    }
+
     @Override
     public void loadAdditional(ValueInput nbt) {
         super.loadAdditional(nbt);
         this.houseType = nbt.getInt("HouseType").orElse(0);
         this.hasPixie = nbt.getBooleanOr("HasPixie", false);
-        this.pixieType = nbt.getInt("PixieType").orElse(0);
+        this.pixieType = net.minecraft.util.Mth.clamp(nbt.getInt("PixieType").orElse(0), 0, PixieEntity.PARTICLE_RGB.length - 1);
         this.tamedPixie = nbt.getBooleanOr("TamedPixie", false);
-        if (nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).isPresent())
-            this.pixieOwnerUUID = nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).orElse(null);
+        this.pixieOwnerUUID = nbt.read("PixieOwnerUUID", UUIDUtil.CODEC).orElse(null);
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, this.pixieItems);
     }
@@ -108,18 +111,18 @@ public class PixieHouseBlockEntity extends BlockEntity {
         if (this.level == null || this.level.isClientSide() || !this.hasPixie) return;
         PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.level);
         pixie.setPos(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F); pixie.setYRot(ThreadLocalRandom.current().nextInt(360)); pixie.setXRot(0);
-        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst());
+        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst().copy());
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;
         pixie.setTame(this.tamedPixie, true);
         pixie.setOwner(this.pixieOwnerUUID != null ? this.level.getPlayerByUUID(this.pixieOwnerUUID) : null);
-        assert this.level != null;
-        if (!this.level.isClientSide())
-            this.level.addFreshEntity(pixie);
+        if (!this.level.addFreshEntity(pixie)) return;
         this.hasPixie = false;
         this.pixieType = 0;
-        if (!this.level.isClientSide())
-            ServerHelper.sendToAll(new UpdatePixieHouseS2CPayload(this.worldPosition, false, 0));
+        this.pixieItems.set(0, ItemStack.EMPTY);
+        this.tamedPixie = false;
+        this.pixieOwnerUUID = null;
+        this.markUpdated();
     }
 
     // 26.2 replaced Block.onRemove with this hook, which fires for ANY removal of the block

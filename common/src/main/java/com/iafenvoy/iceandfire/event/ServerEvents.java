@@ -146,12 +146,6 @@ public final class ServerEvents {
         return amount;
     }
 
-    public static void onLivingSetTarget(Entity tracking, ServerPlayer player) {
-        if (tracking instanceof LivingEntity target) {
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
-            else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
-        }
-    }
 
     public static EventResult onPlayerAttack(Player player, Level world, Entity entity, InteractionHand hand, @Nullable EntityHitResult hitResult) {
         if (entity != null && BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SHEEP)) {

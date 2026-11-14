@@ -2,12 +2,16 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.DreadKnightEntity;
 import com.iafenvoy.iceandfire.util.IafMath;
+import com.iafenvoy.iceandfire.util.SearchCooldown;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import java.util.EnumSet;
 import java.util.List;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 
 public class DreadAIRideHorseGoal extends Goal {
+    private final SearchCooldown searchCooldown = new SearchCooldown(4);
     private final DreadKnightEntity knight;
     private AbstractHorse horse;
 
@@ -24,10 +28,11 @@ public class DreadAIRideHorseGoal extends Goal {
             this.list = IafMath.emptyAbstractHorseEntityList;
             return false;
         } else {
-            if (this.knight.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            if (this.searchCooldown.isReady(this.knight.level().getGameTime()))
                 this.list = this.knight.level().getEntitiesOfClass(AbstractHorse.class,
                         this.knight.getBoundingBox().inflate(16.0D, 7.0D, 16.0D), entity -> !entity.isVehicle());
 
+            if (!this.list.isEmpty()) this.list.removeIf(horse -> !horse.isAlive() || horse.isVehicle());
             if (this.list.isEmpty()) return false;
             else {
                 this.horse = this.list.getFirst();
@@ -38,7 +43,7 @@ public class DreadAIRideHorseGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return !this.knight.isPassenger() && this.horse != null && !this.horse.isVehicle();
+        return !this.knight.isPassenger() && this.horse != null && this.horse.isAlive() && !this.horse.isVehicle();
     }
 
     @Override

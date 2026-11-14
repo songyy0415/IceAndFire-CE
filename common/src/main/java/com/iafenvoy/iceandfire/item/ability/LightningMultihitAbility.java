@@ -3,13 +3,13 @@ package com.iafenvoy.iceandfire.item.ability;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.network.payload.LightningBoltS2CPayload;
 import dev.architectury.networking.NetworkManager;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Set;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.commons.lang3.tuple.Pair;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class LightningMultihitAbility implements PostHitAbility {
     @Override
@@ -26,43 +27,32 @@ public class LightningMultihitAbility implements PostHitAbility {
                 Vec3 pos = attacker.position();
                 double searchRange = IafCommonConfig.INSTANCE.tools.dragonLightningSearchRange.getValue();
                 List<Pair<Vec3, Vec3>> lightnings = new LinkedList<>();
-                //Cache for BFS
-                Queue<Pair<Mob, Double>> bfsQueue = new LinkedList<>();
-                bfsQueue.add(Pair.of(mob, getStackAttackDamage(stack)));
-                List<Mob> attacked = new LinkedList<>();
-                while (!bfsQueue.isEmpty()) {
-                    Pair<Mob, Double> pair = bfsQueue.poll();
-                    Mob mobEntity = pair.getLeft();
-                    double damage = pair.getRight();
-                    if (mobEntity != target)//Don't hit the source entity again
-                        mobEntity.hurt(world.damageSources().mobAttack(attacker), (float) damage);
-                    attacked.add(mobEntity);
-                    //Search for more targets
+                int budget = IafCommonConfig.INSTANCE.tools.dragonLightningMaxSearchCount.getValue();
+                Set<Mob> selected = new HashSet<>();
+                selected.add(mob);
+                double damage = getStackAttackDamage(stack) * IafCommonConfig.INSTANCE.tools.dragonLightningDamageReduction.getValue();
+                if (budget > 1) {
                     List<Mob> targets = world.getEntitiesOfClass(Mob.class, new AABB(
-                            pos.x() - searchRange,
-                            pos.y() - searchRange,
-                            pos.z() - searchRange,
-                            pos.x() + searchRange,
-                            pos.y() + searchRange,
-                            pos.z() + searchRange
-                    )).stream().filter(attacker::hasLineOfSight).filter(x -> !attacked.contains(x)).toList();
-                    for (Mob m : targets) {
-                        if (attacked.size() + bfsQueue.size() >= IafCommonConfig.INSTANCE.tools.dragonLightningMaxSearchCount.getValue())
-                            break;
-                        bfsQueue.add(Pair.of(m, damage * IafCommonConfig.INSTANCE.tools.dragonLightningDamageReduction.getValue()));
-                        lightnings.add(Pair.of(mobEntity.getBoundingBox().getCenter(), m.getBoundingBox().getCenter()));
+                            pos.x() - searchRange, pos.y() - searchRange, pos.z() - searchRange,
+                            pos.x() + searchRange, pos.y() + searchRange, pos.z() + searchRange));
+                    for (Mob next : targets) {
+                        if (selected.size() >= budget) break;
+                        if (next == attacker || !next.isAlive() || !attacker.hasLineOfSight(next) || !selected.add(next))
+                            continue;
+                        next.hurt(world.damageSources().mobAttack(attacker), (float) damage);
+                        lightnings.add(Pair.of(mob.getBoundingBox().getCenter(), next.getBoundingBox().getCenter()));
                     }
                 }
-                for (ServerPlayer player : world.getPlayers(player1 -> player1.distanceTo(attacker) < 64))
+                for (ServerPlayer player : world.getPlayers(serverPlayer -> serverPlayer.distanceTo(attacker) < 64))
                     NetworkManager.sendToPlayer(player, new LightningBoltS2CPayload(lightnings));
             }
         }
     }
 
     /**
-     * Base damage of the chain, taken from the weapon that started it, so the first link deals the weapon's
-     * attack damage (1.20.1 behaviour) instead of a flat 1. Every following link is scaled down by
-     * dragonLightningDamageReduction.
+     * Base damage of the chain, taken from the weapon that started it, so the first link deals the weapon's attack
+     * damage (1.20.1 behaviour) instead of a flat 1. Every selected target takes that damage scaled by
+     * dragonLightningDamageReduction once.
      */
     private static double getStackAttackDamage(ItemStack stack) {
         final ItemAttributeModifiers modifiers = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);

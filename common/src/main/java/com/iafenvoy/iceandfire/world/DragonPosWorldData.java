@@ -29,21 +29,17 @@ public class DragonPosWorldData extends SavedData {
     public static DragonPosWorldData get(Level world) {
         if (world instanceof ServerLevel serverWorld) {
             SavedDataStorage storage = serverWorld.getDataStorage();
-            DragonPosWorldData data = storage.computeIfAbsent(TYPE);
-            if (data != null) data.setDirty();
-            return data;
+            return storage.computeIfAbsent(TYPE);
         }
         return null;
     }
 
     public void addDragon(UUID uuid, BlockPos pos) {
-        this.lastDragonPositions.put(uuid, pos);
-        this.setDirty();
+        if (!pos.equals(this.lastDragonPositions.put(uuid, pos.immutable()))) this.setDirty();
     }
 
     public void removeDragon(UUID uuid) {
-        this.lastDragonPositions.remove(uuid);
-        this.setDirty();
+        if (this.lastDragonPositions.remove(uuid) != null) this.setDirty();
     }
 
     public BlockPos getDragonPos(UUID uuid) {

@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeBlockEntity;
 import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
-import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import com.mojang.serialization.MapCodec;
 import dev.architectury.registry.menu.MenuRegistry;
@@ -38,12 +37,14 @@ import java.util.Map;
 //FIXME::Introduce a base block class for all dragon forge blocks
 public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof, DragonTypeProvider {
     private static final Map<DragonType, Block> ACTIVATED_MAP = new HashMap<>();
+    private static final Map<DragonType, Block> DISABLED_MAP = new HashMap<>();
     private final DragonType dragonType;
 
     public DragonForgeCoreBlock(ResourceKey<Block> key, DragonType dragonType, boolean activated) {
         super(Properties.of().mapColor(MapColor.METAL).dynamicShape().strength(40, 500).sound(SoundType.METAL).lightLevel((state) -> activated ? 15 : 0).setId(key));
         this.dragonType = dragonType;
         if (activated) ACTIVATED_MAP.put(dragonType, this);
+        else DISABLED_MAP.put(dragonType, this);
     }
 
     public static String name(DragonType dragonType, boolean activated) {
@@ -51,12 +52,15 @@ public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof
     }
 
     public static void setState(DragonType dragonType, Level worldIn, BlockPos pos) {
-        BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-        worldIn.setBlock(pos, ACTIVATED_MAP.getOrDefault(dragonType, IafBlocks.DRAGONFORGE_FIRE_CORE.get()).defaultBlockState(), 3);
-        if (blockEntity != null) {
-            blockEntity.clearRemoved();
-            worldIn.setBlockEntity(blockEntity);
-        }
+        setState(dragonType, worldIn, pos, true);
+    }
+
+    public static void setState(DragonType dragonType, Level worldIn, BlockPos pos, boolean assembled) {
+        Block target = (assembled ? ACTIVATED_MAP : DISABLED_MAP).get(dragonType);
+        if (target == null || worldIn.getBlockState(pos).is(target)) return;
+        // Both states use the same BlockEntityType: LevelChunk keeps the entity
+        // (shouldChangedStateKeepBlockEntity) and rebinds the ticker.
+        worldIn.setBlock(pos, target.defaultBlockState(), 3);
     }
 
     @Override

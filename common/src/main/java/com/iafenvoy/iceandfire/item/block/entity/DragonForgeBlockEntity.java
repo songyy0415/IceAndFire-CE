@@ -45,7 +45,6 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
     private static final int[] SLOTS_BOTTOM = new int[]{2};
     public int lastDragonFlameTimer = 0;
     private NonNullList<ItemStack> forgeItemStacks = NonNullList.withSize(3, ItemStack.EMPTY);
-    private boolean prevAssembled;
     private double cookTime = 0;
     //FIXME::Also add total cook time like what vanilla do
     private final ContainerData delegate = new ContainerData() {
@@ -75,42 +74,29 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     //FIXME::Optimize logic and remove core replacement
     public static void tick(Level level, BlockPos pos, BlockState state, DragonForgeBlockEntity blockEntity) {
-        boolean flag = blockEntity.isBurning();
-        boolean flag1 = false;
+        if (level.isClientSide()) return;
+        double previousCookTime = blockEntity.cookTime;
+        int previousFlameTimer = blockEntity.lastDragonFlameTimer;
         if (blockEntity.lastDragonFlameTimer > 0) blockEntity.lastDragonFlameTimer--;
-        blockEntity.updateGrills(blockEntity.assembled());
-        if (!level.isClientSide()) {
-            if (blockEntity.prevAssembled != blockEntity.assembled() && state.getBlock() instanceof DragonForgeCoreBlock core)
-                DragonForgeCoreBlock.setState(core.getDragonType(), level, pos);
-            blockEntity.prevAssembled = blockEntity.assembled();
-            if (!blockEntity.assembled()) return;
-        }
-        if (blockEntity.cookTime > 0 && blockEntity.canSmelt() && blockEntity.lastDragonFlameTimer == 0)
-            blockEntity.cookTime--;
-        if (blockEntity.getItem(0).isEmpty() && !level.isClientSide())
-            blockEntity.cookTime = 0;
-        assert blockEntity.level != null;
-        if (!blockEntity.level.isClientSide()) {
-            if (blockEntity.isBurning()) {
-                if (blockEntity.canSmelt()) {
-                    ++blockEntity.cookTime;
-                    if (blockEntity.cookTime >= blockEntity.getMaxCookTime()) {
-                        blockEntity.cookTime = 0;
-                        blockEntity.smeltItem();
-                        flag1 = true;
-                    }
-                } else if (blockEntity.cookTime > 0) {
-                    blockEntity.lastDragonFlameTimer = 40;
+        boolean assembled = blockEntity.assembled();
+        blockEntity.updateGrills(assembled);
+        if (state.getBlock() instanceof DragonForgeCoreBlock core)
+            DragonForgeCoreBlock.setState(core.getDragonType(), level, pos, assembled);
+
+        if (assembled && blockEntity.canSmelt()) {
+            if (blockEntity.lastDragonFlameTimer > 0 && blockEntity.cookTime > 0) {
+                ++blockEntity.cookTime;
+                if (blockEntity.cookTime >= blockEntity.getMaxCookTime()) {
                     blockEntity.cookTime = 0;
+                    blockEntity.smeltItem();
+                    blockEntity.setChanged();
                 }
-            } else if (!blockEntity.isBurning() && blockEntity.cookTime > 0)
-                blockEntity.cookTime = Mth.clamp(blockEntity.cookTime - 2, 0, blockEntity.getMaxCookTime());
-
-            if (flag != blockEntity.isBurning())
-                flag1 = true;
-        }
-
-        if (flag1) blockEntity.setChanged();
+            } else if (blockEntity.cookTime > 0)
+                blockEntity.cookTime = Math.max(0, blockEntity.cookTime - 1);
+        } else if (assembled || blockEntity.getItem(0).isEmpty())
+            blockEntity.cookTime = 0;
+        if (previousCookTime != blockEntity.cookTime || previousFlameTimer != blockEntity.lastDragonFlameTimer)
+            blockEntity.setChanged();
     }
 
     @Override
@@ -143,7 +129,9 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     @Override
     public ItemStack removeItem(int index, int count) {
-        return ContainerHelper.removeItem(this.forgeItemStacks, index, count);
+        ItemStack removed = ContainerHelper.removeItem(this.forgeItemStacks, index, count);
+        if (!removed.isEmpty()) this.setChanged();
+        return removed;
     }
 
     @Override
@@ -160,10 +148,9 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
         if (stack.getCount() > this.getMaxStackSize())
             stack.setCount(this.getMaxStackSize());
 
-        if (index == 0 && !flag || this.cookTime > this.getMaxCookTime()) {
+        if (index == 0 && !flag || this.cookTime > this.getMaxCookTime())
             this.cookTime = 0;
-            this.setChanged();
-        }
+        this.setChanged();
     }
 
     @Override
@@ -171,13 +158,16 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
         super.loadAdditional(nbt);
         this.forgeItemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, this.forgeItemStacks);
-        this.cookTime = nbt.getInt("CookTime").orElse(0);
+        double savedCookTime = nbt.getDoubleOr("CookTime", 0.0D);
+        this.cookTime = Double.isFinite(savedCookTime) ? Math.max(0, savedCookTime) : 0;
+        this.lastDragonFlameTimer = Mth.clamp(nbt.getIntOr("LastDragonFlameTimer", 0), 0, 40);
     }
 
     @Override
     protected void saveAdditional(ValueOutput nbt) {
         super.saveAdditional(nbt);
-        nbt.putInt("CookTime", (int) this.cookTime);
+        nbt.putDouble("CookTime", this.cookTime);
+        nbt.putInt("LastDragonFlameTimer", this.lastDragonFlameTimer);
         ContainerHelper.saveAllItems(nbt, this.forgeItemStacks);
     }
 
@@ -245,11 +235,13 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
         if (forgeRecipeOutput.isEmpty()) return false;
 
         ItemStack outputStack = this.forgeItemStacks.get(2);
-        if (!outputStack.isEmpty() && !ItemStack.isSameItem(outputStack, forgeRecipeOutput))
+        if (!outputStack.isEmpty() && !ItemStack.isSameItemSameComponents(outputStack, forgeRecipeOutput))
             return false;
 
         int calculatedOutputCount = outputStack.getCount() + forgeRecipeOutput.getCount();
-        return (calculatedOutputCount <= this.getMaxStackSize() && calculatedOutputCount <= outputStack.getMaxStackSize());
+        return calculatedOutputCount <= this.getMaxStackSize()
+                && calculatedOutputCount <= forgeRecipeOutput.getMaxStackSize()
+                && (outputStack.isEmpty() || calculatedOutputCount <= outputStack.getMaxStackSize());
     }
 
     @Override
@@ -273,6 +265,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
         cookStack.shrink(1);
         bloodStack.shrink(1);
+        this.setChanged();
     }
 
     @Override
@@ -327,11 +320,12 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public void transferPower(double i) {
         assert this.level != null;
-        if (!this.level.isClientSide()) {
+        if (!this.level.isClientSide() && Double.isFinite(i) && i > 0) {
             if (this.canSmelt()) this.cookTime = Math.min(this.getMaxCookTime() + 1, this.cookTime + i);
             else this.cookTime = 0;
+            this.lastDragonFlameTimer = 40;
+            this.setChanged();
         }
-        this.lastDragonFlameTimer = 40;
     }
 
     private boolean checkBoneCorners(BlockPos pos) {

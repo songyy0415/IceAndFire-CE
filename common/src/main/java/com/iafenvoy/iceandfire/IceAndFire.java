@@ -9,12 +9,15 @@ import com.iafenvoy.iceandfire.event.ServerEvents;
 import com.iafenvoy.iceandfire.network.ServerNetworkHelper;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.util.IafEntityDataSerializers;
+import com.iafenvoy.iceandfire.world.DragonSummoning;
 import com.iafenvoy.jupiter.ConfigManager;
 import com.iafenvoy.jupiter.ServerConfigManager;
 import com.iafenvoy.uranus.event.EntityEvents;
 import com.iafenvoy.uranus.event.LivingEntityEvents;
 import com.iafenvoy.uranus.event.PlayerEvents;
 import dev.architectury.event.events.common.BlockEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
+import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -97,9 +100,10 @@ public class IceAndFire {
         PlayerEvent.ATTACK_ENTITY.register(ServerEvents::onPlayerAttack);
         PlayerEvents.LOGGED_OUT.register(ServerEvents::onPlayerLeaveEvent);
         EntityEvents.ON_JOIN_WORLD.register(ServerEvents::onEntityJoinWorld);
-        EntityEvents.START_TRACKING_TAIL.register(ServerEvents::onLivingSetTarget);
         LivingEntityEvents.DAMAGE.register(ServerEvents::onEntityDamage);
         EntityEvent.LIVING_HURT.register(ServerEvents::onLivingHurt);
+        TickEvent.SERVER_POST.register(DragonSummoning::tick);
+        LifecycleEvent.SERVER_STOPPING.register(DragonSummoning::clear);
 
         ServerNetworkHelper.registerReceivers();
     }

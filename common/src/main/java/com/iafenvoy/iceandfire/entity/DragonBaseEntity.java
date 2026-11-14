@@ -764,6 +764,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     @Override
     public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            DragonPosWorldData positions = DragonPosWorldData.get(serverLevel);
+            if (this.isBoundToCrystal() && !this.isModelDead()) positions.addDragon(this.getUUID(), this.blockPosition());
+            else positions.removeDragon(this.getUUID());
+        }
         compound.putInt("Hunger", this.getHunger());
         compound.putInt("AgeTicks", this.getAgeInTicks());
         compound.putBoolean("Gender", this.isMale());
@@ -1148,6 +1153,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 }
                 if (stack.getItem() == this.dragonType.getCrystalItem() && !SummoningCrystalItem.hasDragon(stack)) {
                     this.setCrystalBound(true);
+                    if (!this.level().isClientSide()) DragonPosWorldData.get(this.level()).addDragon(this.getUUID(), this.blockPosition());
                     CompoundTag compound = new CompoundTag(), dragonTag = new CompoundTag();
                     dragonTag.putIntArray("DragonUUID", UUIDUtil.uuidToIntArray(this.getUUID()));
                     if (this.getCustomName() != null)
@@ -2869,18 +2875,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
 
     public int getFlightChancePerTick() {
         return FLIGHT_CHANCE_PER_TICK;
-    }
-
-    @Override
-    public void onClientRemoval() {
-        if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {
-            if (this.isBoundToCrystal()) {
-                DragonPosWorldData data = DragonPosWorldData.get(this.level());
-                if (data != null)
-                    data.addDragon(this.getUUID(), this.blockPosition());
-            }
-        }
-        super.onClientRemoval();
     }
 
     @Override

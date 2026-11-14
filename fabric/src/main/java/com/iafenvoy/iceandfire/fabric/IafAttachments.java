@@ -29,6 +29,6 @@ public final class IafAttachments {
     private static <T extends Entity, A extends IafEntityAttachment<T>> void tickAndSync(AttachmentType<A> type, T entity) {
         A attachment = entity.getAttachedOrCreate(type);
         attachment.tick(entity);
-        if (attachment.isDirty()) entity.setAttached(type, attachment);
+        if (attachment.isDirty() && !entity.level().isClientSide()) entity.setAttached(type, attachment);
     }
 }

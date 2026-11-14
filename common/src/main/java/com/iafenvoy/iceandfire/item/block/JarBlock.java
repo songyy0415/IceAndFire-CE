@@ -84,11 +84,11 @@ public class JarBlock extends BaseEntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (!this.empty && world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie && jar.hasProduced) {
-            jar.hasProduced = false;
-            ItemEntity item = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get()));
-            if (!world.isClientSide())
-                world.addFreshEntity(item);
-            world.playLocalSound(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5, IafSounds.PIXIE_HURT.get(), SoundSource.NEUTRAL, 1, 1, false);
+            if (!world.isClientSide()) {
+                jar.hasProduced = false;
+                jar.markUpdated();
+                world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get())));
+            }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

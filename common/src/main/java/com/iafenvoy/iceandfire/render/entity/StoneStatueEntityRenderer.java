@@ -9,6 +9,7 @@ import com.iafenvoy.iceandfire.render.model.StonePlayerModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,6 +29,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 
 public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity, StoneStatueRenderState> {
     protected static final Identifier[] DESTROY_STAGES = new Identifier[]{
@@ -43,6 +45,7 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
             Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_9.png")};
     private final Map<String, Model<?>> modelMap = new HashMap<>();
     private final EntityRendererProvider.Context context;
+    private WeakReference<Level> cachedLevel = new WeakReference<>(null);
 
     public StoneStatueEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -54,9 +57,18 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
         return new StoneStatueRenderState();
     }
 
+    /** Drops the resolved-model cache; called when the client level changes (or on resource reload). */
+    public void clearEntityCache() {
+        this.modelMap.clear();
+    }
+
     @Override
     public void extractRenderState(StoneStatueEntity entity, StoneStatueRenderState state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
+        if (this.cachedLevel.get() != entity.level()) {
+            this.clearEntityCache();
+            this.cachedLevel = new WeakReference<>(entity.level());
+        }
         state.trappedEntityTypeString = entity.getTrappedEntityTypeString();
         state.ageScale = entity.getAgeScale() < 0.01F ? 1F : entity.getAgeScale();
         state.crackAmount = entity.getCrackAmount();

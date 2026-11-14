@@ -28,53 +28,36 @@ public class ServerNetworkHelper {
 
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, DragonControlC2SPayload.ID, DragonControlC2SPayload.CODEC, (payload, ctx) -> {
             Player player = ctx.getPlayer();
-            if (player != null) {
-                Entity entity = player.level().getEntity(payload.dragonId());
-                // Either the player rides the creature (adult), or the creature rides the player
-                // (baby dragon on the shoulder).
-                if (ServerEvents.isRidingOrBeingRiddenBy(entity, player) || ServerEvents.isRidingOrBeingRiddenBy(player, entity)) {
-                    BlockPos pos = payload.pos();
-                        /*
-                            For some of these entities the `setPos` is handled in `Entity#move`
-                            Doing it here would cause server-side movement checks to fail (resulting in "moved wrongly" messages)
-                        */
-                    switch (entity) {
-                        case DragonBaseEntity dragon -> {
-                            if (dragon.isOwnedBy(player)) {
-                                dragon.setControlState(payload.controlState());
-                                if (dragon.getVehicle() == player && dragon.isDismounting()) {
-                                    dragon.stopRiding();
-                                    dragon.dismount(false);
-                                }
-                            }
-                        }
-                        case HippogryphEntity hippogryph -> {
-                            if (hippogryph.isOwnedBy(player))
-                                hippogryph.setControlState(payload.controlState());
-                        }
-                        case HippocampusEntity hippo -> {
-                            if (hippo.isOwnedBy(player)) {
-                                hippo.setControlState(payload.controlState());
-                                hippo.setPos(pos.getX(), pos.getY(), pos.getZ());
-                            }
-                        }
-                        case DeathWormEntity deathWorm -> {
-                            // DeathWorm previously applied control + position with no ownership check,
-                            // letting any riding player teleport the worm regardless of ownership.
-                            if (deathWorm.isOwnedBy(player)) {
-                                deathWorm.setControlState(payload.controlState());
-                                deathWorm.setPos(pos.getX(), pos.getY(), pos.getZ());
-                            }
-                        }
-                        case AmphithereEntity amphithere -> {
-                            if (amphithere.isOwnedBy(player)) {
-                                amphithere.setControlState(payload.controlState());
-                                amphithere.setPos(pos.getX(), pos.getY(), pos.getZ());
-                            }
-                        }
-                        default -> {
+            if (player == null) return;
+            Entity entity = player.level().getEntity(payload.dragonId());
+            // Either the player rides the creature (adult), or the creature rides the player
+            // (baby dragon on the shoulder).
+            if (entity == null || entity.getControllingPassenger() != player && entity.getVehicle() != player) return;
+            // The payload's legacy position field is deliberately ignored: movement is server validated.
+            switch (entity) {
+                case DragonBaseEntity dragon -> {
+                    if (dragon.isOwnedBy(player)) {
+                        dragon.setControlState(payload.controlState());
+                        if (dragon.getVehicle() == player && dragon.isDismounting()) {
+                            dragon.stopRiding();
+                            dragon.dismount(false);
                         }
                     }
+                }
+                case HippogryphEntity hippogryph -> {
+                    if (hippogryph.isOwnedBy(player))
+                        hippogryph.setControlState(payload.controlState());
+                }
+                case HippocampusEntity hippo -> {
+                    if (hippo.isOwnedBy(player))
+                        hippo.setControlState(payload.controlState());
+                }
+                case DeathWormEntity deathWorm -> deathWorm.setControlState(payload.controlState());
+                case AmphithereEntity amphithere -> {
+                    if (amphithere.isOwnedBy(player))
+                        amphithere.setControlState(payload.controlState());
+                }
+                default -> {
                 }
             }
         });

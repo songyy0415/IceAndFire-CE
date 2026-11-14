@@ -42,6 +42,9 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandle
     private static final Identifier DRAWINGS_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_0.png");
     private static final Identifier DRAWINGS_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_1.png");
     private static final Map<String, Identifier> PICTURE_LOCATION_CACHE = Maps.newHashMap();
+    private static volatile int resourceGeneration;
+    private int cachedGeneration = -1;
+    private final Map<Identifier, List<String>> lineCache = new HashMap<>();
     public final List<BestiaryPage> allPageTypes = new ArrayList<>();
     public final List<IndexPageButton> indexButtons = new ArrayList<>();
     protected final ItemStack book;
@@ -664,6 +667,26 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandle
         this.writeFromTxt(ms);
     }
 
+    /** Called from the client resource-reload listener: the next page render re-reads every page file. */
+    public static void invalidatePageCache() {
+        resourceGeneration++;
+    }
+
+    private List<String> cachedLines(Identifier fileLoc, Resource resource) {
+        if (this.cachedGeneration != resourceGeneration) {
+            this.lineCache.clear();
+            this.cachedGeneration = resourceGeneration;
+        }
+        return this.lineCache.computeIfAbsent(fileLoc, key -> {
+            try {
+                return IOUtils.readLines(resource.open(), StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                IceAndFire.LOGGER.error(e);
+                return List.of();
+            }
+        });
+    }
+
     public void imageFromTxt(GuiGraphicsExtractor ms) {
         String fileName = this.pageType.name() + "_" + this.bookPages + ".txt";
         String languageName = Minecraft.getInstance().options.languageCode.toLowerCase(Locale.ROOT);
@@ -676,7 +699,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandle
             resource = Minecraft.getInstance().getResourceManager().getResource(backupLoc);
         try {
             if (resource.isPresent()) {
-                final List<String> lines = IOUtils.readLines(resource.get().open(), StandardCharsets.UTF_8);
+                final List<String> lines = this.cachedLines(fileLoc, resource.get());
                 int zLevelAdd = 0;
                 for (String line : lines) {
                     line = line.trim();
@@ -766,7 +789,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandle
             resource = Minecraft.getInstance().getResourceManager().getResource(backupLoc);
         try {
             assert resource.isPresent();
-            final List<String> lines = IOUtils.readLines(resource.get().open(), "UTF-8");
+            final List<String> lines = this.cachedLines(fileLoc, resource.get());
             int linenumber = 0;
             for (String line : lines) {
                 line = line.trim();

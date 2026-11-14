@@ -244,6 +244,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
                 this.flock.addToFlock(this);
             }
         } else {
+            this.flock.update();
             // Snapshot the leader once: the flock may be empty (issue #295).
             StymphalianBirdEntity leader = this.flock.getLeader();
             if (leader != null && leader != this) {
@@ -262,7 +263,6 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
                     this.setFlying(false);
                 }
             }
-            this.flock.update();
         }
         if (!this.level().isClientSide() && this.getTarget() != null && this.getTarget().isAlive()) {
             double dist = this.distanceToSqr(this.getTarget());

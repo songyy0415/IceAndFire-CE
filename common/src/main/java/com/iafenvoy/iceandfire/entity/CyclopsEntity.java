@@ -343,7 +343,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
                         BlockState state = this.level().getBlockState(pos);
                         Block block = state.getBlock();
                         if (!state.isAir() && !state.getShape(this.level(), pos).isEmpty() && !(block instanceof BushBlock) && block != Blocks.BEDROCK && (state.getBlock() instanceof LeavesBlock || state.is(BlockTags.LOGS))) {
-                            this.getDeltaMovement().scale(0.6D);
+                            this.setDeltaMovement(this.getDeltaMovement().scale(0.6D));
                             if (IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, a, b, c)) continue;
                             if (block != Blocks.AIR)
                                 if (!this.level().isClientSide())

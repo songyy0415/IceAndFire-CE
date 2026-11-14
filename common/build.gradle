@@ -16,6 +16,14 @@ dependencies {
     // Architectury API. This is optional, and you can comment it out if you don't need it.
     implementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
+    // Fabric API (compile-only). A few shared registry helpers in :common
+    // (e.g. impl/ParticleProviderHolder) reference Fabric API classes, and
+    // Fabric API's transitive access wideners grant the vanilla accesses the
+    // MC 26.2 code needs (MenuScreens#register, SpawnPlacements#register,
+    // DamageSources#damageTypes). Kept compile-only: the fabric module owns
+    // the real runtime dependency.
+    compileOnly "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+
     implementation "com.github.IAFEnvoy.Integration:integration-common:$integration_version"
 
     // uranus 26.2 (2.4.1-bugfix) is not published to a public maven — built from

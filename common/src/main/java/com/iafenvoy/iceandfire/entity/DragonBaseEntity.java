@@ -1825,7 +1825,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             this.stopRiding();
         } else {
             this.setDeltaMovement(0, 0, 0);
-            this.tick();
+            // Must call super: Entity#rideTick drives the entity tick (and the tick
+            // events the client move controller listens to), so skipping it leaves a
+            // dragon that is a passenger of the player (baby on the shoulder) unable
+            // to read the sneak key and dismount.
+            super.rideTick();
             if (this.isPassenger()) {
                 this.updateRiding(entity);
             }

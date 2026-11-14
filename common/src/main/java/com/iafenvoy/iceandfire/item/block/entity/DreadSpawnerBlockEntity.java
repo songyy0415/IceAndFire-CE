@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.entity.util.DreadSpawnerBaseLogic;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
+import com.iafenvoy.iceandfire.registry.IafBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -13,7 +14,6 @@ import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.Spawner;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -23,7 +23,7 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
     private final DreadSpawnerBaseLogic spawner = new DreadSpawnerBaseLogic() {
         @Override
         public void broadcastEvent(Level world, BlockPos pos, int status) {
-            world.blockEvent(pos, Blocks.SPAWNER, status, 0);
+            world.blockEvent(pos, IafBlocks.DREAD_SPAWNER.get(), status, 0);
         }
 
         @Override

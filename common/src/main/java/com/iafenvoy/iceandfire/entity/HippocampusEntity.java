@@ -895,7 +895,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
 
         @Override
         public boolean canContinueToUse() {
-            return HippocampusEntity.this.canAutonomouslySwim() && this.explorationTicks > 0;
+            return HippocampusEntity.this.canAutonomouslySwim() && this.target != null && this.explorationTicks > 0;
         }
 
         @Override
@@ -906,7 +906,7 @@ public class HippocampusEntity extends TamableAnimal implements ExtendedMenuProv
         @Override
         public void tick() {
             this.explorationTicks--;
-            if (HippocampusEntity.this.distanceToSqr(this.target) < 8.0D || HippocampusEntity.this.getNavigation().isDone())
+            if (this.target == null || HippocampusEntity.this.distanceToSqr(this.target) < 8.0D || HippocampusEntity.this.getNavigation().isDone())
                 this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.getRandom().nextInt(3), 16);
             if (this.target != null)
                 HippocampusEntity.this.getNavigation().moveTo(this.target.x, this.target.y, this.target.z, 0.8D);

@@ -38,8 +38,13 @@ public class ServerNetworkHelper {
                         */
                     switch (entity) {
                         case DragonBaseEntity dragon -> {
-                            if (dragon.isOwnedBy(player))
+                            if (dragon.isOwnedBy(player)) {
                                 dragon.setControlState(payload.controlState());
+                                if (dragon.getVehicle() == player && dragon.isDismounting()) {
+                                    dragon.stopRiding();
+                                    dragon.dismount(false);
+                                }
+                            }
                         }
                         case HippogryphEntity hippogryph -> {
                             if (hippogryph.isOwnedBy(player))

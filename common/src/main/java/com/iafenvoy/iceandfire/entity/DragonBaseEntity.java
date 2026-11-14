@@ -1192,9 +1192,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                         return InteractionResult.SUCCESS;
                     }
                     final Item stackItem = stack.getItem();
-                    if (stackItem == IafItems.DRAGON_MEAL.get() && this.getAgeInDays() < (this.isTame() ? IafCommonConfig.INSTANCE.dragon.maxTamedDragonAge.getValue() : 128)) {
-                        this.setAgingDisabled(false);
-                        this.growDragon(1);
+                    if (stackItem == IafItems.DRAGON_MEAL.get()) {
+                        if (this.getAgeInDays() < (this.isTame() ? IafCommonConfig.INSTANCE.dragon.maxTamedDragonAge.getValue() : 128)) {
+                            this.setAgingDisabled(false);
+                            this.growDragon(1);
+                        }
                         this.setHunger(this.getHunger() + 20);
                         this.heal(Math.min(this.getHealth(), (int) (this.getMaxHealth() / 2)));
                         this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
@@ -1430,6 +1432,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             return;
 
         final BlockState state = this.level().getBlockState(position);
+        if (!DragonUtils.canGrief(this, state)) return;
         final float hardness = IafCommonConfig.INSTANCE.dragon.griefing.getValue() || this.getDragonStage() <= 3 ? 2.0F : 5.0F;
         if (this.isBreakable(position, state, hardness, this)) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6F, 1, 0.6F));
@@ -1450,7 +1453,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
 
         if (doBreak) {
             if (((ServerLevel) this.level()).getGameRules().get(GameRules.MOB_GRIEFING)) {
-                if (DragonUtils.canGrief(this)) {
+                if (DragonUtils.canGrief(this) || DragonUtils.canSoftGrief(this)) {
                     // TODO :: make `force` ignore the dragon stage?
                     if (!this.isModelDead() && this.getDragonStage() >= 3 && (this.canMove() || this.getControllingPassenger() != null)) {
                         final int bounds = 1;

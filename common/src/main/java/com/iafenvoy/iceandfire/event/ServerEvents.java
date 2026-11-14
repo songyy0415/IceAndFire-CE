@@ -265,8 +265,8 @@ public final class ServerEvents {
         // Handle chain removal
         if (entity instanceof LivingEntity target && !player.isSpectator()) {
             ChainData chainData = ChainData.get(target);
-            if (chainData.isChainedTo(entity.getUUID())) {
-                chainData.removeChain(entity.getUUID());
+            if (chainData.isChainedTo(player.getUUID())) {
+                chainData.removeChain(player.getUUID());
                 if (!player.level().isClientSide())
                     entity.spawnAtLocation((ServerLevel) entity.level(), new ItemStack(IafItems.CHAIN.get()), 1);
                 return EventResult.interruptTrue();

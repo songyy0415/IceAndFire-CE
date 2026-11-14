@@ -13,6 +13,7 @@ import net.minecraft.core.registries.Registries;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -137,6 +138,14 @@ public final class IafEntities {
         SpawnPlacements.register(DREAD_LICH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, DreadLichEntity::canLichSpawnOn);
         SpawnPlacements.register(COCKATRICE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CockatriceEntity::canCockatriceSpawn);
         SpawnPlacements.register(AMPHITHERE.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, AmphithereEntity::canAmphithereSpawnOn);
+        // Dread mobs must spawn on the ground (MOTION_BLOCKING instead of NO_RESTRICTIONS) so they
+        // cannot be placed in the air; see upstream fix "prevent dread mobs spawning in air".
+        SpawnPlacements.register(DREAD_KNIGHT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+        SpawnPlacements.register(DREAD_BEAST.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+        SpawnPlacements.register(DREAD_THRALL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+        SpawnPlacements.register(DREAD_GHOUL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+        SpawnPlacements.register(DREAD_SCUTTLER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
+        SpawnPlacements.register(DREAD_HORSE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
     }
 
     public static void addSpawners() {

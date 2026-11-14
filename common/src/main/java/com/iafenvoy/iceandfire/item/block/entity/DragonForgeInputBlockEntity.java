@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -70,12 +71,6 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
     }
 
     protected void lureDragons() {
-        Vec3 targetPosition = new Vec3(
-                this.getBlockPos().getX() + 0.5F,
-                this.getBlockPos().getY() + 0.5F,
-                this.getBlockPos().getZ() + 0.5F
-        );
-
         AABB searchArea = new AABB(
                 (double) this.worldPosition.getX() - LURE_DISTANCE,
                 (double) this.worldPosition.getY() - LURE_DISTANCE,
@@ -89,10 +84,10 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
 
         assert this.level != null;
         for (DragonBaseEntity dragon : this.level.getEntitiesOfClass(DragonBaseEntity.class, searchArea)) {
-            if (!dragonSelected && /* Dragon Checks */ this.getDragonType() == dragon.dragonType && (dragon.isChained() || dragon.isTame()) && this.canSeeInput(dragon, targetPosition)) {
+            if (!dragonSelected && this.canDragonFuel(dragon)) {
                 dragon.burningTarget = this.worldPosition;
                 dragonSelected = true;
-            } else if (dragon.burningTarget == this.worldPosition) {
+            } else if (this.worldPosition.equals(dragon.burningTarget)) {
                 dragon.burningTarget = null;
                 dragon.setBreathingFire(false);
             }
@@ -103,15 +98,16 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
         return (this.core != null && this.core.assembled() && this.core.canSmelt());
     }
 
-    private boolean canSeeInput(DragonBaseEntity dragon, Vec3 target) {
-        if (target != null) {
-            assert this.level != null;
-            HitResult rayTrace = this.level.clip(new ClipContext(dragon.getHeadPosition(), target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, dragon));
-            double distance = dragon.getHeadPosition().distanceTo(rayTrace.getLocation());
-            return distance < 10 + dragon.getBbWidth() * 2;
-        }
-
-        return false;
+    // Share the same eligibility, range and head-to-input ray with the dragon's breath logic.
+    public boolean canDragonFuel(DragonBaseEntity dragon) {
+        if (this.level == null || !dragon.isAlive() || dragon.isSleeping() || dragon.isBaby()
+                || this.getDragonType() != dragon.dragonType
+                || !(dragon.isChained() || dragon.isTame())) return false;
+        Vec3 target = Vec3.atCenterOf(this.worldPosition);
+        if (dragon.distanceToSqr(target) > (double) LURE_DISTANCE * LURE_DISTANCE) return false;
+        BlockHitResult result = this.level.clip(new ClipContext(dragon.getHeadPosition(), target, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, dragon));
+        return result.getType() == HitResult.Type.MISS
+                || this.worldPosition.equals(result.getBlockPos());
     }
 
     private BlockState getDeactivatedState() {

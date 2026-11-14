@@ -39,6 +39,11 @@ public class DragonPartEntity extends MultipartPartEntity {
     }
 
     @Override
+    public boolean isPickable() {
+        return this.getParent().isAlive();
+    }
+
+    @Override
     public void collideWithNearbyEntities() {
     }
 }

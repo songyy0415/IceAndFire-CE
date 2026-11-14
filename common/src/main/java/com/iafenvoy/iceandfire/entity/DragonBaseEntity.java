@@ -493,9 +493,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     public void updateBurnTarget() {
-        if (this.burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isDragonBaby()) {
-            float maxDist = 115 * this.getDragonStage();
-            if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && this.distanceToSqr(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D) < maxDist && this.canSeeFromHead(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D)) {
+        if (this.burningTarget != null) {
+            // Forge eligibility (alive/asleep/element/tame-or-chained/range/visibility) is shared with
+            // the lure logic in DragonForgeInputBlockEntity.
+            if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && forge.canDragonFuel(this)) {
                 this.getLookControl().setLookAt(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D, 180F, 180F);
                 this.breathFireAtPos(this.burningTarget);
                 this.setBreathingFire(true);
@@ -503,6 +504,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
                 if (!this.level().isClientSide())
                     ServerHelper.sendToAll(new DragonSetBurnBlockS2CPayload(this.getId(), true, this.burningTarget));
                 this.burningTarget = null;
+                this.setBreathingFire(false);
             }
         }
     }
@@ -1087,9 +1089,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
 
     @Override
     public boolean isAlive() {
-        if (this.isModelDead())
-            return !this.isRemoved();
-        return super.isAlive();
+        return !this.isModelDead() && super.isAlive();
     }
 
     @Override
@@ -2473,7 +2473,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
     }
 
     public boolean isChained() {
-        return ChainData.get(this).getChainedTo().isEmpty();
+        return !ChainData.get(this).getChainedTo().isEmpty();
     }
 
     @Override

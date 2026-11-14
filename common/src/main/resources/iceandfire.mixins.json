@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ChickenMixin",
+    "StructureManagerMixin",
     "EntityThunderHitMixin",
     "ChunkRegionMixin",
     "LivingEntityMixin",

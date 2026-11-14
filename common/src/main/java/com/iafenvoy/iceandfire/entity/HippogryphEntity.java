@@ -730,7 +730,6 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         return false;
     }
 
-    // FIXME: There's something majorly wrong with hovering/flying logic. Results in Hippogryphs not landing and other animation issues
     @Override
     public void aiStep() {
         super.aiStep();
@@ -785,9 +784,6 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             }
             this.hasChestVarChanged = false;
         }
-        if (this.isFlying() && this.tickCount % 40 == 0 || this.isFlying() && this.isOrderedToSit()) {
-            this.setFlying(true);
-        }
         if (!this.canMove() && attackTarget != null) {
             this.setTarget(null);
         }
@@ -821,16 +817,13 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         if (!flying && !this.isLandNavigator) {
             this.switchNavigator(true);
         }
-        if ((flying || hovering) && !this.doesWantToLand() && this.getControllingPassenger() == null) {
-            double up = this.isInWater() ? 0.16D : 0.08D;
-            this.setDeltaMovement(this.getDeltaMovement().add(0, up, 0));
-        }
         if ((flying || hovering) && this.tickCount % 20 == 0 && this.isOverAir()) {
             this.playSound(SoundEvents.ENDER_DRAGON_FLAP, this.getSoundVolume() * ((float) IafCommonConfig.INSTANCE.dragon.flapNoiseDistance.getValue() / 2), 0.6F + this.getRandom().nextFloat() * 0.6F * this.getVoicePitch());
         }
         if (this.onGround() && this.doesWantToLand() && (this.isFlying() || this.isHovering())) {
             this.setFlying(false);
             this.setHovering(false);
+            this.setNoGravity(false);
         }
         if (this.isHovering()) {
             if (this.isOrderedToSit()) {
@@ -838,10 +831,11 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             }
             this.hoverTicks++;
             if (this.doesWantToLand()) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05D, 0));
+                this.setDeltaMovement(this.getDeltaMovement().x, -0.12D, this.getDeltaMovement().z);
             } else {
                 if (this.getControllingPassenger() == null) {
-                    this.setDeltaMovement(this.getDeltaMovement().add(0, 0.08D, 0));
+                    // Approach a takeoff speed instead of accelerating upward every tick.
+                    this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y * 0.5D + 0.08D, this.getDeltaMovement().z);
                 }
                 if (this.hoverTicks > 40) {
                     if (!this.isBaby()) {
@@ -861,10 +855,9 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
         }
         if (this.isFlying() && this.doesWantToLand() && this.getControllingPassenger() == null) {
             this.setHovering(false);
-            if (this.onGround()) {
-                this.flyTicks = 0;
-            }
-            this.setFlying(false);
+            this.getNavigation().stop();
+            // Keep flight physics until touchdown, rather than dropping out of the sky.
+            this.setDeltaMovement(this.getDeltaMovement().x * 0.9D, -0.12D, this.getDeltaMovement().z * 0.9D);
         }
         if (this.isFlying()) {
             this.flyTicks++;
@@ -877,7 +870,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
             this.setHovering(false);
             this.setFlying(false);
         }
-        if ((!this.level().isClientSide() && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isOrderedToSit() && !this.isFlying() && this.getPassengers().isEmpty() && !this.isBaby() && !this.isHovering() && !this.isOrderedToSit() && this.canMove() && !this.isOverAir() || this.getY() < -1)) {
+        if (!this.level().isClientSide() && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isFlying() && this.getPassengers().isEmpty() && !this.isBaby() && !this.isHovering() && this.canMove() && this.onGround()) {
             this.setHovering(true);
             this.hoverTicks = 0;
             this.flyTicks = 0;
@@ -951,6 +944,7 @@ public class HippogryphEntity extends TamableAnimal implements ExtendedMenuProvi
     }
 
     protected void switchNavigator(boolean onLand) {
+        this.setNoGravity(!onLand);
         if (onLand) {
             this.moveControl = new MoveControl(this);
             this.navigation = this.createNavigator(this.level(), AdvancedPathNavigate.MovementType.CLIMBING);

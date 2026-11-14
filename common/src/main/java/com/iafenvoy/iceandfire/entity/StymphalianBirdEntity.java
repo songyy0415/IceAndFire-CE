@@ -244,14 +244,16 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
                 this.flock.addToFlock(this);
             }
         } else {
-            if (!this.flock.isLeader(this)) {
-                double dist = this.distanceToSqr(this.flock.getLeader());
+            // Snapshot the leader once: the flock may be empty (issue #295).
+            StymphalianBirdEntity leader = this.flock.getLeader();
+            if (leader != null && leader != this) {
+                double dist = this.distanceToSqr(leader);
                 if (dist > 360) {
                     this.setFlying(true);
                     this.navigation.stop();
-                    this.airTarget = StymphalianBirdAIAirTargetGoal.getNearbyAirTarget(this.flock.getLeader());
+                    this.airTarget = StymphalianBirdAIAirTargetGoal.getNearbyAirTarget(leader);
                     this.aiFlightLaunch = false;
-                } else if (!this.flock.getLeader().isFlying()) {
+                } else if (!leader.isFlying()) {
                     this.setFlying(false);
                     this.airTarget = null;
                     this.aiFlightLaunch = false;
@@ -402,7 +404,8 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
 
     private float getFlySpeed(boolean y) {
         float speed = 2;
-        if (this.flock != null && !this.flock.isLeader(this) && this.distanceToSqr(this.flock.getLeader()) > 10) {
+        StymphalianBirdEntity leader = this.flock == null ? null : this.flock.getLeader();
+        if (leader != null && leader != this && this.distanceToSqr(leader) > 10) {
             speed = 4;
         }
         if (this.getAnimation() == ANIMATION_SHOOT_ARROWS && !y) {

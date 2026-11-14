@@ -6,13 +6,15 @@ import dev.architectury.networking.NetworkManager;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.tuple.Pair;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -26,7 +28,7 @@ public class LightningMultihitAbility implements PostHitAbility {
                 List<Pair<Vec3, Vec3>> lightnings = new LinkedList<>();
                 //Cache for BFS
                 Queue<Pair<Mob, Double>> bfsQueue = new LinkedList<>();
-                bfsQueue.add(Pair.of(mob, (double) EnchantmentHelper.modifyDamage(world, stack, target, world.damageSources().mobAttack(attacker), 1)));
+                bfsQueue.add(Pair.of(mob, getStackAttackDamage(stack)));
                 List<Mob> attacked = new LinkedList<>();
                 while (!bfsQueue.isEmpty()) {
                     Pair<Mob, Double> pair = bfsQueue.poll();
@@ -55,5 +57,20 @@ public class LightningMultihitAbility implements PostHitAbility {
                     NetworkManager.sendToPlayer(player, new LightningBoltS2CPayload(lightnings));
             }
         }
+    }
+
+    /**
+     * Base damage of the chain, taken from the weapon that started it, so the first link deals the weapon's
+     * attack damage (1.20.1 behaviour) instead of a flat 1. Every following link is scaled down by
+     * dragonLightningDamageReduction.
+     */
+    private static double getStackAttackDamage(ItemStack stack) {
+        final ItemAttributeModifiers modifiers = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+        if (modifiers == null) return 1.0D;
+        double damage = 0.0D;
+        for (ItemAttributeModifiers.Entry modifier : modifiers.modifiers())
+            if (modifier.attribute().equals(Attributes.ATTACK_DAMAGE))
+                damage += modifier.modifier().amount();
+        return damage > 0.0D ? damage : 1.0D;
     }
 }

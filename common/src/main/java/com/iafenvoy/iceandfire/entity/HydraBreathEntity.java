@@ -90,6 +90,11 @@ public class HydraBreathEntity extends Fireball implements IDragonProjectile {
                 if (entity instanceof HydraHeadEntity) {
                     return;
                 }
+                // Parts are separate entities: exclude the shooter's own multipart hitboxes explicitly,
+                // otherwise the breath hits a head/body part and the hydra burns itself.
+                if (entity instanceof MultipartPartEntity part && part.getParent() == shootingEntity) {
+                    return;
+                }
                 if (shootingEntity instanceof HydraEntity dragon) {
                     if (dragon.isAlliedTo(entity) || dragon.is(entity)) {
                         return;

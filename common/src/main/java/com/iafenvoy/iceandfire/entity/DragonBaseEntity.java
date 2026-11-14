@@ -1255,7 +1255,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
             if (!stack.isEmpty() && stack.getItem() != null && stack.getItem() == Items.GLASS_BOTTLE && this.getDeathStage() < lastDeathStage / 2 && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue()) {
                 if (!player.isCreative()) stack.shrink(1);
                 this.setDeathStage(this.getDeathStage() + 1);
-                player.getInventory().add(new ItemStack(this.getBloodItem(), 1));
+                player.getInventory().placeItemBackInInventory(new ItemStack(this.getBloodItem(), 1));
                 return InteractionResult.SUCCESS;
             } else if (stack.isEmpty()) {
                 if (this.getDeathStage() >= lastDeathStage - 1 && IafCommonConfig.INSTANCE.dragon.lootSkull.getValue()) {

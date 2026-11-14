@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.fabric;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.IceAndFireClient;
+import com.iafenvoy.iceandfire.client.FlightStaminaOverlay;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafRenderers;
 import com.iafenvoy.iceandfire.render.entity.StoneStatueEntityRenderer;
@@ -10,6 +11,8 @@ import dev.architectury.platform.Platform;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -26,6 +29,9 @@ public final class IceAndFireFabricClient implements ClientModInitializer {
         IceAndFireClient.init();
         IceAndFireClient.process();
         IafRenderers.registerParticleRenderers(holder -> holder.applyRegister(ParticleProviderRegistry.getInstance()::register));
+        // Flight rework stamina bar: drawn right above the vanilla hotbar (the 1.21.1 addon used registerAbove(HOTBAR)).
+        HudElementRegistry.attachElementAfter(VanillaHudElements.HOTBAR,
+                Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "flight_stamina"), FlightStaminaOverlay::render);
         // Drop cached bestiary page text and statue models when resources / the client level change.
         ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
                 Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "bestiary_cache"),

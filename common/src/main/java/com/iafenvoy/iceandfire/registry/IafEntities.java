@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.*;
 import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
+import com.iafenvoy.iceandfire.world.siren.SirenSpawnPlacements;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
@@ -138,6 +139,8 @@ public final class IafEntities {
         SpawnPlacements.register(DREAD_LICH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, DreadLichEntity::canLichSpawnOn);
         SpawnPlacements.register(COCKATRICE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CockatriceEntity::canCockatriceSpawn);
         SpawnPlacements.register(AMPHITHERE.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, AmphithereEntity::canAmphithereSpawnOn);
+        // Siren beach spawns (flight rework patch): night-only surface spawns far from the spawn point and players.
+        SpawnPlacements.register(SIREN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SirenSpawnPlacements::canSirenSpawn);
         // Dread mobs must spawn on the ground (MOTION_BLOCKING instead of NO_RESTRICTIONS) so they
         // cannot be placed in the air; see upstream fix "prevent dread mobs spawning in air".
         SpawnPlacements.register(DREAD_KNIGHT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mob::checkMobSpawnRules);
@@ -161,5 +164,16 @@ public final class IafEntities {
             BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.AMPHITHERE), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(IafEntities.AMPHITHERE.get(), 3, 3), IafCommonConfig.INSTANCE.amphithere.spawnWeight.getValue()));
         if (IafCommonConfig.INSTANCE.troll.spawn.getValue())
             BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.TROLL), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(IafEntities.TROLL.get(), 3, 3), IafCommonConfig.INSTANCE.troll.spawnWeight.getValue()));
+        // Siren beach spawns (flight rework patch): the NeoForge addon added a datapack biome modifier for
+        // #c:is_beach; on Fabric the same spawn list entry is registered through Architectury's biome modifications.
+        if (IafCommonConfig.INSTANCE.siren.beachSpawns.getValue()) {
+            int weight = IafCommonConfig.INSTANCE.siren.beachSpawnWeight.getValue();
+            if (weight > 0) {
+                int min = Math.max(1, IafCommonConfig.INSTANCE.siren.beachMinGroupSize.getValue());
+                int max = Math.max(min, IafCommonConfig.INSTANCE.siren.beachMaxGroupSize.getValue());
+                MobSpawnSettings.SpawnerData siren = new MobSpawnSettings.SpawnerData(IafEntities.SIREN.get(), min, max);
+                BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.IS_BEACH), (context, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, siren, weight));
+            }
+        }
     }
 }

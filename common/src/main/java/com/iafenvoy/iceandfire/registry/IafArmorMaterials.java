@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.tag.CommonItemTags;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import java.util.EnumMap;
+import java.util.List;
 import net.minecraft.util.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
@@ -25,17 +26,17 @@ public final class IafArmorMaterials {
     // `.durability(...)` after `humanoidArmor(...)`, which overrides this base. Kept as a sane base value.
     private static final int BASE_DURABILITY = 15;
 
-    public static final ArmorMaterial COPPER = create("copper", new int[]{1, 3, 4, 2}, 15, SoundEvents.ARMOR_EQUIP_GOLD, 0, 0, IafItemTags.COPPER_INGOTS);
-    public static final ArmorMaterial SILVER = create("silver", new int[]{1, 4, 5, 2}, 20, SoundEvents.ARMOR_EQUIP_CHAIN, 0, 0, CommonItemTags.INGOTS_SILVER);
+    public static final ArmorMaterial COPPER = create("copper", protection(IafCommonConfig.INSTANCE.armors.copperProtection.getValue(), new int[]{1, 3, 4, 2}), 15, SoundEvents.ARMOR_EQUIP_GOLD, 0, 0, IafItemTags.COPPER_INGOTS);
+    public static final ArmorMaterial SILVER = create("silver", protection(IafCommonConfig.INSTANCE.armors.silverProtection.getValue(), new int[]{1, 4, 5, 2}), 20, SoundEvents.ARMOR_EQUIP_CHAIN, 0, 0, CommonItemTags.INGOTS_SILVER);
     public static final ArmorMaterial BLINDFOLD = create("blindfold", new int[]{1, 1, 1, 1}, 10, SoundEvents.ARMOR_EQUIP_LEATHER, 0, 0, CommonItemTags.STRINGS);
     public static final ArmorMaterial SHEEP = create("sheep", new int[]{1, 3, 2, 1}, 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0, 0, ItemTags.WOOL);
     public static final ArmorMaterial EARPLUGS = create("earplugs", new int[]{1, 1, 1, 1}, 10, SoundEvents.ARMOR_EQUIP_LEATHER, 0, 0, ItemTags.WOODEN_BUTTONS);
-    public static final ArmorMaterial DEATHWORM_YELLOW = create("deathworm_yellow", new int[]{2, 5, 7, 3}, 5, SoundEvents.ARMOR_EQUIP_LEATHER, 1.5F, 0, IafItemTags.DEATHWORM_CHITIN_YELLOW);
-    public static final ArmorMaterial DEATHWORM_WHITE = create("deathworm_white", new int[]{2, 5, 7, 3}, 5, SoundEvents.ARMOR_EQUIP_LEATHER, 1.5F, 0, IafItemTags.DEATHWORM_CHITIN_WHITE);
-    public static final ArmorMaterial DEATHWORM_RED = create("deathworm_red", new int[]{2, 5, 7, 3}, 5, SoundEvents.ARMOR_EQUIP_LEATHER, 1.5F, 0, IafItemTags.DEATHWORM_CHITIN_RED);
-    public static final ArmorMaterial TROLL_MOUNTAIN = create("troll_mountain", new int[]{2, 5, 7, 3}, 10, SoundEvents.ARMOR_EQUIP_LEATHER, 1F, 0, IafItemTags.TROLL_LEATHER_MOUNTAIN);
-    public static final ArmorMaterial TROLL_FOREST = create("troll_forest", new int[]{2, 5, 7, 3}, 10, SoundEvents.ARMOR_EQUIP_LEATHER, 1F, 0, IafItemTags.TROLL_LEATHER_FOREST);
-    public static final ArmorMaterial TROLL_FROST = create("troll_frost", new int[]{2, 5, 7, 3}, 10, SoundEvents.ARMOR_EQUIP_LEATHER, 1F, 0, IafItemTags.TROLL_LEATHER_FROST);
+    public static final ArmorMaterial DEATHWORM_YELLOW = create("deathworm_yellow", protection(IafCommonConfig.INSTANCE.armors.deathwormProtection.getValue(), new int[]{2, 5, 7, 3}), 5, SoundEvents.ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.deathwormToughness.getValue().floatValue(), 0, IafItemTags.DEATHWORM_CHITIN_YELLOW);
+    public static final ArmorMaterial DEATHWORM_WHITE = create("deathworm_white", protection(IafCommonConfig.INSTANCE.armors.deathwormProtection.getValue(), new int[]{2, 5, 7, 3}), 5, SoundEvents.ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.deathwormToughness.getValue().floatValue(), 0, IafItemTags.DEATHWORM_CHITIN_WHITE);
+    public static final ArmorMaterial DEATHWORM_RED = create("deathworm_red", protection(IafCommonConfig.INSTANCE.armors.deathwormProtection.getValue(), new int[]{2, 5, 7, 3}), 5, SoundEvents.ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.deathwormToughness.getValue().floatValue(), 0, IafItemTags.DEATHWORM_CHITIN_RED);
+    public static final ArmorMaterial TROLL_MOUNTAIN = create("troll_mountain", protection(IafCommonConfig.INSTANCE.armors.trollProtection.getValue(), new int[]{2, 5, 7, 3}), 10, SoundEvents.ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.trollToughness.getValue().floatValue(), 0, IafItemTags.TROLL_LEATHER_MOUNTAIN);
+    public static final ArmorMaterial TROLL_FOREST = create("troll_forest", protection(IafCommonConfig.INSTANCE.armors.trollProtection.getValue(), new int[]{2, 5, 7, 3}), 10, SoundEvents.ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.trollToughness.getValue().floatValue(), 0, IafItemTags.TROLL_LEATHER_FOREST);
+    public static final ArmorMaterial TROLL_FROST = create("troll_frost", protection(IafCommonConfig.INSTANCE.armors.trollProtection.getValue(), new int[]{2, 5, 7, 3}), 10, SoundEvents.ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.trollToughness.getValue().floatValue(), 0, IafItemTags.TROLL_LEATHER_FROST);
     public static final ArmorMaterial DRAGONSTEEL_FIRE = create(
             "dragonsteel_fire",
             new int[]{
@@ -78,6 +79,11 @@ public final class IafArmorMaterials {
             IafCommonConfig.INSTANCE.armors.dragonsteelArmorKnockbackResistance.getValue().floatValue(),
             IafItemTags.DRAGON_STEELS
     );
+
+    private static int[] protection(List<Integer> configured, int[] fallback) {
+        if (configured == null || configured.size() < 4) return fallback;
+        return new int[]{configured.get(0), configured.get(1), configured.get(2), configured.get(3)};
+    }
 
     public static ArmorMaterial create(String name, int[] protection, int enchantAbility, Holder<SoundEvent> equipSound, float toughness, float knockBackResistance, TagKey<Item> repairItems) {
         return new ArmorMaterial(

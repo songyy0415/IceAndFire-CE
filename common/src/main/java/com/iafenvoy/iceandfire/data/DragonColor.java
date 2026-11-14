@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.data;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.item.armor.DragonScaleArmorItem;
 import com.iafenvoy.iceandfire.registry.IafArmorMaterials;
 import com.iafenvoy.iceandfire.registry.IafItems;
@@ -9,6 +10,7 @@ import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.render.texture.DragonTextureProvider;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import dev.architectury.registry.registries.RegistrySupplier;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -46,13 +48,18 @@ public final class DragonColor {
 
     public static void initArmors() {
         for (DragonColor color : IafRegistries.DRAGON_COLOR.stream().toList()) {
-            color.material = IafArmorMaterials.create("dragon_scales_" + color.name, new int[]{5, 7, 9, 5}, 15, SoundEvents.ARMOR_EQUIP_CHAIN, 2, 0, IafItemTags.DRAGON_SCALES);
+            color.material = IafArmorMaterials.create("dragon_scales_" + color.name, protection(IafCommonConfig.INSTANCE.armors.dragonScaleProtection.getValue(), new int[]{5, 7, 9, 5}), 15, SoundEvents.ARMOR_EQUIP_CHAIN, IafCommonConfig.INSTANCE.armors.dragonScaleToughness.getValue().floatValue(), 0, IafItemTags.DRAGON_SCALES);
             String sub = "armor_" + color.getName().toLowerCase(Locale.ROOT);
             color.helmet = IafItems.registerArmor(sub + "_helmet", key -> new DragonScaleArmorItem(key, color, ArmorType.HELMET));
             color.chestplate = IafItems.registerArmor(sub + "_chestplate", key -> new DragonScaleArmorItem(key, color, ArmorType.CHESTPLATE));
             color.leggings = IafItems.registerArmor(sub + "_leggings", key -> new DragonScaleArmorItem(key, color, ArmorType.LEGGINGS));
             color.boots = IafItems.registerArmor(sub + "_boots", key -> new DragonScaleArmorItem(key, color, ArmorType.BOOTS));
         }
+    }
+
+    private static int[] protection(List<Integer> configured, int[] fallback) {
+        if (configured == null || configured.size() < 4) return fallback;
+        return new int[]{configured.get(0), configured.get(1), configured.get(2), configured.get(3)};
     }
 
     public static DragonColor getById(String id) {

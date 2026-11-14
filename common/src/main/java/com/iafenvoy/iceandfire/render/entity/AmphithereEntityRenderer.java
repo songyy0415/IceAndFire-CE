@@ -1,12 +1,18 @@
 package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.render.entity.state.AmphithereRenderState;
+import com.iafenvoy.iceandfire.render.entity.feature.AmphithereRiderFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.AmphithereModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public class AmphithereEntityRenderer extends AdvancedEntityRendererBase<AmphithereEntity, AmphithereRenderState, AmphithereModel> {
     public static final Identifier TEXTURE_BLUE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue.png");
@@ -22,6 +28,7 @@ public class AmphithereEntityRenderer extends AdvancedEntityRendererBase<Amphith
 
     public AmphithereEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new AmphithereModel(), 1.6F);
+        this.addLayer(new AmphithereRiderFeatureRenderer(this));
     }
 
     @Override
@@ -37,6 +44,18 @@ public class AmphithereEntityRenderer extends AdvancedEntityRendererBase<Amphith
         state.sitProgress = entity.sitProgress;
         state.diveProgress = entity.diveProgress;
         state.onGround = entity.onGround();
+        state.isFlying = entity.isFlying();
+        state.isInWater = entity.isInWater();
+        state.isInLava = entity.isInLava();
+        state.riderRenderState = null;
+        if (IafCommonConfig.INSTANCE.amphithere.flightRework.getValue()) {
+            for (Entity passenger : entity.getPassengers()) {
+                if (passenger instanceof Player && entity.getTarget() != passenger) {
+                    state.riderRenderState = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(passenger, partialTicks);
+                    break;
+                }
+            }
+        }
         state.variant = entity.getVariant();
         state.isBlinking = entity.isBlinking();
         state.roll_buffer = entity.roll_buffer;
@@ -50,6 +69,9 @@ public class AmphithereEntityRenderer extends AdvancedEntityRendererBase<Amphith
     @Override
     protected void scale(AmphithereRenderState state, PoseStack matrixStackIn) {
         matrixStackIn.scale(2.0F, 2.0F, 2.0F);
+        //Flight rework: the body tilts with its pitch while airborne, so the model has to be rotated along with it
+        if (IafCommonConfig.INSTANCE.amphithere.flightRework.getValue() && state.isFlying && !state.isInWater && !state.isInLava)
+            matrixStackIn.mulPose(Axis.XP.rotationDegrees(state.xRot));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.data;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.item.SeaSerpentScaleItem;
 import com.iafenvoy.iceandfire.item.armor.SeaSerpentArmorItem;
 import com.iafenvoy.iceandfire.item.block.SeaSerpentScalesBlock;
@@ -51,12 +52,17 @@ public class SeaSerpentType {
     public static void initArmors() {
         for (SeaSerpentType type : SeaSerpentType.values()) {
             IafBlocks.register(String.format(Locale.ROOT, "sea_serpent_scale_block_%s", type.name), key -> new SeaSerpentScalesBlock(key, type.name, type.color));
-            ArmorMaterial material = IafArmorMaterials.create(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), new int[]{ 4, 7, 8, 4 }, 25, SoundEvents.ARMOR_EQUIP_GOLD, 2.5F, 0, IafItemTags.SEA_SERPENT_SCALES);
+            ArmorMaterial material = IafArmorMaterials.create(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), protection(IafCommonConfig.INSTANCE.armors.tideGuardianProtection.getValue(), new int[]{ 4, 7, 8, 4 }), 25, SoundEvents.ARMOR_EQUIP_GOLD, IafCommonConfig.INSTANCE.armors.tideGuardianToughness.getValue().floatValue(), 0, IafItemTags.SEA_SERPENT_SCALES);
             type.scale = IafItems.registerItem(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), key -> new SeaSerpentScaleItem(key, type));
             type.helmet = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_helmet", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.HELMET));
             type.chestplate = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_chestplate", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.CHESTPLATE));
             type.leggings = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_leggings", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.LEGGINGS));
             type.boots = IafItems.registerArmor(String.format(Locale.ROOT, "tide_%s_boots", type.name), key -> new SeaSerpentArmorItem(key, type, material, ArmorType.BOOTS));
         }
+    }
+
+    private static int[] protection(List<Integer> configured, int[] fallback) {
+        if (configured == null || configured.size() < 4) return fallback;
+        return new int[]{configured.get(0), configured.get(1), configured.get(2), configured.get(3)};
     }
 }

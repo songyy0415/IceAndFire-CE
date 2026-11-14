@@ -1,5 +1,7 @@
 package com.iafenvoy.iceandfire.mixin;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
+import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -41,6 +43,9 @@ public class PlayerEntityRendererMixin {
     @Inject(method = "shouldRender(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/client/renderer/culling/Frustum;DDD)Z", at = @At("HEAD"), cancellable = true)
     private void iceandfire$hideStandaloneDragonRider(Entity entity, Frustum frustum, double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof Avatar avatar && avatar.getVehicle() instanceof DragonBaseEntity)
+            cir.setReturnValue(false);
+        if (entity instanceof Avatar avatar && avatar.getVehicle() instanceof AmphithereEntity
+                && IafCommonConfig.INSTANCE.amphithere.flightRework.getValue())
             cir.setReturnValue(false);
     }
 }

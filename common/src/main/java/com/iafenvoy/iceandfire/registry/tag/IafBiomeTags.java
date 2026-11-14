@@ -42,6 +42,8 @@ public final class IafBiomeTags {
     public static final TagKey<Biome> FOREST_TROLL = create("entity_gen/troll_forest");
     public static final TagKey<Biome> MOUNTAIN_TROLL = create("entity_gen/troll_mountain");
     public static final TagKey<Biome> SNOWY_TROLL = create("entity_gen/troll_snowy");
+    // Common biome categories (Fabric API convention tags / NeoForge c: tags)
+    public static final TagKey<Biome> IS_BEACH = TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath("c", "is_beach"));
 
     private static TagKey<Biome> create(final String name) {
         return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));

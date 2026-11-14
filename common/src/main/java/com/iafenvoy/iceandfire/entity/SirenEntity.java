@@ -66,6 +66,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFear, IHasCustomizableAttributes {
+    private static final String NIGHT_SPAWN_TAG = "iceandfire_night_siren";
     public static final int SEARCH_RANGE = 32;
     public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof Player player && !player.isCreative() && !entity.isSpectator()) || BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SIREN_CHARMABLE);
     public static final Animation ANIMATION_BITE = Animation.create(20);
@@ -492,7 +493,25 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setHairColor(this.getRandom().nextInt(3));
         this.setSingingPose(this.getRandom().nextInt(3));
+        // Flight rework patch (siren beach spawns): remember natural/chunk-generation spawns so they can vanish at
+        // morning. The 1.21.1 addon tagged them from a NeoForge FinalizeSpawnEvent hook.
+        if (reason == EntitySpawnReason.NATURAL || reason == EntitySpawnReason.CHUNK_GENERATION)
+            this.addTag(NIGHT_SPAWN_TAG);
         return spawnDataIn;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        // Flight rework patch (siren beach spawns): night-spawned sirens without a name tag despawn at morning.
+        if (this.level().isClientSide() || !IafCommonConfig.INSTANCE.siren.despawnAtMorning.getValue()) return;
+        if (this.tickCount % 20 != 0) return;
+        if (this.entityTags().contains(NIGHT_SPAWN_TAG)
+                && !this.hasCustomName()
+                && !this.requiresCustomPersistence()
+                && this.level().isBrightOutside()) {
+            this.discard();
+        }
     }
 
     @Override

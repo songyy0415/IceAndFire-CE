@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.compat.delight.DelightFoodItem;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.DragonArmorMaterial;
 import com.iafenvoy.iceandfire.data.DragonArmorPart;
 import com.iafenvoy.iceandfire.item.*;
@@ -18,6 +19,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Unit;
 
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -238,30 +240,30 @@ public final class IafItems {
     public static final RegistrySupplier<Item> DRAGON_DEBUG_STICK = register("dragon_debug_stick", key -> new GenericItem(key, 1));
 
     //Armors
-    public static final RegistrySupplier<Item> SILVER_HELMET = registerArmor("armor_silver_metal_helmet", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.HELMET).durability(165)));
-    public static final RegistrySupplier<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.CHESTPLATE).durability(240)));
-    public static final RegistrySupplier<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.LEGGINGS).durability(225)));
-    public static final RegistrySupplier<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.BOOTS).durability(195)));
-    public static final RegistrySupplier<Item> COPPER_HELMET = registerArmor("armor_copper_metal_helmet", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.HELMET).durability(111)));
-    public static final RegistrySupplier<Item> COPPER_CHESTPLATE = registerArmor("armor_copper_metal_chestplate", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.CHESTPLATE).durability(161)));
-    public static final RegistrySupplier<Item> COPPER_LEGGINGS = registerArmor("armor_copper_metal_leggings", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.LEGGINGS).durability(151)));
-    public static final RegistrySupplier<Item> COPPER_BOOTS = registerArmor("armor_copper_metal_boots", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.BOOTS).durability(131)));
+    public static final RegistrySupplier<Item> SILVER_HELMET = registerArmor("armor_silver_metal_helmet", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.HELMET).durability(165))));
+    public static final RegistrySupplier<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.CHESTPLATE).durability(240))));
+    public static final RegistrySupplier<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.LEGGINGS).durability(225))));
+    public static final RegistrySupplier<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SILVER, ArmorType.BOOTS).durability(195))));
+    public static final RegistrySupplier<Item> COPPER_HELMET = registerArmor("armor_copper_metal_helmet", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.HELMET).durability(111))));
+    public static final RegistrySupplier<Item> COPPER_CHESTPLATE = registerArmor("armor_copper_metal_chestplate", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.CHESTPLATE).durability(161))));
+    public static final RegistrySupplier<Item> COPPER_LEGGINGS = registerArmor("armor_copper_metal_leggings", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.LEGGINGS).durability(151))));
+    public static final RegistrySupplier<Item> COPPER_BOOTS = registerArmor("armor_copper_metal_boots", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.COPPER, ArmorType.BOOTS).durability(131))));
     public static final RegistrySupplier<Item> SHEEP_HELMET = registerArmor("sheep_helmet", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SHEEP, ArmorType.HELMET).durability(55)));
     public static final RegistrySupplier<Item> SHEEP_CHESTPLATE = registerArmor("sheep_chestplate", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SHEEP, ArmorType.CHESTPLATE).durability(80)));
     public static final RegistrySupplier<Item> SHEEP_LEGGINGS = registerArmor("sheep_leggings", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SHEEP, ArmorType.LEGGINGS).durability(75)));
     public static final RegistrySupplier<Item> SHEEP_BOOTS = registerArmor("sheep_boots", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.SHEEP, ArmorType.BOOTS).durability(65)));
-    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_HELMET = registerArmor("deathworm_yellow_helmet", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.HELMET).durability(165)));
-    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_CHESTPLATE = registerArmor("deathworm_yellow_chestplate", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.CHESTPLATE).durability(240)));
-    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_LEGGINGS = registerArmor("deathworm_yellow_leggings", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.LEGGINGS).durability(225)));
-    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_BOOTS = registerArmor("deathworm_yellow_boots", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.BOOTS).durability(195)));
-    public static final RegistrySupplier<Item> DEATHWORM_WHITE_HELMET = registerArmor("deathworm_white_helmet", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.HELMET).durability(165)));
-    public static final RegistrySupplier<Item> DEATHWORM_WHITE_CHESTPLATE = registerArmor("deathworm_white_chestplate", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.CHESTPLATE).durability(240)));
-    public static final RegistrySupplier<Item> DEATHWORM_WHITE_LEGGINGS = registerArmor("deathworm_white_leggings", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.LEGGINGS).durability(225)));
-    public static final RegistrySupplier<Item> DEATHWORM_WHITE_BOOTS = registerArmor("deathworm_white_boots", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.BOOTS).durability(165)));
-    public static final RegistrySupplier<Item> DEATHWORM_RED_HELMET = registerArmor("deathworm_red_helmet", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.HELMET).durability(165)));
-    public static final RegistrySupplier<Item> DEATHWORM_RED_CHESTPLATE = registerArmor("deathworm_red_chestplate", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.CHESTPLATE).durability(240)));
-    public static final RegistrySupplier<Item> DEATHWORM_RED_LEGGINGS = registerArmor("deathworm_red_leggings", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.LEGGINGS).durability(225)));
-    public static final RegistrySupplier<Item> DEATHWORM_RED_BOOTS = registerArmor("deathworm_red_boots", key -> new Item(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.BOOTS).durability(165)));
+    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_HELMET = registerArmor("deathworm_yellow_helmet", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.HELMET).durability(165))));
+    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_CHESTPLATE = registerArmor("deathworm_yellow_chestplate", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.CHESTPLATE).durability(240))));
+    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_LEGGINGS = registerArmor("deathworm_yellow_leggings", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.LEGGINGS).durability(225))));
+    public static final RegistrySupplier<Item> DEATHWORM_YELLOW_BOOTS = registerArmor("deathworm_yellow_boots", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW, ArmorType.BOOTS).durability(195))));
+    public static final RegistrySupplier<Item> DEATHWORM_WHITE_HELMET = registerArmor("deathworm_white_helmet", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.HELMET).durability(165))));
+    public static final RegistrySupplier<Item> DEATHWORM_WHITE_CHESTPLATE = registerArmor("deathworm_white_chestplate", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.CHESTPLATE).durability(240))));
+    public static final RegistrySupplier<Item> DEATHWORM_WHITE_LEGGINGS = registerArmor("deathworm_white_leggings", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.LEGGINGS).durability(225))));
+    public static final RegistrySupplier<Item> DEATHWORM_WHITE_BOOTS = registerArmor("deathworm_white_boots", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE, ArmorType.BOOTS).durability(165))));
+    public static final RegistrySupplier<Item> DEATHWORM_RED_HELMET = registerArmor("deathworm_red_helmet", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.HELMET).durability(165))));
+    public static final RegistrySupplier<Item> DEATHWORM_RED_CHESTPLATE = registerArmor("deathworm_red_chestplate", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.CHESTPLATE).durability(240))));
+    public static final RegistrySupplier<Item> DEATHWORM_RED_LEGGINGS = registerArmor("deathworm_red_leggings", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.LEGGINGS).durability(225))));
+    public static final RegistrySupplier<Item> DEATHWORM_RED_BOOTS = registerArmor("deathworm_red_boots", key -> new Item(cosmeticArmorProperties(new Item.Properties().setId(key).humanoidArmor(IafArmorMaterials.DEATHWORM_RED, ArmorType.BOOTS).durability(165))));
     public static final RegistrySupplier<Item> DRAGONSTEEL_FIRE_HELMET = registerArmor("dragonsteel_fire_helmet", key -> new DragonSteelArmorItem(key, IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.HELMET));
     public static final RegistrySupplier<Item> DRAGONSTEEL_FIRE_CHESTPLATE = registerArmor("dragonsteel_fire_chestplate", key -> new DragonSteelArmorItem(key, IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.CHESTPLATE));
     public static final RegistrySupplier<Item> DRAGONSTEEL_FIRE_LEGGINGS = registerArmor("dragonsteel_fire_leggings", key -> new DragonSteelArmorItem(key, IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.LEGGINGS));
@@ -379,6 +381,11 @@ public final class IafItems {
         RegistrySupplier<T> r = register(name, item);
         r.listen(o -> CreativeTabRegistry.append(IafItemGroups.ARMORS, o));
         return r;
+    }
+
+    public static Item.Properties cosmeticArmorProperties(Item.Properties properties) {
+        if (!IafCommonConfig.INSTANCE.armors.cosmeticArmorUnbreakable.getValue()) return properties;
+        return properties.durability(1).component(DataComponents.UNBREAKABLE, Unit.INSTANCE);
     }
 
     static <T extends Item> RegistrySupplier<T> register(String name, Function<ResourceKey<Item>, T> item) {

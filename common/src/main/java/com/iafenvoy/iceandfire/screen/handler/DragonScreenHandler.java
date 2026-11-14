@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.screen.handler;
 
 import com.iafenvoy.iceandfire.data.DragonArmorPart;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
+import com.iafenvoy.iceandfire.entity.DragonPartEntity;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
 import com.iafenvoy.iceandfire.screen.slot.BannerSlot;
 import com.iafenvoy.iceandfire.screen.slot.DragonArmorSlot;
@@ -42,7 +43,23 @@ public class DragonScreenHandler extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player playerIn) {
-        return !this.dragon.hasInventoryChanged(this.dragonInventory) && this.dragonInventory.stillValid(playerIn) && this.dragon.isAlive() && this.dragon.distanceTo(playerIn) < 8.0F;
+        return !this.dragon.hasInventoryChanged(this.dragonInventory)
+                && this.dragonInventory.stillValid(playerIn)
+                && this.dragon.isAlive()
+                && this.isWithinDragonRange(playerIn);
+    }
+
+    /**
+     * The dragon's own bounding box stays small; keep the menu open when the player only
+     * stands next to one of its multipart hitboxes (wings, tail, ...).
+     */
+    private boolean isWithinDragonRange(Player player) {
+        if (this.dragon.distanceToSqr(player) < 64.0D)
+            return true;
+        for (DragonPartEntity part : this.dragon.getMultipartParts())
+            if (part != null && !part.isRemoved() && part.distanceToSqr(player) < 64.0D)
+                return true;
+        return false;
     }
 
     @Override

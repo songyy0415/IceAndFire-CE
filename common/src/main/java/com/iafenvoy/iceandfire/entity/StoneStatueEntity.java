@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.registry.IafEntities;
+import com.iafenvoy.iceandfire.registry.IafStatusEffects;
+import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.registries.BuiltInRegistries;
 
@@ -20,6 +22,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.HumanoidArm;
@@ -32,6 +35,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -70,6 +74,7 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
             IceAndFire.LOGGER.debug("Encountered issue creating stone statue from {}", parent);
         }
         CompoundTag entityTag = output.buildResult();
+        trimRestorationData(entityTag);
         assert statue != null;
         statue.setTrappedTag(entityTag);
         statue.setTrappedEntityTypeString(BuiltInRegistries.ENTITY_TYPE.getKey(parent.getType()).toString());
@@ -77,6 +82,24 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
         statue.setTrappedHeight(parent.getBbHeight());
         statue.setTrappedScale(parent.getAgeScale());
         return statue;
+    }
+
+    /**
+     * Drops the transient parts of a saved entity so the restored entity does not keep the
+     * statue's position/identity/connections (upstream #233 fix).
+     */
+    private static void trimRestorationData(CompoundTag entityTag) {
+        entityTag.remove("UUID");
+        entityTag.remove("Pos");
+        entityTag.remove("Motion");
+        entityTag.remove("Rotation");
+        entityTag.remove("FallDistance");
+        entityTag.remove("Fire");
+        entityTag.remove("Air");
+        entityTag.remove("OnGround");
+        entityTag.remove("PortalCooldown");
+        entityTag.remove("Leash");
+        entityTag.remove("Passengers");
     }
 
     @Override
@@ -185,6 +208,9 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     @Override
     public void tick() {
         super.tick();
+        if (this.level() instanceof ServerLevel serverLevel && this.hasEffect(IafStatusEffects.depetrificationHolder())) {
+            this.tryDepetrify(serverLevel);
+        }
         this.setYRot(this.yBodyRot);
         this.yHeadRot = this.getYRot();
         if (Math.abs(this.getBbWidth() - this.getTrappedWidth()) > 0.01 || Math.abs(this.getBbHeight() - this.getTrappedHeight()) > 0.01) {
@@ -193,6 +219,33 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
             this.stoneStatueSize = EntityDimensions.scalable(this.getTrappedWidth(), this.getTrappedHeight());
             this.refreshDimensions();
             this.setPos(prevX, this.getY(), prevZ);
+        }
+    }
+
+    /**
+     * Restores the trapped creature when the statue is under the depetrification effect
+     * (potion brewed from a gorgon head, upstream #233).
+     */
+    private void tryDepetrify(ServerLevel level) {
+        EntityType<?> entityType = this.getTrappedEntityType();
+        if (entityType == EntityTypes.PLAYER || entityType.builtInRegistryHolder().is(IafEntityTags.NO_DEPETRIFY)) return;
+
+        CompoundTag entityTag = this.getTrappedTag();
+        if (entityTag.isEmpty()) return;
+
+        Entity entity = entityType.create(level, EntitySpawnReason.LOAD);
+        if (!(entity instanceof LivingEntity livingEntity)) return;
+
+        try {
+            CompoundTag restorationData = entityTag.copy();
+            trimRestorationData(restorationData);
+            livingEntity.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), restorationData));
+            livingEntity.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+            if (level.addFreshEntity(livingEntity)) {
+                this.remove(RemovalReason.DISCARDED);
+            }
+        } catch (Exception e) {
+            IceAndFire.LOGGER.warn("Could not depetrify {}", this.getTrappedEntityTypeString(), e);
         }
     }
 

@@ -75,6 +75,7 @@ public class IceAndFire {
         IafFeatures.REGISTRY.register();
         IafScreenHandlers.REGISTRY.register();
         IafStatusEffects.REGISTRY.register();
+        IafPotions.REGISTRY.register();
         IafStructurePieces.REGISTRY.register();
         IafStructureTypes.REGISTRY.register();
         //Trade

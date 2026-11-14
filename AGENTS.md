@@ -7,9 +7,9 @@
 
 本项目目标：
 
-> 修复一个 已经经过Minecraft 1.21.1 + yarn + Architectury 架构 Mod 的 Fabric 部分迁移到 Minecraft 26.2，同时保持 Architectury 架构的项目的bug
+> 按用户要求修改一个 已经经过Minecraft 1.21.1 + yarn + Architectury 架构 Mod 的 Fabric 部分迁移到 Minecraft 26.2，同时保持 Architectury 架构的项目
 
-修复要求：
+要求：
 
 - 保留 Architectury common/fabric/neoforge 结构
 - 只修改 Fabric 相关实现
@@ -26,7 +26,7 @@
 ---
 
 # 1. 输入资料
-原项目地址:"D:\aiminecraftdev\IceAndFire-CE"(移植前)
+
 
 将提供：
 
@@ -36,7 +36,7 @@
 
 ```
 
-minecraft-1.21.1-mojmap "D:\aiminecraftdev\minecraft1.21.1mojmap"
+minecraft-1.21.1-mojmap "D:\aimoddev\minecraft\1.21.1"
 
 ```
 
@@ -51,7 +51,7 @@ minecraft-1.21.1-mojmap "D:\aiminecraftdev\minecraft1.21.1mojmap"
 
 ```
 
-minecraft-26.2-mojmap "D:\aiminecraftdev\minecraft26.2"
+minecraft-26.2-mojmap "D:\aimoddev\minecraft\26.2"
 
 ```
 
@@ -61,148 +61,40 @@ minecraft-26.2-mojmap "D:\aiminecraftdev\minecraft26.2"
 - 确认官方实现
 - 替换废弃接口
 
+neoforge 1.21.1 "D:\aimoddev\neoforge\NeoForge1.21.1"
+用于：
+进行同步上游任务时的参考
 
 ---
 
 # 2. 依赖项目
 ## fabric loader
-通用 "D:\aiminecraftdev\fabric-loader-0.19.3"
+通用 "D:\aimoddev\fabric_lodaer\fabric-loader"
 ## fabric api
-fabric api for 1.21.1 "D:\aiminecraftdev\fabric-api1.21.1"
-fabric api for 26.2 "D:\aiminecraftdev\fabric-api-0.156.0-26.2"
+fabric api for 1.21.1 "D:\aimoddev\fabric_api\fabric-api-1.21.1"
+fabric api for 26.2 "D:\aimoddev\fabric_api\fabric-api26.2"
 
 ## architectury
-architectury for 1.21.1 "D:\aiminecraftdev\architectury-api-1.21"
-architectury for 26.2 "D:\aiminecraftdev\architectury-api26.2"
+architectury api for 1.21.1 "D:\aimoddev\architectury\architectury-api-1.21"
+architectury for 26.2 "D:\aimoddev\architectury\architectury-api-26.2"
 ## ponder
-ponder26.2包含在create-fly项目中 "D:\aiminecraftdev\Create-Fly"
+ponder26.2包含在create-fly项目中 "D:\aimoddev\createfly\Create-Fly"
 ## Uranus
-Uranus for mc26.2 "D:\aiminecraftdev\Uranus26.2"
-Uranus for mc1.21.1 "D:\aiminecraftdev\Uranus1.21.1"
+Uranus for mc26.2 "D:\aimoddev\Uranus\Uranus26.2"
+Uranus for mc1.21.1 "D:\aimoddev\Uranus\Uranus1.21.1"
+## Jupiter
+Jupiter for 26.2 "D:\aimoddev\jupiter\Jupiter"
 用途：
 
 - API依赖
 - Fabric实现依赖
 
-特点：
-
-```
-
-API变化较小
-
-```
-
-处理策略：
-
-优先直接迁移。
-
----
-
-## Jupiter
-Jupiter for 26.2 "D:\aiminecraftdev\Jupiter new"
-Jupiter for 1.21.1 "D:\aiminecraftdev\Jupiter old"
-用途：
-
-核心API依赖。
-
-特点：
-
-```
-
-API变化较大
-
-```
-
-处理策略：
-
-必须：
-
-1. 对比两个版本源码
-2. 建立API变化表
-3. 分析替代方案
-4. 修改调用代码
-
-禁止：
-
-- 猜测API
-- 简单删除调用
-- 用空实现绕过
 
 
----
-
-## EMI
-emi for 1.21.1 "D:\aiminecraftdev\emi1.21.1"
-emi for 26.2 "D:\aiminecraftdev\emi26.2"
-处理：
-
-- Recipe API
-- Plugin API
-- Client integration
 
 
-检查：
-
-- emi api package变化
-- plugin入口变化
-- registry变化
 
 
----
-
-## Trinkets
-trinkets for 1.21.1 "D:\aiminecraftdev\trinkets1.21.1"
-trinkets for 26.2 "D:\aiminecraftdev\trinkets26.2"
-处理：
-
-- Slot API
-- Component API
-- Entity integration
-
-
-检查：
-
-- TrinketComponent变化
-- SlotGroup变化
-- Callback变化
-
-
----
-
-## Jade
-jade for 1.21.1 "D:\aiminecraftdev\Jade1.21.1"
-jade for 26.2 "D:\aiminecraftdev\Jade26.2"
-处理：
-
-- Client plugin
-- Block entity data
-- Tooltip provider
-
-
-检查：
-
-- plugin注册方式
-- API package变化
-
-
----
-
-## Integration
-通用 "D:\aiminecraftdev\Integration"
-
-特殊说明：
-
-Integration 基于 Loader API。
-
-特点：
-
-```
-
-不依赖Minecraft版本API
-
-```
-
-迁移原则：
 
 优先保持：
 
@@ -317,7 +209,7 @@ API变化:
 
 ```
 
-bugfix: xxx
+bugfix/feat/chore/等其他表示这个commit性质的词语: xxx
 
 ```
 

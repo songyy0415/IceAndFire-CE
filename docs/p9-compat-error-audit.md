@@ -23,6 +23,11 @@ Baseline: `./gradlew :common:compileJava` → **111 total errors, compat: 28 acr
 - Errors: `package net.createmod.ponder.api.scene/registration does not exist`, `net.createmod.ponder.foundation does not exist`, plus dependent symbol/override errors.
 - **Decision (per task rule "除非确认目标 API 已不存在")**: The target 26.2 Ponder API does not exist. The dependency is commented out and cannot be re-added. The compat sources cannot compile against a non-existent API. **Remove the `compat/ponder/` package and its integration call in `IceAndFireClient`**, documenting that Ponder support is deferred until a 26.2 artifact is published. This is the permitted-removal case, not feature deletion.
 
+> **2026-11-15 更新（已补回）**：独立 Ponder 构件确实不存在，但 Create-Fly 26.2 内置了 Ponder
+> （包名 `com.zurrtum.create.client.ponder`，mod id `create`）。`compat/ponder` 包、
+> `IceAndFireClient` 的注册调用以及 `DragonBaseEntity` 中的场景判断均已恢复，
+> 依赖改为 `maven.modrinth:create-fly`。详见 `docs/ponder-migration.md`。
+
 ## Category 2 — JEI (4) — API changes
 
 Verified against `jei-26.2-common-api-30.7.0.39` / `jei-26.2-fabric-30.7.0.39`:

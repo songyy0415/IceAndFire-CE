@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire;
 
+import com.iafenvoy.iceandfire.compat.ponder.IceAndFirePonderPlugin;
 import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.event.ClientEvents;
 import com.iafenvoy.iceandfire.event.CommonEvents;
@@ -9,6 +10,7 @@ import com.iafenvoy.iceandfire.registry.IafRenderers;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
 import com.iafenvoy.iceandfire.render.PortalRenderHelper;
 import com.iafenvoy.iceandfire.render.SirenShaderRenderHelper;
+import com.iafenvoy.integration.IntegrationExecutor;
 import com.iafenvoy.jupiter.ConfigManager;
 import dev.architectury.event.events.client.ClientTickEvent;
 import net.fabricmc.api.EnvType;
@@ -22,6 +24,9 @@ public class IceAndFireClient {
         IafRenderers.registerEntityRenderers();
         IafKeybindings.init();
 
+        // Ponder is bundled in Create-Fly on MC 26.2 (mod id "create"); registering the
+        // plugin is optional and must not run when Create is absent.
+        IntegrationExecutor.runWhenLoad("create", () -> IceAndFirePonderPlugin::init);
     }
 
     public static void process() {

@@ -42,6 +42,8 @@ dependencies {
 
     implementation "maven.modrinth:jade:JB4B8a9g"
 
-    // [P1 待确认] No Ponder-Fabric-26.2 artifact exists yet — disabled until a 26.2 coordinate is available.
-    // implementation "net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_version}"
+    // Ponder is bundled inside Create-Fly on MC 26.2 (the standalone net.createmod.ponder
+    // artifact ended at 1.21.1). Compile-only and optional at runtime: the client side only
+    // registers the plugin when the "create" mod is loaded (see IceAndFireClient).
+    compileOnly "maven.modrinth:create-fly:${create_fly_version}"
 }

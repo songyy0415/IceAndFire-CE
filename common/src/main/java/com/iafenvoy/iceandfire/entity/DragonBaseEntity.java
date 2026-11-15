@@ -1779,7 +1779,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements Extended
         this.prevAnimationProgresses[5] = this.ridingProgress;
         this.prevAnimationProgresses[6] = this.tackleProgress;
         //TODO: Better detect logic
-        if (!IntegrationExecutor.getWhenLoad("ponder", () -> () -> this.level().getClass().getSimpleName().equals("SchematicLevel"), () -> false)) {
+        // Ponder is bundled in Create-Fly on MC 26.2 (mod id "create"). Its fake scene level is
+        // PonderLevel (SchematicLevel is the 1.21.1/older name); skip dimension/part updates there.
+        if (!IntegrationExecutor.getWhenLoad("create", () -> () -> {
+            String levelName = this.level().getClass().getSimpleName();
+            return levelName.equals("PonderLevel") || levelName.equals("SchematicLevel");
+        }, () -> false)) {
             this.refreshDimensions();
             this.updateParts();
         }

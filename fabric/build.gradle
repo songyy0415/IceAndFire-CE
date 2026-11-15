@@ -86,8 +86,8 @@ dependencies {
     compileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
     compileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
 
-    // [P1 待确认] No Ponder-Fabric-26.2 artifact exists yet — disabled until a 26.2 coordinate is available.
-    // compileOnly "net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_version}"
+    // Ponder (bundled in Create-Fly 26.2) is only referenced from :common sources and is an
+    // optional runtime mod, so the fabric module neither compiles against nor bundles it.
 }
 
 processResources {
